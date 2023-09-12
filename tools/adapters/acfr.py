@@ -21,13 +21,11 @@ class SequenceData():
     deployment: str
 
 def add_business_arguments(parser: ArgumentParser) -> ArgumentParser:
-    """ """
-    parser.add_argument("--keys",
-        type=str,
-        nargs='+',
-        required=False,
-        default=list(),
-        help="group keys to transfer",
+    """ Add business relevant arguments to an argument parser. """
+    parser.add_argument("--config",
+        type=Path,
+        required=True,
+        help="config file path",
     )
     return parser
 

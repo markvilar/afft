@@ -14,9 +14,10 @@ from tools.transfer import (
     execute_transfer,
 )
 from tools.utils import (
+    add_remote_transfer_arguments,
     create_argument_parser,
     create_logger,
-    add_remote_transfer_arguments,
+    read_config_file,
 )
 
 def main():
@@ -32,29 +33,32 @@ def main():
     # Parse arguments
     args = parser.parse_args()
 
+    # Load data config
+    config = read_config_file(args.config)
+
     # Read rclone config
-    config = rclone.read_config(args.config)
-    remotes = rclone.list_remotes(config)
+    rclone_config = rclone.read_config(args.rclone)
+    remotes = rclone.list_remotes(rclone_config)
 
     # Prepare query function (ACFR specific)
     transfer_format_fun = partial(
         create_group_transfers, 
-        filepath=args.input, 
-        target_labels=args.keys, 
-        source_root=Path("/media/water/RAW_DATA"),
-        dest_root=Path("/home/martin/data/acfr_dev"),
+        filepath        = Path(config["data"]["file"]), 
+        target_labels   = config["data"]["groups"], 
+        source_root     = Path(config["remote"]["source_root"]),
+        dest_root       = Path(config["paths"]["output"]),
         logger=logger,
     )
    
     # Prepare transfer job with input stem as label
     transfer_jobs = prepare_transfer(
-        source="acfr_archipelago",
+        source=config["remote"]["source"],
         setup_fun=transfer_format_fun,
     )
 
     # Execute data transfer
     for transfer_job in transfer_jobs:
-        execute_transfer(config, transfer_job, logger)
+        execute_transfer(rclone_config, transfer_job, logger)
 
 if __name__ == "__main__":
     main()

@@ -4,7 +4,15 @@ import logging
 import sys
 
 from argparse import ArgumentParser
+from configparser import ConfigParser
 from pathlib import Path
+
+def read_config_file(path: Path) -> ConfigParser:
+    """ Read a config file. """
+    assert path.suffix == ".ini", "invalid config file extension"
+    config = ConfigParser() 
+    config.read(path)
+    return config
 
 def create_argument_parser() -> ArgumentParser:
     """ Creates an argument parser. """
@@ -12,12 +20,7 @@ def create_argument_parser() -> ArgumentParser:
 
 def add_remote_transfer_arguments(parser: ArgumentParser) -> ArgumentParser:
     """ Adds remote transfer arguments to an argument parser. """
-    parser.add_argument("--input",
-        type=Path,
-        required=True,
-        help="input file path",
-    )
-    parser.add_argument("--config",
+    parser.add_argument("--rclone",
         type=Path,
         required=False,
         default=Path.home() / Path(".config/rclone/rclone.conf"),
