@@ -4,11 +4,13 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
+python-rclone = "*"
 
 [dev-packages]
 pytest = "*"
 setuptools = "*"
 twine = "*"
+tqdm = "*"
 
 [requires]
 python = "3.10"
@@ -17,4 +19,5 @@ python = "3.10"
 tests = "python -m unittest"
 main = "python -m main"
 build = "python -m setup bdist_wheel sdist"
-lint = "pylint ./libtemp ./tests"
+lint = "pylint ./tools ./tests"
+dev = "python -m main --input /home/martin/data/groups/20230831_134855_scott_reef.json"

@@ -8,14 +8,14 @@ with open("README.md", "r", encoding="UTF-8") as handle:
     long_description = handle.read()
 
 setup(
-    name="python_project_template",
+    name="acfr-tools",
     version = "0.0.1",
     description = "A template for Python projects with various development tools",
-    package_dir = {"": "libtemp"},
-    packages = find_packages(where="libtemp"),
+    package_dir = {"": "tools"}, # TODO: Rename library
+    packages = find_packages(where="tools"), # TODO: Rename library
     long_description = long_description,
     long_description_content_type = "text/markdown",
-    url = "https://github.com/markvilar/python_project_template",
+    url = "https://github.com/markvilar/acfr-tools",
     author = "markvilar",
     author_email = "martin.kvisvik.larsen@hotmail.com",
     license = "GPLv3+",
