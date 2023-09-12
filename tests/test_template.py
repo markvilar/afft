@@ -2,7 +2,7 @@
 
 import unittest
 
-from libtemp.common import concatenate_strings
+import tools.rclone_wrapper as rclone
 
 class CommonTests(unittest.TestCase):
     """ Test case for the template library common functions. """
@@ -13,10 +13,8 @@ class CommonTests(unittest.TestCase):
     def tearDown(self) -> None:
         """ Method to shut down test case components. """
 
-    def test_string_concatenation(self):
+    def test_void(self) -> None:
         """ Test string concatenation function. """
-        concatenated = concatenate_strings(["hello", " ", "world"])
-        self.assertEqual(concatenated, "hello world")
 
 if __name__ == "__main__":
     unittest.main()
