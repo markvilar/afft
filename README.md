@@ -1,9 +1,9 @@
-# ACFR Tools
+# Filetools
 
 ![ci](https://github.com/markvilar/python_project_template/actions/workflows/ci.yml/badge.svg)
 ![pylint](https://github.com/markvilar/python_project_template/actions/workflows/pylint.yml/badge.svg)
 
-ACFR Tools is a toolbox for processing data from the Austrialian Centre of Field Robotics. The repository includes support for 
+Filetools is a toolbox for handling of files and directories. The repository includes support for 
 the following tools:
 * pipenv - management of virtual environments and dependencies
 * setuptools - management of package setup

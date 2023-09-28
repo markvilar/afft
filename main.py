@@ -3,17 +3,19 @@
 from functools import partial
 from pathlib import Path
 
-import tools.rclone_wrapper as rclone
+import filetools.transfer.rclone_wrapper as rclone
 
-from tools.adapters.acfr import (
+from filetools.adapters.acfr import (
     add_business_arguments,
     create_group_transfers,
 )
-from tools.transfer import (
+
+from filetools.transfer import (
     prepare_transfer, 
     execute_transfer,
 )
-from tools.utils import (
+
+from filetools.utils import (
     add_remote_transfer_arguments,
     create_argument_parser,
     create_logger,
