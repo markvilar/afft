@@ -7,7 +7,7 @@ from typing import Callable, Dict, List
 
 import tqdm
 
-import tools.rclone_wrapper as rclone
+import filetools.transfer.rclone_wrapper as rclone
 
 @dataclass(unsafe_hash=True)
 class TransferItem():

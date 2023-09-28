@@ -5,6 +5,7 @@ from typing import Dict, List
 from logging import Logger
 
 import rclone
+
 def local_config() -> str:
     """ Returns the configuration for a local remote. """
     return """[local] type=local nounc=true"""
@@ -48,11 +49,10 @@ def copy(config: str, source: str, destination: str, flags: List[str]) -> Dict:
 
     Args:
     - config: rclone configuration string
-    - source: A string "source:path"
-    - destination:   A string "dest:path"
+    - source: A string "source:/path/to/dir"
+    - destination:   A string "dest:/path/to/dir"
     - flags:  Extra flags as per `rclone copy --help` 
     """
-    # TODO: Implement
     return rclone.with_config(config).copy(
         source=source,
         dest=destination,
