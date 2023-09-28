@@ -8,14 +8,15 @@ with open("README.md", "r", encoding="UTF-8") as handle:
     long_description = handle.read()
 
 setup(
-    name="acfr-tools",
+    name="filetools",
     version = "0.0.1",
-    description = "A template for Python projects with various development tools",
-    package_dir = {"": "tools"}, # TODO: Rename library
-    packages = find_packages(where="tools"), # TODO: Rename library
+    description = "Various file related tools including transfer, local queries,
+    etc.",
+    package_dir = {"": "filetools"},
+    packages = find_packages(where="filetools"),
     long_description = long_description,
     long_description_content_type = "text/markdown",
-    url = "https://github.com/markvilar/acfr-tools",
+    url = "https://github.com/markvilar/filetools",
     author = "markvilar",
     author_email = "martin.kvisvik.larsen@hotmail.com",
     license = "GPLv3+",
