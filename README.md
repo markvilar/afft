@@ -59,3 +59,7 @@ python -m unittest -v tests/test_math.py
 ```sh
 twine upload --repository python_template_project dist/*
 ```
+
+## TODO:
+- Finding correspondences between reference files and directory files
+- File transfer with include file to function `execute_transfer()`

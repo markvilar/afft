@@ -5,10 +5,7 @@ from pathlib import Path
 
 import filetools.transfer.rclone_wrapper as rclone
 
-from filetools.adapters.acfr import (
-    add_business_arguments,
-    create_group_transfers,
-)
+from filetools.adapters.acfr import create_transfer_assignments
 
 from filetools.transfer import (
     prepare_transfer, 
@@ -16,7 +13,6 @@ from filetools.transfer import (
 )
 
 from filetools.utils import (
-    add_remote_transfer_arguments,
     create_argument_parser,
     create_logger,
     read_config_file,
@@ -29,33 +25,45 @@ def main():
     logger = create_logger()
 
     # Add relevant arguments to argument parser
-    parser = add_remote_transfer_arguments(parser)
-    parser = add_business_arguments(parser)
+    parser.add_argument("destination",
+        type = Path,
+        help = "destination folder for the transfer",
+    )
+    parser.add_argument("--rclone",
+        type=Path,
+        required=False,
+        default=Path.home() / Path(".config/rclone/rclone.conf"),
+        help="rclone config file path",
+    )
+    parser.add_argument("--config",
+        type=Path,
+        required=True,
+        help="config file path",
+    )
 
     # Parse arguments
-    args = parser.parse_args()
+    arguments = parser.parse_args()
 
     # Load data config
-    config = read_config_file(args.config)
+    config = read_config_file(arguments.config)
 
     # Read rclone config
-    rclone_config = rclone.read_config(args.rclone)
+    rclone_config = rclone.read_config(arguments.rclone)
     remotes = rclone.list_remotes(rclone_config)
 
-    # Prepare query function (ACFR specific)
+    # Prepare query function (business specific)
     transfer_format_fun = partial(
-        create_group_transfers, 
-        filepath        = Path(config["data"]["file"]), 
-        target_labels   = config["data"]["groups"], 
-        source_root     = Path(config["remote"]["source_root"]),
-        dest_root       = Path(config["paths"]["output"]),
+        create_transfer_assignments, 
+        filepath        = Path(config["job"]["query"]), 
+        source_root     = Path(config["source"]["root"]),
+        dest_root       = Path(config["destination"]["root"]),
         logger=logger,
     )
    
     # Prepare transfer job with input stem as label
     transfer_jobs = prepare_transfer(
-        source=config["remote"]["source"],
-        setup_fun=transfer_format_fun,
+        source = config["source"]["label"],
+        setup_fun = transfer_format_fun,
     )
 
     # Execute data transfer

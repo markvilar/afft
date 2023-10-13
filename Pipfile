@@ -4,6 +4,7 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
+icecream = "*"
 python-rclone = "*"
 
 [dev-packages]
@@ -17,7 +18,8 @@ python = "3.10"
 
 [scripts]
 tests = "python -m unittest"
-main = "python -m main"
+transfer = "python -m run_transfer"
+cleanup = "python -m run_cleanup"
 build = "python -m setup bdist_wheel sdist"
 lint = "pylint ./tools ./tests"
 dev = "python -m main --input /home/martin/data/groups/20230831_134855_scott_reef.json"

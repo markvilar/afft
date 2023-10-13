@@ -1,6 +1,7 @@
 """ Module for file transfer functionality. """
 import logging
 
+from argparse import ArgumentParser
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Callable, Dict, List
@@ -33,12 +34,12 @@ def prepare_transfer(
     setup_fun: Callable[[], Dict[str, TransferAssignment]],
 ) -> List[TransferJob]:
     """ 
-    Prepares a transfer job by setting up queries and assigning a remote to
-    the job. 
+    Builder function to create a transfer job by setting up queries and 
+    assigning a remote to the job. 
 
     Args:
-     - source:    Source to transfer data from.
-     - setup_fun: Function to setup collections of transfer items.
+     - source:        Source to transfer data from.
+     - setup_fun:     Function to setup collections of transfer items.
 
     Return:
      - A list of transfer jobs.
@@ -72,6 +73,8 @@ def execute_transfer(
     for item in iterator: 
         source = f"{job.source}:{item.source}"
         destination = f"{item.destination}"
+
+        # Execute rclone copy
         result = rclone.copy(config, source, destination, flags=list())
 
     # TODO: Transfer single files, look into --include flag
