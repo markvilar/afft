@@ -8,7 +8,7 @@ from typing import Dict, List, Tuple
 from icecream import ic
 
 from filetools.io import read_json
-from filetools.transfer import TransferItem, TransferAssignment
+from filetools.transfer import DirectoryTransfer, FileTransfer, TransferAssignment
 
 def prepare_directory(parent: Path, name: str, exist_ok: bool=False) -> Path:
     """ Prepares a directory by formatting the path and creating the 
@@ -43,6 +43,8 @@ def create_collection_transfer_assignment(
     Returns:
      - A transfer assignment with directories and files
     """
+    ic(query_directories)
+    input("Presss a key...")
     
     directory_transfers = list()
     for directory in query_directories:
@@ -55,6 +57,7 @@ def create_collection_transfer_assignment(
     file_transfers = list()
     for file in query_files:
         item = TransferItem(
+            # TODO: Add image directory
             source = source_directory / "**" / file,
             destination = destination_directory / "images" / file,
         )
@@ -104,32 +107,49 @@ def create_transfer_assignments(
         for label in collections:
 
             collection = collections[label]
-            logger.info(label, collection.keys())
             
             source_directory = source_root / collection["root"]
 
             # Only use deployment as root for the 
             root = collection["root"].split("/")[-1]
 
-            # Get sequence data and prepare directory
+            # Prepare the collection directory
             destination_directory = prepare_directory(
                 group_directory, 
                 root,
+                exist_ok=True,
             )
 
-            # Set up transfer assignment
-            assignment = create_collection_transfer_assignment(
-                source_directory, 
+            # Set up query directories
+            target_keys = ["bin", "log", "msg"]
+            directory_transfers = list()
+            for key in target_keys:
+                directory_transfers.append(DirectoryTransfer(
+                    source = source_directory / collection["directories"][key],
+                    destination = destination_directory / collection["directories"][key],
+                ))
+
+            # TODO: Set up query files
+            image_destination = prepare_directory(
                 destination_directory, 
-                collection["directories"],
-                collection["files"],
+                "images",
+                exist_ok=True,
             )
 
-            for item in assignment.files[:10]:
-                ic(item)
+            file_transfers = list()
+            file_transfers.append(
+                FileTransfer(
+                    source_dir = source_directory / collection["directories"]["img"],
+                    destination_dir = image_destination,
+                    include_files = collection["files"],
+                )
+            )
 
-            input("Press a key...")
-            
+            assignment = TransferAssignment(
+                directory_transfers = directory_transfers,
+                file_transfers = file_transfers,
+            )
+
             # Add assignment with the collection label to the transfer
             transfers[label] = assignment
 

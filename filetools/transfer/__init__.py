@@ -10,6 +10,7 @@ from .rclone_wrapper import (
 from .transfer import (
     prepare_transfer, 
     execute_transfer,
-    TransferItem,
+    DirectoryTransfer,
+    FileTransfer,
     TransferAssignment,
 )
