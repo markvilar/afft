@@ -1,14 +1,15 @@
 """ Module for ACFR specific logic and data formatting. """
 
-from argparse import ArgumentParser
 from logging import Logger
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 from icecream import ic
 
 from filetools.io import read_json
 from filetools.transfer import DirectoryQuery, FileQuery, TransferAssignment
+
+from .format import replace_file_extensions, append_wildcard_to_prefix
 
 def prepare_directory(parent: Path, name: str, exist_ok: bool=False) -> Path:
     """ Prepares a directory by formatting the path and creating the 
@@ -27,7 +28,7 @@ def log_data_summary(data: Dict, logger: Logger) -> None:
     logger.info("\n")
 
 def filter_groups_by_label(data, target_groups) -> List[str]:
-    """ """
+    """ Adds keys from data that are in the target groups. """
     selection = list()
     for target in target_groups:
         if target in data:
@@ -117,6 +118,16 @@ def create_group_queries(
             )
             file_queries.append(file_query)
 
+            # Format the include items by appending wildcards to the
+            # second-level label
+            for transfer in file_transfers:
+                updated_includes = append_wildcard_to_prefix(
+                    filepaths = transfer.include_files,
+                    prefix_length = 19,
+                    wildcard = "*",
+                )
+                transfer.include_files = updated_includes
+            
             assignment = TransferAssignment(
                 directory_queries = directory_queries,
                 file_queries = file_queries,

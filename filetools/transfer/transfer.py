@@ -110,12 +110,8 @@ def execute_transfer(
         source = f"{job.source}:{query.source_dir}"
         destination = f"{query.destination_dir}"
 
-        logger.info("\n")
-        logger.info(f"Source:      {source}")
-        logger.info(f"Destination: {destination}")
-
         # Write to filenames to txt file
-        include_file_path = f"./cache/{job.label}_include_files.txt"
+        include_file_path = f"./.cache/{job.label}_includes.txt"
         write_include_file(include_file_path, query.include_files)
         
         result = rclone.copy(

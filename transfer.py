@@ -54,13 +54,19 @@ def main():
     logger.info(f" - Config file:   {arguments.rclone}")
     logger.info(f" - Remotes:       {remotes}")
 
+    # Parse target entries
+    if "target_entries" in config["job"]:
+        target_entries = [entry.strip() for entry in config["job"]["target_entries"].split(",")]
+    else:
+        target_entries = None
+    
     # Prepare assignment setup function
     setup_fun = partial(
         create_group_queries, 
         source_root     = Path(config["source"]["root"]),
         dest_root       = Path(config["destination"]["root"]),
         filepath        = Path(config["job"]["entry_file"]), 
-        target_groups   = config["job"]["target_entries"],
+        target_groups   = target_entries,
         logger=logger,
     )
    
