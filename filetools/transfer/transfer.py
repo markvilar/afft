@@ -10,10 +10,10 @@ import tqdm
 
 from icecream import ic
 
-import filetools.transfer.rclone_wrapper as rclone
+import filetools.transfer.rclone as rclone
 
 @dataclass(unsafe_hash=True)
-class FileTransfer():
+class FileQuery():
     """ Data class to represent a transfer of multiple files. """
     source_dir: Path
     destination_dir: Path
@@ -21,15 +21,15 @@ class FileTransfer():
     exclude_files: List[str] = field(default_factory=list)
 
 @dataclass(unsafe_hash=True)
-class DirectoryTransfer():
+class DirectoryQuery():
     """ Data class to represent a directory transfer. """
     source: Path
     destination: Path
 
 @dataclass
 class TransferAssignment():
-    directory_transfers: List[DirectoryTransfer] = field(default_factory=list)
-    file_transfers: List[FileTransfer] = field(default_factory=list)
+    directory_queries: List[DirectoryQuery] = field(default_factory=list)
+    file_queries: List[FileQuery] = field(default_factory=list)
 
 @dataclass
 class TransferJob():
@@ -37,11 +37,11 @@ class TransferJob():
     attempt to resolved the queries with a given remote. """
     source: str
     label: str=str("")
-    assignment: List[TransferAssignment] = field(default_factory=list)
+    assignment: TransferAssignment = None # TODO: Add multiple assignments?
 
 def prepare_transfer(
     source: str,
-    setup_fun: Callable[[], Dict[str, TransferAssignment]],
+    assignment_setup_fun: Callable[[], Dict[str, TransferAssignment]],
 ) -> List[TransferJob]:
     """ 
     Builder function to create a transfer job by setting up queries and 
@@ -54,7 +54,7 @@ def prepare_transfer(
     Return:
      - A list of transfer jobs.
     """
-    assignments = setup_fun()
+    assignments = assignment_setup_fun()
     transfer_jobs = list()
     for label, assignment in assignments.items():
         transfer_jobs.append(TransferJob(
@@ -76,29 +76,39 @@ def execute_transfer(
 ):
     """ Executes a transfer job with a given context. """
     logger.info(f"Starting transfer: {job.label}")
-    logger.info(f" -- Remote:      {job.source}")
-    logger.info(f" -- File count:  {len(job.assignment.file_transfers)}")
-    logger.info(f" -- Dir. count:  {len(job.assignment.directory_transfers)}\n")
+    logger.info(f" -- Remote:           {job.source}")
+    logger.info(f" -- File queries:     {len(job.assignment.file_queries)}")
+    logger.info(f" -- Dir. queries:     {len(job.assignment.directory_queries)}\n")
     
-    # Transfer directories
+    # Set up directory iterator
     iterator = tqdm.tqdm(
-        job.assignment.directory_transfers, 
+        job.assignment.directory_queries, 
         desc="Transferring directories...",
     )
     
-    for item in iterator: 
-        source = f"{job.source}:{item.source}"
-        destination = f"{item.destination}"
-
-        # Execute rclone copy
+    # Transfer directories
+    for query in iterator: 
+        source = f"{job.source}:{query.source}"
+        destination = f"{query.destination}"
+        
+        logger.info("\n")
+        logger.info(f"Source:      {source}")
+        logger.info(f"Destination: {destination}")
+       
         result = rclone.copy(config, source, destination, flags=list())
+        
+        logger.info(f"Rclone result: {result}")
 
-    # TODO: Set up include string
+    # Set up file iterator
+    iterator = tqdm.tqdm(
+        job.assignment.file_queries, 
+        desc="Transferring files..."
+    )
 
-    # TODO: Transfer single files, look into --include flag
-    for transfer in tqdm.tqdm(job.assignment.file_transfers, desc="Transferring files..."): 
-        source = f"{job.source}:{transfer.source_dir}"
-        destination = f"{transfer.destination_dir}"
+    # Transfer files
+    for query in iterator: 
+        source = f"{job.source}:{query.source_dir}"
+        destination = f"{query.destination_dir}"
 
         logger.info("\n")
         logger.info(f"Source:      {source}")
@@ -106,8 +116,13 @@ def execute_transfer(
 
         # Write to filenames to txt file
         include_file_path = f"./cache/{job.label}_include_files.txt"
-        write_include_file(include_file_path, transfer.include_files)
+        write_include_file(include_file_path, query.include_files)
         
-        result = rclone.copy(config, source, destination, 
-            flags=[ "--include-from", str(include_file_path) ]
+        result = rclone.copy(
+            config, 
+            source, 
+            destination, 
+            flags=list("--include-from", str(include_file_path))
         )
+
+        logger.info(f"Rclone result: {result}")

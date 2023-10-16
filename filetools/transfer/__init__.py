@@ -1,4 +1,4 @@
-from .rclone_wrapper import (
+from .rclone import (
     local_config,
     read_config,
     list_remotes,
@@ -10,7 +10,7 @@ from .rclone_wrapper import (
 from .transfer import (
     prepare_transfer, 
     execute_transfer,
-    DirectoryTransfer,
-    FileTransfer,
+    DirectoryQuery,
+    FileQuery,
     TransferAssignment,
 )

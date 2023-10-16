@@ -8,7 +8,7 @@ from typing import Dict, List, Tuple
 from icecream import ic
 
 from filetools.io import read_json
-from filetools.transfer import DirectoryTransfer, FileTransfer, TransferAssignment
+from filetools.transfer import DirectoryQuery, FileQuery, TransferAssignment
 
 def prepare_directory(parent: Path, name: str, exist_ok: bool=False) -> Path:
     """ Prepares a directory by formatting the path and creating the 
@@ -26,56 +26,23 @@ def log_data_summary(data: Dict, logger: Logger) -> None:
         logger.info(f" - Group {group}: {len(collections)} collections")
     logger.info("\n")
 
-def create_collection_transfer_assignment(
-    source_directory: Path, 
-    destination_directory: Path, 
-    query_directories: List[str],
-    query_files: List[str],
-) -> TransferAssignment:
-    """ 
-    Creates transfer items for a sequence of entities. 
+def filter_groups_by_label(data, target_groups) -> List[str]:
+    """ """
+    selection = list()
+    for target in target_groups:
+        if target in data:
+            selection.append(target)
+    return selection
 
-    Args:
-     - source_directory:            source root directory
-     - destination_directory:       destination root directory
-     - directoires:                 target directories
-     - files:                       target files
-    Returns:
-     - A transfer assignment with directories and files
-    """
-    ic(query_directories)
-    input("Presss a key...")
-    
-    directory_transfers = list()
-    for directory in query_directories:
-        item = TransferItem(
-            source = source_directory / directory,
-            destination = destination_directory / directory,
-        )
-        directory_transfers.append(item)
-
-    file_transfers = list()
-    for file in query_files:
-        item = TransferItem(
-            # TODO: Add image directory
-            source = source_directory / "**" / file,
-            destination = destination_directory / "images" / file,
-        )
-        file_transfers.append(item)
-
-    return TransferAssignment(
-        files=file_transfers,
-        directories=directory_transfers,
-    )
-
-def create_transfer_assignments(
+def create_group_queries(
     filepath: Path,
     source_root: Path,
     dest_root: Path,
+    target_groups: List[str]=None,
     logger: Logger=None,
 ) -> Dict[str, List[TransferAssignment]]:
     """ 
-    Creates transfer items for groups of data from ACFR. 
+    Creates queries for groups of data from ACFR. 
 
     Args:
      - filepath:       Input file path with the grouped sequences
@@ -92,9 +59,14 @@ def create_transfer_assignments(
     # Log summary
     log_data_summary(data, logger)
 
-    # TODO: Filter groups by label
-    # data = filter_groups_by_label(data, target_labels)
-    selection = data
+    if target_groups:
+        selection = filter_groups_by_label(data, target_groups)
+    else:
+        selection = list(data.keys())
+
+    ic(type(target_groups), target_groups)
+    ic(type(selection), selection)
+    input("Press a key...")
 
     transfers = dict()
     for group in selection:
@@ -120,34 +92,34 @@ def create_transfer_assignments(
                 exist_ok=True,
             )
 
-            # Set up query directories
+            # Set up directory queries
             target_keys = ["bin", "log", "msg"]
-            directory_transfers = list()
+            directory_queries = list()
             for key in target_keys:
-                directory_transfers.append(DirectoryTransfer(
+                directory_transfer = DirectoryQuery(
                     source = source_directory / collection["directories"][key],
                     destination = destination_directory / collection["directories"][key],
-                ))
+                )
+                directory_queries.append( directory_transfer )
 
-            # TODO: Set up query files
             image_destination = prepare_directory(
                 destination_directory, 
                 "images",
                 exist_ok=True,
             )
 
-            file_transfers = list()
-            file_transfers.append(
-                FileTransfer(
-                    source_dir = source_directory / collection["directories"]["img"],
-                    destination_dir = image_destination,
-                    include_files = collection["files"],
-                )
+            # Set up file queries
+            file_queries = list()
+            file_query = FileQuery(
+                source_dir = source_directory / collection["directories"]["img"],
+                destination_dir = image_destination,
+                include_files = collection["files"],
             )
+            file_queries.append(file_query)
 
             assignment = TransferAssignment(
-                directory_transfers = directory_transfers,
-                file_transfers = file_transfers,
+                directory_queries = directory_queries,
+                file_queries = file_queries,
             )
 
             # Add assignment with the collection label to the transfer

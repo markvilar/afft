@@ -3,20 +3,19 @@
 from functools import partial
 from pathlib import Path
 
-import filetools.transfer.rclone_wrapper as rclone
-
-from filetools.adapters.acfr import create_transfer_assignments
+import filetools.transfer.rclone as rclone
 
 from filetools.transfer import (
     prepare_transfer, 
     execute_transfer,
 )
-
 from filetools.utils import (
     create_argument_parser,
     create_logger,
     read_config_file,
 )
+
+from adapters.archipelago import create_group_queries
 
 def main():
     """ Executed when the script is invoked. """
@@ -51,19 +50,24 @@ def main():
     rclone_config = rclone.read_config(arguments.rclone)
     remotes = rclone.list_remotes(rclone_config)
 
-    # Prepare query function (business specific)
-    transfer_format_fun = partial(
-        create_transfer_assignments, 
-        filepath        = Path(config["job"]["query"]), 
+    logger.info(f"Rclone:")
+    logger.info(f" - Config file:   {arguments.rclone}")
+    logger.info(f" - Remotes:       {remotes}")
+
+    # Prepare assignment setup function
+    setup_fun = partial(
+        create_group_queries, 
         source_root     = Path(config["source"]["root"]),
         dest_root       = Path(config["destination"]["root"]),
+        filepath        = Path(config["job"]["entry_file"]), 
+        target_groups   = config["job"]["target_entries"],
         logger=logger,
     )
    
     # Prepare transfer job with input stem as label
     transfer_jobs = prepare_transfer(
         source = config["source"]["label"],
-        setup_fun = transfer_format_fun,
+        assignment_setup_fun = setup_fun,
     )
 
     # Execute data transfer

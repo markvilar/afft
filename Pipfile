@@ -17,9 +17,8 @@ tqdm = "*"
 python = "3.10"
 
 [scripts]
+transfer = "python -m transfer"
+cleanup = "python -m cleanup"
 tests = "python -m unittest"
-transfer = "python -m run_transfer"
-cleanup = "python -m run_cleanup"
 build = "python -m setup bdist_wheel sdist"
 lint = "pylint ./tools ./tests"
-dev = "python -m main --input /home/martin/data/groups/20230831_134855_scott_reef.json"
