@@ -75,7 +75,7 @@ def execute_transfer(
     logger: logging.Logger=None,
 ):
     """ Executes a transfer job with a given context. """
-    logger.info(f"Starting transfer: {job.label}")
+    logger.info(f"\nStarting transfer: {job.label}")
     logger.info(f" -- Remote:      {job.source}")
     logger.info(f" -- File count:  {len(job.assignment.file_transfers)}")
     logger.info(f" -- Dir. count:  {len(job.assignment.directory_transfers)}\n")
@@ -93,19 +93,12 @@ def execute_transfer(
         # Execute rclone copy
         result = rclone.copy(config, source, destination, flags=list())
 
-    # TODO: Set up include string
-
-    # TODO: Transfer single files, look into --include flag
     for transfer in tqdm.tqdm(job.assignment.file_transfers, desc="Transferring files..."): 
         source = f"{job.source}:{transfer.source_dir}"
         destination = f"{transfer.destination_dir}"
 
-        logger.info("\n")
-        logger.info(f"Source:      {source}")
-        logger.info(f"Destination: {destination}")
-
         # Write to filenames to txt file
-        include_file_path = f"./cache/{job.label}_include_files.txt"
+        include_file_path = f"./.cache/{job.label}_includes.txt"
         write_include_file(include_file_path, transfer.include_files)
         
         result = rclone.copy(config, source, destination, 

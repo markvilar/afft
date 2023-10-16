@@ -1,14 +1,15 @@
 """ Module for ACFR specific logic and data formatting. """
 
-from argparse import ArgumentParser
 from logging import Logger
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import Dict, List
 
 from icecream import ic
 
 from filetools.io import read_json
 from filetools.transfer import DirectoryTransfer, FileTransfer, TransferAssignment
+
+from .format import replace_file_extensions, append_wildcard_to_prefix
 
 def prepare_directory(parent: Path, name: str, exist_ok: bool=False) -> Path:
     """ Prepares a directory by formatting the path and creating the 
@@ -25,48 +26,6 @@ def log_data_summary(data: Dict, logger: Logger) -> None:
         collections = data[group]
         logger.info(f" - Group {group}: {len(collections)} collections")
     logger.info("\n")
-
-def create_collection_transfer_assignment(
-    source_directory: Path, 
-    destination_directory: Path, 
-    query_directories: List[str],
-    query_files: List[str],
-) -> TransferAssignment:
-    """ 
-    Creates transfer items for a sequence of entities. 
-
-    Args:
-     - source_directory:            source root directory
-     - destination_directory:       destination root directory
-     - directoires:                 target directories
-     - files:                       target files
-    Returns:
-     - A transfer assignment with directories and files
-    """
-    ic(query_directories)
-    input("Presss a key...")
-    
-    directory_transfers = list()
-    for directory in query_directories:
-        item = TransferItem(
-            source = source_directory / directory,
-            destination = destination_directory / directory,
-        )
-        directory_transfers.append(item)
-
-    file_transfers = list()
-    for file in query_files:
-        item = TransferItem(
-            # TODO: Add image directory
-            source = source_directory / "**" / file,
-            destination = destination_directory / "images" / file,
-        )
-        file_transfers.append(item)
-
-    return TransferAssignment(
-        files=file_transfers,
-        directories=directory_transfers,
-    )
 
 def create_transfer_assignments(
     filepath: Path,
@@ -94,7 +53,7 @@ def create_transfer_assignments(
 
     # TODO: Filter groups by label
     # data = filter_groups_by_label(data, target_labels)
-    selection = data
+    selection = ["qdch0ftq"]
 
     transfers = dict()
     for group in selection:
@@ -129,6 +88,7 @@ def create_transfer_assignments(
                     destination = destination_directory / collection["directories"][key],
                 ))
 
+            # TODO: Add file format strategy
             # TODO: Set up query files
             image_destination = prepare_directory(
                 destination_directory, 
@@ -145,6 +105,16 @@ def create_transfer_assignments(
                 )
             )
 
+            # Format the include items by appending wildcards to the
+            # second-level label
+            for transfer in file_transfers:
+                updated_includes = append_wildcard_to_prefix(
+                    filepaths = transfer.include_files,
+                    prefix_length = 19,
+                    wildcard = "*",
+                )
+                transfer.include_files = updated_includes
+            
             assignment = TransferAssignment(
                 directory_transfers = directory_transfers,
                 file_transfers = file_transfers,
