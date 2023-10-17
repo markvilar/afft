@@ -24,10 +24,6 @@ def main():
     logger = create_logger()
 
     # Add relevant arguments to argument parser
-    parser.add_argument("destination",
-        type = Path,
-        help = "destination folder for the transfer",
-    )
     parser.add_argument("--rclone",
         type=Path,
         required=False,
@@ -71,14 +67,14 @@ def main():
     )
    
     # Prepare transfer job with input stem as label
-    transfer_jobs = prepare_transfer(
+    jobs = prepare_transfer(
         source = config["source"]["label"],
         assignment_setup_fun = setup_fun,
     )
 
     # Execute data transfer
-    for transfer_job in transfer_jobs:
-        execute_transfer(rclone_config, transfer_job, logger)
+    for job in jobs:
+        execute_transfer(rclone_config, job, logger)
 
 if __name__ == "__main__":
     main()

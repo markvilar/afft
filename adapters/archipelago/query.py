@@ -18,14 +18,13 @@ def prepare_directory(parent: Path, name: str, exist_ok: bool=False) -> Path:
     if not path.is_dir(): path.mkdir(exist_ok=exist_ok)
     return path
 
-    # Log summary
 def log_data_summary(data: Dict, logger: Logger) -> None:
     """ Log a summary of the data from the query file. """
     logger.info(f"\nData: {len(data.keys())} groups")
     for group in data:
         collections = data[group]
         logger.info(f" - Group {group}: {len(collections)} collections")
-    logger.info("\n")
+    logger.info("")
 
 def filter_groups_by_label(data, target_groups) -> List[str]:
     """ Adds keys from data that are in the target groups. """
@@ -65,9 +64,10 @@ def create_group_queries(
     else:
         selection = list(data.keys())
 
-    ic(type(target_groups), target_groups)
-    ic(type(selection), selection)
-    input("Press a key...")
+    logger.info("Selection:")
+    for entry in selection:
+        logger.info(f" - {entry}")
+    logger.info("")
 
     transfers = dict()
     for group in selection:
@@ -111,22 +111,21 @@ def create_group_queries(
 
             # Set up file queries
             file_queries = list()
-            file_query = FileQuery(
+            file_queries.append(FileQuery(
                 source_dir = source_directory / collection["directories"]["img"],
                 destination_dir = image_destination,
                 include_files = collection["files"],
-            )
-            file_queries.append(file_query)
+            ))
 
             # Format the include items by appending wildcards to the
             # second-level label
-            for transfer in file_transfers:
+            for query in file_queries:
                 updated_includes = append_wildcard_to_prefix(
-                    filepaths = transfer.include_files,
+                    filepaths = query.include_files,
                     prefix_length = 19,
                     wildcard = "*",
                 )
-                transfer.include_files = updated_includes
+                query.include_files = updated_includes
             
             assignment = TransferAssignment(
                 directory_queries = directory_queries,

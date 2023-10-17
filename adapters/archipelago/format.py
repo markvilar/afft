@@ -23,7 +23,7 @@ def append_wildcard_to_prefix(
     appends a completion wildcard. """
     # Sanity check
     for filepath in filepaths:
-        assert len(filepath) > prefix_length, \
+        assert len(filepath) >= prefix_length, \
             f"{filepath} is not longer than prefix length {prefix_length}"
 
     # Get prefixes and append wildcard

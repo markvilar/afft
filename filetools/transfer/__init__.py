@@ -1,3 +1,5 @@
+from .endpoint import Endpoint
+
 from .rclone import (
     local_config,
     read_config,

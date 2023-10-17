@@ -2,7 +2,7 @@
 
 import unittest
 
-import tools.rclone_wrapper as rclone
+from filetools.transfer as rclone
 
 class CommonTests(unittest.TestCase):
     """ Test case for the template library common functions. """

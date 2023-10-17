@@ -70,7 +70,7 @@ def write_include_file(filepath: Path, includes: List[str]):
             f.write(f"{include}\n")
 
 def execute_transfer(
-    config: str,
+    config: str, # TODO: Change with Transfer context
     job: TransferJob,
     logger: logging.Logger=None,
 ):
@@ -118,7 +118,7 @@ def execute_transfer(
             config, 
             source, 
             destination, 
-            flags=list("--include-from", str(include_file_path))
+            flags=list(["--include-from", str(include_file_path)])
         )
 
         logger.info(f"Rclone result: {result}")
