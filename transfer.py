@@ -3,9 +3,8 @@
 from functools import partial
 from pathlib import Path
 
-import filetools.transfer.rclone as rclone
-
 from filetools.transfer import (
+    rclone,
     prepare_transfer, 
     execute_transfer,
 )
