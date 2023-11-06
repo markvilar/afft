@@ -1,9 +1,11 @@
 from pathlib import Path
 
+from icecream import ic
+
 import filetools.transfer.rclone as rclone
 
 from filetools.io import read_json
-from filetools.transfer import prepare_transfer, execute_transfer
+from filetools.transfer import prepare_transfer, execute_transfer, Endpoint
 from filetools.utils import (
     ArgumentParser,
     Namespace,
@@ -53,33 +55,44 @@ def main():
     arguments = validate_arguments(parser.parse_args(), logger)
     config = read_config_file(arguments.config)
 
-    # Set up rclone, TODO: Exchange with transfer context
-    rclone_config = rclone.read_config(arguments.rclone)
-    remotes = rclone.list_remotes(rclone_config)
-    logger.info(f"Rclone:")
+    # Set up rclone context
+    context = rclone.Context(rclone.read_config(arguments.rclone))
+    remotes = rclone.list_remotes(context)
+    logger.info(f"Transfer context:")
     logger.info(f" - Config file:   {arguments.rclone}")
     logger.info(f" - Remotes:       {remotes}")
 
+    # Set up source and destination endpoints
+    source = Endpoint(
+        host=config["source"]["host"], 
+        path=config["source"]["root"],
+    )
+    destination = Endpoint(
+        host=config["destination"]["host"], 
+        path=config["destination"]["root"],
+    )
+
+    result = rclone.list_directories(context, destination.host, destination.path)
+    ic(result)
+
+    # TODO: Make the query not dependent on the source and destination
     # Set up query setup function for local transfers
-    query_fun = build_query_setup_function(config, logger)
+    query_fun = build_query_setup_function(source, destination, config, logger)
   
     # Prepare to execute transfers
     jobs = prepare_transfer(
-        source = config["source"]["host"],
-        assignment_setup_fun = query_fun,
+        source = source,
+        destination = destination,
+        assignment_setup_fun = query_fun
     )
     
     # Execute transfers
     for job in jobs:
         execute_transfer(
-            config = rclone_config ,
+            context = context,
             job = job,
             logger = logger,
         )
-        
-    #references = read_json(arguments.references)
-    #ic(references)
-    
 
 if __name__ == "__main__":
     main()

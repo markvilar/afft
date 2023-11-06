@@ -1,11 +1,12 @@
 from .endpoint import Endpoint
 
 from .rclone import (
+    Context,
     local_config,
     read_config,
     list_remotes,
+    list_directories,
     run_command,
-    copy_to,
     copy,
 )
 
@@ -15,4 +16,5 @@ from .transfer import (
     DirectoryQuery,
     FileQuery,
     TransferAssignment,
+    QuerySetupFun,
 )
