@@ -43,7 +43,7 @@ htmlcov/
 .nox/
 .coverage
 .coverage.*
-.cache
+# NOTE: Originally ignored .cache
 nosetests.xml
 coverage.xml
 *.cover
@@ -132,3 +132,7 @@ dmypy.json
 *.swa
 *.swo
 *.swp
+
+# project specific
+.cache/*
+!.cache/.git-keep

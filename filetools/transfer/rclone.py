@@ -33,10 +33,10 @@ def copy_to(config: str, source: str, destination: str, flags: List[str]) -> Dic
     Copy files from the source to the destination.
 
     Args:
-    - config: rclone configuration string
-    - source: A string "source:path"
-    - destination:   A string "dest:path"
-    - flags:  Extra flags as per `rclone copy --help` 
+    - config:           rclone configuration string
+    - source:           A string "source:path"
+    - destination:      A string "dest:path"
+    - flags:            Extra flags as per `rclone copy --help` 
     """
     return run_command(config, 
         command="copyto", 
@@ -48,10 +48,10 @@ def copy(config: str, source: str, destination: str, flags: List[str]) -> Dict:
     Copy a directory from the source to the destination.
 
     Args:
-    - config: rclone configuration string
-    - source: A string "source:/path/to/dir"
-    - destination:   A string "dest:/path/to/dir"
-    - flags:  Extra flags as per `rclone copy --help` 
+    - config:           rclone configuration string
+    - source:           A string "source:/path/to/dir"
+    - destination:      A string "dest:/path/to/dir"
+    - flags:            Extra flags as per `rclone copy --help` 
     """
     return rclone.with_config(config).copy(
         source=source,

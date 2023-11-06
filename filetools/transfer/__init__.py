@@ -1,4 +1,6 @@
-from .rclone_wrapper import (
+from .endpoint import Endpoint
+
+from .rclone import (
     local_config,
     read_config,
     list_remotes,
@@ -10,6 +12,7 @@ from .rclone_wrapper import (
 from .transfer import (
     prepare_transfer, 
     execute_transfer,
-    TransferItem,
+    DirectoryQuery,
+    FileQuery,
     TransferAssignment,
 )
