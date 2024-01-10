@@ -1,0 +1,3 @@
+[items]
+directories = [ "binaries", "logs", "messages" ]
+files = [ "poses", "calibration", "images" ]
