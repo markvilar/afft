@@ -151,6 +151,9 @@ def main():
                 "directories" : list(),
                 "files" : list(),
             }
+
+            # Set destination 
+            destination_directory = destination.path / Path(group) / Path(deployment)
             
             # TODO: Use source and destination paths to set up queries 
             # per deployment within each group
@@ -165,37 +168,29 @@ def main():
                     "destination" : targets[key]["destination"],
                 }
 
-                # TODO: Set up destination directory
-                directory = destination.path / Path(group) / Path(deployment)
+                logger.info(f"\t - Target: {key}")
+
+                destination_directory = destination.path / Path(group) \
+                    / Path(deployment) / Path(target["destination"])
    
                 # If target are files
                 match target["type"]:
                     case "files":
                         reference = target["reference"]
-                        files = items["files"][reference]
-
-                        logger.info(f" - {key} : \t\t {len(files)}")
-                        
                         query = FileQuery(
                             source = source.path,
-                            destination = destination.path / Path(target["destination"]),
-                            include_files = files,
+                            destination = destination_directory,
+                            include_files = items["files"][reference],
                         )
                         queries["files"].append(query)
 
                     case "directory":
                         reference = target["reference"]
-                        directory = items["directories"][reference]
-
-                        logger.info(f" - {key} : \t\t {directory}")
-                        
                         query = DirectoryQuery(
-                            source = source.path / Path(directory),
-                            destination = destination.path / Path(target["destination"]),
+                            source = source.path / Path(items["directories"][reference]),
+                            destination = destination_directory,
                         )
-
                         queries["directories"].append(query)
-
             
             assignments[deployment] = TransferAssignment(
                 directory_queries = queries["directories"],
