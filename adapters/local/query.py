@@ -6,8 +6,6 @@ from typing import Callable, Dict, List
 
 from icecream import ic
 
-import filetools.transfer.rclone as rclone
-
 from filetools.io import read_json
 from filetools.transfer import (
     Endpoint,

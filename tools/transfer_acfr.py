@@ -2,13 +2,24 @@ import sys
 sys.path.append("../filetools")
 
 from pathlib import Path
+from typing import Dict
 
 from icecream import ic
 
 import filetools.transfer.rclone as rclone
 
 from filetools.io import read_json
-from filetools.transfer import prepare_transfer, execute_transfer, Endpoint
+
+from filetools.transfer import (
+    Endpoint,
+    FileQuery,
+    DirectoryQuery,
+    TransferAssignment,
+    TransferJob,
+    prepare_transfer, 
+    execute_transfer, 
+)
+
 from filetools.utils import (
     ArgumentParser,
     Namespace,
@@ -18,7 +29,20 @@ from filetools.utils import (
     read_config_file,
 )
 
-# from adapters.local import build_query_setup_function
+from adapters.archipelago import build_query_setup_function, create_queries
+
+def split_endpoint_string(endpoint_string: str) -> Dict[str, str]:
+    """ 
+    Return the host and directory components of an endpoint as a 
+    dictionary. 
+    """
+    splits = endpoint_string.split(":")
+    assert len(splits) == 2, f"invalid endpoint string {endpoint_string}"
+    
+    endpoint = dict()
+    endpoint["host"] = splits[0]
+    endpoint["directory"] = splits[1]
+    return endpoint
 
 def validate_arguments(arguments: Namespace, logger) -> Namespace:
     """ Validate the command line arguments for the cleanup action. """
@@ -26,14 +50,12 @@ def validate_arguments(arguments: Namespace, logger) -> Namespace:
         f"{arguments.rclone} does not exist"
     assert arguments.rclone.is_file(), \
         f"{arguments.rclone} is not a file"
-    assert arguments.endpoints.exists(), \
-        f"{arguments.endpoints} does not exist"
-    assert arguments.endpoints.is_file(), \
-        f"{arguments.endpoints} is not a file"
+    
     assert arguments.targets.exists(), \
         f"{arguments.targets} does not exist"
     assert arguments.targets.is_file(), \
         f"{arguments.targets} is not a file"
+    
     return arguments
 
 def main():
@@ -48,15 +70,25 @@ def main():
         default=Path.home() / Path(".config/rclone/rclone.conf"),
         help="rclone config file path",
     )
-    parser.add_argument("--endpoints",
-        type=Path,
+    parser.add_argument("--source",
+        type=str,
         required=True,
-        help="endpoint file path",
+        help="transfer source, i.e. <host>:<directory>",
+    )
+    parser.add_argument("--destination",
+        type=str,
+        required=True,
+        help="transfer destination, i.e. <host>:<directory>",
     )
     parser.add_argument("--targets",
         type=Path,
         required=True,
-        help="target file path",
+        help="transfer target configuration",
+    )
+    parser.add_argument("--references",
+        type=Path,
+        required=True,
+        help="file references",
     )
     parser.add_argument("--dry-run",
         action="store_true", 
@@ -66,48 +98,123 @@ def main():
     # Parse and validate the relevant arguments
     arguments = validate_arguments(parser.parse_args(), logger)
    
+    # Set up endpoints
     config = dict()
-    config["endpoint"] = read_config_file(arguments.endpoints)
-    config["targets"] = read_config_file(arguments.targets)
+    config["endpoints"] = dict()
+    config["endpoints"]["source"] = split_endpoint_string(arguments.source)
+    config["endpoints"]["destination"] = split_endpoint_string(arguments.destination)
+
+    logger.info("\nEndpoints: ")
+    for key in config["endpoints"]:
+        logger.info(f" - {key}")
+
+    targets = read_config_file(arguments.targets)
+
+    logger.info("\nTargets: ")
+    for key in targets:
+        logger.info(f" - {key}")
+   
+    # Read the references from file
+    references : Dict[str] = read_json(arguments.references)
+
+    logger.info("\nReferences: ")
+    for key in references:
+        logger.info(f" - {key}")
 
     # Set up rclone context
     context = rclone.Context(rclone.read_config(arguments.rclone))
     remotes = rclone.list_remotes(context)
-    logger.info(f"Transfer context:")
+    
+    logger.info(f"\nTransfer context:")
     logger.info(f" - Config file:   {arguments.rclone}")
     logger.info(f" - Remotes:       {remotes}")
 
     # Set up source and destination endpoints
     source = Endpoint(
-        host=config["endpoint"]["source"]["host"], 
-        path=config["endpoint"]["source"]["root"],
+        host = config["endpoints"]["source"]["host"], 
+        path = config["endpoints"]["source"]["directory"],
     )
     destination = Endpoint(
-        host=config["endpoint"]["destination"]["host"], 
-        path=config["endpoint"]["destination"]["root"],
+        host=config["endpoints"]["destination"]["host"], 
+        path=config["endpoints"]["destination"]["directory"],
     )
 
-    result = rclone.list_directories(context, destination.host, destination.path)
-    ic(result)
+    # TODO: Filter based on groups
+    logger.info("\nReferences:")
+    assignments = dict()
+    for group in references:
+        for deployment in references[group]:
 
-    # TODO: Make the query not dependent on the source and destination
-    # Set up query setup function for local transfers
-    # query_fun = build_query_setup_function(source, destination, config, logger)
-  
-    # Prepare to execute transfers
-    jobs = prepare_transfer(
-        source = source,
-        destination = destination,
-        assignment_setup_fun = query_fun
-    )
-    
-    # Execute transfers
-    for job in jobs:
-        execute_transfer(
-            context = context,
-            job = job,
-            logger = logger,
-        )
+            logger.info(f" - {group} / {deployment}")
+
+            queries = {
+                "directories" : list(),
+                "files" : list(),
+            }
+            
+            # TODO: Use source and destination paths to set up queries 
+            # per deployment within each group
+            items = references[group][deployment]["items"]
+           
+            # For each entry - create directory / files query
+            for key in targets:
+               
+                target = {
+                    "type" : targets[key]["type"],
+                    "reference" : targets[key]["reference"],
+                    "destination" : targets[key]["destination"],
+                }
+
+                # TODO: Set up destination directory
+                directory = destination.path / Path(group) / Path(deployment)
+   
+                # If target are files
+                match target["type"]:
+                    case "files":
+                        reference = target["reference"]
+                        files = items["files"][reference]
+
+                        logger.info(f" - {key} : \t\t {len(files)}")
+                        
+                        query = FileQuery(
+                            source = source.path,
+                            destination = destination.path / Path(target["destination"]),
+                            include_files = files,
+                        )
+                        queries["files"].append(query)
+
+                    case "directory":
+                        reference = target["reference"]
+                        directory = items["directories"][reference]
+
+                        logger.info(f" - {key} : \t\t {directory}")
+                        
+                        query = DirectoryQuery(
+                            source = source.path / Path(directory),
+                            destination = destination.path / Path(target["destination"]),
+                        )
+
+                        queries["directories"].append(query)
+
+            
+            assignments[deployment] = TransferAssignment(
+                directory_queries = queries["directories"],
+                file_queries = queries["files"],
+            )
+           
+        transfer_jobs = list()
+        for deployment in assignments:
+            transfer_jobs.append(
+                TransferJob(
+                    label = deployment,
+                    source = source,
+                    destination = destination,
+                    assignment = assignments[deployment],
+                )
+            )
+            
+        for job in transfer_jobs:
+            execute_transfer(context, job, logger)
 
 if __name__ == "__main__":
     main()

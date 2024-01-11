@@ -1,0 +1,19 @@
+[binaries]
+type = "directory"      # data type
+reference = "binaries"  # reference key
+destination = "bin"     # destination directory
+
+[logs]
+type = "directory"
+reference = "logs"
+destination = "log"
+
+[messages]
+type = "directory"
+reference = "messages"
+destination = "msg"
+
+[images]
+type = "files"
+reference = "images"
+destination = "img"

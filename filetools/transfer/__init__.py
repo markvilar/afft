@@ -16,5 +16,6 @@ from .transfer import (
     DirectoryQuery,
     FileQuery,
     TransferAssignment,
+    TransferJob,
     QuerySetupFun,
 )
