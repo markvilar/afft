@@ -1,0 +1,15 @@
+[binaries]
+search = "binaries"         # key to look for in the search file
+destination = "bin"         # destination directory search result
+
+[logs]
+search = "logs"
+destination = "log"
+
+[messages]
+search = "messages"
+destination = "msg"
+
+[images]
+search = "images"
+destination = "img"

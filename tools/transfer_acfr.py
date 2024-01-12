@@ -2,8 +2,9 @@ import sys
 sys.path.append("../filetools")
 
 from pathlib import Path
-from typing import Dict
+from typing import Dict, List
 
+from tqdm import tqdm
 from icecream import ic
 
 import filetools.transfer.rclone as rclone
@@ -12,12 +13,9 @@ from filetools.io import read_json
 
 from filetools.transfer import (
     Endpoint,
-    FileQuery,
-    DirectoryQuery,
-    TransferAssignment,
-    TransferJob,
-    prepare_transfer, 
-    execute_transfer, 
+    FileSearch,
+    FileQueryData,
+    query_files,
 )
 
 from filetools.utils import (
@@ -29,7 +27,89 @@ from filetools.utils import (
     read_config_file,
 )
 
-from adapters.archipelago import build_query_setup_function, create_queries
+# NOTE: Source / file structure dependent
+def filter_valid_searches(
+    searches: Dict[str, Dict],
+    routes: Dict[str, Dict],
+    logger: Logger,
+) -> List[FileSearch]:
+    """ 
+    Set up valid searches based on a collection of routes and a search lookup.
+
+    Args:
+     - searches:    mapping from key to directory and include files
+     - routes:      mapping from search to destination directory
+    """
+
+    # Filter routes with search in the search lookup
+    valid_routes = list()
+    for label in routes:
+        search = routes[label]["search"]
+        if search in searches:
+            valid_routes.append(label)
+        else:
+            logger.warning(f" - Route {key}: Could not find search {search}")
+    
+    valid_searches : List[FileSearch] = list()
+    for label in valid_routes:
+        # The directory and files we are searching for
+        search = routes[label]["search"] 
+        
+        # The destination of the files found in the search
+        destination = routes[label]["destination"]
+     
+        # The directory and include keywords to look for at the source
+        directory = searches[search]["directory"]
+        searches[search]["include"]
+
+        # TODO: Add capability to exclude files in the future
+        file_search = FileSearch(
+            source = searches[search]["directory"],
+            destination = routes[label]["destination"],
+            includes = searches[search]["include"],
+        )
+        valid_searches.append(file_search)
+    
+    return valid_searches
+        
+    """
+    # For each entry - create directory / files query
+    for key in targets:
+       
+        target = {
+            "reference" : targets[key]["reference"],
+            "destination" : targets[key]["destination"],
+        }
+
+        logger.info(f"\t - Target: {key}")
+
+        destination_directory = destination.path / Path(group) \
+            / Path(deployment) / Path(target["destination"])
+
+        # If target are files
+        match target["type"]:
+            case "files":
+                reference = target["reference"]
+                query = FileQuery(
+                    source = source.path,
+                    destination = destination_directory,
+                    include_files = items["files"][reference],
+                )
+                queries["files"].append(query)
+
+            case "directory":
+                reference = target["reference"]
+                query = DirectoryQuery(
+                    source = source.path / Path(items["directories"][reference]),
+                    destination = destination_directory,
+                )
+                queries["directories"].append(query)
+    
+    return TransferAssignment(
+        directory_queries = queries["directories"],
+        file_queries = queries["files"],
+    )
+    """
 
 def split_endpoint_string(endpoint_string: str) -> Dict[str, str]:
     """ 
@@ -46,16 +126,10 @@ def split_endpoint_string(endpoint_string: str) -> Dict[str, str]:
 
 def validate_arguments(arguments: Namespace, logger) -> Namespace:
     """ Validate the command line arguments for the cleanup action. """
-    assert arguments.rclone.exists(), \
-        f"{arguments.rclone} does not exist"
-    assert arguments.rclone.is_file(), \
-        f"{arguments.rclone} is not a file"
-    
-    assert arguments.targets.exists(), \
-        f"{arguments.targets} does not exist"
-    assert arguments.targets.is_file(), \
-        f"{arguments.targets} is not a file"
-    
+    files = [ arguments.rclone, arguments.routes, arguments.searches ]
+    for path in files:
+        assert path.exists(), f"{path} does not exist"
+        assert path.is_file(), f"{path} is not a file"
     return arguments
 
 def main():
@@ -80,15 +154,15 @@ def main():
         required=True,
         help="transfer destination, i.e. <host>:<directory>",
     )
-    parser.add_argument("--targets",
+    parser.add_argument("--routes",
         type=Path,
         required=True,
-        help="transfer target configuration",
+        help="routing configuration file",
     )
-    parser.add_argument("--references",
+    parser.add_argument("--searches",
         type=Path,
         required=True,
-        help="file references",
+        help="file search configuration file",
     )
     parser.add_argument("--dry-run",
         action="store_true", 
@@ -108,18 +182,18 @@ def main():
     for key in config["endpoints"]:
         logger.info(f" - {key}")
 
-    targets = read_config_file(arguments.targets)
+    config["routes"] = read_config_file(arguments.routes)
 
-    logger.info("\nTargets: ")
-    for key in targets:
-        logger.info(f" - {key}")
+    logger.info("\nRoutes: ")
+    for route in config["routes"]:
+        logger.info(f" - {route}")
    
-    # Read the references from file
-    references : Dict[str] = read_json(arguments.references)
+    # Read the queries from file
+    config["searches"] = read_json(arguments.searches)
 
-    logger.info("\nReferences: ")
-    for key in references:
-        logger.info(f" - {key}")
+    logger.info("\nSearches: ")
+    for search in config["searches"]:
+        logger.info(f" - {search}")
 
     # Set up rclone context
     context = rclone.Context(rclone.read_config(arguments.rclone))
@@ -129,87 +203,62 @@ def main():
     logger.info(f" - Config file:   {arguments.rclone}")
     logger.info(f" - Remotes:       {remotes}")
 
-    # Set up source and destination endpoints
-    source = Endpoint(
-        host = config["endpoints"]["source"]["host"], 
-        path = config["endpoints"]["source"]["directory"],
-    )
-    destination = Endpoint(
-        host=config["endpoints"]["destination"]["host"], 
-        path=config["endpoints"]["destination"]["directory"],
-    )
+    # Set up queries for each search - NOTE: Source and file dependent
+    logger.info("\nSetting up queries:")
+    jobs = dict()
+    for label in config["searches"]:
+        logger.info(f" - {label}")
 
-    # TODO: Filter based on groups
-    logger.info("\nReferences:")
-    assignments = dict()
-    for group in references:
-        for deployment in references[group]:
+        # Filter searches based on routes
+        valid_searches : List[FileSearch] = filter_valid_searches(
+            config["searches"][label]["queries"],
+            config["routes"],
+            logger,
+        )
 
-            logger.info(f" - {group} / {deployment}")
+        # Create source endpoint root
+        source = Endpoint(
+            host = config["endpoints"]["source"]["host"], 
+            path = Path(config["endpoints"]["source"]["directory"]),
+        )
 
-            queries = {
-                "directories" : list(),
-                "files" : list(),
-            }
+        # Create local endpoint root - label = group/deployment
+        destination = Endpoint(
+            host = config["endpoints"]["destination"]["host"], 
+            path = Path(config["endpoints"]["destination"]["directory"]) / label ,
+        )
 
-            # Set destination 
-            destination_directory = destination.path / Path(group) / Path(deployment)
-            
-            # TODO: Use source and destination paths to set up queries 
-            # per deployment within each group
-            items = references[group][deployment]["items"]
-           
-            # For each entry - create directory / files query
-            for key in targets:
-               
-                target = {
-                    "type" : targets[key]["type"],
-                    "reference" : targets[key]["reference"],
-                    "destination" : targets[key]["destination"],
-                }
-
-                logger.info(f"\t - Target: {key}")
-
-                destination_directory = destination.path / Path(group) \
-                    / Path(deployment) / Path(target["destination"])
-   
-                # If target are files
-                match target["type"]:
-                    case "files":
-                        reference = target["reference"]
-                        query = FileQuery(
-                            source = source.path,
-                            destination = destination_directory,
-                            include_files = items["files"][reference],
-                        )
-                        queries["files"].append(query)
-
-                    case "directory":
-                        reference = target["reference"]
-                        query = DirectoryQuery(
-                            source = source.path / Path(items["directories"][reference]),
-                            destination = destination_directory,
-                        )
-                        queries["directories"].append(query)
-            
-            assignments[deployment] = TransferAssignment(
-                directory_queries = queries["directories"],
-                file_queries = queries["files"],
+        # Set up transfer for each search
+        query_data = list()
+        for search in valid_searches:
+            source = Endpoint(
+                host = config["endpoints"]["source"]["host"], 
+                path = Path(config["endpoints"]["source"]["directory"]) / search.source,
             )
-           
-        transfer_jobs = list()
-        for deployment in assignments:
-            transfer_jobs.append(
-                TransferJob(
-                    label = deployment,
-                    source = source,
-                    destination = destination,
-                    assignment = assignments[deployment],
-                )
+            destination = Endpoint(
+                host = config["endpoints"]["destination"]["host"], 
+                path = Path(config["endpoints"]["destination"]["directory"]) \
+                    / label / search.destination,
+            )
+
+            file_query = FileQueryData(
+                source = source,
+                destination = destination,
+                includes = search.includes,
+                excludes = search.excludes,
             )
             
-        for job in transfer_jobs:
-            execute_transfer(context, job, logger)
+            query_data.append(file_query)
+
+        jobs[label] = query_data
+    
+    for label in jobs:
+        for query_data in tqdm(jobs[label], desc = "\nQuerying files..."):
+            result = query_files(
+                context = context,
+                data = query_data,
+                logger = logger,
+            )
 
 if __name__ == "__main__":
     main()

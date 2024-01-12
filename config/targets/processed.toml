@@ -1,9 +1,0 @@
-[poses]
-type = "files"              # data type
-reference = "poses"         # reference key
-destination = "poses"       # destination directory
-
-[calibration]
-type = "files"
-reference = "calibration"
-destination = "calibration"
