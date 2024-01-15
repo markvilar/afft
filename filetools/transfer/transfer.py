@@ -56,8 +56,8 @@ def query_files(
     write_include_file(include_file_path, data.includes) 
     
     logger.info("\n")
-    logger.info(f"Source:       {get_path_end(data.source, 3)}")
-    logger.info(f"Destination:  {get_path_end(data.destination, 3)}")
+    logger.info(f"Source:       {data.source}")
+    logger.info(f"Destination:  {data.destination}")
     logger.info(f"Includes:     {include_file_path}")
    
     result = context.copy(

@@ -204,11 +204,8 @@ def main():
     logger.info(f" - Remotes:       {remotes}")
 
     # Set up queries for each search - NOTE: Source and file dependent
-    logger.info("\nSetting up queries:")
     jobs = dict()
     for label in config["searches"]:
-        logger.info(f" - {label}")
-
         # Filter searches based on routes
         valid_searches : List[FileSearch] = filter_valid_searches(
             config["searches"][label]["queries"],
@@ -251,7 +248,8 @@ def main():
             query_data.append(file_query)
 
         jobs[label] = query_data
-    
+   
+    # Query files
     for label in jobs:
         for query_data in tqdm(jobs[label], desc = "\nQuerying files..."):
             result = query_files(
