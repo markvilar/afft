@@ -42,40 +42,6 @@ python tools/transfer_acfr.py \
     --searches $QUERIES/qtqxshxs.json
 
 # -----------------------------------------------------------------------------
-# ---- TAS --------------------------------------------------------------------
-# -----------------------------------------------------------------------------
-
-python tools/transfer_acfr.py \
-    --source acfr_archipelago:/media/water/PROCESSED_DATA \
-    --destination $DESTINATION \
-    --routes ./config/routes/processed_images.toml \
-    --searches $QUERIES/r234xgje.json
-
-python tools/transfer_acfr.py \
-    --source acfr_archipelago:/media/water/PROCESSED_DATA \
-    --destination $DESTINATION \
-    --routes ./config/routes/processed_images.toml \
-    --searches $QUERIES/r23685bc.json
-
-python tools/transfer_acfr.py \
-    --source acfr_archipelago:/media/water/PROCESSED_DATA \
-    --destination $DESTINATION \
-    --routes ./config/routes/processed_images.toml \
-    --searches $QUERIES/r23m7ms0.json
-
-python tools/transfer_acfr.py \
-    --source acfr_archipelago:/media/water/PROCESSED_DATA \
-    --destination $DESTINATION \
-    --routes ./config/routes/processed_images.toml \
-    --searches $QUERIES/r29mrd12.json
-
-python tools/transfer_acfr.py \
-    --source acfr_archipelago:/media/water/PROCESSED_DATA \
-    --destination $DESTINATION \
-    --routes ./config/routes/processed_images.toml \
-    --searches $QUERIES/r29mrd5h.json
-
-# -----------------------------------------------------------------------------
 # ---- SEQ --------------------------------------------------------------------
 # -----------------------------------------------------------------------------
 
