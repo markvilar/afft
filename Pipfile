@@ -4,8 +4,11 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
+arrow = "*"
 icecream = "*"
+result = "*"
 python-rclone = "*"
+toml = "*"
 
 [dev-packages]
 pytest = "*"

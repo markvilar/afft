@@ -1,1 +1,1 @@
-from .query import create_group_queries
+from .query import create_queries, build_query_setup_function

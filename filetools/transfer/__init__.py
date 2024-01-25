@@ -10,11 +10,10 @@ from .rclone import (
     copy,
 )
 
+from .search import FileSearch
+
+
 from .transfer import (
-    prepare_transfer, 
-    execute_transfer,
-    DirectoryQuery,
-    FileQuery,
-    TransferAssignment,
-    QuerySetupFun,
+    FileQueryData,
+    query_files,
 )

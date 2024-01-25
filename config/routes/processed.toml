@@ -1,0 +1,7 @@
+[poses]
+search = "poses"                # key to look for in the search file
+destination = "poses"           # destination directory search result
+
+[calibration]
+search = "calibration"
+destination = "calibration"
