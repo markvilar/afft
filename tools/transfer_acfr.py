@@ -3,7 +3,8 @@
 # FIXME: Find a more sustainable long-term solution than to append relative
 # directories to the system path
 import sys
-sys.path.append("../filetools")
+sys.path.append("..")
+sys.path.append("../auvtools")
 
 from pathlib import Path
 from typing import Dict, List
@@ -11,18 +12,18 @@ from typing import Dict, List
 from tqdm import tqdm
 from icecream import ic
 
-import filetools.transfer.rclone as rclone
+import auvtools.core.transfer.rclone as rclone
 
-from filetools.io import read_json
+from auvtools.core.io import read_json
 
-from filetools.transfer import (
+from auvtools.core.transfer import (
     Endpoint,
     FileSearch,
     FileQueryData,
     query_files,
 )
 
-from filetools.utils import (
+from auvtools.core.utils import (
     ArgumentParser,
     Namespace,
     Logger,
@@ -76,45 +77,7 @@ def filter_valid_searches(
     
     return valid_searches
         
-    """
-    # For each entry - create directory / files query
-    for key in targets:
-       
-        target = {
-            "reference" : targets[key]["reference"],
-            "destination" : targets[key]["destination"],
-        }
-
-        logger.info(f"\t - Target: {key}")
-
-        destination_directory = destination.path / Path(group) \
-            / Path(deployment) / Path(target["destination"])
-
-        # If target are files
-        match target["type"]:
-            case "files":
-                reference = target["reference"]
-                query = FileQuery(
-                    source = source.path,
-                    destination = destination_directory,
-                    include_files = items["files"][reference],
-                )
-                queries["files"].append(query)
-
-            case "directory":
-                reference = target["reference"]
-                query = DirectoryQuery(
-                    source = source.path / Path(items["directories"][reference]),
-                    destination = destination_directory,
-                )
-                queries["directories"].append(query)
-    
-    return TransferAssignment(
-        directory_queries = queries["directories"],
-        file_queries = queries["files"],
-    )
-    """
-
+# TODO: Consider using the create_endpoint_from_string function
 def split_endpoint_string(endpoint_string: str) -> Dict[str, str]:
     """ 
     Return the host and directory components of an endpoint as a 

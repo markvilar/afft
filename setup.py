@@ -8,15 +8,15 @@ with open("README.md", "r", encoding="UTF-8") as handle:
     long_description = handle.read()
 
 setup(
-    name="filetools",
+    name="auvtools",
     version = "0.0.1",
     description = "Various file related tools including transfer, local queries,
     etc.",
-    package_dir = {"": "filetools"},
-    packages = find_packages(where="filetools"),
+    package_dir = {"": "auvtools"},
+    packages = find_packages(where="auvtools"),
     long_description = long_description,
     long_description_content_type = "text/markdown",
-    url = "https://github.com/markvilar/filetools",
+    url = "https://github.com/markvilar/auvtools",
     author = "markvilar",
     author_email = "martin.kvisvik.larsen@hotmail.com",
     license = "GPLv3+",

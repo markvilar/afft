@@ -8,8 +8,7 @@ from typing import List, Protocol
 from icecream import ic
 
 from .endpoint import Endpoint
-
-from filetools.utils import get_time_string
+from ..utils import get_time_string
 
 @dataclass
 class CommandResult():

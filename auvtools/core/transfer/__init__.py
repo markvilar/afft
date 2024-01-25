@@ -1,4 +1,4 @@
-from .endpoint import Endpoint
+from .endpoint import Endpoint, create_endpoint_from_string
 
 from .rclone import (
     Context,
@@ -12,8 +12,4 @@ from .rclone import (
 
 from .search import FileSearch
 
-
-from .transfer import (
-    FileQueryData,
-    query_files,
-)
+from .transfer import FileQueryData, query_files
