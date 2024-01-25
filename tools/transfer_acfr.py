@@ -1,3 +1,7 @@
+""" Tool to transfer files from ACFR. """
+
+# FIXME: Find a more sustainable long-term solution than to append relative
+# directories to the system path
 import sys
 sys.path.append("../filetools")
 
