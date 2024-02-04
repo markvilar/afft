@@ -1,6 +1,7 @@
-from typing import Callable, Dict
+from dataclasses import dataclass
+from typing import Dict
 
-MessageIdentifiers = [
+MessageIDs = [
     "THR_PORT",
     "THR_STBD",
     "THR_VERT",
@@ -12,39 +13,30 @@ MessageIdentifiers = [
     "ECOPUCK",
 ]
 
-MessageData = Dict[str, str]
-MessageStringFunc = Callable[str, MessageData]
+MessageNames = {
+    "THR_PORT" : "port_thruster",
+    "THR_STBD" : "starboard_thruster",
+    "THR_VERT" : "vertical_thruster",
+    "RDI"      : "doppler_log",
+    "OAS"      : "echosounder",
+    "PAROSCI"  : "pressure",
+    "SEABIRD"  : "seabird",
+    "VIS"      : "visual",
+    "ECOPUCK"  : "ecopuck",
+}
 
-def parse_message_file():
-    """ Parse a message file. """
-    raise NotImplementedError
+# Validate message parsers
+for identifier in MessageIDs:
+    assert identifier in MessageNames, \
+        f"found no name for message identifier {identifier}"
 
-def parse_visual_message(message: str) -> MessageData:
-    """ Parser function for visual sensor messages. """
-    raise NotImplementedError
+@dataclass
+class MessageHeader():
+    identifier: str
+    timestamp: float
 
-def parse_pressure_message(message: str) -> MessageData:
-    """ Parser function for pressure sensor messages. """
-    raise NotImplementedError
+@dataclass
+class MessageData():
+    header: MessageHeader
+    payload: Dict[str, str | int | float]
 
-def parse_doppler_log_message(message: str) -> MessageData:
-    """ Parser function for Doppler log sensor messages. """
-    raise NotImplementedError
-
-def parse_thruster_message(message: str) -> MessageData:
-    """ Parser function for thruster messages. """
-    raise NotImplementedError
-
-def parse_ctd_message(message: str) -> MessageData:
-    """ 
-    Parser function for conductivity, temperature, pressure sensor 
-    messages. 
-    """
-    raise NotImplementedError
-
-def parser_fls_message(message: str) -> MessageData:
-    """ 
-    Parser function for forward looking sonar messages (single-beam 
-    echosounder). 
-    """
-    raise NotImplementedError
