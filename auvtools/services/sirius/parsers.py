@@ -285,7 +285,7 @@ def parse_gps_message(message: str) -> MessageData:
 # ---- Default message parsers ------------------------------------------------
 # -----------------------------------------------------------------------------
 
-DefaultMessageParsers = {
+DEFAULT_MESSAGE_PARSERS = {
     "THR_PORT" : parse_thruster_message,
     "THR_STBD" : parse_thruster_message,
     "THR_VERT" : parse_thruster_message,
@@ -309,7 +309,7 @@ DefaultMessageParsers = {
 
 # Validate message parsers
 for identifier in MessageIDs:
-    assert identifier in DefaultMessageParsers, \
+    assert identifier in DEFAULT_MESSAGE_PARSERS, \
         f"found no parser for message identifier {identifier}"
 
 # -----------------------------------------------------------------------------
@@ -342,7 +342,7 @@ def condense_key_value_pairs(string: str) -> str:
 
 def parse_messages(
     lines: List[str],
-    parsers: Dict[str, MessageParseFunc] = DefaultMessageParsers
+    parsers: Dict[str, MessageParseFunc] = DEFAULT_MESSAGE_PARSERS
 ):
     """ 
     Parse a collection of messages and return the parsed message data. The
