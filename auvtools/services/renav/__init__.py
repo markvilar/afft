@@ -1,1 +1,1 @@
-from .stereo_poses import read_stereo_pose_file
+from .pose_file import read_cameras_from_file, write_cameras_to_file

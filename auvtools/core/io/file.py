@@ -4,10 +4,9 @@ from typing import List
 from result import Ok, Err, Result
 
 FileLines = List[str]
-ReadResult = Result[FileLines, str]
 
-def read_file(path: Path, mode: str="r") -> ReadResult:
-    """ """
+def read_file(path: Path, mode: str="r") -> Result[FileLines, str]:
+    """ Reads lines from a file. """
     if not path.is_file():
         return Err(f"path {path} is not a file")
 
