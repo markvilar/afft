@@ -1,10 +1,12 @@
-# Python Project Template
+# AUV Tools
 
 ![ci](https://github.com/markvilar/python_project_template/actions/workflows/ci.yml/badge.svg)
 ![pylint](https://github.com/markvilar/python_project_template/actions/workflows/pylint.yml/badge.svg)
 
-Repository template for Python projects. The repository includes support for 
-the following tools:
+AUV Tools is a collection of tools for working with data from ACFRs AUVs. The
+tools consist of creating file queries from metadata, transferring files and 
+directories, and parsing various data files. The repository includes support 
+for the following tools:
 * pipenv - management of virtual environments and dependencies
 * setuptools - management of package setup
 * pytest - unit tests
@@ -58,4 +60,18 @@ python -m unittest -v tests/test_math.py
 ## Publishing the project
 ```sh
 twine upload --repository python_template_project dist/*
+```
+
+## Troubleshooting
+
+### Reinstalling the virtual environment
+
+Reinstallation of the pipenv virtual environment can be necessary to update the
+python version of the environment. In order to do this, execute the following
+commands:
+
+```sh
+pipenv --rm
+pipenv install --python <python_version>
+pipenv install --dev
 ```

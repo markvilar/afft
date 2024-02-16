@@ -4,17 +4,25 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [packages]
+arrow = "*"
+icecream = "*"
+loguru = "*"
+result = "*"
+python-rclone = "*"
+toml = "*"
 
 [dev-packages]
 pytest = "*"
 setuptools = "*"
 twine = "*"
+tqdm = "*"
 
 [requires]
 python = "3.10"
 
 [scripts]
+transfer = "python -m transfer"
+cleanup = "python -m cleanup"
 tests = "python -m unittest"
-main = "python -m main"
 build = "python -m setup bdist_wheel sdist"
-lint = "pylint ./libtemp ./tests"
+lint = "pylint ./tools ./tests"

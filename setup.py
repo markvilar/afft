@@ -8,14 +8,15 @@ with open("README.md", "r", encoding="UTF-8") as handle:
     long_description = handle.read()
 
 setup(
-    name="python_project_template",
+    name="auvtools",
     version = "0.0.1",
-    description = "A template for Python projects with various development tools",
-    package_dir = {"": "libtemp"},
-    packages = find_packages(where="libtemp"),
+    description = "Various file related tools including transfer, local queries,
+    etc.",
+    package_dir = {"": "auvtools"},
+    packages = find_packages(where="auvtools"),
     long_description = long_description,
     long_description_content_type = "text/markdown",
-    url = "https://github.com/markvilar/python_project_template",
+    url = "https://github.com/markvilar/auvtools",
     author = "markvilar",
     author_email = "martin.kvisvik.larsen@hotmail.com",
     license = "GPLv3+",
