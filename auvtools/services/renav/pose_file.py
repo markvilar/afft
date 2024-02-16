@@ -81,9 +81,10 @@ def rad_to_deg(radians: float) -> float:
 
 def format_stereo_pose(fields: List[str]) -> Camera:
     """ Format a stereo pose from a pose file row. """
+    fields = [field.strip() for field in fields]
     identifier = int(fields[0])
     timestamp = float(fields[1])
-    label = Path(fields[10]).stem
+    label = Path(fields[10].strip()).stem
     
     geolocation = Geolocation(
         latitude = float(fields[2]),
@@ -97,11 +98,17 @@ def format_stereo_pose(fields: List[str]) -> Camera:
         yaw = rad_to_deg(float(fields[9])),
     )
 
-    left_filename = Path(fields[10])
-    right_filename = Path(fields[11])
+    left_filename = Path(fields[10].strip())
+    right_filename = Path(fields[11].strip())
+
+    # Check filenames for
+    if len(str(left_filename)) != len(str(left_filename).strip()):
+        logger.warning("left filename has tailed whitespaces")
+    if len(str(right_filename)) != len(str(right_filename).strip()):
+        logger.warning("right filename has tailed whitespaces")
 
     images = {
-        "stereo_left" : ImageFile(left_filename.stem, str(left_filename)),
+        "stereo_left" : ImageFile(left_filename.stem, str(left_filename).strip()),
         "stereo_right" : ImageFile(right_filename.stem, str(right_filename)),
     }
 
