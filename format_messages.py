@@ -3,9 +3,8 @@ from pathlib import Path
 from loguru import logger
 from result import Ok, Err, Result
 
-from auvtools.core.io import read_file
-
-from auvtools.core.utils import (
+from auvtools.io import read_file
+from auvtools.utils import (
     create_argument_parser, 
     ArgumentParser,
     Namespace,
