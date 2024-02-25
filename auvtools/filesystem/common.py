@@ -2,8 +2,9 @@
 import os
 
 from pathlib import Path
-from typing import List
+from typing import Callable, List
 
+from loguru import logger
 from result import Ok, Err, Result
 
 def make_directories(directory: Path, exist_ok: bool=False) -> None:
@@ -27,3 +28,18 @@ def get_largest_file(paths: List[Path]) -> Path:
             current_path = path
             current_size = sizes[path]
     return current_path
+
+def sort_paths_by_filename(
+    unsorted_paths: List[Path], 
+    key_fun: Callable[[Path], str] = lambda path: path.name
+) -> List[Path]:
+    """ Sorts paths by their keys. The default path key is the file name.
+    
+    Arguments:
+    - unsorted_paths: unsorted list of paths
+    - key_fun: function that returns the key for a path
+
+    Returns:
+    - sorted list of paths
+    """
+    return sorted(unsorted_paths, key=key_fun)

@@ -9,7 +9,7 @@ from typing import Callable, Dict, List, Tuple
 from loguru import logger
 from result import Ok, Err, Result
 
-from .messages import MessageIDs, MessageNames, MessageHeader, MessageData
+from .message_types import MessageIDs, MessageNames, MessageHeader, MessageData
 
 MessageParseFunc = Callable[str, MessageData]
 
@@ -258,7 +258,8 @@ def parse_pressure_message(message: str) -> MessageData:
 
 def parse_gps_message(message: str) -> MessageData:
     """ 
-    GPS_RMC:  1370910445.897 Lat:-41.253271667 S Lon:148.342691667 E  Bad:   0 A Spd:0.400 Crs:0.000 Mg:-1.000
+    GPS_RMC:  1370910445.897 Lat:-41.253271667 S Lon:148.342691667 E  
+    Bad:   0 A Spd:0.400 Crs:0.000 Mg:-1.000
     """
     header = read_message_header(message)
     payload_string = read_message_payload(message)
@@ -295,6 +296,7 @@ DEFAULT_MESSAGE_PARSERS = {
     "MICRON" : parse_echosounder_message,
     "MICRON_RETURNS" : parse_echosounder_message,
 
+    "BATT" : parse_battery_message, # TODO: Validate
     "BATT0" : parse_battery_message,
     "BATT1" : parse_battery_message,
     "BATT2" : parse_battery_message,
