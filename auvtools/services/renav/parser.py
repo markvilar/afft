@@ -1,16 +1,15 @@
 """ Functionality to create pose references. """
-import csv
 import math
 import re
 
 from dataclasses import dataclass, asdict
 from pathlib import Path
-from typing import Dict, List, Tuple
+from typing import List
 
 from loguru import logger
 from result import Ok, Err, Result
 
-from auvtools.core.data import (
+from auvtools.camera import (
     Geolocation, 
     Position3D, 
     Orientation3D, 
@@ -25,7 +24,7 @@ Cameras = List[Camera]
 # -----------------------------------------------------------------------------
 
 @dataclass
-class PoseFileHeader():
+class RenavFileHeader():
     identifier: str
     version: str
     line_count: int
@@ -40,7 +39,7 @@ def detect_header_line_count(lines: List[str]) -> int:
             break
     return count
 
-def parse_stereo_pose_header(lines: List[str]) -> Result[PoseFileHeader, str]:
+def parse_stereo_pose_header(lines: List[str]) -> Result[RenavFileHeader, str]:
     """ Parse the header of a stereo pose file. """
     # Detect the 
     line_count = detect_header_line_count(lines)
@@ -65,7 +64,7 @@ def parse_stereo_pose_header(lines: List[str]) -> Result[PoseFileHeader, str]:
     identifier = str(search_results["identifier"].group(0))
     version = str(search_results["version"].group(1))
 
-    file_header = PoseFileHeader(
+    file_header = RenavFileHeader(
         identifier = identifier,
         version = version,
         line_count = line_count,
@@ -129,7 +128,7 @@ def format_stereo_pose(fields: List[str]) -> Camera:
 
 def parse_stereo_poses(
     lines: List[str], 
-    header: PoseFileHeader,
+    header: RenavFileHeader,
 ) -> Result[Cameras, str]:
     """ Parse the rows of a stereo pose file. """
     # Get the lines that are not part of the header
@@ -167,29 +166,3 @@ def read_cameras_from_file(path: Path) -> Result[Cameras, str]:
         poses = result.unwrap()
 
         return Ok(poses)
-
-def write_cameras_to_csv(path: Path, cameras: Cameras) -> Result[Path, str]:
-    """ Writes a collection of cameras to a CSV file. """
-    with open(path, 'w', newline='') as csvfile:
-        fields = cameras[0].as_dict()
-
-        writer = csv.DictWriter(csvfile, fieldnames=list(fields.keys()))
-        writer.writeheader()
-
-        for camera in cameras:
-            fields = camera.as_dict()
-            writer.writerow(fields)
-
-    return Ok(path)
-
-def write_cameras_to_file(path: Path, cameras: Cameras) -> Result[Path, str]:
-    """ Writes a collection of cameras to file. """
-    if not path.parent.exists():
-        return Err(f"parent directory does not exist: {path}")
-
-    match path.suffix:
-        case ".csv":
-            return write_cameras_to_csv(path, cameras)
-        case _:
-            return Err(f"invalid file format: {path}")
-    pass

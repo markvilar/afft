@@ -1,4 +1,4 @@
-""" """
+""" Functionality to parse message files from AUV Sirius. """
 
 import re
 
@@ -343,7 +343,7 @@ def condense_key_value_pairs(string: str) -> str:
 def parse_messages(
     lines: List[str],
     parsers: Dict[str, MessageParseFunc] = DEFAULT_MESSAGE_PARSERS
-):
+) -> List[MessageData]:
     """ 
     Parse a collection of messages and return the parsed message data. The
     parser for each message type is based on the identifier of the message.

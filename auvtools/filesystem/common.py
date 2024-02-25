@@ -6,6 +6,10 @@ from typing import List
 
 from result import Ok, Err, Result
 
+def make_directories(directory: Path, exist_ok: bool=False) -> None:
+    """ Creates the ancestor directories for the given path. """
+    os.makedirs(str(directory), exist_ok=exist_ok)
+
 def get_path_size(path: Path) -> Result[int, str]:
     """ Returns the size for a file path. Assumes that the path exists. """
     if not path.exists():
