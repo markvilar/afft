@@ -1,0 +1,7 @@
+[camera_poses]
+search = "camera_poses"         # key to look for in the search file
+destination = "camera_poses"    # destination directory search result
+
+[camera_calibration]
+search = "calibration"
+destination = "camera_calibration"

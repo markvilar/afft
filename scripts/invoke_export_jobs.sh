@@ -1,13 +1,11 @@
 #!/usr/bin/bash
 
-INDEX_DIR=/home/martin/data/acfr_indices
-DATA_DIR=/home/martin/data/acfr_debug
-OUTPUT_DIR=/home/martin/data/acfr_export
+INDEX_DIR=/media/martin/lacie/data/acfr_indices
+DATA_DIR=/media/martin/barracuda/data/acfr_raw
+OUTPUT_DIR=/media/martin/lacie/data/acfr_export
 
 python export_indexed_data.py $INDEX_DIR/r23685bc_index.json \
     $DATA_DIR/r23685bc $OUTPUT_DIR
-
-exit 0
 
 python export_indexed_data.py $INDEX_DIR/qdc5ghs3_index.json \
     $DATA_DIR/qdc5ghs3 $OUTPUT_DIR
