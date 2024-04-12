@@ -3,6 +3,7 @@
 # FIXME: Find a more sustainable long-term solution than to append relative
 # directories to the system path
 import sys
+
 sys.path.append("..")
 sys.path.append("../auvtools")
 
@@ -27,10 +28,11 @@ from auvtools.core.utils import (
     ArgumentParser,
     Namespace,
     Logger,
-    create_argument_parser, 
+    create_argument_parser,
     create_logger,
     read_config_file,
 )
+
 
 # NOTE: Source / file structure dependent
 def filter_valid_searches(
@@ -38,7 +40,7 @@ def filter_valid_searches(
     routes: Dict[str, Dict],
     logger: Logger,
 ) -> List[FileSearch]:
-    """ 
+    """
     Set up valid searches based on a collection of routes and a search lookup.
 
     Args:
@@ -54,91 +56,96 @@ def filter_valid_searches(
             valid_routes.append(label)
         else:
             logger.warning(f" - Route {key}: Could not find search {search}")
-    
-    valid_searches : List[FileSearch] = list()
+
+    valid_searches: List[FileSearch] = list()
     for label in valid_routes:
         # The directory and files we are searching for
-        search = routes[label]["search"] 
-        
+        search = routes[label]["search"]
+
         # The destination of the files found in the search
         destination = routes[label]["destination"]
-     
+
         # The directory and include keywords to look for at the source
         directory = searches[search]["directory"]
         searches[search]["include"]
 
         # TODO: Add capability to exclude files in the future
         file_search = FileSearch(
-            source = searches[search]["directory"],
-            destination = routes[label]["destination"],
-            includes = searches[search]["include"],
+            source=searches[search]["directory"],
+            destination=routes[label]["destination"],
+            includes=searches[search]["include"],
         )
         valid_searches.append(file_search)
-    
+
     return valid_searches
-        
+
+
 # TODO: Consider using the create_endpoint_from_string function
 def split_endpoint_string(endpoint_string: str) -> Dict[str, str]:
-    """ 
-    Return the host and directory components of an endpoint as a 
-    dictionary. 
+    """
+    Return the host and directory components of an endpoint as a
+    dictionary.
     """
     splits = endpoint_string.split(":")
     assert len(splits) == 2, f"invalid endpoint string {endpoint_string}"
-    
+
     endpoint = dict()
     endpoint["host"] = splits[0]
     endpoint["directory"] = splits[1]
     return endpoint
 
+
 def validate_arguments(arguments: Namespace, logger) -> Namespace:
-    """ Validate the command line arguments for the cleanup action. """
-    files = [ arguments.rclone, arguments.routes, arguments.searches ]
+    """Validate the command line arguments for the cleanup action."""
+    files = [arguments.rclone, arguments.routes, arguments.searches]
     for path in files:
         assert path.exists(), f"{path} does not exist"
         assert path.is_file(), f"{path} is not a file"
     return arguments
 
+
 def main():
-    """ Entry point for directory cleanup. """
+    """Entry point for directory cleanup."""
     parser = create_argument_parser()
     logger = create_logger()
 
     # Add cleanup job arguments to argument parser
-    parser.add_argument("--rclone",
+    parser.add_argument(
+        "--rclone",
         type=Path,
         required=False,
         default=Path.home() / Path(".config/rclone/rclone.conf"),
         help="rclone config file path",
     )
-    parser.add_argument("--source",
+    parser.add_argument(
+        "--source",
         type=str,
         required=True,
         help="transfer source, i.e. <host>:<directory>",
     )
-    parser.add_argument("--destination",
+    parser.add_argument(
+        "--destination",
         type=str,
         required=True,
         help="transfer destination, i.e. <host>:<directory>",
     )
-    parser.add_argument("--routes",
+    parser.add_argument(
+        "--routes",
         type=Path,
         required=True,
         help="routing configuration file",
     )
-    parser.add_argument("--searches",
+    parser.add_argument(
+        "--searches",
         type=Path,
         required=True,
         help="file search configuration file",
     )
-    parser.add_argument("--dry-run",
-        action="store_true", 
-        help="execute a dry action"
-    ) 
+    parser.add_argument("--dry-run", action="store_true", help="execute a dry action")
 
     # Parse and validate the relevant arguments
     arguments = validate_arguments(parser.parse_args(), logger)
-   
+
     # Set up endpoints
     config = dict()
     config["endpoints"] = dict()
@@ -154,7 +161,7 @@ def main():
     logger.info("\nRoutes: ")
     for route in config["routes"]:
         logger.info(f" - {route}")
-   
+
     # Read the queries from file
     config["searches"] = read_json(arguments.searches)
 
@@ -165,7 +172,7 @@ def main():
     # Set up rclone context
     context = rclone.Context(rclone.read_config(arguments.rclone))
     remotes = rclone.list_remotes(context)
-    
+
     logger.info(f"\nTransfer context:")
     logger.info(f" - Config file:   {arguments.rclone}")
     logger.info(f" - Remotes:       {remotes}")
@@ -174,7 +181,7 @@ def main():
     jobs = dict()
     for label in config["searches"]:
         # Filter searches based on routes
-        valid_searches : List[FileSearch] = filter_valid_searches(
+        valid_searches: List[FileSearch] = filter_valid_searches(
             config["searches"][label]["queries"],
             config["routes"],
             logger,
@@ -182,48 +189,50 @@ def main():
 
         # Create source endpoint root
         source = Endpoint(
-            host = config["endpoints"]["source"]["host"], 
-            path = Path(config["endpoints"]["source"]["directory"]),
+            host=config["endpoints"]["source"]["host"],
+            path=Path(config["endpoints"]["source"]["directory"]),
         )
 
         # Create local endpoint root - label = group/deployment
         destination = Endpoint(
-            host = config["endpoints"]["destination"]["host"], 
-            path = Path(config["endpoints"]["destination"]["directory"]) / label ,
+            host=config["endpoints"]["destination"]["host"],
+            path=Path(config["endpoints"]["destination"]["directory"]) / label,
         )
 
         # Set up transfer for each search
         query_data = list()
         for search in valid_searches:
             source = Endpoint(
-                host = config["endpoints"]["source"]["host"], 
-                path = Path(config["endpoints"]["source"]["directory"]) / search.source,
+                host=config["endpoints"]["source"]["host"],
+                path=Path(config["endpoints"]["source"]["directory"]) / search.source,
             )
             destination = Endpoint(
-                host = config["endpoints"]["destination"]["host"], 
-                path = Path(config["endpoints"]["destination"]["directory"]) \
-                    / label / search.destination,
+                host=config["endpoints"]["destination"]["host"],
+                path=Path(config["endpoints"]["destination"]["directory"])
+                / label
+                / search.destination,
             )
 
             file_query = FileQueryData(
-                source = source,
-                destination = destination,
-                includes = search.includes,
-                excludes = search.excludes,
+                source=source,
+                destination=destination,
+                includes=search.includes,
+                excludes=search.excludes,
             )
-            
+
             query_data.append(file_query)
 
         jobs[label] = query_data
-   
+
     # Query files
     for label in jobs:
-        for query_data in tqdm(jobs[label], desc = "\nQuerying files..."):
+        for query_data in tqdm(jobs[label], desc="\nQuerying files..."):
             result = query_files(
-                context = context,
-                data = query_data,
-                logger = logger,
+                context=context,
+                data=query_data,
+                logger=logger,
             )
+
 
 if __name__ == "__main__":
     main()

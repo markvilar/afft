@@ -1,4 +1,5 @@
 """ Functionality to create pose references. """
+
 import math
 import re
 
@@ -10,9 +11,9 @@ from loguru import logger
 from result import Ok, Err, Result
 
 from auvtools.camera import (
-    Geolocation, 
-    Position3D, 
-    Orientation3D, 
+    Geolocation,
+    Position3D,
+    Orientation3D,
     ImageFile,
     Camera,
 )
@@ -23,15 +24,17 @@ Cameras = List[Camera]
 # ---- Pose file header -------------------------------------------------------
 # -----------------------------------------------------------------------------
 
+
 @dataclass
-class RenavFileHeader():
+class RenavFileHeader:
     identifier: str
     version: str
     line_count: int
     text: str
 
+
 def detect_header_line_count(lines: List[str]) -> int:
-    """ Returns the number of lines in the header. """
+    """Returns the number of lines in the header."""
     count = 0
     for index, line in enumerate(lines):
         if len(line.split("\t")) > 10:
@@ -39,12 +42,13 @@ def detect_header_line_count(lines: List[str]) -> int:
             break
     return count
 
+
 def parse_stereo_pose_header(lines: List[str]) -> Result[RenavFileHeader, str]:
-    """ Parse the header of a stereo pose file. """
-    # Detect the 
+    """Parse the header of a stereo pose file."""
+    # Detect the
     line_count = detect_header_line_count(lines)
     header_lines = lines[:line_count]
-    
+
     # Get header lines and string
     header_lines = [line.replace("% ", "") for line in header_lines]
     header_string = "\n".join(header_lines)
@@ -65,36 +69,37 @@ def parse_stereo_pose_header(lines: List[str]) -> Result[RenavFileHeader, str]:
     version = str(search_results["version"].group(1))
 
     file_header = RenavFileHeader(
-        identifier = identifier,
-        version = version,
-        line_count = line_count,
-        text = header_string,
+        identifier=identifier,
+        version=version,
+        line_count=line_count,
+        text=header_string,
     )
-    
+
     return Ok(file_header)
 
 
 def rad_to_deg(radians: float) -> float:
-    """ Converts an angle from radians to degress. """
+    """Converts an angle from radians to degress."""
     return radians * 180.0 / math.pi
 
+
 def format_stereo_pose(fields: List[str]) -> Camera:
-    """ Format a stereo pose from a pose file row. """
+    """Format a stereo pose from a pose file row."""
     fields = [field.strip() for field in fields]
     identifier = int(fields[0])
     timestamp = float(fields[1])
     label = Path(fields[10].strip()).stem
-    
+
     geolocation = Geolocation(
-        latitude = float(fields[2]),
-        longitude = float(fields[3]),
-        height = -float(fields[6]),
+        latitude=float(fields[2]),
+        longitude=float(fields[3]),
+        height=-float(fields[6]),
     )
-    
+
     orientation = Orientation3D(
-        roll = rad_to_deg(float(fields[7])),
-        pitch = rad_to_deg(float(fields[8])),
-        yaw = rad_to_deg(float(fields[9])),
+        roll=rad_to_deg(float(fields[7])),
+        pitch=rad_to_deg(float(fields[8])),
+        yaw=rad_to_deg(float(fields[9])),
     )
 
     left_filename = Path(fields[10].strip())
@@ -107,32 +112,30 @@ def format_stereo_pose(fields: List[str]) -> Camera:
         logger.warning("right filename has tailed whitespaces")
 
     images = {
-        "stereo_left" : ImageFile(left_filename.stem, str(left_filename).strip()),
-        "stereo_right" : ImageFile(right_filename.stem, str(right_filename)),
+        "stereo_left": ImageFile(left_filename.stem, str(left_filename).strip()),
+        "stereo_right": ImageFile(right_filename.stem, str(right_filename)),
     }
 
-    accessories = {
-        "altitude" : float(fields[12]),
-        "bounding_radius" : float(fields[13])
-    }
+    accessories = {"altitude": float(fields[12]), "bounding_radius": float(fields[13])}
 
     return Camera(
-        identifier = identifier,
-        timestamp = timestamp,
-        label = label,
-        geolocation = geolocation,
-        orientation = orientation,
-        images = images,
-        accessories = accessories,
+        identifier=identifier,
+        timestamp=timestamp,
+        label=label,
+        geolocation=geolocation,
+        orientation=orientation,
+        images=images,
+        accessories=accessories,
     )
 
+
 def parse_stereo_poses(
-    lines: List[str], 
+    lines: List[str],
     header: RenavFileHeader,
 ) -> Result[Cameras, str]:
-    """ Parse the rows of a stereo pose file. """
+    """Parse the rows of a stereo pose file."""
     # Get the lines that are not part of the header
-    pose_lines = lines[header.line_count:]
+    pose_lines = lines[header.line_count :]
     poses = list()
     for line in pose_lines:
         items = line.split("\t")
@@ -140,8 +143,9 @@ def parse_stereo_poses(
         poses.append(pose)
     return Ok(poses)
 
+
 def read_cameras_from_file(path: Path) -> Result[Cameras, str]:
-    """ Reads camera poses from a Renav stereo pose file. """
+    """Reads camera poses from a Renav stereo pose file."""
     # TODO: Dispatch to stereo pose file reader
     if not path.is_file():
         return Err(f"{path} is not a file")
@@ -155,7 +159,7 @@ def read_cameras_from_file(path: Path) -> Result[Cameras, str]:
 
         if result.is_err():
             return Err("unable to read stereo pose header")
-        
+
         # Parse stereo poses
         header = result.unwrap()
         result = parse_stereo_poses(lines, header)

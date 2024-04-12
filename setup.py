@@ -9,26 +9,25 @@ with open("README.md", "r", encoding="UTF-8") as handle:
 
 setup(
     name="auvtools",
-    version = "0.0.1",
-    description = "Various file related tools including transfer, local queries,
-    etc.",
-    package_dir = {"": "auvtools"},
-    packages = find_packages(where="auvtools"),
-    long_description = long_description,
-    long_description_content_type = "text/markdown",
-    url = "https://github.com/markvilar/auvtools",
-    author = "markvilar",
-    author_email = "martin.kvisvik.larsen@hotmail.com",
-    license = "GPLv3+",
-    classifiers = [
+    version="0.0.1",
+    description="Various file related tools including transfer, local queries, etc.",
+    package_dir={"": "auvtools"},
+    packages=find_packages(where="auvtools"),
+    long_description=long_description,
+    long_description_content_type="text/markdown",
+    url="https://github.com/markvilar/auvtools",
+    author="markvilar",
+    author_email="martin.kvisvik.larsen@hotmail.com",
+    license="GPLv3+",
+    classifiers=[
         "License :: OSI Approved :: GNU General Public License v3 or later (GPLv3+)",
         "Programming Language :: Python :: 3.10",
         "Operating System :: OS Independent",
     ],
-    install_requires = ["bson >= 0.5.10"],
-    extras_require = {
+    install_requires=["bson >= 0.5.10"],
+    extras_require={
         "dev": ["pytest>=7.0"],
     },
-    test_suite = "tests",
-    python_requires = ">=3.10",
+    test_suite="tests",
+    python_requires=">=3.10",
 )

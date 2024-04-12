@@ -9,17 +9,19 @@ h5py = "*"
 icecream = "*"
 loguru = "*"
 result = "*"
+python-dotenv = "*"
 python-rclone = "*"
 toml = "*"
+tqdm = "*"
 
 [dev-packages]
+black = "*"
 pytest = "*"
 setuptools = "*"
 twine = "*"
-tqdm = "*"
 
 [requires]
-python = "3.10"
+python = "3.12"
 
 [scripts]
 tests = "python -m unittest"

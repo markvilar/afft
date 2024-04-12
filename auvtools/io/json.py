@@ -10,8 +10,9 @@ JsonValue = Union[str, int, float, Dict]
 
 JsonData = Dict[JsonKey, JsonValue]
 
+
 def read_json(filepath: Path) -> Result[JsonData, str]:
-    """ Reads a JSON file and returns the content as a dictionary. """
+    """Reads a JSON file and returns the content as a dictionary."""
     if not filepath.exists():
         return Err(f"path does not exist: {filepath}")
     try:

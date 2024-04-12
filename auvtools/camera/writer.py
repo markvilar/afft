@@ -1,4 +1,5 @@
 """ Functionality to write cameras to file. """
+
 import csv
 
 from pathlib import Path
@@ -10,9 +11,10 @@ from .camera import Camera
 
 Cameras = List[Camera]
 
+
 def write_cameras_to_csv(path: Path, cameras: Cameras) -> Result[Path, str]:
-    """ Writes a collection of cameras to a CSV file. """
-    with open(path, 'w', newline='') as csvfile:
+    """Writes a collection of cameras to a CSV file."""
+    with open(path, "w", newline="") as csvfile:
         fields = cameras[0].as_dict()
 
         writer = csv.DictWriter(csvfile, fieldnames=list(fields.keys()))
@@ -24,8 +26,9 @@ def write_cameras_to_csv(path: Path, cameras: Cameras) -> Result[Path, str]:
 
     return Ok(path)
 
+
 def write_cameras_to_file(path: Path, cameras: Cameras) -> Result[Path, str]:
-    """ Writes a collection of cameras to file. """
+    """Writes a collection of cameras to file."""
     if not path.parent.exists():
         return Err(f"parent directory does not exist: {path}")
 

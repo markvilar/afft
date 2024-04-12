@@ -1,6 +1,6 @@
 from .common import (
-    get_path_size, 
-    get_largest_file, 
+    get_path_size,
+    get_largest_file,
     make_directories,
     sort_paths_by_filename,
 )

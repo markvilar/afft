@@ -1,4 +1,5 @@
 """ Functionality to export messages to file. """
+
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Dict, List, Optional
@@ -10,15 +11,18 @@ from ..services.sirius import MessageHeader, MessageData
 Messages = List[MessageData]
 MessageExporter = Callable[[Path, Messages], None]
 
-@dataclass 
-class MessageExportData():
-    """ Data class for message export. """
+
+@dataclass
+class MessageExportData:
+    """Data class for message export."""
+
     messages: Messages
     output_path: Path
-    exporters: Dict[str, MessageExporter]=None
+    exporters: Dict[str, MessageExporter] = None
+
 
 def group_messages_by_identifier(messages: Messages) -> Dict[str, Messages]:
-    """ Groups messages by their identifier. """
+    """Groups messages by their identifier."""
     message_groups = dict()
     for message in messages:
         if not message.header.identifier in message_groups:
@@ -26,9 +30,10 @@ def group_messages_by_identifier(messages: Messages) -> Dict[str, Messages]:
         message_groups[message.header.identifier].append(message)
     return message_groups
 
+
 def export_messages(export_data: MessageExportData):
-    """ Process a message file line by line with handlers for each message
-    identifier. """
+    """Process a message file line by line with handlers for each message
+    identifier."""
 
     # Group messages by identifer
     message_groups = group_messages_by_identifier(export_data.messages)
