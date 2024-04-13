@@ -4,7 +4,6 @@ import sys
 
 from auvtools.session import Command
 
-# Tasks
 from auvtools.tasks.process_cameras import process_cameras
 from auvtools.tasks.process_messages import process_messages
 
@@ -16,9 +15,9 @@ def main():
     command = Command(command, arguments)
 
     match command:
-        case Command(command="process_messages", arguments=any):
+        case Command(command="process_messages"):
             process_messages(command.arguments)
-        case Command(command="process_cameras", arguments=[config]):
+        case Command(command="process_cameras"):
             process_cameras(command.arguments)
 
 

@@ -17,13 +17,17 @@ from auvtools.messages.message_readers import read_message_lines_and_concatenate
 @dataclass
 class FileConfig:
     """Class representing message files."""
+
     messages: List[Path]
     output: Path
+
 
 @dataclass
 class ProcessorConfig:
     """Class representing message processor."""
+
     messages: List[str]
+
 
 @dataclass
 class MessageFormattingData:
@@ -46,7 +50,7 @@ def configure_paths(config: Path) -> FileConfig:
 
     directories = paths["directories"]
     files = paths["files"]
-   
+
     # Create absolute directory paths
     message_directory = input_root / directories["messages"]
     output_directory = output_root / directories["output"]
@@ -90,17 +94,15 @@ def execute_message_processing_task() -> None:
 
 def process_messages(arguments: List[str]) -> None:
     """Executor for processing messages."""
-    
+
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "data", 
-        type=Path, 
-        help="data configuration file, i.e. files and paths"
+        "data", type=Path, help="data configuration file, i.e. files and paths"
     )
     parser.add_argument(
-        "processor", 
-        type=Path, 
-        help="processor configuration file, i.e. message set and descriptors"
+        "processor",
+        type=Path,
+        help="processor configuration file, i.e. message set and descriptors",
     )
 
     namespace = parser.parse_args(arguments)
