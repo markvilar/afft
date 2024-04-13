@@ -24,6 +24,8 @@ twine = "*"
 python = "3.12"
 
 [scripts]
-tests = "python -m unittest"
+main = "python -m main"
+process_messages = "python -m main process_messages"
+process_cameras = "python -m main process_cameras"
 build = "python -m setup bdist_wheel sdist"
 lint = "pylint ./tools ./tests"
