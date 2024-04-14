@@ -11,7 +11,8 @@ from dotenv import dotenv_values
 from loguru import logger
 
 from auvtools.io import read_toml
-from auvtools.messages.message_readers import read_message_lines_and_concatenate
+
+from .message_readers import read_message_lines_and_concatenate
 
 
 @dataclass

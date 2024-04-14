@@ -4,8 +4,8 @@ import sys
 
 from auvtools.session import Command
 
-from auvtools.tasks.process_cameras import process_cameras
-from auvtools.tasks.process_messages import process_messages
+from auvtools.camera import process_cameras
+from auvtools.message import process_messages
 
 
 def main():
