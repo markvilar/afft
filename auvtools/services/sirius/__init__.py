@@ -1,10 +1,11 @@
-from .messages import (
+from .message_types import (
     MessageIDs,
     MessageNames,
-    MessageData, 
+    MessageHeader,
+    MessageData,
 )
 
-from .parsers import (
-    DefaultMessageParsers, 
+from .message_parsers import (
+    DEFAULT_MESSAGE_PARSERS,
     parse_messages,
 )
