@@ -1,3 +1,0 @@
-[images]
-search = "processed_images"      # group key in file search file
-destination = "images"           # destination directory search result

@@ -5,6 +5,7 @@ verify_ssl = true
 
 [packages]
 arrow = "*"
+h5py = "*"
 icecream = "*"
 loguru = "*"
 result = "*"
@@ -21,8 +22,6 @@ tqdm = "*"
 python = "3.10"
 
 [scripts]
-transfer = "python -m transfer"
-cleanup = "python -m cleanup"
 tests = "python -m unittest"
 build = "python -m setup bdist_wheel sdist"
 lint = "pylint ./tools ./tests"
