@@ -22,18 +22,3 @@ def read_message_lines(filepath: Path) -> ReadResult:
         return Err(f"invalid message file type: {filepath}")
 
     return read_file(filepath)
-
-
-def read_message_lines_and_concatenate(paths: List[Path]) -> ReadResult:
-    """Reads message lines from multiple AUV files and concatenates them."""
-    cumulative: Lines = list()
-    for path in paths:
-        result: ReadResult = read_message_lines(path)
-
-        match result:
-            case Err(message):
-                return Err(message)
-            case Ok(lines):
-                cumulative += lines
-
-    return Ok(cumulative)
