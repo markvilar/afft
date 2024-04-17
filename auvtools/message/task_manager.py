@@ -16,26 +16,26 @@ from .config import (
     validate_message_paths,
     validate_message_protocol,
 )
+
+from .line_processors import Line, LineProcessor, process_message_lines
 from .message_readers import read_message_lines
 
 
-def execute_message_processing_task(paths: MessagePaths) -> None:
+def read_and_accumulate_lines(paths: MessagePaths) -> List[Line]:
     """Executes message processing."""
 
     # Get absolute file paths
     message_files: List[Path] = [paths.directories.data / file for file in paths.files.messages]
 
-    lines: List[str] = list()
+    lines: List[Line] = list()
     for file in message_files:
-        new_lines: List[str] = read_message_lines(file).unwrap()
+        new_lines: List[Line] = read_message_lines(file).unwrap()
         logger.info(f"Read lines: {len(new_lines)}")
         lines.extend(new_lines)
 
     logger.info(f"Total amount of lines read: {len(lines)}")
 
-    # TODO: Invoke message formatting job
-
-    raise NotImplementedError
+    return lines
 
 
 def process_messages(arguments: List[str]) -> None:
@@ -65,8 +65,13 @@ def process_messages(arguments: List[str]) -> None:
     # TODO: Implement 
     # message_protocol: MessageProtocol = validate_message_protocol(message_protocol).unwrap()
 
-    logger.info(message_paths)
-    logger.info(message_protocol)
+    # Read message lines from files
+    lines: List[Line] = read_and_accumulate_lines(message_paths)
+    processed_lines: List[Line] = process_message_lines(lines)
 
-    # Execute processing
-    execute_message_processing_task(message_paths)
+    logger.info(f"Count, lines:           {len(lines)}")
+    logger.info(f"Count, processed lines: {len(processed_lines)}")
+
+    # TODO: Process messages
+
+    raise NotImplementedError
