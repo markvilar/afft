@@ -1,9 +1,9 @@
-# AUV Tools
+# Robust AUV File Tool
 
 ![ci](https://github.com/markvilar/python_project_template/actions/workflows/ci.yml/badge.svg)
 ![pylint](https://github.com/markvilar/python_project_template/actions/workflows/pylint.yml/badge.svg)
 
-AUV Tools is a collection of tools for working with data from ACFRs AUVs. The
+Raft is a collection of tools for working with data from ACFRs AUVs. The
 tools consist of creating file queries from metadata, transferring files and 
 directories, and parsing various data files. The repository includes support 
 for the following tools:
