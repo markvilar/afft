@@ -2,14 +2,19 @@
 
 import sys
 
-from auvtools.session import Command
+from raft.session import Command
 
-from auvtools.camera import process_cameras
-from auvtools.message import process_messages
+from raft.camera import process_cameras
+from raft.message import process_messages
+
+from raft.utils.log import init_logger
 
 
 def main():
     """Entry point for invoking tasks."""
+
+    # Initialize logger with level, format, and sinks
+    init_logger()
 
     command, *arguments = sys.argv[1:]
     command = Command(command, arguments)

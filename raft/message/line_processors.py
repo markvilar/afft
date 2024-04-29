@@ -5,8 +5,9 @@ import re
 from functools import partial
 from typing import Callable, List
 
+from .interfaces import Line
+
 # Interface for line processor
-type Line = str
 type LineProcessor = Callable[[Line], Line]
 
 
@@ -41,15 +42,12 @@ def default_line_processors() -> List[LineProcessor]:
     return [
         remove_subsequent_whitespaces,
         remove_ending_whitespaces,
-        partial(replace_characters, target="[", replacement=""),
-        partial(replace_characters, target="]", replacement=""),
         partial(replace_characters, target="\t", replacement=" "),
-        partial(replace_characters, target=": ", replacement=":"),
     ]
 
 
 def process_message_lines(
-    lines: List[Line], 
+    lines: List[Line],
     processors: List[LineProcessor] = default_line_processors(),
 ) -> List[Line]:
     """Applies the processors to the message lines."""

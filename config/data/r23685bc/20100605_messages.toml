@@ -1,5 +1,5 @@
 [directories]
-data = "r23685bc/r20100605_021022_lanterns_15_deep/messages"
+data = "r23685bc/20100605_021022/messages"
 output = "r23685bc/20100605_021022"
 
 [files]

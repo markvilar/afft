@@ -10,7 +10,7 @@ from typing import List
 from loguru import logger
 from result import Ok, Err, Result
 
-from auvtools.camera import (
+from raft.camera import (
     Geolocation,
     Position3D,
     Orientation3D,

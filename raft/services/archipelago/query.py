@@ -6,15 +6,15 @@ from typing import Callable, Dict, List
 
 from icecream import ic
 
-from auvtools.io import read_json
-from auvtools.transfer import (
+from raft.io import read_json
+from raft.transfer import (
     Endpoint,
     DirectoryQuery,
     FileQuery,
     QuerySetupFun,
     TransferAssignment,
 )
-from auvtools.utils import Logger
+from raft.utils import Logger
 
 
 def create_queries(

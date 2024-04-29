@@ -7,7 +7,7 @@ from typing import Dict, List
 from dotenv import dotenv_values
 from result import Ok, Err, Result
 
-from auvtools.io import read_toml
+from raft.io import read_toml
 
 
 DATA_PATH_KEY = "MESSAGE_INPUT_ROOT"
@@ -15,6 +15,7 @@ OUTPUT_PATH_KEY = "MESSAGE_OUTPUT_ROOT"
 
 INPUT_FILE_KEY = "messages"
 OUTPUT_FILE_KEY = "output"
+
 
 @dataclass
 class Directories:
@@ -74,7 +75,7 @@ def configure_message_paths(path: Path) -> MessagePaths:
 
 
 def validate_message_paths(paths: MessagePaths) -> Result[MessagePaths, str]:
-    """Validates the message paths by checking the existance of directories and files. """
+    """Validates the message paths by checking the existance of directories and files."""
 
     if not paths.directories.data.exists():
         return Err("data directory does not exist")
@@ -103,8 +104,10 @@ def configure_message_protocol(path: Path) -> MessageProtocol:
 
     return MessageProtocol(identifiers)
 
-def validate_message_protocol(protocol: MessageProtocol) -> Result[MessageProtocol, str]:
-    """Validates the message protocol. """
+
+def validate_message_protocol(
+    protocol: MessageProtocol,
+) -> Result[MessageProtocol, str]:
+    """Validates the message protocol."""
 
     return Err("not implemented")
-

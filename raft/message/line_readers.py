@@ -6,7 +6,7 @@ from typing import List, TypeAlias
 from loguru import logger
 from result import Ok, Err, Result
 
-from auvtools.io import read_file
+from raft.io import read_file
 
 Line: TypeAlias = str
 Lines: TypeAlias = List[Line]
