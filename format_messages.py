@@ -1,17 +1,16 @@
+""" Script for formatting messages from AUV Sirius. """
+import argparse
+
 from pathlib import Path
 
 from loguru import logger
 from result import Ok, Err, Result
 
-from auvtools.core.io import read_file
-
-from auvtools.core.utils import (
-    create_argument_parser, 
-    ArgumentParser,
-    Namespace,
-)
-
+from auvtools.io import read_file
 from auvtools.services.sirius import parse_messages
+
+ArgumentParser = argparse.ArgumentParser
+Namespace = argparse.Namespace
 
 def process_message_files(arguments: Namespace):
     """ 
@@ -34,7 +33,7 @@ def process_message_files(arguments: Namespace):
         messages = parse_messages(lines)
 
         # Group messages by identifer
-        grouped_messages = dict()
+        grouped_messages: Dict[str, List[MessageData] = dict()
         for message in messages:
             if not message.header.identifier in grouped_messages:
                 grouped_messages[message.header.identifier] = list()
@@ -52,9 +51,7 @@ def process_message_files(arguments: Namespace):
             logger.info(f" - {identifier} : {field_keys}")
 
 
-def validate_arguments(
-    arguments : Namespace
-) -> Result[Namespace, BaseException]:
+def validate_arguments(arguments : Namespace) -> Result[Namespace, str]:
     """ Validates command line arguments. """
     for path in arguments.input:
         if not path.is_file():
@@ -65,7 +62,7 @@ def validate_arguments(
 
 def main():
     """ Main function. """
-    parser = create_argument_parser()
+    parser = ArgumentParser()
     parser.add_argument("input", 
         type = Path,
         nargs = "+",
@@ -76,7 +73,7 @@ def main():
         help = "path to output directory",
     )
 
-    result : Result[Namespace, BaseException] = validate_arguments(
+    result : Result[Namespace, str] = validate_arguments(
         parser.parse_args()
     )
 

@@ -5,6 +5,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import List, Protocol
 
+from loguru import logger
 from icecream import ic
 
 from .endpoint import Endpoint
@@ -45,7 +46,6 @@ def get_path_end(path: Path, count: int) -> str:
 def query_files(
     context: TransferContext,
     data: FileQueryData,
-    logger: logging.Logger=None,
 ):
     """ Execute a file search query. """
 
@@ -54,17 +54,13 @@ def query_files(
     include_file_path = f"./.cache/{time}_includes.txt"
     write_include_file(include_file_path, data.includes) 
     
-    logger.info("\n")
-    logger.info(f"Source:       {data.source}")
-    logger.info(f"Destination:  {data.destination}")
-    logger.info(f"Includes:     {include_file_path}")
-   
     result = context.copy(
         data.source, 
         data.destination, 
         flags=list(["--include-from", str(include_file_path)])
     )
     
-    logger.info(f"Rclone result: {result}\n")
+    if result.flag != 0:
+        logger.info(f"Transfer failed: {result.error}\n")
 
     return result

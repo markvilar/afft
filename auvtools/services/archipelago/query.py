@@ -6,15 +6,15 @@ from typing import Callable, Dict, List
 
 from icecream import ic
 
-from auvtools.core.io import read_json
-from auvtools.core.transfer import (
+from auvtools.io import read_json
+from auvtools.transfer import (
     Endpoint,
     DirectoryQuery,
     FileQuery,
     QuerySetupFun, 
     TransferAssignment,
 )
-from auvtools.core.utils import Logger
+from auvtools.utils import Logger
 
 def create_queries(
     source: Endpoint,

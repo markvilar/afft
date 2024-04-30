@@ -2,41 +2,34 @@
 
 # FIXME: Find a more sustainable long-term solution than to append relative
 # directories to the system path
+import os
 import sys
-sys.path.append("..")
-sys.path.append("../auvtools")
+sys.path.append(".")
+sys.path.append("./auvtools")
 
+from argparse import ArgumentParser, Namespace
 from pathlib import Path
 from typing import Dict, List
 
+from loguru import logger
 from tqdm import tqdm
 from icecream import ic
 
-import auvtools.core.transfer.rclone as rclone
+import auvtools.transfer.rclone as rclone
 
-from auvtools.core.io import read_json
-
-from auvtools.core.transfer import (
+from auvtools.io import read_json
+from auvtools.transfer import (
     Endpoint,
     FileSearch,
     FileQueryData,
     query_files,
 )
-
-from auvtools.core.utils import (
-    ArgumentParser,
-    Namespace,
-    Logger,
-    create_argument_parser, 
-    create_logger,
-    read_config_file,
-)
+from auvtools.utils import read_config_file
 
 # NOTE: Source / file structure dependent
 def filter_valid_searches(
     searches: Dict[str, Dict],
     routes: Dict[str, Dict],
-    logger: Logger,
 ) -> List[FileSearch]:
     """ 
     Set up valid searches based on a collection of routes and a search lookup.
@@ -53,7 +46,7 @@ def filter_valid_searches(
         if search in searches:
             valid_routes.append(label)
         else:
-            logger.warning(f" - Route {key}: Could not find search {search}")
+            logger.warning(f" - Route {label}: Could not find search {search}")
     
     valid_searches : List[FileSearch] = list()
     for label in valid_routes:
@@ -101,10 +94,7 @@ def validate_arguments(arguments: Namespace, logger) -> Namespace:
 
 def main():
     """ Entry point for directory cleanup. """
-    parser = create_argument_parser()
-    logger = create_logger()
-
-    # Add cleanup job arguments to argument parser
+    parser = ArgumentParser()
     parser.add_argument("--rclone",
         type=Path,
         required=False,
@@ -129,7 +119,7 @@ def main():
     parser.add_argument("--searches",
         type=Path,
         required=True,
-        help="file search configuration file",
+        help="search configuration file",
     )
     parser.add_argument("--dry-run",
         action="store_true", 
@@ -154,9 +144,10 @@ def main():
     logger.info("\nRoutes: ")
     for route in config["routes"]:
         logger.info(f" - {route}")
-   
+
     # Read the queries from file
-    config["searches"] = read_json(arguments.searches)
+    result: Result[Dict, str] = read_json(arguments.searches)
+    config["searches"] = result.unwrap()
 
     logger.info("\nSearches: ")
     for search in config["searches"]:
@@ -173,28 +164,21 @@ def main():
     # Set up queries for each search - NOTE: Source and file dependent
     jobs = dict()
     for label in config["searches"]:
+
         # Filter searches based on routes
         valid_searches : List[FileSearch] = filter_valid_searches(
-            config["searches"][label]["queries"],
+            config["searches"][label]["searches"],
             config["routes"],
-            logger,
         )
 
-        # Create source endpoint root
-        source = Endpoint(
-            host = config["endpoints"]["source"]["host"], 
-            path = Path(config["endpoints"]["source"]["directory"]),
-        )
-
-        # Create local endpoint root - label = group/deployment
-        destination = Endpoint(
-            host = config["endpoints"]["destination"]["host"], 
-            path = Path(config["endpoints"]["destination"]["directory"]) / label ,
-        )
+        # FIXME: Set up destination directory tree
+        metadata = config["searches"][label]["metadata"]
+        subdirectory = metadata["deployment"]
 
         # Set up transfer for each search
         query_data = list()
         for search in valid_searches:
+
             source = Endpoint(
                 host = config["endpoints"]["source"]["host"], 
                 path = Path(config["endpoints"]["source"]["directory"]) / search.source,
@@ -202,7 +186,7 @@ def main():
             destination = Endpoint(
                 host = config["endpoints"]["destination"]["host"], 
                 path = Path(config["endpoints"]["destination"]["directory"]) \
-                    / label / search.destination,
+                    / subdirectory / search.destination,
             )
 
             file_query = FileQueryData(
@@ -215,14 +199,13 @@ def main():
             query_data.append(file_query)
 
         jobs[label] = query_data
-   
+
     # Query files
     for label in jobs:
         for query_data in tqdm(jobs[label], desc = "\nQuerying files..."):
             result = query_files(
                 context = context,
                 data = query_data,
-                logger = logger,
             )
 
 if __name__ == "__main__":
