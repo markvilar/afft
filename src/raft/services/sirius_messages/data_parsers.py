@@ -9,8 +9,6 @@ from typing import Any, Dict, Callable, Tuple, Generic, TypeVar
 from loguru import logger
 from result import Ok, Err, Result
 
-from raft.message.interfaces import Line
-
 from .data_types import (
     AuvMessageHeader,
     ImageCaptureDataV1,
@@ -47,7 +45,7 @@ Image message parsers:
 type ParseResult = Result[Any, str]
 
 
-def parse_image_message_v1(header: AuvMessageHeader, line: Line) -> ParseResult:
+def parse_image_message_v1(header: AuvMessageHeader, line: str) -> ParseResult:
     """Parses a message line as an image message.
 
     VIS: 1244853280.578  [1244853280.348234] PR_20090613_003440_348_LC16.pgm
@@ -73,7 +71,7 @@ def parse_image_message_v1(header: AuvMessageHeader, line: Line) -> ParseResult:
     return Ok(body)
 
 
-def parse_image_message_v2(header: AuvMessageHeader, line: Line) -> ParseResult:
+def parse_image_message_v2(header: AuvMessageHeader, line: str) -> ParseResult:
     """Parses a message line as an image message.
 
     VIS: 1370910671.991  [1370910671.168201] PR_20130611_003111_168_LC16.tif exp: 1592
@@ -107,7 +105,7 @@ Navigation data parsers:
 """
 
 
-def parse_teledyne_dvl_message(header: AuvMessageHeader, line: Line) -> TeledyneDVLData:
+def parse_teledyne_dvl_message(header: AuvMessageHeader, line: str) -> TeledyneDVLData:
     """Parses a message line as a TeledyneDVLData dataclass."""
 
     pattern = re.compile(
@@ -169,12 +167,12 @@ def parse_teledyne_dvl_message(header: AuvMessageHeader, line: Line) -> Teledyne
     return Ok(data)
 
 
-def parse_paroscientific_message(header: AuvMessageHeader, line: Line) -> object:
+def parse_paroscientific_message(header: AuvMessageHeader, line: str) -> object:
     """Parses a message line as a Paroscientific dataclass."""
     raise NotImplementedError("parse_paroscientific_message is not implemented.")
 
 
-def parse_lq_modem_message(header: AuvMessageHeader, line: Line) -> LQModemData:
+def parse_lq_modem_message(header: AuvMessageHeader, line: str) -> LQModemData:
     """Parses a message line as a LQModemData dataclass."""
 
     pattern = re.compile(
@@ -210,7 +208,7 @@ def parse_lq_modem_message(header: AuvMessageHeader, line: Line) -> LQModemData:
 
 
 def parse_evologics_modem_message(
-    header: AuvMessageHeader, line: Line
+    header: AuvMessageHeader, line: str
 ) -> EvologicsModemData:
     """Parses a message line as an Evologics USBL message.
 
@@ -261,7 +259,7 @@ def parse_evologics_modem_message(
     return Ok(data)
 
 
-def parse_thruster_message(header: AuvMessageHeader, line: Line) -> ThrusterData:
+def parse_thruster_message(header: AuvMessageHeader, line: str) -> ThrusterData:
     """Parser function for thruster messages.
 
     THR_PORT:  1244855390.607        RPM:0.00 A:0.0400 V:46.80 T:29.00
@@ -302,7 +300,7 @@ Power system data parsers:
 """
 
 
-def parse_battery_message(header: AuvMessageHeader, line: Line) -> ParseResult:
+def parse_battery_message(header: AuvMessageHeader, line: str) -> ParseResult:
     """Parses a message line as a BatteryMessage object."""
 
     pattern = re.compile(
@@ -338,7 +336,7 @@ def parse_battery_message(header: AuvMessageHeader, line: Line) -> ParseResult:
     return Ok(body)
 
 
-ParseFun = Callable[[Line], Any]
+ParseFun = Callable[[str], Any]
 
 
 # Temporary: Remove after development is done

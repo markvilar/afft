@@ -23,8 +23,8 @@ from .line_readers import read_message_lines
 from .interfaces import Line
 
 # TEMPORARY: Import protocol
-from ..protocol.data_parsers import PROTOCOL_DEV, PROTOCOL_V1, PROTOCOL_V2
-from ..protocol.parsers import parse_message
+from raft.services.sirius_messages.data_parsers import PROTOCOL_DEV, PROTOCOL_V1, PROTOCOL_V2
+from raft.services.sirius_messages.parsers import parse_message
 
 
 def read_and_accumulate_lines(paths: MessagePaths) -> List[Line]:
