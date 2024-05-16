@@ -1,0 +1,12 @@
+[directories]
+data = "r23685bc/20100605_021022/messages"
+output = "r23685bc/20100605_021022"
+
+[files]
+messages = [
+  "20100605_0210.RAW.auv",
+  "20100605_0300.RAW.auv",
+  "20100605_0400.RAW.auv",
+  "20100605_0500.RAW.auv"
+]
+output = "20100605_021022_messages.hdf5"
