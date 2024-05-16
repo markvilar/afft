@@ -24,7 +24,9 @@ jobs:
     - name: Build
       run: |
         poetry build
-    - name: Test and run
+    - name: Run scripts
+      run: |
+        poetry run raft-cli -h
+    - name: Run tests
       run: |
         poetry run pytest
-        poetry run main_script
