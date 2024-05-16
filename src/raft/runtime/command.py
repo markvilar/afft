@@ -1,4 +1,4 @@
-"""Functionality for commands."""
+"""Module for commands."""
 
 from dataclasses import dataclass
 from typing import List, Callable

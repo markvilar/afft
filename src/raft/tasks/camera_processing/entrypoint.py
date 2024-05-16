@@ -2,10 +2,7 @@
 
 import argparse
 
-from typing import List
-
-
-def process_cameras(arguments: List[str]) -> None:
+def process_cameras(arguments: list[str]) -> None:
     """Executor for camera processing task."""
     parser = argparse.ArgumentParser()
     parser.add_argument(
@@ -14,4 +11,5 @@ def process_cameras(arguments: List[str]) -> None:
         help="data configuration, i.e. files and directory paths",
     )
     namespace = parser.parse_args(arguments)
-    raise NotImplementedError
+    
+    raise NotImplementedError("process_cameras is not implemented")

@@ -1,4 +1,4 @@
-"""Package for processing of AUV messages."""
+"""Package for processing AUV messages."""
 
 from .config import MessagePaths, MessageProtocol
 from .line_readers import read_message_lines

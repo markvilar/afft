@@ -1,77 +1,80 @@
-# Robust AUV File Tool
+# Raft - Relatively Simple AUV File Tool
 
-![ci](https://github.com/markvilar/python_project_template/actions/workflows/ci.yml/badge.svg)
-![pylint](https://github.com/markvilar/python_project_template/actions/workflows/pylint.yml/badge.svg)
+![ci](https://github.com/markvilar/raft/actions/workflows/ci.yml/badge.svg)
+![pylint](https://github.com/markvilar/raft/actions/workflows/pylint.yml/badge.svg)
 
 Raft is a collection of tools for working with data from ACFRs AUVs. The
 tools consist of creating file queries from metadata, transferring files and 
 directories, and parsing various data files. The repository includes support 
 for the following tools:
-* pipenv - management of virtual environments and dependencies
-* setuptools - management of package setup
+
+The repository includes support for the following tools:
+* poetry - package management and build system
 * pytest - unit tests
-* twine - remote repository interaction
 
-## Setting up a virtual environment
 
-### Install pipenv
+## Getting started
 
-```sh
+### Install poetry
+
+```shell
 # Install pipenv
-pip3 install --user pipenv
+pip3 install --user poetry
 ```
 
-### Install dependencies and activate shell
+### Configure the project environment
 
-```sh
-# Install dependencies and setup environment
-pipenv install --dev
+```shell
+# Set the Python version 3.12
+poetry env use 3.12
 
-# Activate an interactive shell for the virtual environment
-pipenv shell
+# Validate the environment configuration
+poetry env info
 ```
 
-## Executing pipenv scripts
+### Install dependencies and build the project
 
-```sh
-pipenv run tests
-pipenv run main
-pipenv run build
+```shell
+# Install dependencies
+poetry install
+
+# Build the project
+poetry build
 ```
 
-## Building binaries and sources
+### Running unit tests
 
-```sh
-python setup.py bdist_wheel sdist
+```shell
+poetry run pytest
 ```
 
-## Running tests
+### Running notebooks
 
-```sh
-# Run specific tests
-python -m unittest tests/test_common.py
-python -m unittest tests/test_math.py
-
-# Run specific tests in verbose mode
-python -m unittest -v tests/test_common.py
-python -m unittest -v tests/test_math.py
+```shell
+poetry run jupyter notebook
 ```
 
-## Publishing the project
-```sh
-twine upload --repository python_template_project dist/*
+
+## Other uses
+
+### Managing the project environment
+
+```shell
+poetry env info
 ```
 
-## Troubleshooting
+```shell
+poetry env remove
+```
 
-### Reinstalling the virtual environment
+### Activate the project environment in a shell
 
-Reinstallation of the pipenv virtual environment can be necessary to update the
-python version of the environment. In order to do this, execute the following
-commands:
+```shell
+poetry shell
+```
 
-```sh
-pipenv --rm
-pipenv install --python <python_version>
-pipenv install --dev
+### Removing dependencies
+
+```shell
+poetry remove <package>
 ```
