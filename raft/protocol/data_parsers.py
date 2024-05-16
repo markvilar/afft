@@ -170,7 +170,7 @@ def parse_teledyne_dvl_message(header: AuvMessageHeader, line: Line) -> Teledyne
         gimbal_pitch = float(match["gimbal_pitch"]),
         sound_velocity = float(match["sound_velocity"]),
 
-        bottom_track_status = bool(int(match["bottom_track_status"])),
+        bottom_track_status = int(match["bottom_track_status"]),
     )
 
     logger.info(data)

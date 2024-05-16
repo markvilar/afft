@@ -67,7 +67,7 @@ class TeledyneDVLData:
     gimbal_pitch: float
     sound_velocity: float
 
-    bottom_track_status: bool
+    bottom_track_status: int
 
 
 @dataclass
