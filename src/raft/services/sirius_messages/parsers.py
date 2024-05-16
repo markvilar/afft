@@ -102,6 +102,6 @@ def parse_message(line: Line, parsers: Dict[str, MessageBodyParser]) -> None:
 
     # TODO: Create a dataclass to contain these
     message = {
-        "header" : header,
-        "body" : body,
+        "header": header,
+        "body": body,
     }

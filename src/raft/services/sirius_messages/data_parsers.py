@@ -13,14 +13,11 @@ from raft.message.interfaces import Line
 
 from .data_types import (
     AuvMessageHeader,
-    
     ImageCaptureDataV1,
     ImageCaptureDataV2,
-    
     TeledyneDVLData,
     LQModemData,
     EvologicsModemData,
-    
     BatteryData,
     ThrusterData,
 )
@@ -109,9 +106,10 @@ Navigation data parsers:
 - parse_evologics_modem_message
 """
 
+
 def parse_teledyne_dvl_message(header: AuvMessageHeader, line: Line) -> TeledyneDVLData:
     """Parses a message line as a TeledyneDVLData dataclass."""
-    
+
     pattern = re.compile(
         r"""
         \s*alt:\s*(?P<altitude>[-+]?\d*[.]\d*)
@@ -135,7 +133,7 @@ def parse_teledyne_dvl_message(header: AuvMessageHeader, line: Line) -> Teledyne
         \s*p_gimbal:\s*(?P<gimbal_pitch>[-+]?\d*[.]\d*)
         \s*sv:\s*(?P<sound_velocity>[-+]?\d*[.]\d*)
         """,
-        re.VERBOSE
+        re.VERBOSE,
     )
 
     match = pattern.match(line)
@@ -144,33 +142,26 @@ def parse_teledyne_dvl_message(header: AuvMessageHeader, line: Line) -> Teledyne
         return Err(f"failed to parse line: {line}")
 
     data = TeledyneDVLData(
-        altitude = float(match["altitude"]),
-    
-        range_01 = float(match["range_01"]),
-        range_02 = float(match["range_02"]),
-        range_03 = float(match["range_03"]),
-        range_04 = float(match["range_04"]),
-
-        heading = float(match["heading"]),
-        pitch = float(match["pitch"]),
-        roll = float(match["roll"]),
-
-        velocity_x = float(match["velocity_x"]),
-        velocity_y = float(match["velocity_y"]),
-        velocity_z = float(match["velocity_z"]),
-
-        position_x = float(match["position_x"]),
-        position_y = float(match["position_y"]),
-        position_z = float(match["position_z"]),
-
-        course_over_ground = float(match["course_over_ground"]),
-        speed_over_ground = float(match["speed_over_ground"]),
-        true_heading = float(match["true_heading"]),
-        
-        gimbal_pitch = float(match["gimbal_pitch"]),
-        sound_velocity = float(match["sound_velocity"]),
-
-        bottom_track_status = int(match["bottom_track_status"]),
+        altitude=float(match["altitude"]),
+        range_01=float(match["range_01"]),
+        range_02=float(match["range_02"]),
+        range_03=float(match["range_03"]),
+        range_04=float(match["range_04"]),
+        heading=float(match["heading"]),
+        pitch=float(match["pitch"]),
+        roll=float(match["roll"]),
+        velocity_x=float(match["velocity_x"]),
+        velocity_y=float(match["velocity_y"]),
+        velocity_z=float(match["velocity_z"]),
+        position_x=float(match["position_x"]),
+        position_y=float(match["position_y"]),
+        position_z=float(match["position_z"]),
+        course_over_ground=float(match["course_over_ground"]),
+        speed_over_ground=float(match["speed_over_ground"]),
+        true_heading=float(match["true_heading"]),
+        gimbal_pitch=float(match["gimbal_pitch"]),
+        sound_velocity=float(match["sound_velocity"]),
+        bottom_track_status=int(match["bottom_track_status"]),
     )
 
     logger.info(data)
@@ -270,7 +261,6 @@ def parse_evologics_modem_message(
     return Ok(data)
 
 
-
 def parse_thruster_message(header: AuvMessageHeader, line: Line) -> ThrusterData:
     """Parser function for thruster messages.
 
@@ -346,8 +336,6 @@ def parse_battery_message(header: AuvMessageHeader, line: Line) -> ParseResult:
     )
 
     return Ok(body)
-
-
 
 
 ParseFun = Callable[[Line], Any]

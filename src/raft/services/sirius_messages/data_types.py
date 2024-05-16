@@ -35,6 +35,7 @@ Navigation system data types:
 - TODO: RDI, PAROSCI, GPS_RMC, GPS_GSV, OAS, MICRON, MICRON_RETURNS, MICRON_TRACE, MICRON_SECTOR
 """
 
+
 @dataclass
 class TeledyneDVLData:
     """Class representing Teledyne DVL data.
@@ -42,7 +43,7 @@ class TeledyneDVLData:
     """
 
     altitude: float
-    
+
     range_01: float
     range_02: float
     range_03: float
@@ -63,7 +64,7 @@ class TeledyneDVLData:
     course_over_ground: float
     speed_over_ground: float
     true_heading: float
-    
+
     gimbal_pitch: float
     sound_velocity: float
 

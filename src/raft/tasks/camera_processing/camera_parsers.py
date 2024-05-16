@@ -146,7 +146,7 @@ def parse_stereo_poses(
 
 def read_cameras_from_file(path: Path) -> Result[Cameras, str]:
     """Reads camera poses from a Renav stereo pose file."""
-    
+
     # TODO: Dispatch to stereo pose file reader
     if not path.is_file():
         return Err(f"{path} is not a file")
