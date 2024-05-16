@@ -1,3 +1,5 @@
+"""Module for time functionality."""
+
 import arrow
 
 
