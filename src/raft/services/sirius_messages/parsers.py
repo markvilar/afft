@@ -9,8 +9,6 @@ from typing import Any, Dict, Callable, Tuple, Generic, TypeVar
 from loguru import logger
 from result import Ok, Err, Result
 
-from raft.message.interfaces import Line
-
 from .data_types import AuvMessageHeader
 from .data_parsers import (
     parse_image_message_v1,
@@ -27,18 +25,12 @@ T = TypeVar("T")
 
 
 @dataclass
-class ParsedLine:
-    data: T
-    line: str
-
-
-@dataclass
 class SplitLine:
     header: str
     body: str
 
 
-def split_header_and_body_strings(line: Line) -> Result[SplitLine, str]:
+def split_header_and_body_strings(line: str) -> Result[SplitLine, str]:
     """Splits a message line into the header and body substrings."""
     pattern = re.compile(
         r"""
@@ -61,7 +53,7 @@ def split_header_and_body_strings(line: Line) -> Result[SplitLine, str]:
     return Ok(SplitLine(header=header, body=body))
 
 
-def parse_message_header(line: Line) -> HeaderParseResult:
+def parse_message_header(line: str) -> HeaderParseResult:
     """Parses the header from a message line."""
 
     pattern = re.compile(
@@ -85,10 +77,10 @@ def parse_message_header(line: Line) -> HeaderParseResult:
     return Ok(header)
 
 
-type MessageBodyParser = Callable[[AuvMessageHeader, Line], Any]
+type MessageBodyParser = Callable[[AuvMessageHeader, str], Any]
 
 
-def parse_message(line: Line, parsers: Dict[str, MessageBodyParser]) -> None:
+def parse_message(line: str, parsers: Dict[str, MessageBodyParser]) -> None:
     """Parses a message by dispatching based on the header information."""
 
     split: SplitLine = split_header_and_body_strings(line).unwrap()

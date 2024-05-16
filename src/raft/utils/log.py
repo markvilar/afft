@@ -2,8 +2,9 @@
 
 import sys
 
+import loguru
+
 from dotenv import dotenv_values
-from loguru import logger
 
 from .time import get_time_string
 
@@ -24,10 +25,10 @@ def init_logger() -> None:
     log_file: str = f"{directory}/{datetime}.log"
 
     # Clear default logger
-    logger.remove()
+    loguru.logger.remove()
 
     # Add custom sinks
-    logger.add(
+    loguru.logger.add(
         sys.stderr,
         level=LOG_LEVEL,
         format=LOG_FORMAT,
@@ -35,7 +36,7 @@ def init_logger() -> None:
         backtrace=True,
         diagnose=True,
     )
-    logger.add(
+    loguru.logger.add(
         log_file,
         level=LOG_LEVEL,
         format=LOG_FORMAT,
@@ -43,3 +44,5 @@ def init_logger() -> None:
         backtrace=True,
         diagnose=True,
     )
+
+logger = loguru.logger

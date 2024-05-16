@@ -2,11 +2,11 @@
 
 import sys
 
+from raft.runtime import Command
+from raft.utils.log import init_logger
+
 from raft.tasks.camera_processing import process_cameras
 from raft.tasks.message_processing import process_messages
-from raft.runtime import Command
-
-from raft.utils.log import init_logger
 
 
 def main():
