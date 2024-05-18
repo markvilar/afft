@@ -23,7 +23,11 @@ from .line_readers import read_message_lines
 from .interfaces import Line
 
 # TEMPORARY: Import protocol
-from raft.services.sirius_messages.data_parsers import PROTOCOL_DEV, PROTOCOL_V1, PROTOCOL_V2
+from raft.services.sirius_messages.data_parsers import (
+    PROTOCOL_DEV,
+    PROTOCOL_V1,
+    PROTOCOL_V2,
+)
 from raft.services.sirius_messages.parsers import parse_message
 
 
@@ -58,7 +62,7 @@ def handle_messages(lines: List[Line], protocol: Dict) -> Dict[str, object]:
     raise NotImplementedError
 
 
-def process_messages(arguments: List[str]) -> None:
+def invoke_message_formatting(arguments: List[str]) -> None:
     """Executor for processing messages."""
 
     parser = argparse.ArgumentParser()

@@ -28,6 +28,7 @@ tqdm = "^4.66.2"
 pytest = "^8.2.0"
 black = "^24.4.2"
 jupyter = "^1.0.0"
+geoplot = "^0.5.1"
 
 [tool.poetry.scripts]
 raft-cli = "raft.cli:main"
