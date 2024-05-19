@@ -1,0 +1,34 @@
+[[deployment]]
+
+name = "r23685bc_20100605_021022"
+message_files = [
+  "r23685bc/20100605_021022/messages/20100605_0210.RAW.auv",
+  "r23685bc/20100605_021022/messages/20100605_0300.RAW.auv",
+  "r23685bc/20100605_021022/messages/20100605_0400.RAW.auv",
+  "r23685bc/20100605_021022/messages/20100605_0500.RAW.auv",
+]
+camera_file = "r23685bc/20100605_021022/camera_poses/renav20100512/stereo_pose_est.data"
+
+
+[[deployment]]
+
+name = "r23685bc_20120530_233021"
+message_files = [
+  "r23685bc/20120530_233021/messages/20120530_2330.RAW.auv",
+  "r23685bc/20120530_233021/messages/20120531_0000.RAW.auv",
+  "r23685bc/20120530_233021/messages/20120531_0100.RAW.auv",
+  "r23685bc/20120530_233021/messages/20120531_0200.RAW.auv",
+]
+
+camera_file = "r23685bc/20100605_021022/camera_poses/renav20100512/stereo_pose_est.data"
+
+
+[[deployment]]
+
+name = "r23685bc_20140616_225022"
+message_files = [
+  "r23685bc/20140616_225022/messages/20140616_2250.RAW.auv",
+  "r23685bc/20140616_225022/messages/20140616_2300.RAW.auv",
+  "r23685bc/20140616_225022/messages/20140617_0000.RAW.auv",
+  "r23685bc/20140616_225022/messages/20140617_0100.RAW.auv",
+]

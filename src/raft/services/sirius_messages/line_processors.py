@@ -5,10 +5,8 @@ import re
 from functools import partial
 from typing import Callable, List
 
-from .interfaces import Line
-
 # Interface for line processor
-type LineProcessor = Callable[[Line], Line]
+type LineProcessor = Callable[[str], str]
 
 
 def remove_subsequent_whitespaces(string: str) -> str:
@@ -21,17 +19,17 @@ def remove_ending_whitespaces(string: str) -> str:
     return string.strip()
 
 
-def remove_brackets(string: Line) -> Line:
+def remove_brackets(string: str) -> str:
     """Removes square bracket characters from a string."""
     return string.replace("[", "").replace("]", "")
 
 
-def replace_characters(string: Line, target: Line, replacement: Line) -> Line:
+def replace_characters(string: str, target: str, replacement: str) -> str:
     """Replaces tab characters from a string."""
     return string.replace(target, replacement)
 
 
-def condense_key_value_pairs(string: Line) -> Line:
+def condense_key_value_pairs(string: str) -> str:
     """Removes whitespace after semicolons to condense key-value pairs."""
     return string.replace(": ", ":")
 
@@ -47,12 +45,12 @@ def default_line_processors() -> List[LineProcessor]:
 
 
 def process_message_lines(
-    lines: List[Line],
+    lines: List[str],
     processors: List[LineProcessor] = default_line_processors(),
-) -> List[Line]:
+) -> List[str]:
     """Applies the processors to the message lines."""
 
-    processed_lines: List[Line] = list()
+    processed_lines: List[str] = list()
     for line in lines:
         processed_line = line
         for processor in processors:
