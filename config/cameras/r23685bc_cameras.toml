@@ -1,0 +1,19 @@
+[[camera_formatting]]
+name = "r23685bc_00_camera_formatting"
+camera_file = "r20100605_021022_lanterns_15_deep/camera_poses/renav20100605/stereo_pose_est.data"
+# TODO: Label file
+output_file = "20100605_021022/20100605_021022_cameras.csv"
+
+
+[[camera_formatting]]
+name = "r23685bc_01_camera_formatting"
+camera_file = "r20120530_233021_lanterns_10_deep/camera_poses/renav20121023/stereo_pose_est.data"
+# TODO: Label file
+output_file = "20120530_233021/20120530_233021_cameras.csv"
+
+
+[[camera_formatting]]
+name = "r23685bc_02_camera_formatting"
+camera_file = "r20140616_225022_tas_13_lanterns_deep/camera_poses/renav20140618/stereo_pose_est.data"
+# TODO: Label file
+output_file = "20140616_225022/20140616_225022_cameras.csv"

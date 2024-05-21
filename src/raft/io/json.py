@@ -1,4 +1,5 @@
 """Module for reading and writing JSON files."""
+
 import json
 
 from pathlib import Path

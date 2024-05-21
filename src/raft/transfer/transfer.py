@@ -55,8 +55,8 @@ def query_files(
     # Write include keywords to file
     time = get_time_string()
     include_file_path = f"./.cache/{time}_includes.txt"
-    write_include_file(include_file_path, data.includes) 
-    
+    write_include_file(include_file_path, data.includes)
+
     result = context.copy(
         data.source,
         data.destination,

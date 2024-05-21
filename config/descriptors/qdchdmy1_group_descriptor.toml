@@ -1,0 +1,30 @@
+[[deployment]]
+name = "20110416_005411"
+messages = [ "20110416_005411/messages/20110416_0054.RAW.auv", "20110416_005411/messages/20110416_0100.RAW.auv", "20110416_005411/messages/20110416_0200.RAW.auv", "20110416_005411/messages/20110416_0300.RAW.auv",]
+cameras = [ "20110416_005411/camera_poses/renav20110416/stereo_pose_est.data",]
+
+[[deployment]]
+name = "20120501_071203"
+messages = [ "20120501_071203/messages/20120501_0712.RAW.auv", "20120501_071203/messages/20120501_0800.RAW.auv", "20120501_071203/messages/20120501_0900.RAW.auv",]
+cameras = [ "20120501_071203/camera_poses/renav20121023/stereo_pose_est.data",]
+
+[[deployment]]
+name = "20130406_081713"
+messages = [ "20130406_081713/messages/20130406_0817.RAW.auv", "20130406_081713/messages/20130406_0900.RAW.auv", "20130406_081713/messages/20130406_1000.RAW.auv",]
+cameras = [ "20130406_081713/camera_poses/renav20130422/stereo_pose_est.data",]
+
+[[deployment]]
+name = "20140328_063358"
+messages = [ "20140328_063358/messages/20140328_0633.RAW.auv", "20140328_063358/messages/20140328_0700.RAW.auv", "20140328_063358/messages/20140328_0800.RAW.auv", "20140328_063358/messages/20140328_0900.RAW.auv",]
+cameras = [ "20140328_063358/camera_poses/renav20140329/stereo_pose_est.data", "20140328_063358/camera_poses/renav20140820/stereo_pose_est.data",]
+
+[[deployment]]
+name = "20170525_234624"
+messages = [ "20170525_234624/messages/20170525_2346.RAW.auv", "20170525_234624/messages/20170526_0000.RAW.auv", "20170525_234624/messages/20170526_0100.RAW.auv", "20170525_234624/messages/20170526_0200.RAW.auv",]
+cameras = [ "20170525_234624/camera_poses/renav20170526/stereo_pose_est.data",]
+
+[[deployment]]
+name = "20210315_081519"
+messages = [ "20210315_081519/messages/20210315_0815.RAW.auv", "20210315_081519/messages/20210315_0900.RAW.auv", "20210315_081519/messages/20210315_1000.RAW.auv",]
+cameras = [ "20210315_081519/camera_poses/renav20210531_1005/stereo_pose_est.data", "20210315_081519/camera_poses/renav20210531_1102/stereo_pose_est.data", "20210315_081519/camera_poses/renav20210531_1132/stereo_pose_est.data", "20210315_081519/camera_poses/renav20210608_1003/stereo_pose_est.data",]
+

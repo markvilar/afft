@@ -45,4 +45,5 @@ def init_logger() -> None:
         diagnose=True,
     )
 
+
 logger = loguru.logger

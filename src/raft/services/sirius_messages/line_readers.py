@@ -8,10 +8,8 @@ from result import Ok, Err, Result
 
 from raft.io import read_file
 
-Line: TypeAlias = str
-Lines: TypeAlias = List[Line]
 
-ReadResult: TypeAlias = Result[Lines, str]
+type ReadResult = Result[list[str], str]
 
 
 def read_message_lines(filepath: Path) -> ReadResult:

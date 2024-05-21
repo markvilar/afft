@@ -1,0 +1,25 @@
+[[deployment]]
+name = "20100421_022145"
+messages = [ "20100421_022145/messages/20100421_0221.RAW.auv", "20100421_022145/messages/20100421_0300.RAW.auv", "20100421_022145/messages/20100421_0400.RAW.auv",]
+cameras = [ "20100421_022145/camera_poses/renav20100421/stereo_pose_est.data", "20100421_022145/camera_poses/renav20100512/stereo_pose_est.data",]
+
+[[deployment]]
+name = "20110410_011202"
+messages = [ "20110410_011202/messages/20110410_0112.RAW.auv", "20110410_011202/messages/20110410_0200.RAW.auv", "20110410_011202/messages/20110410_0300.RAW.auv",]
+cameras = [ "20110410_011202/camera_poses/renav20110410/stereo_pose_est.data",]
+
+[[deployment]]
+name = "20120422_043114"
+messages = [ "20120422_043114/messages/20120422_0431.RAW.auv", "20120422_043114/messages/20120422_0500.RAW.auv", "20120422_043114/messages/20120422_0600.RAW.auv",]
+cameras = [ "20120422_043114/camera_poses/renav20121022/stereo_pose_est.data",]
+
+[[deployment]]
+name = "20130414_013620"
+messages = [ "20130414_013620/messages/20130414_0136.RAW.auv", "20130414_013620/messages/20130414_0200.RAW.auv", "20130414_013620/messages/20130414_0300.RAW.auv",]
+cameras = [ "20130414_013620/camera_poses/renav20130424/stereo_pose_est.data",]
+
+[[deployment]]
+name = "20170523_040815"
+messages = [ "20170523_040815/messages/20170523_0408.RAW.auv", "20170523_040815/messages/20170523_0500.RAW.auv", "20170523_040815/messages/20170523_0600.RAW.auv",]
+cameras = [ "20170523_040815/camera_poses/renav20170523/stereo_pose_est.data", "20170523_040815/camera_poses/renav20170524_nousbl/stereo_pose_est.data",]
+
