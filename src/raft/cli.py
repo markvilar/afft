@@ -6,7 +6,8 @@ from raft.runtime import Command
 from raft.utils.log import init_logger, logger
 
 from raft.tasks.camera_processing import invoke_camera_formatting
-from raft.tasks.message_merge import invoke_message_merging
+from raft.tasks.message_processing import invoke_message_processing
+from raft.tasks.generate_descriptors import invoke_group_descriptor_generation
 
 
 def main():
@@ -19,10 +20,13 @@ def main():
     command = Command(command, arguments)
 
     match command:
-        case Command(command="merge_messages"):
-            invoke_message_merging(command.arguments)
-        case Command(command="format_cameras"):
+        case Command(command="process_messages"):
+            invoke_message_processing(command.arguments)
+        case Command(command="process_cameras"):
             invoke_camera_formatting(command.arguments)
+        case Command(command="describe"):
+            invoke_group_descriptor_generation(command.arguments)
+
         case _:
             logger.error(f"invalid command: {command.command}")
 

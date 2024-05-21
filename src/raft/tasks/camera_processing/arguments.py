@@ -17,7 +17,7 @@ def parse_arguments(arguments: list[str]) -> Result[Namespace, str]:
     # parser.add_argument("config", type=Path, help="configuration file path")
 
     namespace: Namespace = parser.parse_args(arguments)
-    
+
     if not namespace:
         return Err("invalid arguments")
     else:

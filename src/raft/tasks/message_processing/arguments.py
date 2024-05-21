@@ -5,12 +5,13 @@ from pathlib import Path
 
 from result import Ok, Err, Result
 
-def parse_arguments(arguments: list[str]) -> Namespace:
+
+def parse_arguments(arguments: list[str]) -> Result[Namespace, str]:
     parser = ArgumentParser()
     parser.add_argument(
         "subtasks",
         type=Path,
-        help="configuration file for message merge subtasks",
+        help="configuration file for message processing subtasks",
     )
     parser.add_argument(
         "input",

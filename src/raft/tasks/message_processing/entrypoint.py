@@ -1,5 +1,4 @@
-"""Module for formatting AUV messages including reading, preprocessing,
-parsing, and exporting."""
+"""Module for formatting AUV messages including reading, preprocessing, parsing, and exporting."""
 
 import argparse
 
@@ -14,8 +13,8 @@ from .config import MessageMergeBatch, MessageMergeConfig, configure_task
 from .arguments import parse_arguments
 
 
-def execute_message_merging(config: MessageMergeConfig) -> None:
-    """Execute for message formatting."""
+def execute_message_processing(config: MessageMergeConfig) -> None:
+    """Executes a message processing task."""
 
     logger.info("Executing message merge subtask:")
     logger.info(f" - Name:   {config.name}")
@@ -29,17 +28,17 @@ def execute_message_merging(config: MessageMergeConfig) -> None:
     lines: list[str] = list()
     for file in sorted(config.message_files):
         filepath: Path = config.directories.input / file
-        
+
         read_result: Result[list[str], str] = read_message_lines(filepath)
         if read_result.is_err():
             logger.error(read_result.err())
             return
 
         new_lines: list[str] = read_result.ok()
-        
+
         logger.debug(f"read {len(new_lines)} messages from {filepath}")
         lines.extend(new_lines)
-        
+
     # Replace tabs with whitespaces to simplify processing down the line.
     lines: list[str] = [line.replace("\t", "    ") for line in lines]
 
@@ -51,8 +50,8 @@ def execute_message_merging(config: MessageMergeConfig) -> None:
         return
 
 
-def invoke_message_merging(arguments: List[str]) -> None:
-    """Entrypoint for merging message files."""
+def invoke_message_processing(arguments: List[str]) -> None:
+    """Entrypoint for processing of message files."""
 
     parse_result: Result[Namespace, str] = parse_arguments(arguments)
     if parse_result.is_err():
@@ -60,7 +59,9 @@ def invoke_message_merging(arguments: List[str]) -> None:
 
     namespace: Namespace = parse_result.ok()
 
-    batch: MessageMergeBatch = configure_task(namespace.input, namespace.output, namespace.subtasks)
+    batch: MessageMergeBatch = configure_task(
+        namespace.input, namespace.output, namespace.subtasks
+    )
 
     for subtask in batch.subtasks:
-        execute_message_merging(subtask)
+        execute_message_processing(subtask)

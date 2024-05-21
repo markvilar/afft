@@ -20,7 +20,7 @@ Body = TypeVar("Body")
 
 
 @dataclass
-class AuvMessage():
+class AuvMessage:
 
     header: Header
     body: Body
@@ -42,4 +42,3 @@ type LQModemMessage = AuvMessage[AuvMessageHeader, LQModemData]
 type EvologicsModemMessage = AuvMessage[AuvMessageHeader, EvologicsModemData]
 type BatteryMessage = AuvMessage[AuvMessageHeader, BatteryData]
 type ThrusterMessage = AuvMessage[AuvMessageHeader, ThrusterData]
-

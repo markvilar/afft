@@ -8,6 +8,7 @@ from result import Ok, Err, Result
 from raft.io import read_toml
 from raft.utils.log import logger
 
+
 @dataclass
 class Directories:
     """Class representing """
