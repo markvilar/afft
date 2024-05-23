@@ -1,0 +1,16 @@
+[supergroup.visit]
+name = "visit"
+directory = true
+level = 1
+
+[[supergroup.visit.file_query]]
+name = "messages"
+subdirectory = "messages"
+pattern = "*.RAW.auv"
+recursive = false
+
+[[supergroup.visit.file_query]]
+name = "cameras"
+subdirectory = "camera_poses"
+pattern = "*/stereo_pose_est.data"
+recursive = true

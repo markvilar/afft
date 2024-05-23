@@ -136,3 +136,6 @@ dmypy.json
 # project specific
 .cache/*
 !.cache/.git-keep
+
+# Log directory
+log/

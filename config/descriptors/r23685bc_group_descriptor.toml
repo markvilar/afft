@@ -1,0 +1,15 @@
+[[deployment]]
+name = "20100605_021022"
+messages = [ "20100605_021022/messages/20100605_0210.RAW.auv", "20100605_021022/messages/20100605_0300.RAW.auv", "20100605_021022/messages/20100605_0400.RAW.auv", "20100605_021022/messages/20100605_0500.RAW.auv",]
+cameras = [ "20100605_021022/camera_poses/renav20100605/stereo_pose_est.data",]
+
+[[deployment]]
+name = "20120530_233021"
+messages = [ "20120530_233021/messages/20120530_2330.RAW.auv", "20120530_233021/messages/20120531_0000.RAW.auv", "20120530_233021/messages/20120531_0100.RAW.auv", "20120530_233021/messages/20120531_0200.RAW.auv",]
+cameras = [ "20120530_233021/camera_poses/renav20121023/stereo_pose_est.data",]
+
+[[deployment]]
+name = "20140616_225022"
+messages = [ "20140616_225022/messages/20140616_2250.RAW.auv", "20140616_225022/messages/20140616_2300.RAW.auv", "20140616_225022/messages/20140617_0000.RAW.auv", "20140616_225022/messages/20140617_0100.RAW.auv",]
+cameras = [ "20140616_225022/camera_poses/renav20140618/stereo_pose_est.data",]
+
