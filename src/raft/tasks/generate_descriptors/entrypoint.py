@@ -22,4 +22,6 @@ def invoke_group_descriptor_generation(arguments: list[str]) -> None:
     logger.info(f" - Prefix: {namespace.prefix}")
     logger.info("")
 
-    generate_group_descriptors(namespace.root, namespace.output, namespace.prefix)
+    generate_group_descriptors(
+        namespace.root, namespace.output, namespace.config, namespace.prefix
+    )

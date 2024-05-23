@@ -6,8 +6,8 @@ from raft.runtime import Command
 from raft.utils.log import init_logger, logger
 
 from raft.tasks.camera_processing import invoke_camera_formatting
-from raft.tasks.message_processing import invoke_message_processing
 from raft.tasks.generate_descriptors import invoke_group_descriptor_generation
+from raft.tasks.message_processing import invoke_message_processing
 
 
 def main():

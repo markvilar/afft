@@ -26,7 +26,7 @@ tqdm = "^4.66.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
-black = "^24.4.2"
+black = {extras = ["jupyter"], version = "^24.4.2"}
 jupyter = "^1.0.0"
 geoplot = "^0.5.1"
 

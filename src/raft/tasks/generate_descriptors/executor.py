@@ -5,97 +5,124 @@ from typing import Callable
 
 from result import Ok, Err, Result
 
-from raft.filesystem import list_directory, search_directory
-from raft.io import write_toml
+from raft.filesystem import (
+    list_directory,
+    search_directory,
+    FileQueryData,
+    FileSelection,
+)
+from raft.io import read_toml, write_toml
 from raft.utils.log import logger
 
-from .data_types import DeploymentIndex, DeploymentIndexGroup
+from .data_types import QueryGroup, SelectionGroup, SupergroupQuery, SupergroupSelection
 
 
-def check_directory(path: Path, checker: Callable[[Path], bool]) -> Result[Path, str]:
-    """Performs a check on the given directory."""
-    if not checker(path):
-        return Err(f"check failed for path: {path}")
-    else:
-        return Ok(path)
+def list_subdirectories(root: Path) -> list[Path]:
+    """Lists group directories by finding subdirectories within the root directory."""
+    directories: list[Path] = sorted(
+        [path for path in list_directory(root) if path.is_dir()]
+    )
+    return directories
 
 
-def reference_and_validate_subdirectories(
-    parent: Path,
-    directory_structure: dict[str, str],
-    validator: Callable[[Path], bool],
-) -> dict[str, Path]:
-    """Creates and validates subdirectory paths with a parent directory.
+def create_supergroup_query(root: Path, config: dict) -> SupergroupQuery:
+    """Creates a supergroup query from config data."""
 
-    Arguments:
-     - parent: parent directory path
-     - directory_structure: subdirectory names with associated keys
-    """
+    children: list[Path] = list_subdirectories(root)
+    execute_group_querys: list[QueryGroup] = list()
 
-    # Create map from key to absoluate subdirectory path
-    subdirectories: dict[str, Path] = {
-        name: parent / subdirectory
-        for name, subdirectory in directory_structure.items()
-    }
+    # Create a query group for every child directory in the root directory
+    for child in children:
 
-    validate_subdirectories: dict[str, Path] = dict()
-    for key, subdirectory in subdirectories.items():
-        is_valid: bool = validator(subdirectory)
+        file_queries: list[FileQueryData] = list()
 
-        if not is_valid:
-            logger.error(f"invalid subdirectory: {subdirectory}")
-        else:
-            validate_subdirectories[key]: Path = subdirectory
+        for query_data in config["file_query"]:
+            query_directory: Path = child / query_data["subdirectory"]
+            file_queries.append(
+                FileQueryData(
+                    name=query_data["name"],
+                    directory=query_directory,
+                    pattern=query_data["pattern"],
+                    recursive=query_data["recursive"],
+                )
+            )
 
-    return validate_subdirectories
+        execute_group_querys.append(QueryGroup(name=child.name, queries=file_queries))
+
+    return SupergroupQuery(name=config["name"], groups=execute_group_querys)
 
 
-def create_deployment_index(
-    name: str, subdirectories: dict[str, Path]
-) -> DeploymentIndex:
-    """Creates a deployment index."""
-
+def query_files(query_data: FileQueryData) -> Result[FileSelection, str]:
+    """Executes the file query and returns the result as a file selection."""
     search_result: Result[list[Path], str] = search_directory(
-        subdirectories["messages"], pattern="*.RAW.auv", recursive=False
+        query_data.directory,
+        query_data.pattern,
+        query_data.recursive,
     )
 
     if search_result.is_err():
-        logger.error(search_result.err())
+        return search_result
 
-    message_files: list[Path] = search_result.ok()
-
-    search_result: Result[list[Path], str] = search_directory(
-        subdirectories["cameras"], pattern="*/stereo_pose_est.data", recursive=True
-    )
-
-    if search_result.is_err():
-        logger.error(search_result.err())
-
-    camera_files: list[Path] = search_result.ok()
-
-    return DeploymentIndex(name=name, messages=message_files, cameras=camera_files)
+    files: list[Path] = search_result.ok()
+    return Ok(FileSelection(name=query_data.name, files=files))
 
 
-def export_group_descriptor(group: DeploymentIndexGroup, output_file: Path) -> None:
-    """Export a group descriptor to file."""
+def execute_group_query(group: QueryGroup) -> SelectionGroup:
+    """TODO"""
+    file_selections: list[FileSelection] = list()
 
-    deployment_data: list[dict] = list()
-    for deployment in group.deployments:
+    for file_query in group.queries:
+        search_result: Result[FileSelection, str] = query_files(file_query)
 
-        messages: list[str] = sorted(
-            [str(file.relative_to(group.directory)) for file in deployment.messages]
-        )
-        cameras: list[str] = sorted(
-            [str(file.relative_to(group.directory)) for file in deployment.cameras]
-        )
+        if search_result.is_err():
+            logger.error(search_result.err())
+            continue
 
-        deployment_data.append(
-            {"name": deployment.name, "messages": messages, "cameras": cameras}
-        )
+        file_selection: FileSelection = search_result.ok()
+        file_selection.files = sorted(file_selection.files)
+        file_selections.append(file_selection)
 
-    group_data = {"deployment": deployment_data}
+    return SelectionGroup(name=group.name, file_selections=file_selections)
 
-    write_result: Result[Path, str] = write_toml(group_data, output_file)
+
+def execute_supergroup_query(supergroup: SupergroupQuery) -> SupergroupSelection:
+    """TODO"""
+    selections: list[SelectionGroup] = [
+        execute_group_query(query) for query in supergroup.groups
+    ]
+    return SupergroupSelection(name=supergroup.name, groups=selections)
+
+
+def make_selection_paths_relative(
+    supergroup: SupergroupSelection, root: Path
+) -> SupergroupSelection:
+    """TODO"""
+
+    for group in supergroup.groups:
+        for selection in group.file_selections:
+            selection.files = [file.relative_to(root) for file in selection.files]
+
+    return supergroup
+
+
+def export_supergroup_selection(
+    supergroup: SupergroupSelection, output_file: Path
+) -> None:
+    """Exports a group selection by writing it to a TOML file."""
+
+    data: dict = {supergroup.name: list()}
+
+    for group in supergroup.groups:
+        group_data = {"name": group.name}
+
+        for file_selection in group.file_selections:
+            group_data[file_selection.name] = [
+                str(file) for file in file_selection.files
+            ]
+
+        data[supergroup.name].append(group_data)
+
+    write_result: Result[Path, str] = write_toml(data, output_file)
 
     if write_result.is_err():
         logger.error(write_result.err())
@@ -103,43 +130,24 @@ def export_group_descriptor(group: DeploymentIndexGroup, output_file: Path) -> N
         logger.info(f"wrote group descriptor: {output_file}")
 
 
-def generate_group_descriptors(root: Path, output: Path, prefix: str) -> None:
-    """Generate descriptors for a group of deployments. The procedure searches for message
+def generate_group_descriptors(
+    root: Path, output: Path, config: Path, prefix: str
+) -> None:
+    """Generate descriptors for a of deployments. The procedure searches for message
     and camera files for each deployment."""
 
-    # Add directories in root directory as deployment candidates
-    deployments: list[Path] = sorted(
-        [path for path in list_directory(root) if path.is_dir()]
-    )
+    config: dict = read_toml(config).unwrap()
 
-    # NOTE: Consider moving to a config file
-    # Set up map from name to subdirectory name
-    subdirectory_structure: dict[str, str] = {
-        "cameras": "camera_poses",
-        "messages": "messages",
-    }
-
-    # Reference subdirectories for each parent based the given structure
-    directory_tree: dict[str, Path] = dict()
-    for deployment in deployments:
-        subdirectories: dict[str, Path] = reference_and_validate_subdirectories(
-            deployment,
-            subdirectory_structure,
-            validator=lambda path: path.exists() and path.is_dir(),
+    # Create group queries for every entry in the config file
+    for key in config["supergroup"]:
+        query: SupergroupQuery = create_supergroup_query(
+            root, config["supergroup"][key]
         )
 
-        directory_tree[deployment] = subdirectories
+        selection: SupergroupSelection = execute_supergroup_query(query)
 
-    # For each deployment - create an index
-    deployment_indices: list[DeploymentIndex] = list()
-    for parent, subdirectories in directory_tree.items():
-        deployment_index: DeploymentIndex = create_deployment_index(
-            parent.name, subdirectories
-        )
-        deployment_indices.append(deployment_index)
+        selection: SupergroupSelection = make_selection_paths_relative(selection, root)
 
-    group: DeploymentIndexGroup = DeploymentIndexGroup(
-        name=root.name, directory=root, deployments=deployment_indices
-    )
+        output_file: Path = output / f"{prefix}_file_descriptor.toml"
 
-    export_group_descriptor(group, output / f"{group.name}_group_descriptor.toml")
+        export_supergroup_selection(selection, output_file)

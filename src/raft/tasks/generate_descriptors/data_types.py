@@ -1,22 +1,38 @@
-"""TODO"""
+"""Module with data types for the file descriptor generation."""
 
 from dataclasses import dataclass
 from pathlib import Path
 
-
-@dataclass
-class DeploymentIndex:
-    """Class representing search results for a deployment."""
-
-    name: str
-    messages: list[Path]
-    cameras: list[Path]
+from raft.filesystem import FileQueryData, FileSelection
 
 
 @dataclass
-class DeploymentIndexGroup:
-    """Class representing a group of deployment files."""
+class QueryGroup:
+    """Class representing a group of file queries."""
 
     name: str
-    directory: Path
-    deployments: list[DeploymentIndex]
+    queries: list[FileQueryData]
+
+
+@dataclass
+class SupergroupQuery:
+    """Class representing a supergroup of query groups."""
+
+    name: str
+    groups: list[QueryGroup]
+
+
+@dataclass
+class SelectionGroup:
+    """Class representing a group of file selections."""
+
+    name: str
+    file_selections: list[FileSelection]
+
+
+@dataclass
+class SupergroupSelection:
+    """Class representing a supergroup of selection groups."""
+
+    name: str
+    groups: list[SelectionGroup]

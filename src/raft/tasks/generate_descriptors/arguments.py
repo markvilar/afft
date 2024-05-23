@@ -18,6 +18,7 @@ def parse_arguments(arguments: list[str]) -> Result[Namespace, str]:
         type=Path,
         help="output directory",
     )
+    parser.add_argument("config", type=Path, help="config file path")
     parser.add_argument(
         "--prefix",
         type=str,
