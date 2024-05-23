@@ -11,7 +11,8 @@ from raft.utils.log import logger
 
 @dataclass
 class Directories:
-    """Class representing """
+    """Class representing"""
+
     input: Path
     output: Path
 
@@ -19,7 +20,7 @@ class Directories:
 @dataclass
 class MessageMergeConfig:
     """Class representing a message merge task."""
-    
+
     name: str
     message_files: list[Path]
     directories: Directories
@@ -32,19 +33,23 @@ class MessageMergeBatch:
     subtasks: list[MessageMergeConfig]
 
 
-def configure_task(input_directory: Path, output_directory: Path, config: Path) -> MessageMergeBatch:
+def configure_task(
+    input_directory: Path, output_directory: Path, config: Path
+) -> MessageMergeBatch:
     """Create a task configuration."""
-    
+
     data: dict = read_toml(config).unwrap()
 
     subtasks: list[MessageMergeConfig] = list()
     for subtask in data["deployment"]:
         logger.info(subtask)
 
-        subtasks.append(MessageMergeConfig(
-            name = subtask["name"],
-            message_files = [Path(file) for file in subtask["message_files"]],
-            directories = Directories(input_directory, output_directory)
-        ))
+        subtasks.append(
+            MessageMergeConfig(
+                name=subtask["name"],
+                message_files=[Path(file) for file in subtask["message_files"]],
+                directories=Directories(input_directory, output_directory),
+            )
+        )
 
     return MessageMergeBatch(subtasks)

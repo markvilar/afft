@@ -8,4 +8,5 @@ from .common import (
     sort_paths_by_filename,
 )
 
+from .query import FileQueryData, FileSelection
 from .search import search_directory_tree, search_directory
