@@ -3,11 +3,11 @@
 from raft.utils.log import logger
 
 from .arguments import parse_arguments
-from .executor import generate_group_descriptors
+from .worker import generate_metafiles
 
 
-def invoke_group_descriptor_generation(arguments: list[str]) -> None:
-    """Entrypoint for generating group descriptors."""
+def invoke_metafile_generation(arguments: list[str]) -> None:
+    """Entrypoint for generating group metafiles."""
 
     parse_result: Result[Namespace, str] = parse_arguments(arguments)
     if parse_result.is_err():
@@ -16,12 +16,12 @@ def invoke_group_descriptor_generation(arguments: list[str]) -> None:
     namespace: Namespace = parse_result.ok()
 
     logger.info("")
-    logger.info("Descriptor generation:")
+    logger.info("Metafile generation:")
     logger.info(f" - Root:   {namespace.root}")
     logger.info(f" - Output: {namespace.output}")
     logger.info(f" - Prefix: {namespace.prefix}")
     logger.info("")
 
-    generate_group_descriptors(
+    generate_metafiles(
         namespace.root, namespace.output, namespace.config, namespace.prefix
     )

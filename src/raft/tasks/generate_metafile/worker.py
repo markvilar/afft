@@ -130,7 +130,7 @@ def export_supergroup_selection(
         logger.info(f"wrote group descriptor: {output_file}")
 
 
-def generate_group_descriptors(
+def generate_metafiles(
     root: Path, output: Path, config: Path, prefix: str
 ) -> None:
     """Generate descriptors for a of deployments. The procedure searches for message
@@ -148,6 +148,6 @@ def generate_group_descriptors(
 
         selection: SupergroupSelection = make_selection_paths_relative(selection, root)
 
-        output_file: Path = output / f"{prefix}_file_descriptor.toml"
+        output_file: Path = output / f"{prefix}_metafile.toml"
 
         export_supergroup_selection(selection, output_file)

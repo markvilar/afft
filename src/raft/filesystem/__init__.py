@@ -3,9 +3,8 @@
 from .common import (
     list_directory,
     get_path_size,
-    get_largest_file,
+    copy_file,
     make_directories,
-    sort_paths_by_filename,
 )
 
 from .query import FileQueryData, FileSelection
