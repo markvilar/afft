@@ -1,6 +1,7 @@
 """Module for common filesystem functions."""
 
 import os
+import shutil
 
 from pathlib import Path
 from typing import Callable
@@ -32,6 +33,18 @@ def make_directories(directory: Path, exist_ok: bool = False) -> None:
     os.makedirs(str(directory), exist_ok=exist_ok)
 
 
+def copy_file(source: Path, destination: Path, follow_symlinks: bool=True) -> Result[Path, str]:
+    """Copies a file from the source to the destination."""
+    try:
+        shutil.copyfile(str(source), str(destination), follow_symlinks=follow_symlinks)
+    except shutil.SameFileError as error:
+        return Err(str(error))
+    except OSError as error:
+        return Err(str(error))
+
+    return Ok(destination)
+
+
 def get_path_size(path: Path) -> Result[int, str]:
     """Returns the size for a file path. Assumes that the path exists."""
     if not path.exists():
@@ -39,29 +52,3 @@ def get_path_size(path: Path) -> Result[int, str]:
 
     size: int = os.path.getsize(str(path))
     return Ok(size)
-
-
-def get_largest_file(paths: list[Path]) -> Path:
-    """Returns the path of largest file."""
-    sizes = dict([(path, get_path_size(path).unwrap()) for path in paths])
-    current_path, current_size = Path(""), 0
-    for path in sizes:
-        if sizes[path] > current_size:
-            current_path = path
-            current_size = sizes[path]
-    return current_path
-
-
-def sort_paths_by_filename(
-    unsorted_paths: list[Path], key_fun: Callable[[Path], str] = lambda path: path.name
-) -> list[Path]:
-    """Sorts paths by their keys. The default path key is the file name.
-
-    Arguments:
-    - unsorted_paths: unsorted list of paths
-    - key_fun: function that returns the key for a path
-
-    Returns:
-    - sorted list of paths
-    """
-    return sorted(unsorted_paths, key=key_fun)
