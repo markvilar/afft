@@ -3,36 +3,30 @@
 from dataclasses import dataclass
 from pathlib import Path
 
-from raft.filesystem import FileQueryData, FileSelection
+from raft.filesystem import FileQueryData
 
 
 @dataclass
-class QueryGroup:
-    """Class representing a group of file queries."""
+class QueryItem:
+    """Class representing a query item."""
 
     name: str
-    queries: list[FileQueryData]
+    directory: Path
+    query_data: FileQueryData
 
 
 @dataclass
-class SupergroupQuery:
-    """Class representing a supergroup of query groups."""
+class SelectionItem:
+    """Class representing a selection item."""
 
     name: str
-    groups: list[QueryGroup]
+    files: list[Path]
 
 
 @dataclass
-class SelectionGroup:
-    """Class representing a group of file selections."""
+class MetafileGenerationContext:
+    """Class representing a metafile generation context."""
 
-    name: str
-    file_selections: list[FileSelection]
-
-
-@dataclass
-class SupergroupSelection:
-    """Class representing a supergroup of selection groups."""
-
-    name: str
-    groups: list[SelectionGroup]
+    root_directory: Path
+    output_directory: Path
+    prefix: str

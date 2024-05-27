@@ -8,8 +8,6 @@ from pathlib import Path
 class FileQueryData:
     """Class representing file query data."""
 
-    name: str
-    directory: Path
     pattern: str
     recursive: bool
 
@@ -18,5 +16,4 @@ class FileQueryData:
 class FileSelection:
     """Class representing a file selection."""
 
-    name: str
     files: list[Path]

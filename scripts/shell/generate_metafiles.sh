@@ -1,7 +1,7 @@
 #!/usr/bin/bash
 
 DATA_DIRECTORY="/home/martin/data/acfr_revisits_unprocessed/acfr_measurements_unprocessed"
-OUTPUT_DIRECTORY="/home/martin/data/acfr_revisits_processed/acfr_metafiles_test"
+OUTPUT_DIRECTORY="/home/martin/data/acfr_revisits_processed/acfr_metafiles"
 
 CONFIG_FILE="config/tasks/metafile_generation.toml"
 
@@ -15,21 +15,21 @@ poetry run raft-cli generate "$DATA_DIRECTORY/qdchdmy1" "$OUTPUT_DIRECTORY" "$CO
   --prefix "qdchdmy1"
 poetry run raft-cli generate "$DATA_DIRECTORY/qtqxshxs" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \
   --prefix "qtqxshxs"
-poetry run raft-cli generate "$DATA_DIRECTORY/r7jjskxq" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \ 
+poetry run raft-cli generate "$DATA_DIRECTORY/r7jjskxq" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \
   --prefix "r7jjskxq"
-poetry run raft-cli generate "$DATA_DIRECTORY/r7jjss8n" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \ 
+poetry run raft-cli generate "$DATA_DIRECTORY/r7jjss8n" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \
   --prefix "r7jjss8n"
-poetry run raft-cli generate "$DATA_DIRECTORY/r7jjssbh" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \ 
+poetry run raft-cli generate "$DATA_DIRECTORY/r7jjssbh" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \
   --prefix "r7jjssbh"
-poetry run raft-cli generate "$DATA_DIRECTORY/r23m7ms0" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \ 
+poetry run raft-cli generate "$DATA_DIRECTORY/r23m7ms0" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \
   --prefix "r23m7ms0"
-poetry run raft-cli generate "$DATA_DIRECTORY/r29mrd5h" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \ 
+poetry run raft-cli generate "$DATA_DIRECTORY/r29mrd5h" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \
   --prefix "r29mrd5h"
-poetry run raft-cli generate "$DATA_DIRECTORY/r29mrd12" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \ 
+poetry run raft-cli generate "$DATA_DIRECTORY/r29mrd12" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \
   --prefix "r29mrd12"
-poetry run raft-cli generate "$DATA_DIRECTORY/r234xgje" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \ 
+poetry run raft-cli generate "$DATA_DIRECTORY/r234xgje" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \
   --prefix "r234xgje"
-poetry run raft-cli generate "$DATA_DIRECTORY/r23685bc" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \ 
+poetry run raft-cli generate "$DATA_DIRECTORY/r23685bc" "$OUTPUT_DIRECTORY" "$CONFIG_FILE" \
   --prefix "r23685bc"
 
 exit 0
