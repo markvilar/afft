@@ -17,9 +17,9 @@ def invoke_metafile_generation(arguments: list[str]) -> None:
     namespace: Namespace = parse_result.ok()
 
     context: MetafileGenerationContext = MetafileGenerationContext(
-        root_directory = namespace.root,
-        output_directory = namespace.output,
-        prefix = namespace.prefix,
+        root_directory=namespace.root,
+        output_directory=namespace.output,
+        prefix=namespace.prefix,
     )
 
     logger.info("")
