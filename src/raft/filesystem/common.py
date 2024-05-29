@@ -33,7 +33,9 @@ def make_directories(directory: Path, exist_ok: bool = False) -> None:
     os.makedirs(str(directory), exist_ok=exist_ok)
 
 
-def copy_file(source: Path, destination: Path, follow_symlinks: bool=True) -> Result[Path, str]:
+def copy_file(
+    source: Path, destination: Path, follow_symlinks: bool = True
+) -> Result[Path, str]:
     """Copies a file from the source to the destination."""
     try:
         shutil.copyfile(str(source), str(destination), follow_symlinks=follow_symlinks)

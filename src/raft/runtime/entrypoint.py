@@ -19,7 +19,6 @@ def cli_entrypoint(parse_fun, task_fun) -> None:
 
         logger.info(task_fun)
 
-
         parse_result: Result[Namespace, str] = parse_fun(arguments)
         if parse_result.is_err():
             logger.error(parse_result.err())

@@ -15,27 +15,10 @@ from .worker import execute_group_export
 def parse_arguments(arguments: list[str]) -> Result[Namespace, str]:
     """Parses command-line arguments for metafile export tasks."""
     parser: ArgumentParser = ArgumentParser()
-    parser.add_argument(
-        "data_directory",
-        type=Path,
-        help="data directory path"
-    )
-    parser.add_argument(
-        "metafile",
-        type=Path,
-        help="metafile path"
-    )
-    parser.add_argument(
-        "output_directory",
-        type=Path,
-        help="output directory path"
-    )
-    parser.add_argument(
-        "--prefix",
-        type=str,
-        default="",
-        help="output file prefix"
-    )
+    parser.add_argument("data_directory", type=Path, help="data directory path")
+    parser.add_argument("metafile", type=Path, help="metafile path")
+    parser.add_argument("output_directory", type=Path, help="output directory path")
+    parser.add_argument("--prefix", type=str, default="", help="output file prefix")
 
     namespace: Namespace = parser.parse_args(arguments)
 
@@ -51,7 +34,7 @@ def invoke_metafile_export(arguments: list[str]) -> None:
     parse_result: Result[Namespace, str] = parse_arguments(arguments)
     if parse_result.is_err():
         logger.error(parse_result.err())
-    
+
     namespace: Namespace = parse_result.ok()
 
     context: FileExportContext = FileExportContext(
