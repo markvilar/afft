@@ -233,10 +233,12 @@ poetry run raft-cli filter-cameras \
 
 # Site 10 - r29mrd5h
 
-poetry run raft-cli filter-cameras \
-  "$CAMERA_DIR/r29mrd5h_20090612_225306_cameras.csv" \
-  "$OUTPUT_DIR/r29mrd5h_20090612_225306_cameras.csv" \
-  --labels "$LABEL_DIR/r29mrd5h_20090612_225306_camera_labels.txt"
+# NOTE: The camera latitude and longitude is wrong for this deployment
+# poetry run raft-cli filter-cameras \
+#   "$CAMERA_DIR/r29mrd5h_20090612_225306_cameras.csv" \
+#   "$OUTPUT_DIR/r29mrd5h_20090612_225306_cameras.csv" \
+#   --labels "$LABEL_DIR/r29mrd5h_20090612_225306_camera_labels.txt"
+echo "Note: Found invalid lat/long for cameras in r29mrd5h_20090612_225306_cameras.csv"
 
 poetry run raft-cli filter-cameras \
   "$CAMERA_DIR/r29mrd5h_20090613_100254_cameras.csv" \
