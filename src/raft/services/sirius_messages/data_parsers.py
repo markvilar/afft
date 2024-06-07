@@ -14,8 +14,10 @@ from .data_types import (
     AuvMessageHeader,
 
     ImageCaptureMessage,
+
     SeabirdCTDMessage,
     AanderaaCTDMessage,
+    EcopuckMessage,
 
     ParosciPressureMessage,
     TeledyneDVLMessage,
@@ -53,6 +55,12 @@ def parse_message_header(line: str) -> Result[AuvMessageHeader, str]:
     return Ok(header)
 
 
+"""
+Image data parsers:
+- parse_image_message
+"""
+
+
 def parse_image_message(line: str) -> Result[ImageCaptureMessage, str]:
     """TODO"""
 
@@ -63,7 +71,7 @@ def parse_image_message(line: str) -> Result[ImageCaptureMessage, str]:
         (?P<timestamp>\d+\.\d+)\s+
         (\[(?P<trigger_time>\d+.\d+)\])\s+
         (?P<filename>[\w]+\.[\w]+)\s*
-        (exp:\s+(?P<exposure>\d+))?          # Optional exposure group
+        (exp:\s+(?P<exposure>\d+))?\s*          # Optional exposure group
         $
         """,
         re.VERBOSE
@@ -95,6 +103,14 @@ def parse_image_message(line: str) -> Result[ImageCaptureMessage, str]:
     )
     
     return Ok(ImageCaptureMessage(header, body))
+
+
+"""
+Environmental data parsers:
+- parse_seabird_ctd_message
+- parse_aanderaa_ctd_message
+- parse_ecopuck_message
+"""
 
 
 def parse_seabird_ctd_message(line: str) -> Result[SeabirdCTDMessage, str]:
@@ -173,6 +189,42 @@ def parse_aanderaa_ctd_message(line: str) -> Result[AanderaaCTDMessage, str]:
     )
 
     return Ok(AanderaaCTDMessage(header, body))
+
+
+def parse_ecopuck_message(line: str) -> Result[EcopuckMessage, str]:
+    """TODO"""
+    pattern = re.compile(
+        r"""
+        ^
+        (?P<topic>\w+):\s+
+        (?P<timestamp>[-+]?\d+\.\d+)\s+
+        chlor:(?P<chlorophyll>[-+]?\d+\.\d+)\s+
+        bcksct:(?P<backscatter>[-+]?\d+\.\d+)\s+
+        cdom:(?P<cdom>[-+]?\d+\.\d+)\s+
+        temp:(?P<temperature>[-+]?\d+\.\d+)\s*
+        $
+        """,
+        re.VERBOSE
+    )
+
+    match = pattern.match(line)
+
+    if not match:
+        return Err(f"failed to parse Ecopuck message: {line}")
+
+    header = EcopuckMessage.header_type(
+        topic = str(match["topic"]),
+        timestamp = float(match["timestamp"]),
+    )
+
+    body = EcopuckMessage.body_type(
+        chlorophyll = float(match["chlorophyll"]),
+        backscatter = float(match["backscatter"]),
+        cdom = float(match["cdom"]),
+        temperature = float(match["temperature"]),
+    )
+
+    return Ok(EcopuckMessage(header, body))
  
 
 """

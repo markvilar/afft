@@ -44,6 +44,16 @@ class AanderaaCTDData:
     sound_velocity: float
 
 
+@dataclass
+class EcopuckData:
+    """Class representing data from an Ecopuck sensor."""
+
+    chlorophyll: float
+    backscatter: float
+    cdom: float
+    temperature: float
+
+
 """
 Navigation system data types:
 - ParosciPressureData
@@ -202,6 +212,17 @@ class AanderaaCTDMessage:
 
     header: AuvMessageHeader
     body: AanderaaCTDData
+
+
+@dataclass
+class EcopuckMessage:
+    """TODO"""
+
+    header_type = AuvMessageHeader
+    body_type = EcopuckData
+    
+    header: AuvMessageHeader
+    body: EcopuckData
 
 
 @dataclass
