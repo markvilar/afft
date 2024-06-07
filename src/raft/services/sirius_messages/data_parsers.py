@@ -4,7 +4,6 @@ import re
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable
 
 from result import Ok, Err, Result
 
@@ -32,8 +31,8 @@ def parse_message_header(line: str) -> Result[AuvMessageHeader, str]:
         r"""
         ^
         (?P<topic>.+?):\s+
-        (?P<timestamp>\d+\.\d+)
-        .+$
+        (?P<timestamp>\d+\.\d+).+   # unlimited of any character after timestamp
+        $
         """,
         re.VERBOSE,
     )
@@ -58,7 +57,7 @@ Image data parsers:
 
 
 def parse_image_message(line: str) -> Result[ImageCaptureMessage, str]:
-    """TODO"""
+    """Parses a message line as an image capture message."""
 
     pattern = re.compile(
         r"""
@@ -66,8 +65,8 @@ def parse_image_message(line: str) -> Result[ImageCaptureMessage, str]:
         (?P<topic>.+?):\s+
         (?P<timestamp>\d+\.\d+)\s+
         (\[(?P<trigger_time>\d+.\d+)\])\s+
-        (?P<filename>[\w]+\.[\w]+)\s*
-        (exp:\s+(?P<exposure>\d+))?\s*          # Optional exposure group
+        (?P<filename>[\w]+\.[\w]+)\s*       # Zero or unlimited since next group is optional
+        (exp:\s+(?P<exposure>\d+))?\s*      # Optional exposure group
         $
         """,
         re.VERBOSE,
@@ -110,7 +109,7 @@ Environmental data parsers:
 
 
 def parse_seabird_ctd_message(line: str) -> Result[SeabirdCTDMessage, str]:
-    """TODO"""
+    """Parses a message line as a Seabird CTD message."""
 
     pattern = re.compile(
         r"""
@@ -148,7 +147,7 @@ def parse_seabird_ctd_message(line: str) -> Result[SeabirdCTDMessage, str]:
 
 
 def parse_aanderaa_ctd_message(line: str) -> Result[AanderaaCTDMessage, str]:
-    """TODO"""
+    """Parses a message line as an Aanderaa CTD message."""
 
     pattern = re.compile(
         r"""
@@ -187,7 +186,7 @@ def parse_aanderaa_ctd_message(line: str) -> Result[AanderaaCTDMessage, str]:
 
 
 def parse_ecopuck_message(line: str) -> Result[EcopuckMessage, str]:
-    """TODO"""
+    """Parses a message line as an Ecopuck water quality message."""
     pattern = re.compile(
         r"""
         ^
@@ -232,17 +231,14 @@ Navigation data parsers:
 
 
 def parse_parosci_pressure_message(line: str) -> Result[ParosciPressureMessage, str]:
-    """Parses a message line as a Paroscientific dataclass.
-
-    Example:
-    PAROSCI:  1244855340.922        1.3721
-    """
+    """Parses a message line as a Parosci pressure message."""
     pattern = re.compile(
         r"""
         ^
         (?P<topic>.+?):\s+
         (?P<timestamp>\d+\.\d+)\s+
-        (?P<depth>[-+]?\d+\.\d+)
+        (?P<depth>[-+]?\d+\.\d+)\s*
+        $
         """,
         re.VERBOSE,
     )
@@ -265,13 +261,7 @@ def parse_parosci_pressure_message(line: str) -> Result[ParosciPressureMessage, 
 
 
 def parse_teledyne_dvl_message(line: str) -> Result[TeledyneDVLMessage, str]:
-    """Parses a message line as a TeledyneDVLData dataclass.
-
-    Example message:
-    RDI:  1244847550.310        alt:3.960 r1:3.920 r2:4.080 r3:4.080 r4:3.760 h:348.380 p:2.200
-    r:-0.190 vx:-0.117 vy:0.116 vz:-0.056 nx:-3.010 ny:71.425 nz:-27.494 COG:-0.790 SOG:0.165
-    bt_status:0 h_true:348.380 p_gimbal:2.200 sv:1504.000
-    """
+    """Parses a message line as a Teledyne DVL message."""
 
     pattern = re.compile(
         r"""
@@ -297,7 +287,8 @@ def parse_teledyne_dvl_message(line: str) -> Result[TeledyneDVLMessage, str]:
         bt_status:\s*(?P<bottom_track_status>\d*)\s+
         h_true:\s*(?P<true_heading>[-+]?\d*[.]\d*)\s+
         p_gimbal:\s*(?P<gimbal_pitch>[-+]?\d*[.]\d*)\s+
-        sv:\s*(?P<sound_velocity>[-+]?\d*[.]\d*)
+        sv:\s*(?P<sound_velocity>[-+]?\d*[.]\d*)\s*
+        $
         """,
         re.VERBOSE,
     )
@@ -338,17 +329,13 @@ def parse_teledyne_dvl_message(line: str) -> Result[TeledyneDVLMessage, str]:
 
 
 def parse_lq_modem_message(line: str) -> Result[LQModemMessage, str]:
-    """Parses a message line as a LQModemData dataclass.
-
-    Example message:
-    LQMODEM: 1244847209.334         time:1244847232.000 Lat:-41.253616333 Lon:148.342147827 hdg:252.5
-    roll:0.3 pitch:2.1 bear:144.00 rng:11.10
-    """
+    """Parses a message line as a LQ modem message."""
 
     pattern = re.compile(
         r"""
         ^
-        (?P<topic>.+?):\s+(?P<timestamp>\d+\.\d+)\s+
+        (?P<topic>.+?):\s+
+        (?P<timestamp>\d+\.\d+)\s+
         time:\s*(?P<time>[-+]?\d*[.]\d*)\s+
         Lat:\s*(?P<latitude>[-+]?\d*[.]\d*)\s+
         Lon:\s*(?P<longitude>[-+]?\d*[.]\d*)\s+
@@ -387,13 +374,7 @@ def parse_lq_modem_message(line: str) -> Result[LQModemMessage, str]:
 
 
 def parse_evologics_modem_message(line: str) -> Result[EvologicsModemMessage, str]:
-    """Parses a message line as an Evologics USBL message.
-
-    EVOLOGICS_FIX: 1495772673.026 target_lat:-28.813446502 target_lon:113.947151550
-    target_depth:12.357 accuracy:3.537 ship_lat:-28.812462645 ship_lon:113.946070301
-    ship_roll: -1.61 ship_pitch: -0.01 ship_heading:270.35 target_x:-54.63 target_y:-141.69
-    target_z: -4.48
-    """
+    """Parses a message line as an Evologics USBL message."""
 
     pattern = re.compile(
         r"""
@@ -411,7 +392,8 @@ def parse_evologics_modem_message(line: str) -> Result[EvologicsModemMessage, st
         ship_heading:\s*(?P<ship_heading>\d*[.]\d*)\s+
         target_x:\s*(?P<target_x>[-+]?\d*[.]\d*)\s+
         target_y:\s*(?P<target_y>[-+]?\d*[.]\d*)\s+
-        target_z:\s*(?P<target_z>[-+]?\d*[.]\d*)
+        target_z:\s*(?P<target_z>[-+]?\d*[.]\d*)\s*
+        $
         """,
         re.VERBOSE,
     )
@@ -508,21 +490,18 @@ THRUSTER_TOPIC_TO_NAME: dict[str, str] = {
 
 
 def parse_thruster_message(line: str) -> Result[ThrusterMessage, str]:
-    """Parser function for thruster messages.
+    """Parser function for thruster messages."""
 
-    THR_PORT:  1244855390.607        RPM:0.00 A:0.0400 V:46.80 T:29.00
-    """
-
-    # TODO: Update with header parsing + info
     pattern = re.compile(
         r"""
         ^
         (?P<topic>.+?):\s+
         (?P<timestamp>\d+\.\d+)\s+
-        RPM:\s*(?P<rpm>[-+]?\d*[.]\d*)\s+           # rpm
-        A:\s*(?P<current>[-+]?\d*[.]\d*)\s+         # current
-        V:\s*(?P<voltage>[-+]?\d*[.]\d*)\s+         # voltage
-        T:\s*(?P<temperature>[-+]?\d*[.]\d*)        # temperature
+        RPM:\s*(?P<rpm>[-+]?\d*[.]\d*)\s+
+        A:\s*(?P<current>[-+]?\d*[.]\d*)\s+
+        V:\s*(?P<voltage>[-+]?\d*[.]\d*)\s+
+        T:\s*(?P<temperature>[-+]?\d*[.]\d*)\s*
+        $
         """,
         re.VERBOSE,
     )
