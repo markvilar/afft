@@ -12,18 +12,14 @@ from raft.utils.log import logger
 
 from .data_types import (
     AuvMessageHeader,
-
     ImageCaptureMessage,
-
     SeabirdCTDMessage,
     AanderaaCTDMessage,
     EcopuckMessage,
-
     ParosciPressureMessage,
     TeledyneDVLMessage,
     LQModemMessage,
     EvologicsModemMessage,
-
     BatteryMessage,
     ThrusterMessage,
 )
@@ -74,7 +70,7 @@ def parse_image_message(line: str) -> Result[ImageCaptureMessage, str]:
         (exp:\s+(?P<exposure>\d+))?\s*          # Optional exposure group
         $
         """,
-        re.VERBOSE
+        re.VERBOSE,
     )
 
     match = pattern.match(line)
@@ -83,8 +79,8 @@ def parse_image_message(line: str) -> Result[ImageCaptureMessage, str]:
         return Err(f"failed to parse image message: {line}")
 
     header = ImageCaptureMessage.header_type(
-        topic = str(match["topic"]),
-        timestamp = float(match["timestamp"]),
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
     )
 
     filename: str = str(match["filename"])
@@ -95,13 +91,13 @@ def parse_image_message(line: str) -> Result[ImageCaptureMessage, str]:
     exposure: int = int(match["exposure"]) if exposure_logged else 0
 
     body = ImageCaptureMessage.body_type(
-        label = label,
-        filename = filename,
-        trigger_time = trigger_time,
-        exposure_logged = exposure_logged,
-        exposure = exposure,
+        label=label,
+        filename=filename,
+        trigger_time=trigger_time,
+        exposure_logged=exposure_logged,
+        exposure=exposure,
     )
-    
+
     return Ok(ImageCaptureMessage(header, body))
 
 
@@ -128,7 +124,7 @@ def parse_seabird_ctd_message(line: str) -> Result[SeabirdCTDMessage, str]:
         sos:(?P<sound_velocity>[-+]?\d+\.\d+)\s*
         $
         """,
-        re.VERBOSE
+        re.VERBOSE,
     )
 
     match = pattern.match(line)
@@ -137,16 +133,15 @@ def parse_seabird_ctd_message(line: str) -> Result[SeabirdCTDMessage, str]:
         return Err(f"failed to parse Seabird CTD message: {line}")
 
     header = SeabirdCTDMessage.header_type(
-        topic = str(match["topic"]),
-        timestamp = float(match["timestamp"])
+        topic=str(match["topic"]), timestamp=float(match["timestamp"])
     )
 
     body = SeabirdCTDMessage.body_type(
-        conductivity = float(match["conductivity"]),
-        temperature = float(match["temperature"]),
-        salinity = float(match["salinity"]),
-        pressure = float(match["pressure"]),
-        sound_velocity = float(match["sound_velocity"]),
+        conductivity=float(match["conductivity"]),
+        temperature=float(match["temperature"]),
+        salinity=float(match["salinity"]),
+        pressure=float(match["pressure"]),
+        sound_velocity=float(match["sound_velocity"]),
     )
 
     return Ok(SeabirdCTDMessage(header, body))
@@ -154,7 +149,7 @@ def parse_seabird_ctd_message(line: str) -> Result[SeabirdCTDMessage, str]:
 
 def parse_aanderaa_ctd_message(line: str) -> Result[AanderaaCTDMessage, str]:
     """TODO"""
-    
+
     pattern = re.compile(
         r"""
         ^
@@ -167,7 +162,7 @@ def parse_aanderaa_ctd_message(line: str) -> Result[AanderaaCTDMessage, str]:
         sos:(?P<sound_velocity>[-+]?\d+\.\d+)\s*
         $
         """,
-        re.VERBOSE
+        re.VERBOSE,
     )
 
     match = pattern.match(line)
@@ -176,16 +171,16 @@ def parse_aanderaa_ctd_message(line: str) -> Result[AanderaaCTDMessage, str]:
         return Err(f"failed to parse Aanderaa CTD message: {line}")
 
     header = AanderaaCTDMessage.header_type(
-        topic = str(match["topic"]),
-        timestamp = float(match["timestamp"]),
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
     )
-    
+
     body = AanderaaCTDMessage.body_type(
-        conductivity = float(match["conductivity"]),
-        temperature = float(match["temperature"]),
-        salinity = float(match["salinity"]),
-        pressure = float(match["pressure"]),
-        sound_velocity = float(match["sound_velocity"]),
+        conductivity=float(match["conductivity"]),
+        temperature=float(match["temperature"]),
+        salinity=float(match["salinity"]),
+        pressure=float(match["pressure"]),
+        sound_velocity=float(match["sound_velocity"]),
     )
 
     return Ok(AanderaaCTDMessage(header, body))
@@ -204,7 +199,7 @@ def parse_ecopuck_message(line: str) -> Result[EcopuckMessage, str]:
         temp:(?P<temperature>[-+]?\d+\.\d+)\s*
         $
         """,
-        re.VERBOSE
+        re.VERBOSE,
     )
 
     match = pattern.match(line)
@@ -213,19 +208,19 @@ def parse_ecopuck_message(line: str) -> Result[EcopuckMessage, str]:
         return Err(f"failed to parse Ecopuck message: {line}")
 
     header = EcopuckMessage.header_type(
-        topic = str(match["topic"]),
-        timestamp = float(match["timestamp"]),
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
     )
 
     body = EcopuckMessage.body_type(
-        chlorophyll = float(match["chlorophyll"]),
-        backscatter = float(match["backscatter"]),
-        cdom = float(match["cdom"]),
-        temperature = float(match["temperature"]),
+        chlorophyll=float(match["chlorophyll"]),
+        backscatter=float(match["backscatter"]),
+        cdom=float(match["cdom"]),
+        temperature=float(match["temperature"]),
     )
 
     return Ok(EcopuckMessage(header, body))
- 
+
 
 """
 Navigation data parsers:
@@ -256,25 +251,25 @@ def parse_parosci_pressure_message(line: str) -> Result[ParosciPressureMessage, 
 
     if not match:
         return Err(f"failed to parse line: {line}")
-    
+
     header = ParosciPressureMessage.header_type(
-        topic = str(match["topic"]), 
-        timestamp = float(match["timestamp"]),
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
     )
 
     body = ParosciPressureMessage.body_type(
         depth=float(match["depth"]),
     )
-    
+
     return Ok(ParosciPressureMessage(header, body))
 
 
 def parse_teledyne_dvl_message(line: str) -> Result[TeledyneDVLMessage, str]:
     """Parses a message line as a TeledyneDVLData dataclass.
-    
+
     Example message:
-    RDI:  1244847550.310        alt:3.960 r1:3.920 r2:4.080 r3:4.080 r4:3.760 h:348.380 p:2.200 
-    r:-0.190 vx:-0.117 vy:0.116 vz:-0.056 nx:-3.010 ny:71.425 nz:-27.494 COG:-0.790 SOG:0.165 
+    RDI:  1244847550.310        alt:3.960 r1:3.920 r2:4.080 r3:4.080 r4:3.760 h:348.380 p:2.200
+    r:-0.190 vx:-0.117 vy:0.116 vz:-0.056 nx:-3.010 ny:71.425 nz:-27.494 COG:-0.790 SOG:0.165
     bt_status:0 h_true:348.380 p_gimbal:2.200 sv:1504.000
     """
 
@@ -311,12 +306,11 @@ def parse_teledyne_dvl_message(line: str) -> Result[TeledyneDVLMessage, str]:
 
     if not match:
         return Err(f"failed to parse line: {line}")
-    
+
     header: AuvMessageHeader = TeledyneDVLMessage.header_type(
-        topic = str(match["topic"]), 
-        timestamp = float(match["timestamp"])
+        topic=str(match["topic"]), timestamp=float(match["timestamp"])
     )
-    
+
     body: TeledyneDVLData = TeledyneDVLMessage.body_type(
         altitude=float(match["altitude"]),
         range_01=float(match["range_01"]),
@@ -345,9 +339,9 @@ def parse_teledyne_dvl_message(line: str) -> Result[TeledyneDVLMessage, str]:
 
 def parse_lq_modem_message(line: str) -> Result[LQModemMessage, str]:
     """Parses a message line as a LQModemData dataclass.
-    
+
     Example message:
-    LQMODEM: 1244847209.334         time:1244847232.000 Lat:-41.253616333 Lon:148.342147827 hdg:252.5 
+    LQMODEM: 1244847209.334         time:1244847232.000 Lat:-41.253616333 Lon:148.342147827 hdg:252.5
     roll:0.3 pitch:2.1 bear:144.00 rng:11.10
     """
 
@@ -372,19 +366,19 @@ def parse_lq_modem_message(line: str) -> Result[LQModemMessage, str]:
 
     if not match:
         return Err(f"failed to parse line: {line}")
-    
+
     header: AuvMessageHeader = LQModemMessage.header_type(
-        topic = str(match["topic"]), 
-        timestamp = float(match["timestamp"]),
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
     )
-    
+
     body = LQModemMessage.body_type(
         latitude=float(match["latitude"]),
         longitude=float(match["longitude"]),
         roll=float(match["roll"]),
         pitch=float(match["pitch"]),
         heading=float(match["heading"]),
-        time = float(match["time"]),
+        time=float(match["time"]),
         bearing=float(match["bearing"]),
         range=float(match["range"]),
     )
@@ -428,8 +422,8 @@ def parse_evologics_modem_message(line: str) -> Result[EvologicsModemMessage, st
         return Err(f"failed to parse line: {line}")
 
     header = EvologicsModemMessage.header_type(
-        topic = str(match["topic"]), 
-        timestamp = float(match["timestamp"]),
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
     )
 
     body = EvologicsModemMessage.body_type(
@@ -490,8 +484,7 @@ def parse_battery_message(line: str) -> Result[BatteryMessage, str]:
         return Err(f"failed to parse line: {line}")
 
     header = BatteryMessage.header_type(
-        topic = str(match["topic"]), 
-        timestamp = float(match["timestamp"])
+        topic=str(match["topic"]), timestamp=float(match["timestamp"])
     )
 
     body = BatteryMessage.body_type(
@@ -540,8 +533,7 @@ def parse_thruster_message(line: str) -> Result[ThrusterMessage, str]:
         return Err(f"failed to parse line: {line}")
 
     header = ThrusterMessage.header_type(
-        topic = str(match["topic"]), 
-        timestamp = float(match["timestamp"])
+        topic=str(match["topic"]), timestamp=float(match["timestamp"])
     )
 
     body = ThrusterMessage.body_type(

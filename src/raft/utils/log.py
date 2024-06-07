@@ -20,7 +20,7 @@ LOG_FORMAT = (
 
 def init_logger() -> None:
     """Initializes the logger."""
-    
+
     env_values: OrderedDict = dotenv_values(".env")
 
     if LOG_DIRECTORY_KEY in env_values:

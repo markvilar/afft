@@ -15,7 +15,7 @@ from .worker import execute_message_parsing
 
 def parse_arguments(arguments: list[str]) -> Result[Namespace, str]:
     parser = ArgumentParser()
-    
+
     parser.add_argument("input", type=Path, help="input message file")
     parser.add_argument("output", type=Path, help="output message file")
     parser.add_argument("protocol", type=Path, help="protocol configuration file")
@@ -36,8 +36,10 @@ def log_task_intro(input: Path, output_file: Path, protocol: Path) -> None:
     logger.info("")
 
 
-def configure_task_context(input: Path, output: Path, protocol: Path) -> MessageParseContext:
-    """Creates a message parse context based on the """
+def configure_task_context(
+    input: Path, output: Path, protocol: Path
+) -> MessageParseContext:
+    """Creates a message parse context based on the"""
 
     # TODO: Add option to save messages to database
 
@@ -48,22 +50,20 @@ def configure_task_data() -> MessageParseData:
     """TODO"""
 
     return MessageParseData(
-        message_loader = None,
-        protocol_builder = None,
-        message_saver = None,
+        message_loader=None,
+        protocol_builder=None,
+        message_saver=None,
     )
 
 
 def invoke_message_parsing(command: Command) -> None:
     """Entrypoint for parsing message files."""
-    
+
     namespace: Namespace = parse_arguments(command.arguments).unwrap()
     log_task_intro(namespace.input, namespace.output, namespace.protocol)
 
     context: MessageParseContext = configure_task_context(
-        namespace.input, 
-        namespace.output, 
-        namespace.protocol
+        namespace.input, namespace.output, namespace.protocol
     )
 
     data: MessageParseData = configure_task_data()

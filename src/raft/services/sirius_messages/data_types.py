@@ -36,7 +36,7 @@ class SeabirdCTDData:
 @dataclass
 class AanderaaCTDData:
     """Class representing data from an Aanderaa CTD."""
-    
+
     conductivity: float
     temperature: float
     salinity: float
@@ -94,8 +94,8 @@ class TeledyneDVLData:
     velocity_z: float
 
     dmg_x: float
-    dmg_y: float 
-    dmg_z: float 
+    dmg_y: float
+    dmg_z: float
 
     course_over_ground: float
     speed_over_ground: float
@@ -220,7 +220,7 @@ class EcopuckMessage:
 
     header_type = AuvMessageHeader
     body_type = EcopuckData
-    
+
     header: AuvMessageHeader
     body: EcopuckData
 
@@ -228,10 +228,10 @@ class EcopuckMessage:
 @dataclass
 class ParosciPressureMessage:
     """TODO"""
-    
+
     header_type = AuvMessageHeader
     body_type = ParosciPressureData
-    
+
     header: AuvMessageHeader
     body: ParosciPressureData
 
@@ -239,22 +239,22 @@ class ParosciPressureMessage:
 @dataclass
 class TeledyneDVLMessage:
     """TODO"""
-    
-    header_type = AuvMessageHeader 
+
+    header_type = AuvMessageHeader
     body_type = TeledyneDVLData
-    
-    header: AuvMessageHeader 
+
+    header: AuvMessageHeader
     body: TeledyneDVLData
 
 
 @dataclass
 class LQModemMessage:
     """TODO"""
-    
-    header_type = AuvMessageHeader 
+
+    header_type = AuvMessageHeader
     body_type = LQModemData
 
-    header: AuvMessageHeader 
+    header: AuvMessageHeader
     body: LQModemData
 
 
@@ -265,9 +265,9 @@ class EvologicsModemMessage:
     header_type = AuvMessageHeader
     body_type = EvologicsModemData
 
-    header: AuvMessageHeader 
+    header: AuvMessageHeader
     body: EvologicsModemData
-    
+
 
 @dataclass
 class BatteryMessage:
@@ -275,8 +275,8 @@ class BatteryMessage:
 
     header_type = AuvMessageHeader
     body_type = BatteryData
-    
-    header: AuvMessageHeader 
+
+    header: AuvMessageHeader
     body: BatteryData
 
 
@@ -287,5 +287,5 @@ class ThrusterMessage:
     header_type = AuvMessageHeader
     body_type = ThrusterData
 
-    header: AuvMessageHeader 
+    header: AuvMessageHeader
     body: ThrusterData
