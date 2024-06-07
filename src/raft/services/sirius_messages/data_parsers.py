@@ -524,3 +524,18 @@ def parse_thruster_message(line: str) -> Result[ThrusterMessage, str]:
     )
 
     return Ok(ThrusterMessage(header, body))
+
+
+DEFAULT_MESSAGE_PARSERS: dict = {
+    AuvMessageHeader: parse_message_header,
+    ImageCaptureMessage: parse_image_message,
+    SeabirdCTDMessage: parse_seabird_ctd_message,
+    AanderaaCTDMessage: parse_aanderaa_ctd_message,
+    EcopuckMessage: parse_ecopuck_message,
+    ParosciPressureMessage: parse_parosci_pressure_message,
+    TeledyneDVLMessage: parse_teledyne_dvl_message,
+    LQModemMessage: parse_lq_modem_message,
+    EvologicsModemMessage: parse_evologics_modem_message,
+    BatteryMessage: parse_battery_message,
+    ThrusterMessage: parse_thruster_message,
+}
