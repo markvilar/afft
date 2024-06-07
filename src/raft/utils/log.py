@@ -8,8 +8,8 @@ from dotenv import dotenv_values
 
 from .time import get_time_string
 
-LOG_DIRECTORY = "LOG_DIRECTORY"
-LOG_LEVEL = "DEBUG"
+LOG_DIRECTORY_KEY: str = "LOG_DIRECTORY"
+LOG_LEVEL: str = "DEBUG"
 
 LOG_FORMAT = (
     "<green>{time:YYYY-MM-DD HH:mm:ss.SSS}</green>"
@@ -20,7 +20,10 @@ LOG_FORMAT = (
 
 def init_logger() -> None:
     """Initializes the logger."""
-    directory: str = dotenv_values(LOG_DIRECTORY)
+    
+    env_values: OrderedDict = dotenv_values(".env")
+    
+    directory: str = env_values[LOG_DIRECTORY_KEY]
     datetime: str = get_time_string("YYYYMMDD_HHmmss")
     log_file: str = f"{directory}/{datetime}.log"
 

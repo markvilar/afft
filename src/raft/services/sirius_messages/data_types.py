@@ -1,4 +1,4 @@
-"""Module for message data classes."""
+"""Module for message classes."""
 
 from dataclasses import dataclass
 
@@ -12,28 +12,54 @@ class AuvMessageHeader:
 
 
 @dataclass
-class ImageCaptureDataV1:
-    """Class representing an image message."""
+class ImageCaptureData:
+    """Class representing image capture data."""
 
-    trigger_time: float
     label: str
+    filename: str
+    trigger_time: float
+    exposure_logged: bool
+    exposure: int = 0
 
 
 @dataclass
-class ImageCaptureDataV2:
-    """Class representing image version 2, with logged exposure values."""
+class SeabirdCTDData:
+    """Class representing data from a Seabird CTD."""
 
-    trigger_time: float
-    label: str
-    exposure: int
+    conductivity: float
+    temperature: float
+    salinity: float
+    pressure: float
+    sound_velocity: float
+
+
+@dataclass
+class AanderaaCTDData:
+    """Class representing data from an Aanderaa CTD."""
+    
+    conductivity: float
+    temperature: float
+    salinity: float
+    pressure: float
+    sound_velocity: float
 
 
 """
 Navigation system data types:
+- ParosciPressureData
+- TeledyneDVLData
 - LQModemData
-- EvologicsData
-- TODO: RDI, PAROSCI, GPS_RMC, GPS_GSV, OAS, MICRON, MICRON_RETURNS, MICRON_TRACE, MICRON_SECTOR
+- EvologicsModemData
+
+- TODO: GPS_RMC, GPS_GSV, OAS, MICRON, MICRON_RETURNS, MICRON_TRACE, MICRON_SECTOR
 """
+
+
+@dataclass
+class ParosciPressureData:
+    """Class representing Parosci pressure data."""
+
+    depth: float
 
 
 @dataclass
@@ -57,9 +83,9 @@ class TeledyneDVLData:
     velocity_y: float
     velocity_z: float
 
-    position_x: float
-    position_y: float
-    position_z: float
+    dmg_x: float
+    dmg_y: float 
+    dmg_z: float 
 
     course_over_ground: float
     speed_over_ground: float
@@ -82,6 +108,7 @@ class LQModemData:
     pitch: float
     heading: float
 
+    time: float
     bearing: float
     range: float
 
@@ -107,18 +134,11 @@ class EvologicsModemData:
     ship_heading: float
 
 
-"""
-Power system data types:
-- BatteryData
-- ThrusterData
-"""
-
-
 @dataclass
 class BatteryData:
     """Class representing battery data."""
 
-    name: str
+    label: str
     time_left: int
     current: float
     voltage: float
@@ -131,8 +151,120 @@ class BatteryData:
 class ThrusterData:
     """Class representing thruster data."""
 
-    name: str
+    label: str
     rpm: float
     current: float
     voltage: float
     temperature: float
+
+
+"""
+AUV message types:
+ - ImageCaptureMessage
+ - SeabirdCTDMessage:
+ - ParosciPressureMessage
+ - TeledyneDVLMessage
+ - LQModemMessage
+ - EvologicsModemMessage
+ - BatteryMessage
+ - ThrusterMessage
+"""
+
+
+@dataclass
+class ImageCaptureMessage:
+    """TODO"""
+
+    header_type = AuvMessageHeader
+    body_type = ImageCaptureData
+
+    header: AuvMessageHeader
+    body: ImageCaptureData
+
+
+@dataclass
+class SeabirdCTDMessage:
+    """TODO"""
+
+    header_type = AuvMessageHeader
+    body_type = SeabirdCTDData
+
+    header: AuvMessageHeader
+    body: SeabirdCTDData
+
+
+@dataclass
+class AanderaaCTDMessage:
+    """TODO"""
+
+    header_type = AuvMessageHeader
+    body_type = AanderaaCTDData
+
+    header: AuvMessageHeader
+    body: AanderaaCTDData
+
+
+@dataclass
+class ParosciPressureMessage:
+    """TODO"""
+    
+    header_type = AuvMessageHeader
+    body_type = ParosciPressureData
+    
+    header: AuvMessageHeader
+    body: ParosciPressureData
+
+
+@dataclass
+class TeledyneDVLMessage:
+    """TODO"""
+    
+    header_type = AuvMessageHeader 
+    body_type = TeledyneDVLData
+    
+    header: AuvMessageHeader 
+    body: TeledyneDVLData
+
+
+@dataclass
+class LQModemMessage:
+    """TODO"""
+    
+    header_type = AuvMessageHeader 
+    body_type = LQModemData
+
+    header: AuvMessageHeader 
+    body: LQModemData
+
+
+@dataclass
+class EvologicsModemMessage:
+    """TODO"""
+
+    header_type = AuvMessageHeader
+    body_type = EvologicsModemData
+
+    header: AuvMessageHeader 
+    body: EvologicsModemData
+    
+
+@dataclass
+class BatteryMessage:
+    """TODO"""
+
+    header_type = AuvMessageHeader
+    body_type = BatteryData
+    
+    header: AuvMessageHeader 
+    body: BatteryData
+
+
+@dataclass
+class ThrusterMessage:
+    """TODO"""
+
+    header_type = AuvMessageHeader
+    body_type = ThrusterData
+
+    header: AuvMessageHeader 
+    body: ThrusterData
