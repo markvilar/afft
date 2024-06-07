@@ -22,8 +22,12 @@ def init_logger() -> None:
     """Initializes the logger."""
     
     env_values: OrderedDict = dotenv_values(".env")
-    
-    directory: str = env_values[LOG_DIRECTORY_KEY]
+
+    if LOG_DIRECTORY_KEY in env_values:
+        directory: str = env_values[LOG_DIRECTORY_KEY]
+    else:
+        directory: str = "./log"
+
     datetime: str = get_time_string("YYYYMMDD_HHmmss")
     log_file: str = f"{directory}/{datetime}.log"
 
