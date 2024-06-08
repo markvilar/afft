@@ -6,7 +6,6 @@ from pathlib import Path
 from result import Ok, Err, Result
 
 from raft.runtime import Command
-from raft.services.sirius_messages import process_message_lines, read_message_lines
 from raft.utils.log import logger
 
 from .data_types import MessageParseContext, MessageParseData

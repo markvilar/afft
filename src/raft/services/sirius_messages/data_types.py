@@ -60,8 +60,10 @@ Navigation system data types:
 - TeledyneDVLData
 - LQModemData
 - EvologicsModemData
+- MicronSonarData
+- OASonarData
 
-- TODO: GPS_RMC, GPS_GSV, OAS, MICRON, MICRON_RETURNS, MICRON_TRACE, MICRON_SECTOR
+- TODO: GPS_RMC, GPS_GSV, MICRON_TRACE, MICRON_SECTOR
 """
 
 
@@ -145,6 +147,25 @@ class EvologicsModemData:
 
 
 @dataclass
+class MicronSonarData:
+    """Class representing Micron sonar data."""
+
+    profile_range: float
+    profile_altitude: float
+    pseudo_forward_distance: float
+    angle: float
+
+
+@dataclass
+class OASonarData:
+    """Class representing obstacle avoidance sonar data."""
+
+    profile_range: float
+    profile_altitude: float
+    pseudo_forward_distance: float
+
+
+@dataclass
 class BatteryData:
     """Class representing battery data."""
 
@@ -171,11 +192,15 @@ class ThrusterData:
 """
 AUV message types:
  - ImageCaptureMessage
- - SeabirdCTDMessage:
+ - SeabirdCTDMessage
+ - AanderaaCTDMessage
+ - EcopuckMessage
  - ParosciPressureMessage
  - TeledyneDVLMessage
  - LQModemMessage
  - EvologicsModemMessage
+ - MicronSonarMessage
+ - OASonarMessage
  - BatteryMessage
  - ThrusterMessage
 """
@@ -270,6 +295,28 @@ class EvologicsModemMessage:
 
 
 @dataclass
+class MicronSonarMessage:
+    """TODO"""
+
+    header_type = AuvMessageHeader
+    body_type = MicronSonarData
+
+    header: AuvMessageHeader
+    body: MicronSonarData
+
+
+@dataclass
+class OASonarMessage:
+    """TODO"""
+
+    header_type = AuvMessageHeader
+    body_type = OASonarData
+
+    header: AuvMessageHeader
+    body: OASonarData
+
+
+@dataclass
 class BatteryMessage:
     """TODO"""
 
@@ -289,3 +336,4 @@ class ThrusterMessage:
 
     header: AuvMessageHeader
     body: ThrusterData
+
