@@ -1,0 +1,15 @@
+[targets]
+directory = true
+level = 1
+
+[groups.messages.file_query]
+pattern = "messages/*.RAW.auv"
+recursive = false
+
+[groups.cameras.file_query]
+pattern = "camera_poses/*/stereo_pose_est.data"
+recursive = true
+
+[groups.calibration.file_query]
+pattern = "camera_calibration/*/*.calib"
+recursive = true

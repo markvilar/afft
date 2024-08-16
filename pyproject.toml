@@ -5,7 +5,7 @@ build-backend = "poetry.core.masonry.api"
 [tool.poetry]
 name = "raft"
 version = "0.0.1"
-description = "A relatively small toolbox for processing data ACFR AUV data"
+description = "A relatively small toolbox for processing data from ACFR AUVs"
 authors = ["Martin Kvisvik Larsen <martin.kvisvik.larsen@hotmail.com>"]
 readme = "README.md"
 packages = [{include = "raft", from="src"}]
@@ -28,7 +28,7 @@ tqdm = "^4.66.2"
 pytest = "^8.2.0"
 black = {extras = ["jupyter"], version = "^24.4.2"}
 jupyter = "^1.0.0"
-geoplot = "^0.5.1"
+plotly = "^5.22.0"
 
 [tool.poetry.scripts]
 raft-cli = "raft.cli:main"

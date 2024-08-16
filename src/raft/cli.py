@@ -1,12 +1,13 @@
-"""Main script - Entry point for executing tasks."""
+"""Entrypoint for invoking tasks through the command-line interface."""
 
 import sys
 
 from raft.runtime import Command
 from raft.utils.log import init_logger, logger
 
-from raft.tasks.camera_processing import invoke_camera_formatting
-from raft.tasks.generate_descriptors import invoke_group_descriptor_generation
+from raft.tasks.camera_filtering import invoke_camera_filtering
+from raft.tasks.export_metafile import invoke_metafile_export
+from raft.tasks.generate_metafile import invoke_metafile_generation
 from raft.tasks.message_processing import invoke_message_processing
 
 
@@ -20,12 +21,14 @@ def main():
     command = Command(command, arguments)
 
     match command:
-        case Command(command="process_messages"):
+        case Command(command="generate"):
+            invoke_metafile_generation(command.arguments)
+        case Command(command="metafile-export"):
+            invoke_metafile_export(command.arguments)
+        case Command(command="process-messages"):
             invoke_message_processing(command.arguments)
-        case Command(command="process_cameras"):
-            invoke_camera_formatting(command.arguments)
-        case Command(command="describe"):
-            invoke_group_descriptor_generation(command.arguments)
+        case Command(command="filter-cameras"):
+            invoke_camera_filtering(command.arguments)
 
         case _:
             logger.error(f"invalid command: {command.command}")
