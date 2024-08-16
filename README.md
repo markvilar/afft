@@ -1,4 +1,4 @@
-# Raft - Relatively Simple AUV File Tool
+# Afft - AUV File Formatting Tool
 
 ![ci](https://github.com/markvilar/raft/actions/workflows/ci.yml/badge.svg)
 ![pylint](https://github.com/markvilar/raft/actions/workflows/pylint.yml/badge.svg)
