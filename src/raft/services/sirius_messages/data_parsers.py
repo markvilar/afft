@@ -4,142 +4,355 @@ import re
 
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, Callable, Tuple, Generic, TypeVar
 
-from loguru import logger
 from result import Ok, Err, Result
+
+from raft.utils.log import logger
 
 from .data_types import (
     AuvMessageHeader,
-    ImageCaptureDataV1,
-    ImageCaptureDataV2,
-    TeledyneDVLData,
-    LQModemData,
-    EvologicsModemData,
-    BatteryData,
-    ThrusterData,
+    
+    ImageCaptureMessage,
+    
+    SeabirdCTDMessage,
+    AanderaaCTDMessage,
+    EcopuckMessage,
+    
+    ParosciPressureMessage,
+    TeledyneDVLMessage,
+    LQModemMessage,
+    EvologicsModemMessage,
+    
+    MicronSonarMessage,
+    OASonarMessage,
+    
+    BatteryMessage,
+    ThrusterMessage,
 )
 
-
-THRUSTER_TOPIC_TO_NAME: Dict[str, str] = {
-    "THR_PORT": "thruster_portside",
-    "THR_STBD": "thruster_starboard",
-    "THR_VERT": "thruster_vertical",
-}
-
-BATTERY_TOPIC_TO_NAME: Dict[str, str] = {
-    "BATT": "battery",
-    "BATT0": "battery_00",
-    "BATT1": "battery_01",
-    "BATT2": "battery_02",
-}
-
-
-"""
-Image message parsers:
-- parse_image_message_v1
-- parse_image_message_v2
-"""
-
-
-type ParseResult = Result[Any, str]
-
-
-def parse_image_message_v1(header: AuvMessageHeader, line: str) -> ParseResult:
-    """Parses a message line as an image message.
-
-    VIS: 1244853280.578  [1244853280.348234] PR_20090613_003440_348_LC16.pgm
+MESSAGE_HEADER_REGEX = r"""
+    ^
+    (?P<topic>.+?):\s+
+    (?P<timestamp>\d+\.\d+).*   # unlimited of any character after timestamp
+    $
     """
 
-    pattern = re.compile(
-        r"""
-        \s*\[(?P<trigger_time>\d+.\d+)\]    # whitespaces, left bracket, trigger time, right bracket
-        \s*(?P<label>[\w]+)                 # whitespaces, label (filename stem)
-        """,
-        re.VERBOSE,
-    )
+IMAGE_CAPTURE_REGEX = r"""
+    ^
+    (?P<topic>.+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    (\[(?P<trigger_time>\d+.\d+)\])\s+
+    (?P<filename>[\w]+\.[\w]+)\s*       # Zero or unlimited since next group is optional
+    (exp:\s+(?P<exposure>\d+))?\s*      # Optional exposure group
+    $
+    """
 
+SEABIRD_CTD_REGEX = r"""
+    ^
+    (?P<topic>\w+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    cond:(?P<conductivity>[-+]?\d+\.\d+)\s+
+    temp:(?P<temperature>[-+]?\d+\.\d+)\s+
+    sal:(?P<salinity>[-+]?\d+\.\d+)\s+
+    pres:(?P<pressure>[-+]?\d+\.\d+)\s+
+    sos:(?P<sound_velocity>[-+]?\d+\.\d+)\s*
+    $
+    """
+
+AANDERAA_CTD_REGEX = r"""
+    ^
+    (?P<topic>\w+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    cond:(?P<conductivity>[-+]?\d+\.\d+)\s+
+    temp:(?P<temperature>[-+]?\d+\.\d+)\s+
+    sal:(?P<salinity>[-+]?\d+\.\d+)\s+
+    pres:(?P<pressure>[-+]?\d+\.\d+)\s+
+    sos:(?P<sound_velocity>[-+]?\d+\.\d+)\s*
+    $
+    """
+
+ECOPUCK_REGEX = r"""
+    ^
+    (?P<topic>\w+):\s+
+    (?P<timestamp>[-+]?\d+\.\d+)\s+
+    chlor:(?P<chlorophyll>[-+]?\d+\.\d+)\s+
+    bcksct:(?P<backscatter>[-+]?\d+\.\d+)\s+
+    cdom:(?P<cdom>[-+]?\d+\.\d+)\s+
+    temp:(?P<temperature>[-+]?\d+\.\d+)\s*
+    $
+    """
+
+PAROSCI_REGEX = r"""
+    ^
+    (?P<topic>.+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    (?P<depth>[-+]?\d+\.\d+)\s*
+    $
+    """
+
+TELEDYNE_DVL_REGEX = r"""
+    ^
+    (?P<topic>.+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    alt:\s*(?P<altitude>[-+]?\d*[.]\d*)\s+
+    r1:\s*(?P<range_01>[-+]?\d*[.]\d*)\s+
+    r2:\s*(?P<range_02>[-+]?\d*[.]\d*)\s+
+    r3:\s*(?P<range_03>[-+]?\d*[.]\d*)\s+
+    r4:\s*(?P<range_04>[-+]?\d*[.]\d*)\s+
+    h:\s*(?P<heading>[-+]?\d*[.]\d*)\s+
+    p:\s*(?P<pitch>[-+]?\d*[.]\d*)\s+
+    r:\s*(?P<roll>[-+]?\d*[.]\d*)\s+
+    vx:\s*(?P<velocity_x>[-+]?\d*[.]\d*)\s+
+    vy:\s*(?P<velocity_y>[-+]?\d*[.]\d*)\s+
+    vz:\s*(?P<velocity_z>[-+]?\d*[.]\d*)\s+
+    nx:\s*(?P<dmg_x>[-+]?\d*[.]\d*)\s+
+    ny:\s*(?P<dmg_y>[-+]?\d*[.]\d*)\s+
+    nz:\s*(?P<dmg_z>[-+]?\d*[.]\d*)\s+
+    COG:\s*(?P<course_over_ground>[-+]?\d*[.]\d*)\s+
+    SOG:\s*(?P<speed_over_ground>[-+]?\d*[.]\d*)\s+
+    bt_status:\s*(?P<bottom_track_status>\d*)\s+
+    h_true:\s*(?P<true_heading>[-+]?\d*[.]\d*)\s+
+    p_gimbal:\s*(?P<gimbal_pitch>[-+]?\d*[.]\d*)\s+
+    sv:\s*(?P<sound_velocity>[-+]?\d*[.]\d*)\s*
+    $
+    """
+
+LQ_MODEM_REGEX = r"""
+    ^
+    (?P<topic>.+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    time:\s*(?P<time>[-+]?\d*[.]\d*)\s+
+    Lat:\s*(?P<latitude>[-+]?\d*[.]\d*)\s+
+    Lon:\s*(?P<longitude>[-+]?\d*[.]\d*)\s+
+    hdg:\s*(?P<heading>[-+]?\d*[.]\d*)\s+
+    roll:\s*(?P<roll>[-+]?\d*[.]\d*)\s+
+    pitch:\s*(?P<pitch>[-+]?\d*[.]\d*)\s+
+    bear:\s*(?P<bearing>[-+]?\d*[.]\d*)\s+
+    rng:\s*(?P<range>[-+]?\d*[.]\d*)\s*
+    $
+    """
+
+EVOLOGICS_MODEM_REGEX = r"""
+    ^
+    (?P<topic>.+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    target_lat:\s*(?P<target_latitude>[-+]?\d*[.]\d*)\s+
+    target_lon:\s*(?P<target_longitude>[-+]?\d*[.]\d*)\s+
+    target_depth:\s*(?P<target_depth>[-+]?\d*[.]\d*)\s+
+    accuracy:\s*(?P<accuracy>[-+]?\d*[.]\d*)\s+
+    ship_lat:(?P<ship_latitude>[-+]?\d*[.]\d*)\s+
+    ship_lon:\s*(?P<ship_longitude>\d*[.]\d*)\s+
+    ship_roll:\s*(?P<ship_roll>[-+]?\d*[.]\d*)\s+
+    ship_pitch:\s*(?P<ship_pitch>[-+]?\d*[.]\d*)\s+
+    ship_heading:\s*(?P<ship_heading>\d*[.]\d*)\s+
+    target_x:\s*(?P<target_x>[-+]?\d*[.]\d*)\s+
+    target_y:\s*(?P<target_y>[-+]?\d*[.]\d*)\s+
+    target_z:\s*(?P<target_z>[-+]?\d*[.]\d*)\s*
+    $
+    """
+
+MICRON_REGEX = r"""
+    ^
+    (?P<topic>.+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    ProfRng:\s*(?P<profile_range>[-+]?\d+\.\d+)\s+
+    PseudoAlt:\s*(?P<profile_altitude>[-+]?\d+\.\d+)\s+
+    PseudoFwdDistance:\s*(?P<pseudo_forward_distance>[-+]?\d+\.\d+)\s+
+    Angle:\s*(?P<angle>[-+]?\d+\.\d+).*
+    $
+    """
+
+OAS_REGEX = r"""
+    ^
+    (?P<topic>.+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    ProfRng:\s*(?P<profile_range>[-+]?\d+\.\d+)\s+
+    PseudoAlt:\s*(?P<profile_altitude>[-+]?\d+\.\d+)\s+
+    PseudoFwdDistance:\s*(?P<pseudo_forward_distance>[-+]?\d+\.\d+).*
+    $
+    """
+
+THRUSTER_REGEX = r"""
+    ^
+    (?P<topic>.+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    RPM:\s*(?P<rpm>[-+]?\d*[.]\d*)\s+
+    A:\s*(?P<current>[-+]?\d*[.]\d*)\s+
+    V:\s*(?P<voltage>[-+]?\d*[.]\d*)\s+
+    T:\s*(?P<temperature>[-+]?\d*[.]\d*)\s*
+    $
+    """
+
+BATTERY_REGEX = r"""
+    ^
+    (?P<topic>\w+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    TimeLeft:\s*(?P<time_left>[-+]?\d+)\s+
+    PercentCharge:\s*(?P<charge_percent>\d+)\s+
+    Current:\s*(?P<current>[-+]?\d+[.]\d+)\s+
+    Voltage:\s*(?P<voltage>[-+]?\d+[.]\d+)\s+
+    Power:\s*(?P<power>[-+]?\d+[.]\d+)\s+
+    Charging:\s*(?P<charging>\d)\s*
+    $
+    """
+
+
+def parse_message_header(line: str) -> Result[AuvMessageHeader, str]:
+    """Parses the header from a message line."""
+
+    pattern = re.compile(MESSAGE_HEADER_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse body: {line}")
+        return Err(f"failed to parse header: {line}")
 
-    body = ImageCaptureDataV1(
-        trigger_time=float(match["trigger_time"]), label=str(match["label"])
+    header = AuvMessageHeader(
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
     )
 
-    return Ok(body)
+    return Ok(header)
 
 
-def parse_image_message_v2(header: AuvMessageHeader, line: str) -> ParseResult:
-    """Parses a message line as an image message.
+def parse_image_message(line: str) -> Result[ImageCaptureMessage, str]:
+    """Parses a message line as an image capture message."""
 
-    VIS: 1370910671.991  [1370910671.168201] PR_20130611_003111_168_LC16.tif exp: 1592
-    """
-
-    pattern = re.compile(
-        r"""
-        \s*\[(?P<trigger_time>\d+.\d+)\]    # whitespace, trigger time
-        \s*(?P<label>[\w]+)\.[\w]+          # whitespace, label, extension
-        \s*exp:\s*(?P<exposure>[\d]+)       # whitespace, key, exposure
-        """,
-        re.VERBOSE,
-    )
-
-    match = pattern.match(line)
-
-    body = ImageCaptureDataV2(
-        trigger_time=float(match["trigger_time"]),
-        label=str(match["label"]),
-        exposure=int(match["exposure"]),
-    )
-
-    return Ok(body)
-
-
-"""
-Navigation data parsers:
-- parse_teledyne_dvl_message
-- parse_lq_modem_message
-- parse_evologics_modem_message
-"""
-
-
-def parse_teledyne_dvl_message(header: AuvMessageHeader, line: str) -> TeledyneDVLData:
-    """Parses a message line as a TeledyneDVLData dataclass."""
-
-    pattern = re.compile(
-        r"""
-        \s*alt:\s*(?P<altitude>[-+]?\d*[.]\d*)
-        \s*r1:\s*(?P<range_01>[-+]?\d*[.]\d*)
-        \s*r2:\s*(?P<range_02>[-+]?\d*[.]\d*)
-        \s*r3:\s*(?P<range_03>[-+]?\d*[.]\d*)
-        \s*r4:\s*(?P<range_04>[-+]?\d*[.]\d*)
-        \s*h:\s*(?P<heading>[-+]?\d*[.]\d*)
-        \s*p:\s*(?P<pitch>[-+]?\d*[.]\d*)
-        \s*r:\s*(?P<roll>[-+]?\d*[.]\d*)
-        \s*vx:\s*(?P<velocity_x>[-+]?\d*[.]\d*)
-        \s*vy:\s*(?P<velocity_y>[-+]?\d*[.]\d*)
-        \s*vz:\s*(?P<velocity_z>[-+]?\d*[.]\d*)
-        \s*nx:\s*(?P<position_x>[-+]?\d*[.]\d*)
-        \s*ny:\s*(?P<position_y>[-+]?\d*[.]\d*)
-        \s*nz:\s*(?P<position_z>[-+]?\d*[.]\d*)
-        \s*COG:\s*(?P<course_over_ground>[-+]?\d*[.]\d*)
-        \s*SOG:\s*(?P<speed_over_ground>[-+]?\d*[.]\d*)
-        \s*bt_status:\s*(?P<bottom_track_status>\d*)
-        \s*h_true:\s*(?P<true_heading>[-+]?\d*[.]\d*)
-        \s*p_gimbal:\s*(?P<gimbal_pitch>[-+]?\d*[.]\d*)
-        \s*sv:\s*(?P<sound_velocity>[-+]?\d*[.]\d*)
-        """,
-        re.VERBOSE,
-    )
-
+    pattern = re.compile(IMAGE_CAPTURE_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse line: {line}")
+        return Err(f"failed to parse image message: {line}")
 
-    data = TeledyneDVLData(
+    header = ImageCaptureMessage.header_type(
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
+    )
+
+    filename: str = str(match["filename"])
+    label: str = Path(match["filename"]).stem
+    trigger_time: float = float(match["trigger_time"])
+    exposure_logged: bool = match["exposure"] is not None
+
+    exposure: int = int(match["exposure"]) if exposure_logged else 0
+
+    body = ImageCaptureMessage.body_type(
+        label=label,
+        filename=filename,
+        trigger_time=trigger_time,
+        exposure_logged=exposure_logged,
+        exposure=exposure,
+    )
+
+    return Ok(ImageCaptureMessage(header, body))
+
+
+def parse_seabird_ctd_message(line: str) -> Result[SeabirdCTDMessage, str]:
+    """Parses a message line as a Seabird CTD message."""
+
+    pattern = re.compile(SEABIRD_CTD_REGEX, re.VERBOSE)
+    match = pattern.match(line)
+
+    if not match:
+        return Err(f"failed to parse Seabird CTD message: {line}")
+
+    header = SeabirdCTDMessage.header_type(
+        topic=str(match["topic"]), timestamp=float(match["timestamp"])
+    )
+
+    body = SeabirdCTDMessage.body_type(
+        conductivity=float(match["conductivity"]),
+        temperature=float(match["temperature"]),
+        salinity=float(match["salinity"]),
+        pressure=float(match["pressure"]),
+        sound_velocity=float(match["sound_velocity"]),
+    )
+
+    return Ok(SeabirdCTDMessage(header, body))
+
+
+def parse_aanderaa_ctd_message(line: str) -> Result[AanderaaCTDMessage, str]:
+    """Parses a message line as an Aanderaa CTD message."""
+
+    pattern = re.compile(AANDERAA_CTD_REGEX, re.VERBOSE)
+    match = pattern.match(line)
+
+    if not match:
+        return Err(f"failed to parse Aanderaa CTD message: {line}")
+
+    header = AanderaaCTDMessage.header_type(
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
+    )
+
+    body = AanderaaCTDMessage.body_type(
+        conductivity=float(match["conductivity"]),
+        temperature=float(match["temperature"]),
+        salinity=float(match["salinity"]),
+        pressure=float(match["pressure"]),
+        sound_velocity=float(match["sound_velocity"]),
+    )
+
+    return Ok(AanderaaCTDMessage(header, body))
+
+
+def parse_ecopuck_message(line: str) -> Result[EcopuckMessage, str]:
+    """Parses a message line as an Ecopuck water quality message."""
+    
+    pattern = re.compile(ECOPUCK_REGEX, re.VERBOSE)
+    match = pattern.match(line)
+
+    if not match:
+        return Err(f"failed to parse Ecopuck message: {line}")
+
+    header = EcopuckMessage.header_type(
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
+    )
+
+    body = EcopuckMessage.body_type(
+        chlorophyll=float(match["chlorophyll"]),
+        backscatter=float(match["backscatter"]),
+        cdom=float(match["cdom"]),
+        temperature=float(match["temperature"]),
+    )
+
+    return Ok(EcopuckMessage(header, body))
+
+
+def parse_parosci_pressure_message(line: str) -> Result[ParosciPressureMessage, str]:
+    """Parses a message line as a Parosci pressure message."""
+    pattern = re.compile(PAROSCI_REGEX, re.VERBOSE)
+    match = pattern.match(line)
+
+    if not match:
+        return Err(f"failed to parse message line: {line}")
+
+    header = ParosciPressureMessage.header_type(
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
+    )
+
+    body = ParosciPressureMessage.body_type(
+        depth=float(match["depth"]),
+    )
+
+    return Ok(ParosciPressureMessage(header, body))
+
+
+def parse_teledyne_dvl_message(line: str) -> Result[TeledyneDVLMessage, str]:
+    """Parses a message line as a Teledyne DVL message."""
+
+    pattern = re.compile(TELEDYNE_DVL_REGEX, re.VERBOSE)
+    match = pattern.match(line)
+
+    if not match:
+        return Err(f"failed to parse message line: {line}")
+
+    header: AuvMessageHeader = TeledyneDVLMessage.header_type(
+        topic=str(match["topic"]), timestamp=float(match["timestamp"])
+    )
+
+    body: TeledyneDVLData = TeledyneDVLMessage.body_type(
         altitude=float(match["altitude"]),
         range_01=float(match["range_01"]),
         range_02=float(match["range_02"]),
@@ -151,9 +364,9 @@ def parse_teledyne_dvl_message(header: AuvMessageHeader, line: str) -> TeledyneD
         velocity_x=float(match["velocity_x"]),
         velocity_y=float(match["velocity_y"]),
         velocity_z=float(match["velocity_z"]),
-        position_x=float(match["position_x"]),
-        position_y=float(match["position_y"]),
-        position_z=float(match["position_z"]),
+        dmg_x=float(match["dmg_x"]),
+        dmg_y=float(match["dmg_y"]),
+        dmg_z=float(match["dmg_z"]),
         course_over_ground=float(match["course_over_ground"]),
         speed_over_ground=float(match["speed_over_ground"]),
         true_heading=float(match["true_heading"]),
@@ -162,86 +375,52 @@ def parse_teledyne_dvl_message(header: AuvMessageHeader, line: str) -> TeledyneD
         bottom_track_status=int(match["bottom_track_status"]),
     )
 
-    logger.info(data)
-
-    return Ok(data)
+    return Ok(TeledyneDVLMessage(header, body))
 
 
-def parse_paroscientific_message(header: AuvMessageHeader, line: str) -> object:
-    """Parses a message line as a Paroscientific dataclass."""
-    raise NotImplementedError("parse_paroscientific_message is not implemented.")
+def parse_lq_modem_message(line: str) -> Result[LQModemMessage, str]:
+    """Parses a message line as a LQ modem message."""
 
-
-def parse_lq_modem_message(header: AuvMessageHeader, line: str) -> LQModemData:
-    """Parses a message line as a LQModemData dataclass."""
-
-    pattern = re.compile(
-        r"""
-        \s*time:\s*(?P<time>\d*[.]\d*)
-        \s*Lat:\s*(?P<latitude>[-+]?\d*[.]\d*)
-        \s*Lon:\s*(?P<longitude>[-+]?\d*[.]\d*)
-        \s*hdg:\s*(?P<heading>[-+]?\d*[.]\d*)
-        \s*roll:\s*(?P<roll>[-+]?\d*[.]\d*)
-        \s*pitch:\s*(?P<pitch>[-+]?\d*[.]\d*)
-        \s*bear:\s*(?P<bearing>[-+]?\d*[.]\d*)
-        \s*rng:\s*(?P<range>[-+]?\d*[.]\d*)
-        """,
-        re.VERBOSE,
-    )
-
+    pattern = re.compile(LQ_MODEM_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse line: {line}")
+        return Err(f"failed to parse message line: {line}")
 
-    data = LQModemData(
+    header: AuvMessageHeader = LQModemMessage.header_type(
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
+    )
+
+    body = LQModemMessage.body_type(
         latitude=float(match["latitude"]),
         longitude=float(match["longitude"]),
         roll=float(match["roll"]),
         pitch=float(match["pitch"]),
         heading=float(match["heading"]),
+        time=float(match["time"]),
         bearing=float(match["bearing"]),
         range=float(match["range"]),
     )
 
-    return Ok(data)
+    return Ok(LQModemMessage(header, body))
 
 
-def parse_evologics_modem_message(
-    header: AuvMessageHeader, line: str
-) -> EvologicsModemData:
-    """Parses a message line as an Evologics USBL message.
+def parse_evologics_modem_message(line: str) -> Result[EvologicsModemMessage, str]:
+    """Parses a message line as an Evologics USBL message."""
 
-    EVOLOGICS_FIX: 1495772673.026 target_lat:-28.813446502 target_lon:113.947151550
-    target_depth:12.357 accuracy:3.537 ship_lat:-28.812462645 ship_lon:113.946070301
-    ship_roll: -1.61 ship_pitch: -0.01 ship_heading:270.35 target_x:-54.63 target_y:-141.69
-    target_z: -4.48
-    """
-
-    pattern = re.compile(
-        r"""
-        \s*target_lat:\s*(?P<target_latitude>[-+]?\d*[.]\d*)
-        \s*target_lon:\s*(?P<target_longitude>[-+]?\d*[.]\d*)
-        \s*target_depth:\s*(?P<target_depth>[-+]?\d*[.]\d*)
-        \s*accuracy:\s*(?P<accuracy>[-+]?\d*[.]\d*)
-        \s*ship_lat:(?P<ship_latitude>[-+]?\d*[.]\d*)
-        \s*ship_lon:\s*(?P<ship_longitude>\d*[.]\d*)
-        \s*ship_roll:\s*(?P<ship_roll>[-+]?\d*[.]\d*)
-        \s*ship_pitch:\s*(?P<ship_pitch>[-+]?\d*[.]\d*)
-        \s*ship_heading:\s*(?P<ship_heading>\d*[.]\d*)
-        \s*target_x:\s*(?P<target_x>[-+]?\d*[.]\d*)
-        \s*target_y:\s*(?P<target_y>[-+]?\d*[.]\d*)
-        \s*target_z:\s*(?P<target_z>[-+]?\d*[.]\d*)
-        """,
-        re.VERBOSE,
-    )
-
+    pattern = re.compile(EVOLOGICS_MODEM_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse line: {line}")
+        return Err(f"failed to parse message line: {line}")
 
-    data = EvologicsModemData(
+    header = EvologicsModemMessage.header_type(
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
+    )
+
+    body = EvologicsModemMessage.body_type(
         target_latitude=float(match["target_latitude"]),
         target_longitude=float(match["target_longitude"]),
         target_depth=float(match["target_depth"]),
@@ -256,75 +435,79 @@ def parse_evologics_modem_message(
         ship_heading=float(match["ship_heading"]),
     )
 
-    return Ok(data)
+    return Ok(EvologicsModemMessage(header, body))
 
 
-def parse_thruster_message(header: AuvMessageHeader, line: str) -> ThrusterData:
-    """Parser function for thruster messages.
+def parse_micron_sonar_message(line: str) -> Result[MicronSonarMessage, str]:
+    """Parses a message line as a Micron sonar message."""
 
-    THR_PORT:  1244855390.607        RPM:0.00 A:0.0400 V:46.80 T:29.00
-    """
-    pattern = re.compile(
-        r"""
-        \s*RPM:\s*(?P<rpm>[-+]?\d*[.]\d*)                  # rpm
-        \s*A:\s*(?P<current>[-+]?\d*[.]\d*)                # current
-        \s*V:\s*(?P<voltage>[-+]?\d*[.]\d*)                # voltage
-        \s*T:\s*(?P<temperature>[-+]?\d*[.]\d*)            # temperature
-        """,
-        re.VERBOSE,
-    )
-
+    pattern = re.compile(MICRON_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse line: {line}")
+        return Err(f"failed to parse message line: {line}")
 
-    if not header.topic in THRUSTER_TOPIC_TO_NAME:
-        return Err(f"unknown thruster name for topic: {header.topic}")
-
-    body = ThrusterData(
-        name=THRUSTER_TOPIC_TO_NAME[header.topic],
-        rpm=float(match["rpm"]),
-        current=float(match["current"]),
-        voltage=float(match["voltage"]),
-        temperature=float(match["temperature"]),
+    header = MicronSonarMessage.header_type(
+        topic = str(match["topic"]),
+        timestamp = float(match["timestamp"]),
+    )
+    
+    body = MicronSonarMessage.body_type(
+        profile_range = float(match["profile_range"]),
+        profile_altitude = float(match["profile_altitude"]),
+        pseudo_forward_distance = float(match["pseudo_forward_distance"]),
+        angle = float(match["angle"]),
     )
 
-    return Ok(body)
+    return Ok(MicronSonarMessage(header, body))
 
 
-"""
-Power system data parsers:
-- parse_battery_message
-- parse_thruster_message
-"""
+def parse_obstacle_avoidance_sonar_message(line: str) -> Result[OASonarMessage, str]:
+    """Parses a message line as an OA sonar message."""
+
+    pattern = re.compile(OAS_REGEX, re.VERBOSE)
+    match = pattern.match(line)
+
+    if not match:
+        return Err(f"failed to parse message line: {line}")
+
+    header = OASonarMessage.header_type(
+        topic = str(match["topic"]),
+        timestamp = float(match["timestamp"]),
+    )
+    
+    body = OASonarMessage.body_type(
+        profile_range = float(match["profile_range"]),
+        profile_altitude = float(match["profile_altitude"]),
+        pseudo_forward_distance = float(match["pseudo_forward_distance"]),
+    )
+
+    return Ok(OASonarMessage(header, body))
 
 
-def parse_battery_message(header: AuvMessageHeader, line: str) -> ParseResult:
+BATTERY_TOPIC_TO_NAME: dict[str, str] = {
+    "BATT": "battery",
+    "BATT0": "battery_00",
+    "BATT1": "battery_01",
+    "BATT2": "battery_02",
+}
+
+
+def parse_battery_message(line: str) -> Result[BatteryMessage, str]:
     """Parses a message line as a BatteryMessage object."""
 
-    pattern = re.compile(
-        r"""
-        \s*TimeLeft:\s*(?P<time_left>\d+)
-        \s*PercentCharge:\s*(?P<charge_percent>\d+)
-        \s*Current:\s*(?P<current>[-+]?\d+[.]\d+)
-        \s*Voltage:\s*(?P<voltage>\d+[.]\d+)
-        \s*Power:\s*(?P<power>\d+[.]\d+)
-        \s*Charging:\s*(?P<charging>\d)
-        """,
-        re.VERBOSE,
-    )
-
+    pattern = re.compile(BATTERY_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse line: {line}")
+        return Err(f"failed to parse message line: {line}")
 
-    if not header.topic in BATTERY_TOPIC_TO_NAME:
-        return Err(f"unknown battery name for topic: {header.topic}")
+    header = BatteryMessage.header_type(
+        topic=str(match["topic"]), timestamp=float(match["timestamp"])
+    )
 
-    body = BatteryData(
-        name=BATTERY_TOPIC_TO_NAME[header.topic],
+    body = BatteryMessage.body_type(
+        label=BATTERY_TOPIC_TO_NAME[header.topic],
         time_left=int(match["time_left"]),
         current=float(match["current"]),
         voltage=float(match["voltage"]),
@@ -333,49 +516,52 @@ def parse_battery_message(header: AuvMessageHeader, line: str) -> ParseResult:
         charging=bool(int(match["charging"])),
     )
 
-    return Ok(body)
+    return Ok(BatteryMessage(header, body))
 
 
-ParseFun = Callable[[str], Any]
-
-
-# Temporary: Remove after development is done
-PROTOCOL_DEV: Dict[str, ParseFun] = {
-    "VIS": parse_image_message_v1,
-    "RDI": parse_teledyne_dvl_message,
-    "LQMODEM": parse_lq_modem_message,
-    "EVOLOGICS_FIX": parse_evologics_modem_message,
-    "THR_PORT": parse_thruster_message,
-    "THR_STBD": parse_thruster_message,
-    "THR_VERT": parse_thruster_message,
-    "BATT": parse_battery_message,
-    "BATT0": parse_battery_message,
-    "BATT1": parse_battery_message,
-    "BATT2": parse_battery_message,
+THRUSTER_TOPIC_TO_NAME: dict[str, str] = {
+    "THR_PORT": "thruster_portside",
+    "THR_STBD": "thruster_starboard",
+    "THR_VERT": "thruster_vertical",
 }
 
-PROTOCOL_V1: Dict[str, ParseFun] = {
-    "VIS": parse_image_message_v1,
-    "RDI": parse_teledyne_dvl_message,
-    "LQMODEM": parse_lq_modem_message,
-    "THR_PORT": parse_thruster_message,
-    "THR_STBD": parse_thruster_message,
-    "THR_VERT": parse_thruster_message,
-    "BATT": parse_battery_message,
-    "BATT0": parse_battery_message,
-    "BATT1": parse_battery_message,
-    "BATT2": parse_battery_message,
-}
 
-PROTOCOL_V2: Dict[str, ParseFun] = {
-    "VIS": parse_image_message_v2,
-    "RDI": parse_teledyne_dvl_message,
-    "LQMODEM": parse_lq_modem_message,
-    "THR_PORT": parse_thruster_message,
-    "THR_STBD": parse_thruster_message,
-    "THR_VERT": parse_thruster_message,
-    "BATT": parse_battery_message,
-    "BATT0": parse_battery_message,
-    "BATT1": parse_battery_message,
-    "BATT2": parse_battery_message,
+def parse_thruster_message(line: str) -> Result[ThrusterMessage, str]:
+    """Parser function for thruster messages."""
+
+    pattern = re.compile(THRUSTER_REGEX, re.VERBOSE)
+    match = pattern.match(line)
+
+    if not match:
+        return Err(f"failed to parse message line: {line}")
+
+    header = ThrusterMessage.header_type(
+        topic=str(match["topic"]), timestamp=float(match["timestamp"])
+    )
+
+    body = ThrusterMessage.body_type(
+        label=THRUSTER_TOPIC_TO_NAME[header.topic],
+        rpm=float(match["rpm"]),
+        current=float(match["current"]),
+        voltage=float(match["voltage"]),
+        temperature=float(match["temperature"]),
+    )
+
+    return Ok(ThrusterMessage(header, body))
+
+
+MESSAGE_TYPE_TO_PARSER: dict = {
+    AuvMessageHeader: parse_message_header,
+    ImageCaptureMessage: parse_image_message,
+    SeabirdCTDMessage: parse_seabird_ctd_message,
+    AanderaaCTDMessage: parse_aanderaa_ctd_message,
+    EcopuckMessage: parse_ecopuck_message,
+    ParosciPressureMessage: parse_parosci_pressure_message,
+    TeledyneDVLMessage: parse_teledyne_dvl_message,
+    LQModemMessage: parse_lq_modem_message,
+    EvologicsModemMessage: parse_evologics_modem_message,
+    MicronSonarMessage: parse_micron_sonar_message,
+    OASonarMessage: parse_obstacle_avoidance_sonar_message,
+    BatteryMessage: parse_battery_message,
+    ThrusterMessage: parse_thruster_message,
 }

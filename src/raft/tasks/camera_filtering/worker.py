@@ -16,7 +16,7 @@ from .data_types import CameraFilteringContext, CameraFilteringData
 def prepare_camera_processing_data(
     context: CameraFilteringContext,
 ) -> CameraFilteringData:
-    """Reads cameras and labels from file. Additionally, cameras are cleaned by renaming and dropping 
+    """Reads cameras and labels from file. Additionally, cameras are cleaned by renaming and dropping
     unnecessary columns."""
 
     camera_read_result: Result[pl.DataFrame, str] = read_cameras(context.camera_file)
@@ -39,12 +39,14 @@ def prepare_camera_processing_data(
 def filter_cameras_by_label(cameras: pl.DataFrame, labels: list[str]) -> pl.DataFrame:
     """Filter a camera data frame by the given labels. Cameras whose label is not in the given label
     are discarded."""
-    
+
     filtered_cameras: pl.DataFrame = cameras.filter(
         pl.col("stereo_left_label").is_in(labels)
     )
 
-    logger.info(f"Filter by label - Kept {len(filtered_cameras)} out of {len(cameras)} cameras")
+    logger.info(
+        f"Filter by label - Kept {len(filtered_cameras)} out of {len(cameras)} cameras"
+    )
 
     return filtered_cameras
 
@@ -53,7 +55,7 @@ def write_cameras_to_csv(cameras: pl.DataFrame, path: Path) -> Result[Path, str]
     """Writes a camera data frame to a CSV file."""
     if not path.suffix == ".csv":
         return Err(f"invalid file extension: {path}")
-    
+
     error: Optional[str] = cameras.write_csv(path)
 
     if error:
@@ -82,7 +84,7 @@ def filter_cameras(context: CameraFilteringContext) -> None:
     write_result: Result[Path, str] = write_cameras_to_csv(
         filtered_cameras, context.output_file
     )
-    
+
     if write_result.is_err():
         logger.error(write_result.err())
     else:
