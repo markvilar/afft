@@ -8,7 +8,7 @@ from raft.utils.log import init_logger, logger
 from raft.tasks.camera_filtering import invoke_camera_filtering
 from raft.tasks.export_metafile import invoke_metafile_export
 from raft.tasks.generate_metafile import invoke_metafile_generation
-from raft.tasks.message_processing import invoke_message_processing
+from raft.tasks.message_parsing import invoke_message_parsing
 
 
 def main():
@@ -25,11 +25,10 @@ def main():
             invoke_metafile_generation(command.arguments)
         case Command(command="metafile-export"):
             invoke_metafile_export(command.arguments)
-        case Command(command="process-messages"):
-            invoke_message_processing(command.arguments)
         case Command(command="filter-cameras"):
             invoke_camera_filtering(command.arguments)
-
+        case Command(command="parse-messages"):
+            invoke_message_parsing(command)
         case _:
             logger.error(f"invalid command: {command.command}")
 

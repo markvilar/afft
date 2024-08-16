@@ -69,7 +69,7 @@ def read_cameras(
             has_header=False,
             separator=RENAV_SEPARATOR,
             skip_rows=RENAV_SKIP_ROWS,
-            infer_schema_length=0, # NOTE: Makes sure all columns are interpreted as strings
+            infer_schema_length=0,  # NOTE: Makes sure all columns are interpreted as strings
         )
     except pl.exceptions.ComputeError as error:
         return Err(error)
