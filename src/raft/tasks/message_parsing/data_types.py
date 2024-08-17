@@ -17,6 +17,7 @@ class MessageParseContext:
 type MessageLoader = Callable[[None], list[str]]
 
 
+@dataclass
 class MessageParseData:
     """TODO"""
 

@@ -1,0 +1,36 @@
+[device.martin-mia1]
+path = "/sdcard/"
+host = "martin-mia1"
+user = "mu"
+
+[[tasks.CopyToHost]]
+source = "ClearScanner/share"
+
+[[tasks.CopyToHost]]
+source = "DCIM/Camera"
+destination = "~/TODO/"
+
+[[tasks.CopyToHost]]
+source = "bluetooth"
+
+[[tasks.CopyToHost]]
+source = "Download"
+
+[[tasks.CopyToHost]]
+source = "Pictures"
+
+[[tasks.CopyToHost]]
+source = "TODO"
+
+[[tasks.CopyToHost]]
+source = "Android/data/net.osmand/files/tracks/rec"
+destination = "~/Dokumente/Karten/Tracks/"
+
+[[tasks.CopyToDevice]]
+source = "~/Dokumente/Karten/Routen"
+destination = "Android/data/net.osmand/files/tracks/Routen"
+delete = true
+
+[[tasks.CopyToDevice]]
+source = "~/Dokumente/Hauptliste/Hauptliste.kdbx"
+destination = ""

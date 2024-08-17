@@ -21,8 +21,11 @@ polars = "^0.20.26"
 python-dotenv = "^1.0.1"
 python-rclone = "*"
 result = "^0.16.1"
-toml = "^0.10.2"
 tqdm = "^4.66.2"
+msgspec = "^0.18.6"
+
+# Needed by plotly express
+pandas = "^2.2.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.2.0"
