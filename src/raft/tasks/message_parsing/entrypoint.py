@@ -45,8 +45,12 @@ def configure_task_context(
     return MessageParseContext(input, output, protocol)
 
 
-def configure_task_data() -> MessageParseData:
+def configure_task_data(source: Path) -> MessageParseData:
     """TODO"""
+
+    # TODO: Set up message loader
+    # TODO: Build protocol
+    # TODO: Add export handler
 
     return MessageParseData(
         message_loader=None,
@@ -65,6 +69,6 @@ def invoke_message_parsing(command: Command) -> None:
         namespace.input, namespace.output, namespace.protocol
     )
 
-    data: MessageParseData = configure_task_data()
+    data: MessageParseData = configure_task_data(namespace.input)
 
     execute_message_parsing(context, data)

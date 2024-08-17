@@ -1,8 +1,8 @@
 #!/usr/bin/bash
 
-DEVICE="/media/martin/hdd_01"
-MESSAGE_DIR="$DEVICE/acfr_revisits_processed/acfr_merged_message_files"
-OUTPUT_DIR="$DEVICE/acfr_revisits_processed/acfr_parsed_message_files"
+DEVICE="/home/martin/data"
+MESSAGE_DIR="$DEVICE/acfr_revisits_messages/acfr_merged_messages"
+OUTPUT_DIR="$DEVICE/acfr_revisits_messages/acfr_parsed_messages"
 
 poetry run raft-cli parse-messages \
   "$MESSAGE_DIR/qd61g27j_20100421_022145_messages.txt" \
