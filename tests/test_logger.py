@@ -1,6 +1,6 @@
-"""Unit test for rafts logger."""
+"""Unit test for the afft logger."""
 
-from raft.utils.log import init_logger
+from afft.utils.log import init_logger
 
 
 def test_log_initialization() -> None:
