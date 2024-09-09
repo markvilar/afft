@@ -8,7 +8,7 @@ from ...filesystem import (
     FileQueryData,
 )
 
-from ...io import read_toml, write_toml
+from ...io import read_config, write_config
 from ...utils.log import logger
 from ...utils.result import Ok, Err, Result
 
@@ -85,7 +85,7 @@ def generate_metafiles(context: MetafileGenerationContext, config: Path) -> None
     """Generate descriptors for a of deployments. The procedure searches for message
     and camera files for each deployment."""
 
-    config: dict = read_toml(config).unwrap()
+    config: dict = read_config(config).unwrap()
 
     # Find directories to query
     target_directories: list[Path] = get_target_directories(
@@ -131,7 +131,7 @@ def generate_metafiles(context: MetafileGenerationContext, config: Path) -> None
         ]
 
     output_file: Path = context.output_directory / f"{context.prefix}_metafile.toml"
-    write_result: Result[Path, str] = write_toml(serialized_groups, output_file)
+    write_result: Result[Path, str] = write_config(serialized_groups, output_file)
 
     match write_result:
         case Ok(output_file):

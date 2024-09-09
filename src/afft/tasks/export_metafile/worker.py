@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Callable
 
 from ...filesystem import get_path_size, copy_file
-from ...io import read_file, read_toml, write_file
+from ...io import read_file, read_config, write_file
 from ...utils.log import logger
 from ...utils.result import Result
 
@@ -103,7 +103,7 @@ def execute_group_export(context: FileExportContext) -> None:
     logger.info(f" - Prefix:                {context.prefix}")
     logger.info("")
 
-    read_result: Result[dict, str] = read_toml(context.metafile)
+    read_result: Result[dict, str] = read_config(context.metafile)
     if read_result.is_err():
         logger.error(read_result.err())
         return
