@@ -21,12 +21,12 @@ jobs:
     - name: Install packages
       run: |
         poetry install
-    - name: Build
+    - name: Build project
       run: |
         poetry build
     - name: Run scripts
       run: |
-        poetry run raft-cli -h
+        poetry run afft-cli -h
     - name: Run tests
       run: |
         poetry run pytest

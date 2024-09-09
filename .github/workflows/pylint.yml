@@ -21,6 +21,10 @@ jobs:
     - name: Install packages
       run: |
         poetry install
-    - name: Lint source code
+    - name: Lint source code with ruff
+      run: |
+        poetry run ruff check .
+    - name: Lint source code with black
       run: |
         poetry run black .
+
