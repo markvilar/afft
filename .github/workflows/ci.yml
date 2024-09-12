@@ -26,7 +26,7 @@ jobs:
         poetry build
     - name: Run CLI
       run: |
-        poetry run afft -h
+        poetry run afft --help
     - name: Run tests
       run: |
         poetry run pytest
