@@ -24,7 +24,9 @@ polars = "^0.20.26"
 python-dotenv = "^1.0.1"
 python-rclone = "*"
 result = "^0.16.1"
+sqlalchemy = "^2.0.34"
 tqdm = "^4.66.2"
+psycopg2-binary = "^2.9.9"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -34,4 +36,4 @@ pytest = "^8.2.0"
 ruff = "^0.6.4"
 
 [tool.poetry.scripts]
-afft-cli = "afft.cli.cli:main"
+afft = "afft.cli.entrypoint:main"
