@@ -58,7 +58,7 @@ class EcopuckData:
 Navigation system data types:
 - ParosciPressureData
 - TeledyneDVLData
-- LQModemData
+- TrackLinkModemData
 - EvologicsModemData
 - MicronSonarData
 - OASonarData
@@ -109,8 +109,8 @@ class TeledyneDVLData:
 
 
 @dataclass
-class LQModemData:
-    """Class representing LQ modem data."""
+class TrackLinkModemData:
+    """Class representing TrackLink modem data."""
 
     latitude: float
     longitude: float
@@ -196,7 +196,7 @@ AUV message types:
  - EcopuckMessage
  - ParosciPressureMessage
  - TeledyneDVLMessage
- - LQModemMessage
+ - TrackLinkModemMessage
  - EvologicsModemMessage
  - MicronSonarMessage
  - OASonarMessage
@@ -272,14 +272,14 @@ class TeledyneDVLMessage:
 
 
 @dataclass
-class LQModemMessage:
-    """Class representing a LQ modem message."""
+class TrackLinkModemMessage:
+    """Class representing a TrackLink modem message."""
 
     header_type = AuvMessageHeader
-    body_type = LQModemData
+    body_type = TrackLinkModemData
 
     header: AuvMessageHeader
-    body: LQModemData
+    body: TrackLinkModemData
 
 
 @dataclass
@@ -335,3 +335,22 @@ class ThrusterMessage:
 
     header: AuvMessageHeader
     body: ThrusterData
+
+
+MESSAGE_TYPES: list[type] = [
+    AuvMessageHeader,
+    ImageCaptureMessage,
+    SeabirdCTDMessage,
+    AanderaaCTDMessage,
+    EcopuckMessage,
+    ParosciPressureMessage,
+    TeledyneDVLMessage,
+    TrackLinkModemMessage,
+    EvologicsModemMessage,
+    MicronSonarMessage,
+    OASonarMessage,
+    BatteryMessage,
+    ThrusterMessage,
+]
+
+MESSAGE_NAME_TO_TYPE: dict[str, type] = {type.__name__: type for type in MESSAGE_TYPES}

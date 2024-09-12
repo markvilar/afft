@@ -139,3 +139,6 @@ dmypy.json
 
 # Log directory
 log/
+
+# Environment
+.env

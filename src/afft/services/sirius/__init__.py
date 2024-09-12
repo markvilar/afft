@@ -14,7 +14,6 @@ from .message_parsers import (
     parse_obstacle_avoidance_sonar_message,
     parse_battery_message,
     parse_thruster_message,
-    MESSAGE_TYPE_TO_PARSER,
 )
 
 
@@ -26,7 +25,7 @@ from .message_types import (
     EcopuckMessage,
     ParosciPressureMessage,
     TeledyneDVLMessage,
-    LQModemMessage,
+    TrackLinkModemMessage,
     EvologicsModemMessage,
     MicronSonarMessage,
     OASonarMessage,
@@ -44,7 +43,7 @@ __all__ = [
     "EcopuckMessage",
     "ParosciPressureMessage",
     "TeledyneDVLMessage",
-    "LQModemMessage",
+    "TrackLinkModemMessage",
     "EvologicsModemMessage",
     "MicronSonarMessage",
     "OASonarMessage",
@@ -62,5 +61,4 @@ __all__ = [
     "parse_obstacle_avoidance_sonar_message",
     "parse_battery_message",
     "parse_thruster_message",
-    "MESSAGE_TYPE_TO_PARSER",
 ]
