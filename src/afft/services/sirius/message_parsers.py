@@ -14,7 +14,7 @@ from .message_types import (
     EcopuckMessage,
     ParosciPressureMessage,
     TeledyneDVLMessage,
-    LQModemMessage,
+    TrackLinkModemMessage,
     EvologicsModemMessage,
     MicronSonarMessage,
     OASonarMessage,
@@ -370,7 +370,7 @@ def parse_teledyne_dvl_message(line: str) -> Result[TeledyneDVLMessage, str]:
     return Ok(TeledyneDVLMessage(header, body))
 
 
-def parse_lq_modem_message(line: str) -> Result[LQModemMessage, str]:
+def parse_lq_modem_message(line: str) -> Result[TrackLinkModemMessage, str]:
     """Parses a message line as a LQ modem message."""
 
     pattern = re.compile(LQ_MODEM_REGEX, re.VERBOSE)
@@ -379,12 +379,12 @@ def parse_lq_modem_message(line: str) -> Result[LQModemMessage, str]:
     if not match:
         return Err(f"failed to parse message line: {line}")
 
-    header: AuvMessageHeader = LQModemMessage.header_type(
+    header: AuvMessageHeader = TrackLinkModemMessage.header_type(
         topic=str(match["topic"]),
         timestamp=float(match["timestamp"]),
     )
 
-    body = LQModemMessage.body_type(
+    body = TrackLinkModemMessage.body_type(
         latitude=float(match["latitude"]),
         longitude=float(match["longitude"]),
         roll=float(match["roll"]),
@@ -395,7 +395,7 @@ def parse_lq_modem_message(line: str) -> Result[LQModemMessage, str]:
         range=float(match["range"]),
     )
 
-    return Ok(LQModemMessage(header, body))
+    return Ok(TrackLinkModemMessage(header, body))
 
 
 def parse_evologics_modem_message(line: str) -> Result[EvologicsModemMessage, str]:
@@ -550,7 +550,7 @@ MESSAGE_TYPE_TO_PARSER: dict = {
     EcopuckMessage: parse_ecopuck_message,
     ParosciPressureMessage: parse_parosci_pressure_message,
     TeledyneDVLMessage: parse_teledyne_dvl_message,
-    LQModemMessage: parse_lq_modem_message,
+    TrackLinkModemMessage: parse_lq_modem_message,
     EvologicsModemMessage: parse_evologics_modem_message,
     MicronSonarMessage: parse_micron_sonar_message,
     OASonarMessage: parse_obstacle_avoidance_sonar_message,

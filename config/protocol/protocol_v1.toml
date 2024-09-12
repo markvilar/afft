@@ -1,2 +1,26 @@
-[messages]
-identifiers = ["VIS", "LQMODEM"]
+[message_maps]
+
+VIS = "ImageCaptureMessage"
+SEABIRD = "SeabirdCTDMessage"
+AANDERAA = "AanderaaCTDMessage"
+ECOPUCK = "EcopuckMessage"
+PAROSCI = "ParosciPressureMessage"
+RDI = "TeledyneDVLMessage"
+LQMODEM = "LQModemMessage"
+EVOLOGICS_FIX = "EvologicsModemMessage"
+BATT = "BatteryMessage"
+BATT0 = "BatteryMessage"
+BATT1 = "BatteryMessage"
+BATT2 = "BatteryMessage"
+THR_PORT = "ThrusterMessage"
+THR_STBD = "ThrusterMessage"
+THR_VERT = "ThrusterMessage"
+OAS = "OASonarMessage"
+MICRON = "MicronSonarMessage"
+MICRON_RETURNS = "MicronSonarMessage"
+
+# NOTE: Currently unimplemented messages
+# GPS_GSV = ""
+# GPS_RMC = ""
+# MICRON_TRACE = ""
+# MICRON_SECTOR = ""
