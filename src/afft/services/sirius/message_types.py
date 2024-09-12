@@ -76,9 +76,8 @@ class ParosciPressureData:
 
 @dataclass
 class TeledyneDVLData:
-    """Class representing Teledyne DVL data.
-    Check documentation at: https://www.comm-tec.com/Docs/Manuali/RDI/WH_CG_Mar14.pdf
-    """
+    """Class representing Teledyne DVL data. Check documentation at:
+    https://www.comm-tec.com/Docs/Manuali/RDI/WH_CG_Mar14.pdf"""
 
     altitude: float
 
@@ -208,7 +207,7 @@ AUV message types:
 
 @dataclass
 class ImageCaptureMessage:
-    """TODO"""
+    """Class representing an image capture message."""
 
     header_type = AuvMessageHeader
     body_type = ImageCaptureData
@@ -219,7 +218,7 @@ class ImageCaptureMessage:
 
 @dataclass
 class SeabirdCTDMessage:
-    """TODO"""
+    """Class representing a Seabird CTD message."""
 
     header_type = AuvMessageHeader
     body_type = SeabirdCTDData
@@ -230,7 +229,7 @@ class SeabirdCTDMessage:
 
 @dataclass
 class AanderaaCTDMessage:
-    """TODO"""
+    """Class representing an Aanderaa CTD message."""
 
     header_type = AuvMessageHeader
     body_type = AanderaaCTDData
@@ -241,7 +240,7 @@ class AanderaaCTDMessage:
 
 @dataclass
 class EcopuckMessage:
-    """TODO"""
+    """Class representing an Ecopuck message."""
 
     header_type = AuvMessageHeader
     body_type = EcopuckData
@@ -252,7 +251,7 @@ class EcopuckMessage:
 
 @dataclass
 class ParosciPressureMessage:
-    """TODO"""
+    """Class representing a Paroscientific pressure message."""
 
     header_type = AuvMessageHeader
     body_type = ParosciPressureData
@@ -263,7 +262,7 @@ class ParosciPressureMessage:
 
 @dataclass
 class TeledyneDVLMessage:
-    """TODO"""
+    """Class representing a Teledyne DVL message."""
 
     header_type = AuvMessageHeader
     body_type = TeledyneDVLData
@@ -274,7 +273,7 @@ class TeledyneDVLMessage:
 
 @dataclass
 class LQModemMessage:
-    """TODO"""
+    """Class representing a LQ modem message."""
 
     header_type = AuvMessageHeader
     body_type = LQModemData
@@ -285,7 +284,7 @@ class LQModemMessage:
 
 @dataclass
 class EvologicsModemMessage:
-    """TODO"""
+    """Class representing an Evologics modem message."""
 
     header_type = AuvMessageHeader
     body_type = EvologicsModemData
@@ -296,7 +295,7 @@ class EvologicsModemMessage:
 
 @dataclass
 class MicronSonarMessage:
-    """TODO"""
+    """Class representing a Micron sonar message."""
 
     header_type = AuvMessageHeader
     body_type = MicronSonarData
@@ -307,7 +306,7 @@ class MicronSonarMessage:
 
 @dataclass
 class OASonarMessage:
-    """TODO"""
+    """Class representing an OA sonar message."""
 
     header_type = AuvMessageHeader
     body_type = OASonarData
@@ -318,7 +317,7 @@ class OASonarMessage:
 
 @dataclass
 class BatteryMessage:
-    """TODO"""
+    """Class representing a battery message."""
 
     header_type = AuvMessageHeader
     body_type = BatteryData
@@ -329,7 +328,7 @@ class BatteryMessage:
 
 @dataclass
 class ThrusterMessage:
-    """TODO"""
+    """Class representing a thruster message."""
 
     header_type = AuvMessageHeader
     body_type = ThrusterData

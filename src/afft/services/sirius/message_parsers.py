@@ -6,8 +6,7 @@ from pathlib import Path
 
 from ...utils.result import Ok, Err, Result
 
-
-from .data_types import (
+from .message_types import (
     AuvMessageHeader,
     ImageCaptureMessage,
     SeabirdCTDMessage,
