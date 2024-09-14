@@ -1,14 +1,21 @@
 """Module for message classes."""
 
 from dataclasses import dataclass
+from typing import Optional, Self
+
+from .message_interfaces import Message
 
 
 @dataclass
-class AuvMessageHeader:
+class MessageHeader:
     """Class representing an AUV message header."""
 
     topic: str
     timestamp: float
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return self.__dict__
 
 
 @dataclass
@@ -21,6 +28,10 @@ class ImageCaptureData:
     exposure_logged: bool
     exposure: int = 0
 
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return self.__dict__
+
 
 @dataclass
 class SeabirdCTDData:
@@ -31,6 +42,10 @@ class SeabirdCTDData:
     salinity: float
     pressure: float
     sound_velocity: float
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return self.__dict__
 
 
 @dataclass
@@ -43,6 +58,10 @@ class AanderaaCTDData:
     pressure: float
     sound_velocity: float
 
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return self.__dict__
+
 
 @dataclass
 class EcopuckData:
@@ -52,6 +71,10 @@ class EcopuckData:
     backscatter: float
     cdom: float
     temperature: float
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return self.__dict__
 
 
 """
@@ -72,6 +95,10 @@ class ParosciPressureData:
     """Class representing Parosci pressure data."""
 
     depth: float
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return self.__dict__
 
 
 @dataclass
@@ -107,6 +134,10 @@ class TeledyneDVLData:
 
     bottom_track_status: int
 
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return self.__dict__
+
 
 @dataclass
 class TrackLinkModemData:
@@ -122,6 +153,10 @@ class TrackLinkModemData:
     time: float
     bearing: float
     range: float
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return self.__dict__
 
 
 @dataclass
@@ -144,6 +179,23 @@ class EvologicsModemData:
     ship_pitch: float
     ship_heading: float
 
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return {
+            "target_latitude": self.target_latitude,
+            "target_longitude": self.target_longitude,
+            "target_depth": self.target_depth,
+            "target_x": self.target_x,
+            "target_y": self.target_y,
+            "target_z": self.target_z,
+            "accuracy": self.accuracy,
+            "ship_latitude": self.ship_latitude,
+            "ship_longitude": self.ship_longitude,
+            "ship_roll": self.ship_roll,
+            "ship_pitch": self.ship_pitch,
+            "ship_heading": self.ship_heading,
+        }
+
 
 @dataclass
 class MicronSonarData:
@@ -154,6 +206,15 @@ class MicronSonarData:
     pseudo_forward_distance: float
     angle: float
 
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return {
+            "profile_range": self.profile_range,
+            "profile_altitude": self.profile_altitude,
+            "pseudo_forward_distance": self.pseudo_forward_distance,
+            "angle": self.angle,
+        }
+
 
 @dataclass
 class OASonarData:
@@ -162,6 +223,14 @@ class OASonarData:
     profile_range: float
     profile_altitude: float
     pseudo_forward_distance: float
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return {
+            "profile_range": self.profile_range,
+            "profile_altitude": self.profile_altitude,
+            "pseudo_forward_distance": self.pseudo_forward_distance,
+        }
 
 
 @dataclass
@@ -176,6 +245,18 @@ class BatteryData:
     charge_percent: int
     charging: bool
 
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return {
+            "label": self.label,
+            "time_left": self.time_left,
+            "current": self.current,
+            "voltage": self.voltage,
+            "power": self.power,
+            "charge_percent": self.charge_percent,
+            "charging": self.charging,
+        }
+
 
 @dataclass
 class ThrusterData:
@@ -186,6 +267,16 @@ class ThrusterData:
     current: float
     voltage: float
     temperature: float
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return {
+            "label": self.label,
+            "rpm": self.rpm,
+            "current": self.current,
+            "voltage": self.voltage,
+            "temperature": self.temperature,
+        }
 
 
 """
@@ -209,136 +300,208 @@ AUV message types:
 class ImageCaptureMessage:
     """Class representing an image capture message."""
 
-    header_type = AuvMessageHeader
+    header_type = MessageHeader
     body_type = ImageCaptureData
 
-    header: AuvMessageHeader
+    header: MessageHeader
     body: ImageCaptureData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
 
 
 @dataclass
 class SeabirdCTDMessage:
     """Class representing a Seabird CTD message."""
 
-    header_type = AuvMessageHeader
+    header_type = MessageHeader
     body_type = SeabirdCTDData
 
-    header: AuvMessageHeader
+    header: MessageHeader
     body: SeabirdCTDData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
 
 
 @dataclass
 class AanderaaCTDMessage:
     """Class representing an Aanderaa CTD message."""
 
-    header_type = AuvMessageHeader
+    header_type = MessageHeader
     body_type = AanderaaCTDData
 
-    header: AuvMessageHeader
+    header: MessageHeader
     body: AanderaaCTDData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
 
 
 @dataclass
 class EcopuckMessage:
     """Class representing an Ecopuck message."""
 
-    header_type = AuvMessageHeader
+    header_type = MessageHeader
     body_type = EcopuckData
 
-    header: AuvMessageHeader
+    header: MessageHeader
     body: EcopuckData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
 
 
 @dataclass
 class ParosciPressureMessage:
     """Class representing a Paroscientific pressure message."""
 
-    header_type = AuvMessageHeader
+    header_type = MessageHeader
     body_type = ParosciPressureData
 
-    header: AuvMessageHeader
+    header: MessageHeader
     body: ParosciPressureData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
 
 
 @dataclass
 class TeledyneDVLMessage:
     """Class representing a Teledyne DVL message."""
 
-    header_type = AuvMessageHeader
+    header_type = MessageHeader
     body_type = TeledyneDVLData
 
-    header: AuvMessageHeader
+    header: MessageHeader
     body: TeledyneDVLData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
 
 
 @dataclass
 class TrackLinkModemMessage:
     """Class representing a TrackLink modem message."""
 
-    header_type = AuvMessageHeader
+    header_type = MessageHeader
     body_type = TrackLinkModemData
 
-    header: AuvMessageHeader
+    header: MessageHeader
     body: TrackLinkModemData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
 
 
 @dataclass
 class EvologicsModemMessage:
     """Class representing an Evologics modem message."""
 
-    header_type = AuvMessageHeader
+    header_type = MessageHeader
     body_type = EvologicsModemData
 
-    header: AuvMessageHeader
+    header: MessageHeader
     body: EvologicsModemData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
 
 
 @dataclass
 class MicronSonarMessage:
     """Class representing a Micron sonar message."""
 
-    header_type = AuvMessageHeader
+    header_type = MessageHeader
     body_type = MicronSonarData
 
-    header: AuvMessageHeader
+    header: MessageHeader
     body: MicronSonarData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
 
 
 @dataclass
 class OASonarMessage:
     """Class representing an OA sonar message."""
 
-    header_type = AuvMessageHeader
+    header_type = MessageHeader
     body_type = OASonarData
 
-    header: AuvMessageHeader
+    header: MessageHeader
     body: OASonarData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
 
 
 @dataclass
 class BatteryMessage:
     """Class representing a battery message."""
 
-    header_type = AuvMessageHeader
+    header_type = MessageHeader
     body_type = BatteryData
 
-    header: AuvMessageHeader
+    header: MessageHeader
     body: BatteryData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
 
 
 @dataclass
 class ThrusterMessage:
     """Class representing a thruster message."""
 
-    header_type = AuvMessageHeader
+    header_type = MessageHeader
     body_type = ThrusterData
 
-    header: AuvMessageHeader
+    header: MessageHeader
     body: ThrusterData
 
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
 
-MESSAGE_TYPES: list[type] = [
-    AuvMessageHeader,
+
+# Collection of message types to simplify imports
+MessageTypes: list[Message] = [
     ImageCaptureMessage,
     SeabirdCTDMessage,
     AanderaaCTDMessage,
@@ -353,4 +516,10 @@ MESSAGE_TYPES: list[type] = [
     ThrusterMessage,
 ]
 
-MESSAGE_NAME_TO_TYPE: dict[str, type] = {type.__name__: type for type in MESSAGE_TYPES}
+
+MESSAGE_NAME_TO_TYPE: dict[str, type] = {type.__name__: type for type in MessageTypes}
+
+
+def message_name_to_type(name: str) -> Optional[type]:
+    """Returns a message type if the name is a valid message name, and none otherwise."""
+    return MESSAGE_NAME_TO_TYPE.get(name)
