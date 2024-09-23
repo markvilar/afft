@@ -63,9 +63,7 @@ def parse_message_lines(
     parsed: dict[str, list[Message]] = dict()
 
     for line in lines:
-        header_parser: Optional[MessageParser] = message_type_to_parser(
-            MessageHeader
-        )
+        header_parser: Optional[MessageParser] = message_type_to_parser(MessageHeader)
 
         header: MessageHeader = header_parser(line).unwrap()
 

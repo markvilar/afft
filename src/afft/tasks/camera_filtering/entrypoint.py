@@ -3,9 +3,8 @@
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
-from result import Ok, Err, Result
-
 from ...utils.log import logger
+from ...utils.result import Ok, Err, Result
 
 from .data_types import CameraFilteringContext
 from .worker import filter_cameras
