@@ -4,11 +4,11 @@ import click
 
 from ..utils.log import init_logger
 
-from .message_cli import message_services
+from .message_cli import message_cli
 
 
 # Create the main CLI as a collection of task specific CLIs
-cli_services = click.CommandCollection(sources=[message_services])
+cli_services = click.CommandCollection(sources=[message_cli])
 
 
 def main():
