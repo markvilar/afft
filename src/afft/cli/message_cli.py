@@ -15,6 +15,8 @@ from ..services.sirius.message_protocol import (
     parse_message_lines,
 )
 
+from ..tasks.ingest_messages import ingest_messages
+
 from ..utils.log import logger
 
 
@@ -54,5 +56,8 @@ def parse_messages(
 
     for topic, messages in parsed_topics.items():
         logger.info(f"Topic: {topic}, messages: {len(messages)}")
+
+
+    ingest_messages
 
     raise NotImplementedError("parse_messages is not implemented")
