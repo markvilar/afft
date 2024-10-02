@@ -6,12 +6,15 @@ from typing import Optional
 import click
 
 from ..io import read_config, read_lines
+from ..io.database import create_engine
+
 from ..services.sirius.message_interfaces import Message
 from ..services.sirius.message_protocol import (
     MessageProtocol,
     build_message_protocol,
     parse_message_lines,
 )
+
 from ..utils.log import logger
 
 
@@ -25,8 +28,11 @@ def message_cli(context: click.Context) -> None:
 @message_cli.command()
 @click.argument("source", type=click.Path(exists=True))
 @click.argument("destination", type=click.Path(exists=True))
-@click.argument("config", type=click.Path(exists=True))
-@click.option("--prefix", type=str, help="Prefix for exported data groups")
+@click.argument("protocol", type=click.Path(exists=True))
+@click.option("--prefix", type=str, help="prefix for exported data groups")
+@click.option("--database", type=str, help="database name")
+@click.option("--host", type=str, help="database host")
+@click.option("--port", type=int, help="database port")
 def parse_messages(
     source: str, 
     destination: str, 

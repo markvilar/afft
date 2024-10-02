@@ -22,7 +22,7 @@ The repository includes support for the following tools:
 pip3 install --user poetry
 ```
 
-### Configure the project environment
+### Configure the project environment and install dependencies
 
 ```shell
 # Set the Python version 3.12
@@ -32,8 +32,6 @@ poetry env use 3.12
 poetry env info
 ```
 
-### Install dependencies and build the project
-
 ```shell
 # Install dependencies
 poetry install
@@ -41,6 +39,23 @@ poetry install
 # Build the project
 poetry build
 ```
+
+## Tasks
+
+### Message parsing and database ingestion
+
+In order to use the AFFTs database ingestion tools, you first need to install
+Postgres on your computer, for instance by following this (guide)[https://www.devart.com/dbforge/postgresql/how-to-install-postgresql-on-linux/]. 
+
+To ease interactions with Postgres databases we highly recommend installing PgAdmin. PgAdmin is specifically designed for managing Postgres databases, and lets you create, delete, and inspect database through a graphical user interface. To get started with PgAdmin please refer to the following (guide)[https://www.pgadmin.org/docs/pgadmin4/8.11/getting_started.html#].
+
+```text
+PG_USER=YOUR_POSTGRES_USER
+PG_PASSWORD=YOUR_POSTGRES_PASSWORD
+```
+
+
+## Other uses
 
 ### Running unit tests
 
@@ -53,9 +68,6 @@ poetry run pytest
 ```shell
 poetry run jupyter notebook
 ```
-
-
-## Other uses
 
 ### Managing the project environment
 

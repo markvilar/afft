@@ -19,15 +19,15 @@ h5py = "^3.11.0"
 loguru = "^0.7.2"
 msgspec = "^0.18.6"
 numpy = "^1.26.4"
-pandas = "^2.2.2" # Needed by plotly express
+pandas = "^2.2.2"               # NOTE: Needed by plotly express
 polars = "^0.20.26"
-pyarrow = "^17.0.0" # Needed by polars to write to databases
+pyarrow = "^17.0.0"             # NOTE: Needed by polars to write to databases
 python-dotenv = "^1.0.1"
 python-rclone = "*"
 result = "^0.16.1"
 sqlalchemy = "^2.0.34"
 tqdm = "^4.66.2"
-psycopg2-binary = "^2.9.9"
+psycopg2-binary = "^2.9.9"      # NOTE: Python adapter for Postgres databases
 
 
 [tool.poetry.group.dev.dependencies]
