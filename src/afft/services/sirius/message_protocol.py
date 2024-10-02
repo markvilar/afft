@@ -4,12 +4,12 @@ from dataclasses import dataclass
 from typing import Optional, Self
 
 from .message_interfaces import Message, MessageParser
-from .message_parsers import parse_message_header, MESSAGE_TYPE_TO_PARSER
-from .message_types import AuvMessageHeader, MESSAGE_NAME_TO_TYPE
+from .message_parsers import message_type_to_parser
+from .message_types import MessageHeader, message_name_to_type
 
 
 @dataclass
-class MessageSet:
+class MessageProtocol:
     """Class representing a message set."""
 
     @dataclass
@@ -35,37 +35,39 @@ class MessageSet:
         return list(self.items.keys())
 
 
-def build_message_set(topic_to_name: dict[str, str]) -> MessageSet:
+def build_message_protocol(topic_to_name: dict[str, str]) -> MessageProtocol:
     """Builds a protocol from a mapping from topic to a string representation of a message type."""
 
-    items: list[MessageSet.Item] = list()
+    items: list[MessageProtocol.Item] = list()
     for topic, name in topic_to_name.items():
-        message_type: type = MESSAGE_NAME_TO_TYPE.get(name)
+        message_type: type = message_name_to_type(name)
 
         if not message_type:
             continue
 
-        message_parser: MessageParser = MESSAGE_TYPE_TO_PARSER.get(message_type)
+        message_parser: Optional[MessageParser] = message_type_to_parser(message_type)
 
         if not message_type or not message_parser:
             continue
 
-        items.append(MessageSet.Item(topic, message_type, message_parser))
+        items.append(MessageProtocol.Item(topic, message_type, message_parser))
 
-    return MessageSet({item.topic: item for item in items})
+    return MessageProtocol({item.topic: item for item in items})
 
 
 def parse_message_lines(
-    lines: list[str], message_set: MessageSet
+    lines: list[str], message_set: MessageProtocol
 ) -> dict[str, Message]:
-    """Parses lines"""
+    """Parses lines as message types in the given protocol."""
 
     parsed: dict[str, list[Message]] = dict()
 
     for line in lines:
-        header: AuvMessageHeader = parse_message_header(line).unwrap()
+        header_parser: Optional[MessageParser] = message_type_to_parser(MessageHeader)
 
-        item: Optional[MessageSet.Item] = message_set.get_topic(header.topic)
+        header: MessageHeader = header_parser(line).unwrap()
+
+        item: Optional[MessageProtocol.Item] = message_set.get_topic(header.topic)
 
         if not item:
             continue

@@ -21,6 +21,7 @@ msgspec = "^0.18.6"
 numpy = "^1.26.4"
 pandas = "^2.2.2" # Needed by plotly express
 polars = "^0.20.26"
+pyarrow = "^17.0.0" # Needed by polars to write to databases
 python-dotenv = "^1.0.1"
 python-rclone = "*"
 result = "^0.16.1"
