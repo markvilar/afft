@@ -17,12 +17,12 @@ from ..utils.log import logger
 
 @click.group()
 @click.pass_context
-def message_group(context: click.Context) -> None:
+def message_cli(context: click.Context) -> None:
     """CLI group for invoking message processing tasks."""
     context.ensure_object(dict)
 
 
-@message_group.command()
+@message_cli.command()
 @click.argument("source", type=click.Path(exists=True))
 @click.argument("destination", type=click.Path(exists=True))
 @click.argument("config", type=click.Path(exists=True))
