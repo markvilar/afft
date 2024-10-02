@@ -3,25 +3,27 @@
 import re
 
 from pathlib import Path
+from typing import Optional
 
 from ...utils.result import Ok, Err, Result
 
-
-from .data_types import (
-    AuvMessageHeader,
+from .message_interfaces import MessageParser
+from .message_types import (
+    MessageHeader,
     ImageCaptureMessage,
     SeabirdCTDMessage,
     AanderaaCTDMessage,
     EcopuckMessage,
     ParosciPressureMessage,
     TeledyneDVLMessage,
-    LQModemMessage,
+    TrackLinkModemMessage,
     EvologicsModemMessage,
     MicronSonarMessage,
     OASonarMessage,
     BatteryMessage,
     ThrusterMessage,
 )
+
 
 MESSAGE_HEADER_REGEX = r"""
     ^
@@ -190,7 +192,7 @@ BATTERY_REGEX = r"""
     """
 
 
-def parse_message_header(line: str) -> Result[AuvMessageHeader, str]:
+def parse_message_header(line: str) -> Result[MessageHeader, str]:
     """Parses the header from a message line."""
 
     pattern = re.compile(MESSAGE_HEADER_REGEX, re.VERBOSE)
@@ -199,7 +201,7 @@ def parse_message_header(line: str) -> Result[AuvMessageHeader, str]:
     if not match:
         return Err(f"failed to parse header: {line}")
 
-    header = AuvMessageHeader(
+    header = MessageHeader(
         topic=str(match["topic"]),
         timestamp=float(match["timestamp"]),
     )
@@ -371,7 +373,7 @@ def parse_teledyne_dvl_message(line: str) -> Result[TeledyneDVLMessage, str]:
     return Ok(TeledyneDVLMessage(header, body))
 
 
-def parse_lq_modem_message(line: str) -> Result[LQModemMessage, str]:
+def parse_lq_modem_message(line: str) -> Result[TrackLinkModemMessage, str]:
     """Parses a message line as a LQ modem message."""
 
     pattern = re.compile(LQ_MODEM_REGEX, re.VERBOSE)
@@ -380,12 +382,12 @@ def parse_lq_modem_message(line: str) -> Result[LQModemMessage, str]:
     if not match:
         return Err(f"failed to parse message line: {line}")
 
-    header: AuvMessageHeader = LQModemMessage.header_type(
+    header: MessageHeader = TrackLinkModemMessage.header_type(
         topic=str(match["topic"]),
         timestamp=float(match["timestamp"]),
     )
 
-    body = LQModemMessage.body_type(
+    body = TrackLinkModemMessage.body_type(
         latitude=float(match["latitude"]),
         longitude=float(match["longitude"]),
         roll=float(match["roll"]),
@@ -396,7 +398,7 @@ def parse_lq_modem_message(line: str) -> Result[LQModemMessage, str]:
         range=float(match["range"]),
     )
 
-    return Ok(LQModemMessage(header, body))
+    return Ok(TrackLinkModemMessage(header, body))
 
 
 def parse_evologics_modem_message(line: str) -> Result[EvologicsModemMessage, str]:
@@ -543,18 +545,43 @@ def parse_thruster_message(line: str) -> Result[ThrusterMessage, str]:
     return Ok(ThrusterMessage(header, body))
 
 
-MESSAGE_TYPE_TO_PARSER: dict = {
-    AuvMessageHeader: parse_message_header,
+# Collection of parsers to ease import
+MessageParsers: list[MessageParser] = [
+    parse_message_header,
+    parse_image_message,
+    parse_seabird_ctd_message,
+    parse_aanderaa_ctd_message,
+    parse_ecopuck_message,
+    parse_parosci_pressure_message,
+    parse_teledyne_dvl_message,
+    parse_lq_modem_message,
+    parse_evologics_modem_message,
+    parse_micron_sonar_message,
+    parse_obstacle_avoidance_sonar_message,
+    parse_battery_message,
+    parse_thruster_message,
+]
+
+
+# Collection for message parser to ease import
+MESSAGE_TYPE_TO_PARSER: dict[type, MessageParser] = {
+    MessageHeader: parse_message_header,
     ImageCaptureMessage: parse_image_message,
     SeabirdCTDMessage: parse_seabird_ctd_message,
     AanderaaCTDMessage: parse_aanderaa_ctd_message,
     EcopuckMessage: parse_ecopuck_message,
     ParosciPressureMessage: parse_parosci_pressure_message,
     TeledyneDVLMessage: parse_teledyne_dvl_message,
-    LQModemMessage: parse_lq_modem_message,
+    TrackLinkModemMessage: parse_lq_modem_message,
     EvologicsModemMessage: parse_evologics_modem_message,
     MicronSonarMessage: parse_micron_sonar_message,
     OASonarMessage: parse_obstacle_avoidance_sonar_message,
     BatteryMessage: parse_battery_message,
     ThrusterMessage: parse_thruster_message,
 }
+
+
+def message_type_to_parser(message_type: type) -> Optional[MessageParser]:
+    """Returns a parser for the message type if the message type is valid, and
+    none otherwise."""
+    return MESSAGE_TYPE_TO_PARSER.get(message_type)

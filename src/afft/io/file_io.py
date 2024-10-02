@@ -5,7 +5,7 @@ from pathlib import Path
 from ..utils.result import Ok, Err, Result
 
 
-def read_file(path: Path, mode: str = "r") -> Result[list[str], str]:
+def read_lines(path: Path, mode: str = "r") -> Result[list[str], str]:
     """Reads lines from a text file."""
     if not path.is_file():
         return Err(f"path {path} is not a file")
@@ -19,7 +19,7 @@ def read_file(path: Path, mode: str = "r") -> Result[list[str], str]:
         return Err(f"error when reading from file: {error}")
 
 
-def write_file(lines: list[str], path: Path, mode: str = "w") -> Result[Path, str]:
+def write_lines(lines: list[str], path: Path, mode: str = "w") -> Result[Path, str]:
     """Writes lines to a text file."""
 
     if not path.parent.exists():
