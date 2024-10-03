@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from typing import Optional, Self
 
 
-
 @dataclass
 class MessageHeader:
     """Class representing an AUV message header."""

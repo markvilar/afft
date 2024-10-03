@@ -2,13 +2,13 @@
 
 from collections.abc import Iterable, Mapping
 from pathlib import Path
-from typing import Any, Optional
+from typing import Any, Optional, TypeVar
 
 import click
 import polars as pl
 
 from ..io import read_config, read_lines
-from ..io.sql import create_endpoint, insert_data_frame_into
+from ..io.sql import create_endpoint, write_database
 from ..services.sirius import Message, parse_message_lines
 from ..utils.log import logger
 from ..utils.result import Ok, Err, Result
@@ -17,6 +17,7 @@ from ..utils.result import Ok, Err, Result
 type Topic = str
 type Messages = Iterable[Message]
 type MessageGroups = Mapping[Topic, Messages]
+
 
 @click.group()
 @click.pass_context
@@ -33,12 +34,12 @@ def message_cli(context: click.Context) -> None:
 @click.option("--port", type=int, help="destination port")
 @click.option("--prefix", type=str, help="common prefix for exported message groups")
 def parse_messages(
-    source: str, 
-    config: str, 
-    database: Optional[str]=None, 
-    host: Optional[str]=None,
-    port: Optional[int]=None,
-    prefix: Optional[str]=None,
+    source: str,
+    config: str,
+    database: Optional[str] = None,
+    host: Optional[str] = None,
+    port: Optional[int] = None,
+    prefix: Optional[str] = None,
 ) -> None:
     """CLI action for ingesting messages into a destination."""
 
@@ -48,21 +49,25 @@ def parse_messages(
     if parse_result.is_err():
         logger.error(parse_result.err())
         return
-    
+
     messages: MessageGroups = parse_result.ok()
-    
+
     # Write to database if a database is provided
     if database:
-        match handle_message_database_insertion(database, host, port, messages, config, prefix):
+        match handle_message_database_insertion(
+            database, host, port, messages, config, prefix
+        ):
             case Ok(None):
                 pass
             case Err(error_message):
                 logger.error(error_message)
 
 
-def handle_message_parsing(source: str | Path, config: dict) -> Result[MessageGroups, str]:
+def handle_message_parsing(
+    source: str | Path, config: dict
+) -> Result[MessageGroups, str]:
     """Handle parsing of messages."""
-    
+
     lines: list[str] = read_lines(Path(source)).unwrap()
 
     topic_types: Optional[dict[Topic, str]] = config.get("message_maps")
@@ -70,7 +75,7 @@ def handle_message_parsing(source: str | Path, config: dict) -> Result[MessageGr
     if topic_types is None:
         return Err("invalid config: missing topic types")
 
-    # Read the message lines 
+    # Read the message lines
     parsed_messages: MessageGroups = parse_message_lines(lines, topic_types)
 
     return Ok(parsed_messages)
@@ -82,8 +87,8 @@ def handle_message_database_insertion(
     port: int,
     message_groups: dict[str, Messages],
     config: dict[str, Any],
-    prefix: Optional[str]=None,
-)-> Result[None, str]:
+    prefix: Optional[str] = None,
+) -> Result[None, str]:
     """Handle insertion of messages into a database."""
 
     table_names: Optional[dict[str, str]] = config.get("table_names")
@@ -105,7 +110,7 @@ def handle_message_database_insertion(
     table_messages: dict[str, Messages] = dict()
     for group, messages in message_groups.items():
         table_name: str = table_names.get(group)
-        
+
         if table_name not in table_messages:
             table_messages[table_name] = list()
 
@@ -128,7 +133,7 @@ def handle_message_database_insertion(
     match create_endpoint(database=database, host=host, port=port):
         case Ok(endpoint):
             _insert_results: dict[str, Result] = {
-                table: insert_data_frame_into(endpoint, table, dataframe)
+                table: write_database(endpoint, table, dataframe)
                 for table, dataframe in dataframes.items()
             }
             # TODO: Handle insert results
@@ -136,7 +141,17 @@ def handle_message_database_insertion(
             logger.error(message)
 
 
+T: TypeVar = TypeVar("T")
+
+
+def check_uniform_type(items: Iterable[T]) -> bool:
+    """Returns true if all the items are the same type"""
+    reference: type = type(items[0])
+    is_same_type: list[bool] = [isinstance(item, reference) for item in items]
+    return all(is_same_type)
+
+
 def tabulate_messages(messages: Messages) -> pl.DataFrame:
-    """Creates a data frame from a collection of messages. Assumes that 
+    """Creates a data frame from a collection of messages. Assumes that
     the messages are of the same type or have the same fields."""
     return pl.DataFrame([message.to_dict() for message in messages])

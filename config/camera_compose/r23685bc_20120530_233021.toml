@@ -1,0 +1,5 @@
+[queries]
+ctd = "SELECT * from r23685bc_20120530_233021_ctd_seabird"
+dvl = "SELECT * from r23685bc_20120530_233021_dvl_teledyne"
+image = "SELECT * from r23685bc_20120530_233021_image_capture"
+pressure = "SELECT * from r23685bc_20120530_233021_pressure_parosci"
