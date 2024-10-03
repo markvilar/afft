@@ -55,7 +55,9 @@ def build_message_protocol(topic_to_name: dict[str, str]) -> MessageProtocol:
     return MessageProtocol({item.topic: item for item in items})
 
 
-def parse_message_lines(lines: list[str], topic_types: dict[str, str]) -> dict[str, Message]:
+def parse_message_lines(
+    lines: list[str], topic_types: dict[str, str]
+) -> dict[str, Message]:
     """Parses lines as message types in the given protocol."""
 
     protocol: MessageProtocol = build_message_protocol(topic_types)

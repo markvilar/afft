@@ -15,10 +15,10 @@ PASSWORD_KEY: str = "DB_PASSWORD"
 
 
 def create_endpoint(
-    database: str, 
-    host: str, 
-    port: int, 
-    drivername: str="postgresql",
+    database: str,
+    host: str,
+    port: int,
+    drivername: str = "postgresql",
 ) -> Result[Endpoint, str]:
     """Creates a connection to a SQL database."""
 
