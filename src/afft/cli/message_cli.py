@@ -1,6 +1,6 @@
 """Module for message processing CLI."""
 
-from collections.abc import Iterable
+from collections.abc import Iterable, Mapping
 from pathlib import Path
 from typing import Any, Optional
 
@@ -8,7 +8,7 @@ import click
 import polars as pl
 
 from ..io import read_config, read_lines
-from ..io.sql import Endpoint, create_endpoint, insert_data_frame_into
+from ..io.sql import create_endpoint, insert_data_frame_into
 from ..services.sirius import Message, parse_message_lines
 from ..utils.log import logger
 from ..utils.result import Ok, Err, Result
@@ -127,7 +127,7 @@ def handle_message_database_insertion(
     # Create endpoint and insert
     match create_endpoint(database=database, host=host, port=port):
         case Ok(endpoint):
-            insert_results: dict[str, Result] = {
+            _insert_results: dict[str, Result] = {
                 table: insert_data_frame_into(endpoint, table, dataframe)
                 for table, dataframe in dataframes.items()
             }
