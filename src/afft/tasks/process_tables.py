@@ -37,6 +37,7 @@ def collect_camera_metadata(
     ctd: pl.DataFrame,
     dvl: pl.DataFrame,
     pressure: pl.DataFrame,
+    flourometer: pl.DataFrame,
 ) -> pl.DataFrame:
     """Process a collection of structured data."""
 
@@ -45,6 +46,7 @@ def collect_camera_metadata(
     dvl: pl.DataFrame = dvl.sort("timestamp")
     image: pl.DataFrame = image.sort("timestamp")
     pressure: pl.DataFrame = pressure.sort("timestamp")
+    flourometer: pl.DataFrame = flourometer.sort("timestamp")
 
     # Select the relevant columns
     ctd: pl.DataFrame = ctd.select(
@@ -55,7 +57,9 @@ def collect_camera_metadata(
         ["timestamp", "label", "trigger_time", "exposure_logged", "exposure"]
     )
     pressure: pl.DataFrame = pressure.select(["timestamp", "depth"])
-
+    flourometer: pl.DataFrame = flourometer.select(["timestamp", "chlorophyll", "backscatter", "cdom"])
+    
+    
     # TODO: Smooth data columns: CTD, DVL, pressure
     # df = df.with_columns(
     #     pl.col("your_column").rolling_mean(window_size=5).alias("smoothed_column")
@@ -65,7 +69,7 @@ def collect_camera_metadata(
     camera_data: pl.DataFrame = image
 
     # Merge with CTD, DVL, and pressure
-    for dataframe in [ctd, dvl, pressure]:
+    for dataframe in [ctd, dvl, pressure, flourometer]:
         camera_data: pl.DataFrame = camera_data.join_asof(
             dataframe,
             left_on="timestamp",
