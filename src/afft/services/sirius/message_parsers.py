@@ -8,7 +8,7 @@ from typing import Optional
 from ...utils.result import Ok, Err, Result
 
 from .message_interfaces import MessageParser
-from .message_types import (
+from .concrete_messages import (
     MessageHeader,
     ImageCaptureMessage,
     SeabirdCTDMessage,
@@ -545,8 +545,7 @@ def parse_thruster_message(line: str) -> Result[ThrusterMessage, str]:
     return Ok(ThrusterMessage(header, body))
 
 
-# Collection of parsers to ease import
-MessageParsers: list[MessageParser] = [
+MESSAGE_PARSERS: list[MessageParser] = [
     parse_message_header,
     parse_image_message,
     parse_seabird_ctd_message,
@@ -563,7 +562,6 @@ MessageParsers: list[MessageParser] = [
 ]
 
 
-# Collection for message parser to ease import
 MESSAGE_TYPE_TO_PARSER: dict[type, MessageParser] = {
     MessageHeader: parse_message_header,
     ImageCaptureMessage: parse_image_message,
@@ -581,7 +579,7 @@ MESSAGE_TYPE_TO_PARSER: dict[type, MessageParser] = {
 }
 
 
-def message_type_to_parser(message_type: type) -> Optional[MessageParser]:
-    """Returns a parser for the message type if the message type is valid, and
-    none otherwise."""
+def get_message_parser(message_type: type) -> Optional[MessageParser]:
+    """Returns a parser for the message type if the message type is within the
+    set of messages, and none otherwise."""
     return MESSAGE_TYPE_TO_PARSER.get(message_type)

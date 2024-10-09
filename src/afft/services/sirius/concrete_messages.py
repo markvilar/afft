@@ -3,8 +3,6 @@
 from dataclasses import dataclass
 from typing import Optional, Self
 
-from .message_interfaces import Message
-
 
 @dataclass
 class MessageHeader:
@@ -500,8 +498,7 @@ class ThrusterMessage:
         return data
 
 
-# Collection of message types to simplify imports
-MessageTypes: list[Message] = [
+MESSAGE_TYPES: list[type] = [
     ImageCaptureMessage,
     SeabirdCTDMessage,
     AanderaaCTDMessage,
@@ -517,9 +514,11 @@ MessageTypes: list[Message] = [
 ]
 
 
-MESSAGE_NAME_TO_TYPE: dict[str, type] = {type.__name__: type for type in MessageTypes}
+MESSAGE_NAME_TO_TYPE: dict[str, type] = {
+    message_type.__name__: message_type for message_type in MESSAGE_TYPES
+}
 
 
-def message_name_to_type(name: str) -> Optional[type]:
+def get_message_type(name: str) -> Optional[type]:
     """Returns a message type if the name is a valid message name, and none otherwise."""
     return MESSAGE_NAME_TO_TYPE.get(name)

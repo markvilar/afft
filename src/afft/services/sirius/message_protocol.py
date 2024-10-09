@@ -4,8 +4,8 @@ from dataclasses import dataclass
 from typing import Optional, Self
 
 from .message_interfaces import Message, MessageParser
-from .message_parsers import message_type_to_parser
-from .message_types import MessageHeader, message_name_to_type
+from .message_parsers import get_message_parser
+from .concrete_messages import MessageHeader, get_message_type
 
 
 @dataclass
@@ -40,12 +40,12 @@ def build_message_protocol(topic_to_name: dict[str, str]) -> MessageProtocol:
 
     items: list[MessageProtocol.Item] = list()
     for topic, name in topic_to_name.items():
-        message_type: type = message_name_to_type(name)
+        message_type: type = get_message_type(name)
 
         if not message_type:
             continue
 
-        message_parser: Optional[MessageParser] = message_type_to_parser(message_type)
+        message_parser: Optional[MessageParser] = get_message_parser(message_type)
 
         if not message_type or not message_parser:
             continue
@@ -56,18 +56,19 @@ def build_message_protocol(topic_to_name: dict[str, str]) -> MessageProtocol:
 
 
 def parse_message_lines(
-    lines: list[str], message_set: MessageProtocol
+    lines: list[str], topic_types: dict[str, str]
 ) -> dict[str, Message]:
     """Parses lines as message types in the given protocol."""
 
+    protocol: MessageProtocol = build_message_protocol(topic_types)
     parsed: dict[str, list[Message]] = dict()
 
     for line in lines:
-        header_parser: Optional[MessageParser] = message_type_to_parser(MessageHeader)
+        header_parser: Optional[MessageParser] = get_message_parser(MessageHeader)
 
         header: MessageHeader = header_parser(line).unwrap()
 
-        item: Optional[MessageProtocol.Item] = message_set.get_topic(header.topic)
+        item: Optional[MessageProtocol.Item] = protocol.get_topic(header.topic)
 
         if not item:
             continue
