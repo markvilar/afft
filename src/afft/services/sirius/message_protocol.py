@@ -8,7 +8,7 @@ from .message_parsers import get_message_parser
 from .concrete_messages import MessageHeader, get_message_type
 
 from afft.utils.log import logger
-from afft.utils.result import Ok, Err, Result
+from afft.utils.result import Ok, Err
 
 
 @dataclass
