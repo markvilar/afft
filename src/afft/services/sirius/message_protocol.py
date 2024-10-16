@@ -85,5 +85,4 @@ def parse_message_lines(
             case Err(error):
                 logger.warning(error)
 
-
     return parsed

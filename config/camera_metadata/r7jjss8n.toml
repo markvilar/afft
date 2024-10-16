@@ -1,0 +1,64 @@
+[[tasks]]
+label="r7jjss8n_20101023_210332"
+
+[tasks.queries]
+ctd="SELECT * from r7jjss8n_20101023_210332_ctd_seabird"
+dvl="SELECT * from r7jjss8n_20101023_210332_dvl_teledyne"
+image="SELECT * from r7jjss8n_20101023_210332_image_capture"
+pressure="SELECT * from r7jjss8n_20101023_210332_pressure_parosci"
+flourometer="SELECT * from r7jjss8n_20101023_210332_flourometer_ecopuck"
+
+[tasks.join]
+base="image"
+field="timestamp"
+
+[tasks.selections]
+ctd=["timestamp", "conductivity", "temperature", "salinity"]
+dvl=["timestamp", "altitude"]
+image=["timestamp", "label", "trigger_time", "exposure_logged", "exposure"]
+pressure=["timestamp", "depth"]
+flourometer=["timestamp", "chlorophyll", "backscatter", "cdom"]
+
+
+
+[[tasks]]
+label="r7jjss8n_20121013_060425"
+
+[tasks.queries]
+ctd="SELECT * from r7jjss8n_20121013_060425_ctd_seabird"
+dvl="SELECT * from r7jjss8n_20121013_060425_dvl_teledyne"
+image="SELECT * from r7jjss8n_20121013_060425_image_capture"
+pressure="SELECT * from r7jjss8n_20121013_060425_pressure_parosci"
+flourometer="SELECT * from r7jjss8n_20121013_060425_flourometer_ecopuck"
+
+[tasks.join]
+base="image"
+field="timestamp"
+
+[tasks.selections]
+ctd=["timestamp", "conductivity", "temperature", "salinity"]
+dvl=["timestamp", "altitude"]
+image=["timestamp", "label", "trigger_time", "exposure_logged", "exposure"]
+pressure=["timestamp", "depth"]
+flourometer=["timestamp", "chlorophyll", "backscatter", "cdom"]
+
+
+
+[[tasks]]
+label="r7jjss8n_20131022_004934"
+
+[tasks.queries]
+ctd="SELECT * from r7jjss8n_20131022_004934_ctd_seabird"
+dvl="SELECT * from r7jjss8n_20131022_004934_dvl_teledyne"
+image="SELECT * from r7jjss8n_20131022_004934_image_capture"
+pressure="SELECT * from r7jjss8n_20131022_004934_pressure_parosci"
+
+[tasks.join]
+base="image"
+field="timestamp"
+
+[tasks.selections]
+ctd=["timestamp", "conductivity", "temperature", "salinity"]
+dvl=["timestamp", "altitude"]
+image=["timestamp", "label", "trigger_time", "exposure_logged", "exposure"]
+pressure=["timestamp", "depth"]

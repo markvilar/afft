@@ -8,7 +8,7 @@ from .endpoint import Endpoint
 
 
 def write_database(
-    endpoint: Endpoint, table: str, data: pl.DataFrame, **kwargs
+    endpoint: Endpoint, table: str, data: pl.DataFrame, **overrides
 ) -> Result[int, str]:
     """Writes a data frame to database table."""
     try:
@@ -16,7 +16,7 @@ def write_database(
             rows: int = data.write_database(
                 table_name=table,
                 connection=connection,
-                **kwargs,
+                **overrides,
             )
         return Ok(rows)
     except (IOError, TypeError, ValueError) as error:

@@ -2,13 +2,19 @@
 
 import click
 
-from ..utils.log import init_logger
+from afft.utils.log import init_logger
 
+from .database_cli import database_cli
 from .message_cli import message_cli
 
 
 # Create the main CLI as a collection of task specific CLIs
-cli_services = click.CommandCollection(sources=[message_cli])
+cli_services = click.CommandCollection(
+    sources=[
+        database_cli,
+        message_cli,
+    ]
+)
 
 
 def main():
