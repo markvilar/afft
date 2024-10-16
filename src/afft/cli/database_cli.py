@@ -10,7 +10,7 @@ from afft.io.sql import create_endpoint, write_database
 from afft.tasks.database_tasks import JoinTableConfig, join_database_tables
 
 from afft.utils.log import logger
-from afft.utils.result import Ok, Err, Result
+from afft.utils.result import Ok, Err
 
 
 @click.group()
