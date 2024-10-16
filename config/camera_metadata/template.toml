@@ -1,0 +1,20 @@
+[[tasks]]
+label="DEPLOYMENT"
+
+[tasks.queries]
+ctd="SELECT * from DEPLOYMENT_ctd_seabird"
+dvl="SELECT * from DEPLOYMENT_dvl_teledyne"
+image="SELECT * from DEPLOYMENT_image_capture"
+pressure="SELECT * from DEPLOYMENT_pressure_parosci"
+flourometer="SELECT * from DEPLOYMENT_flourometer_ecopuck"
+
+[tasks.join]
+base="image"        # reference table when joining
+field="timestamp"   # field used for data association
+
+[tasks.selections]
+ctd=["timestamp", "conductivity", "temperature", "salinity"]
+dvl=["timestamp", "altitude"]
+image=["timestamp", "label", "trigger_time", "exposure_logged", "exposure"]
+pressure=["timestamp", "depth"]
+flourometer=["timestamp", "chlorophyll", "backscatter", "cdom"]

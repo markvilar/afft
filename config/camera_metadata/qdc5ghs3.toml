@@ -1,0 +1,89 @@
+[[tasks]]
+label="qdc5ghs3_20100430_024508"
+
+[tasks.queries]
+ctd="SELECT * from qdc5ghs3_20100430_024508_ctd_seabird"
+dvl="SELECT * from qdc5ghs3_20100430_024508_dvl_teledyne"
+image="SELECT * from qdc5ghs3_20100430_024508_image_capture"
+pressure="SELECT * from qdc5ghs3_20100430_024508_pressure_parosci"
+flourometer="SELECT * from qdc5ghs3_20100430_024508_flourometer_ecopuck"
+
+[tasks.join]
+base="image"
+field="timestamp"
+
+[tasks.selections]
+ctd=["timestamp", "conductivity", "temperature", "salinity"]
+dvl=["timestamp", "altitude"]
+image=["timestamp", "label", "trigger_time", "exposure_logged", "exposure"]
+pressure=["timestamp", "depth"]
+flourometer=["timestamp", "chlorophyll", "backscatter", "cdom"]
+
+
+
+[[tasks]]
+label="qdc5ghs3_20120501_033336"
+
+[tasks.queries]
+ctd="SELECT * from qdc5ghs3_20120501_033336_ctd_seabird"
+dvl="SELECT * from qdc5ghs3_20120501_033336_dvl_teledyne"
+image="SELECT * from qdc5ghs3_20120501_033336_image_capture"
+pressure="SELECT * from qdc5ghs3_20120501_033336_pressure_parosci"
+flourometer="SELECT * from qdc5ghs3_20120501_033336_flourometer_ecopuck"
+
+[tasks.join]
+base="image"
+field="timestamp"
+
+[tasks.selections]
+ctd=["timestamp", "conductivity", "temperature", "salinity"]
+dvl=["timestamp", "altitude"]
+image=["timestamp", "label", "trigger_time", "exposure_logged", "exposure"]
+pressure=["timestamp", "depth"]
+flourometer=["timestamp", "chlorophyll", "backscatter", "cdom"]
+
+
+
+[[tasks]]
+label="qdc5ghs3_20130405_103429"
+
+[tasks.queries]
+ctd="SELECT * from qdc5ghs3_20130405_103429_ctd_seabird"
+dvl="SELECT * from qdc5ghs3_20130405_103429_dvl_teledyne"
+image="SELECT * from qdc5ghs3_20130405_103429_image_capture"
+pressure="SELECT * from qdc5ghs3_20130405_103429_pressure_parosci"
+flourometer="SELECT * from qdc5ghs3_20130405_103429_flourometer_ecopuck"
+
+[tasks.join]
+base="image"
+field="timestamp"
+
+[tasks.selections]
+ctd=["timestamp", "conductivity", "temperature", "salinity"]
+dvl=["timestamp", "altitude"]
+image=["timestamp", "label", "trigger_time", "exposure_logged", "exposure"]
+pressure=["timestamp", "depth"]
+flourometer=["timestamp", "chlorophyll", "backscatter", "cdom"]
+
+
+
+[[tasks]]
+label="qdc5ghs3_20210315_230947"
+
+[tasks.queries]
+ctd="SELECT * from qdc5ghs3_20210315_230947_ctd_aanderaa"
+dvl="SELECT * from qdc5ghs3_20210315_230947_dvl_teledyne"
+image="SELECT * from qdc5ghs3_20210315_230947_image_capture"
+pressure="SELECT * from qdc5ghs3_20210315_230947_pressure_parosci"
+flourometer="SELECT * from qdc5ghs3_20210315_230947_flourometer_ecopuck"
+
+[tasks.join]
+base="image"
+field="timestamp"
+
+[tasks.selections]
+ctd=["timestamp", "conductivity", "temperature", "salinity"]
+dvl=["timestamp", "altitude"]
+image=["timestamp", "label", "trigger_time", "exposure_logged", "exposure"]
+pressure=["timestamp", "depth"]
+flourometer=["timestamp", "chlorophyll", "backscatter", "cdom"]

@@ -1,0 +1,66 @@
+[[tasks]]
+label="r234xgje_20100604_230524"
+
+[tasks.queries]
+ctd="SELECT * from r234xgje_20100604_230524_ctd_seabird"
+dvl="SELECT * from r234xgje_20100604_230524_dvl_teledyne"
+image="SELECT * from r234xgje_20100604_230524_image_capture"
+pressure="SELECT * from r234xgje_20100604_230524_pressure_parosci"
+flourometer="SELECT * from r234xgje_20100604_230524_flourometer_ecopuck"
+
+[tasks.join]
+base="image"
+field="timestamp"
+
+[tasks.selections]
+ctd=["timestamp", "conductivity", "temperature", "salinity"]
+dvl=["timestamp", "altitude"]
+image=["timestamp", "label", "trigger_time", "exposure_logged", "exposure"]
+pressure=["timestamp", "depth"]
+flourometer=["timestamp", "chlorophyll", "backscatter", "cdom"]
+
+
+
+[[tasks]]
+label="r234xgje_20120530_064545"
+
+[tasks.queries]
+ctd="SELECT * from r234xgje_20120530_064545_ctd_seabird"
+dvl="SELECT * from r234xgje_20120530_064545_dvl_teledyne"
+image="SELECT * from r234xgje_20120530_064545_image_capture"
+pressure="SELECT * from r234xgje_20120530_064545_pressure_parosci"
+flourometer="SELECT * from r234xgje_20120530_064545_flourometer_ecopuck"
+
+[tasks.join]
+base="image"
+field="timestamp"
+
+[tasks.selections]
+ctd=["timestamp", "conductivity", "temperature", "salinity"]
+dvl=["timestamp", "altitude"]
+image=["timestamp", "label", "trigger_time", "exposure_logged", "exposure"]
+pressure=["timestamp", "depth"]
+flourometer=["timestamp", "chlorophyll", "backscatter", "cdom"]
+
+
+
+[[tasks]]
+label="r234xgje_20140616_205232"
+
+[tasks.queries]
+ctd="SELECT * from r234xgje_20140616_205232_ctd_seabird"
+dvl="SELECT * from r234xgje_20140616_205232_dvl_teledyne"
+image="SELECT * from r234xgje_20140616_205232_image_capture"
+pressure="SELECT * from r234xgje_20140616_205232_pressure_parosci"
+flourometer="SELECT * from r234xgje_20140616_205232_flourometer_ecopuck"
+
+[tasks.join]
+base="image"
+field="timestamp"
+
+[tasks.selections]
+ctd=["timestamp", "conductivity", "temperature", "salinity"]
+dvl=["timestamp", "altitude"]
+image=["timestamp", "label", "trigger_time", "exposure_logged", "exposure"]
+pressure=["timestamp", "depth"]
+flourometer=["timestamp", "chlorophyll", "backscatter", "cdom"]
