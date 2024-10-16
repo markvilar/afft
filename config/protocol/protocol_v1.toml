@@ -2,7 +2,7 @@
 
 VIS = "ImageCaptureMessage"
 SEABIRD = "SeabirdCTDMessage"
-AANDERAA = "AanderaaCTDMessage"
+AANDERAA_4319 = "AanderaaCTDMessage"
 ECOPUCK = "EcopuckMessage"
 PAROSCI = "ParosciPressureMessage"
 RDI = "TeledyneDVLMessage"
@@ -30,7 +30,7 @@ MICRON_RETURNS = "MicronSonarMessage"
 
 VIS = "image_capture"
 SEABIRD = "ctd_seabird"
-AANDERAA = "ctd_aanderaa"
+AANDERAA_4319 = "ctd_aanderaa"
 ECOPUCK = "flourometer_ecopuck"
 PAROSCI = "pressure_parosci"
 RDI = "dvl_teledyne"
