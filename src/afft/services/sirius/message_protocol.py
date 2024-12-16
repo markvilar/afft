@@ -7,6 +7,9 @@ from .message_interfaces import Message, MessageParser
 from .message_parsers import get_message_parser
 from .concrete_messages import MessageHeader, get_message_type
 
+from afft.utils.log import logger
+from afft.utils.result import Ok, Err
+
 
 @dataclass
 class MessageProtocol:
@@ -73,10 +76,13 @@ def parse_message_lines(
         if not item:
             continue
 
-        message: Message = item.message_parser(line).unwrap()
-        if header.topic not in parsed:
-            parsed[header.topic] = list()
-
-        parsed[header.topic].append(message)
+        # Parse message line and handle result
+        match item.message_parser(line):
+            case Ok(message):
+                if header.topic not in parsed:
+                    parsed[header.topic] = list()
+                parsed[header.topic].append(message)
+            case Err(error):
+                logger.warning(error)
 
     return parsed

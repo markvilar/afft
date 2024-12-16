@@ -125,9 +125,11 @@ def handle_message_database_insertion(
         name: tabulate_messages(messages) for name, messages in table_messages.items()
     }
 
+    logger.info("")
     logger.info("Writing database tables:")
     for name, dataframe in dataframes.items():
         logger.info(f" - {name}: {len(dataframe)}")
+    logger.info("")
 
     # Create endpoint and insert
     match create_endpoint(database=database, host=host, port=port):
