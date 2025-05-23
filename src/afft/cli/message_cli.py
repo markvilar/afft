@@ -5,11 +5,16 @@ from pathlib import Path
 from typing import Any, Optional, TypeVar
 
 import click
+import dotenv
 import polars as pl
 
+
+import afft.database as db
+import afft.utils.env as env
+
 from afft.io import read_config, read_lines
-from afft.io.sql import create_endpoint, write_database
-from afft.services.sirius import Message, parse_message_lines
+from afft.sirius import Message, parse_message_lines
+
 from afft.utils.log import logger
 from afft.utils.result import Ok, Err, Result
 
@@ -95,6 +100,20 @@ def handle_message_database_insertion(
 ) -> Result[None, str]:
     """Handle insertion of messages into a database."""
 
+    assert "PG_USERNAME" in env.env_values(), "missing environment key: PG_USERNAME"
+    assert "PG_PASSWORD" in env.env_values(), "missing environment key: PG_PASSWORD"
+
+    engine: db.Engine | str = db.create_engine(
+        database=database, 
+        host=host, 
+        port=port,
+        username=env.get_env_value("PG_USERNAME"),
+        password=env.get_env_value("PG_PASSWORD"),
+    )
+
+    assert isinstance(engine, db.Engine), f"error while connecting to engine: {engine}"
+
+
     table_names: Optional[dict[str, str]] = config.get("table_names")
 
     if table_names is None:
@@ -138,15 +157,10 @@ def handle_message_database_insertion(
     logger.info("")
 
     # Create endpoint and insert
-    match create_endpoint(database=database, host=host, port=port):
-        case Ok(endpoint):
-            _insert_results: dict[str, Result] = {
-                table: write_database(endpoint, table, dataframe)
-                for table, dataframe in dataframes.items()
-            }
-            # TODO: Handle insert results
-        case Err(message):
-            logger.error(message)
+    _insert_results: dict[str, Result] = {
+        table: db.write_database_table(endpoint, table, dataframe)
+        for table, dataframe in dataframes.items()
+    }
 
 
 T: TypeVar = TypeVar("T")

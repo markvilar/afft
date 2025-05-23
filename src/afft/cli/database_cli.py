@@ -5,8 +5,10 @@ from pathlib import Path
 import click
 import polars as pl
 
+import afft.database as db
+import afft.utils.env as env
+
 from afft.io import read_config
-from afft.io.sql import create_endpoint, write_database
 from afft.tasks.database_tasks import JoinTableConfig, join_database_tables
 
 from afft.utils.log import logger
@@ -37,23 +39,32 @@ def table_join(database: str, host: str, port: int, config: click.Path) -> None:
             logger.error(error)
             return
 
-    match create_endpoint(database=database, host=host, port=port):
-        case Ok(endpoint):
-            results: dict[str, pl.DataFrame] = {
-                config.label: join_database_tables(
-                    endpoint,
-                    queries=config.queries,
-                    selections=config.selections,
-                    base=config.join.get("base"),
-                    join_on=config.join.get("field"),
-                )
-                for config in task_configs
-            }
+    assert "PG_USERNAME" in env.env_values(), "missing environment key: PG_USERNAME"
+    assert "PG_PASSWORD" in env.env_values(), "missing environment key: PG_PASSWORD"
 
-            for label, dataframe in results.items():
-                logger.info(f"Label: {label}, dataframe: {len(dataframe)}")
-        case Err(message):
-            logger.error(message)
+    engine: db.Engine = create_engine(
+        database=database, 
+        host=host, 
+        port=port,
+        username=env.get_env_value("PG_USERNAME"),
+        password=env.get_env_value("PG_PASSWORD"),
+    )
+
+    assert isinstance(engine, db.Engine), f"error when creating database engine: {engine}"
+
+    results: dict[str, pl.DataFrame] = {
+        config.label: join_database_tables(
+            endpoint,
+            queries=config.queries,
+            selections=config.selections,
+            base=config.join.get("base"),
+            join_on=config.join.get("field"),
+        )
+        for config in task_configs
+    }
+
+    for label, dataframe in results.items():
+        logger.info(f"Label: {label}, dataframe: {len(dataframe)}")
 
 
 # TODO: Add command to upload table

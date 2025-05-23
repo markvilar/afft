@@ -3,7 +3,7 @@
 from glob import glob
 from pathlib import Path
 
-from ..utils.result import Ok, Err, Result
+from afft.utils.result import Ok, Err, Result
 
 
 def search_directory_tree(search_path: Path) -> Result[list[Path], str]:

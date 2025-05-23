@@ -6,7 +6,7 @@ import shutil
 from pathlib import Path
 from typing import Callable
 
-from ..utils.result import Ok, Err, Result
+from afft.utils.result import Ok, Err, Result
 
 
 def list_directory(
