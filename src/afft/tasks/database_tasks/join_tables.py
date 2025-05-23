@@ -65,7 +65,9 @@ def collect_camera_metadata(
 
     left: pl.DataFrame = dataframes.pop(base)
     for key, right in dataframes.items():
-        left: pl.DataFrame = left.join_asof(right, on=join_on, strategy="nearest")
+        left: pl.DataFrame = left.join_asof(
+            right, on=join_on, strategy="nearest"
+        )
 
     joined: pl.DataFrame = left
     return joined

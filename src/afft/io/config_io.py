@@ -1,4 +1,4 @@
-"""Module for reading and writing data from configuration files. Supported formats are JSON, 
+"""Module for reading and writing data from configuration files. Supported formats are JSON,
 YAML, TOML and msgpack."""
 
 from pathlib import Path
@@ -110,7 +110,9 @@ def _write_toml(data: dict, path: Path, mode: str = "w") -> Result[Path, str]:
         return Err(str(error))
 
 
-def _write_msgpack(data: dict, path: Path, mode: str = "w") -> Result[Path, str]:
+def _write_msgpack(
+    data: dict, path: Path, mode: str = "w"
+) -> Result[Path, str]:
     """Writes an object to a MSGPACK file."""
     try:
         with open(path, mode) as handle:

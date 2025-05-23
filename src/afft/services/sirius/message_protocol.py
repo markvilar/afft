@@ -48,7 +48,9 @@ def build_message_protocol(topic_to_name: dict[str, str]) -> MessageProtocol:
         if not message_type:
             continue
 
-        message_parser: Optional[MessageParser] = get_message_parser(message_type)
+        message_parser: Optional[MessageParser] = get_message_parser(
+            message_type
+        )
 
         if not message_type or not message_parser:
             continue
@@ -67,7 +69,9 @@ def parse_message_lines(
     parsed: dict[str, list[Message]] = dict()
 
     for line in lines:
-        header_parser: Optional[MessageParser] = get_message_parser(MessageHeader)
+        header_parser: Optional[MessageParser] = get_message_parser(
+            MessageHeader
+        )
 
         header: MessageHeader = header_parser(line).unwrap()
 

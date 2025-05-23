@@ -78,10 +78,15 @@ def make_selection_paths_relative(
 
 def serialize_selection(selection: SelectionItem) -> dict:
     """Serializes selection items to a dictionary."""
-    return {"name": selection.name, "files": [str(file) for file in selection.files]}
+    return {
+        "name": selection.name,
+        "files": [str(file) for file in selection.files],
+    }
 
 
-def generate_metafiles(context: MetafileGenerationContext, config: Path) -> None:
+def generate_metafiles(
+    context: MetafileGenerationContext, config: Path
+) -> None:
     """Generate descriptors for a of deployments. The procedure searches for message
     and camera files for each deployment."""
 
@@ -101,13 +106,16 @@ def generate_metafiles(context: MetafileGenerationContext, config: Path) -> None
     serialized_groups: dict[str, list] = dict()
 
     for name, group_config in config["groups"].items():
-
-        file_query_data: FileQueryData = create_file_query(group_config["file_query"])
+        file_query_data: FileQueryData = create_file_query(
+            group_config["file_query"]
+        )
 
         queries: list[QueryItem] = list()
         for target_name, target_directory in targets.items():
             queries.append(
-                create_query_item(target_name, target_directory, file_query_data)
+                create_query_item(
+                    target_name, target_directory, file_query_data
+                )
             )
 
         query_results: list[Result[SelectionItem, str]] = [
@@ -130,8 +138,12 @@ def generate_metafiles(context: MetafileGenerationContext, config: Path) -> None
             serialize_selection(selection) for selection in selections
         ]
 
-    output_file: Path = context.output_directory / f"{context.prefix}_metafile.toml"
-    write_result: Result[Path, str] = write_config(serialized_groups, output_file)
+    output_file: Path = (
+        context.output_directory / f"{context.prefix}_metafile.toml"
+    )
+    write_result: Result[Path, str] = write_config(
+        serialized_groups, output_file
+    )
 
     match write_result:
         case Ok(output_file):

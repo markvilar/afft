@@ -3,8 +3,8 @@
 from argparse import ArgumentParser, Namespace
 from pathlib import Path
 
-from ...utils.log import logger
-from ...utils.result import Ok, Err, Result
+from afft.utils.log import logger
+from afft.utils.result import Ok, Err, Result
 
 from .data_types import CameraFilteringContext
 from .worker import filter_cameras

@@ -62,9 +62,14 @@ def table_join(database: str, host: str, port: int, config: click.Path) -> None:
 @click.argument("database", type=str)
 @click.argument("host", type=str)
 @click.argument("port", type=int)
-@click.option("--name", type=str, default=None, help="overwrite existing database")
 @click.option(
-    "--overwrite", is_flag=True, default=False, help="overwrite existing database"
+    "--name", type=str, default=None, help="overwrite existing database"
+)
+@click.option(
+    "--overwrite",
+    is_flag=True,
+    default=False,
+    help="overwrite existing database",
 )
 def table_write(
     source: click.Path,
@@ -91,7 +96,10 @@ def table_write(
     match create_endpoint(database=database, host=host, port=port):
         case Ok(endpoint):
             write_database(
-                endpoint, table=name, data=data_frame, if_table_exists=if_table_exists
+                endpoint,
+                table=name,
+                data=data_frame,
+                if_table_exists=if_table_exists,
             ).unwrap()
         case Err(error):
             logger.error(error)

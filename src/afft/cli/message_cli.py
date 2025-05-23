@@ -7,11 +7,11 @@ from typing import Any, Optional, TypeVar
 import click
 import polars as pl
 
-from ..io import read_config, read_lines
-from ..io.sql import create_endpoint, write_database
-from ..services.sirius import Message, parse_message_lines
-from ..utils.log import logger
-from ..utils.result import Ok, Err, Result
+from afft.io import read_config, read_lines
+from afft.io.sql import create_endpoint, write_database
+from afft.services.sirius import Message, parse_message_lines
+from afft.utils.log import logger
+from afft.utils.result import Ok, Err, Result
 
 
 type Topic = str
@@ -32,7 +32,9 @@ def message_cli(context: click.Context) -> None:
 @click.option("--database", type=str, help="destination database")
 @click.option("--host", type=str, help="destination host")
 @click.option("--port", type=int, help="destination port")
-@click.option("--prefix", type=str, help="common prefix for exported message groups")
+@click.option(
+    "--prefix", type=str, help="common prefix for exported message groups"
+)
 def parse_messages(
     source: str,
     config: str,
@@ -45,7 +47,9 @@ def parse_messages(
 
     config: dict = read_config(Path(config)).unwrap()
 
-    parse_result: Result[MessageGroups, str] = handle_message_parsing(source, config)
+    parse_result: Result[MessageGroups, str] = handle_message_parsing(
+        source, config
+    )
     if parse_result.is_err():
         logger.error(parse_result.err())
         return
@@ -98,7 +102,8 @@ def handle_message_database_insertion(
 
     if prefix is not None:
         table_names: dict[str, str] = {
-            topic: f"{prefix}_{table_name}" for topic, table_name in table_names.items()
+            topic: f"{prefix}_{table_name}"
+            for topic, table_name in table_names.items()
         }
 
     # Validate that every message group has an assigned table
@@ -122,7 +127,8 @@ def handle_message_database_insertion(
 
     # Convert messages to data frames
     dataframes: dict[str, pl.DataFrame] = {
-        name: tabulate_messages(messages) for name, messages in table_messages.items()
+        name: tabulate_messages(messages)
+        for name, messages in table_messages.items()
     }
 
     logger.info("")

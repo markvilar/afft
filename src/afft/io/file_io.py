@@ -19,7 +19,9 @@ def read_lines(path: Path, mode: str = "r") -> Result[list[str], str]:
         return Err(f"error when reading from file: {error}")
 
 
-def write_lines(lines: list[str], path: Path, mode: str = "w") -> Result[Path, str]:
+def write_lines(
+    lines: list[str], path: Path, mode: str = "w"
+) -> Result[Path, str]:
     """Writes lines to a text file."""
 
     if not path.parent.exists():

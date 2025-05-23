@@ -15,8 +15,12 @@ def parse_arguments(arguments: list[str]) -> Result[Namespace, str]:
     parser: ArgumentParser = ArgumentParser()
     parser.add_argument("data_directory", type=Path, help="data directory path")
     parser.add_argument("metafile", type=Path, help="metafile path")
-    parser.add_argument("output_directory", type=Path, help="output directory path")
-    parser.add_argument("--prefix", type=str, default="", help="output file prefix")
+    parser.add_argument(
+        "output_directory", type=Path, help="output directory path"
+    )
+    parser.add_argument(
+        "--prefix", type=str, default="", help="output file prefix"
+    )
 
     namespace: Namespace = parser.parse_args(arguments)
 

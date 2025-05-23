@@ -6,10 +6,10 @@ from pathlib import Path
 
 import polars as pl
 
-from ...io import read_file
-from ...services.renav import read_cameras, clean_camera_dataframe
-from ...utils.log import logger
-from ...utils.result import Ok, Err, Result
+from afft.io import read_file
+from afft.services.renav import read_cameras, clean_camera_dataframe
+from afft.utils.log import logger
+from afft.utils.result import Ok, Err, Result
 
 from .data_types import CameraFilteringContext, CameraFilteringData
 
@@ -20,7 +20,9 @@ def prepare_camera_processing_data(
     """Reads cameras and labels from file. Additionally, cameras are cleaned by renaming and dropping
     unnecessary columns."""
 
-    camera_read_result: Result[pl.DataFrame, str] = read_cameras(context.camera_file)
+    camera_read_result: Result[pl.DataFrame, str] = read_cameras(
+        context.camera_file
+    )
     if camera_read_result.is_err():
         logger.error(camera_read_result.err())
 
@@ -29,7 +31,9 @@ def prepare_camera_processing_data(
     cameras: pl.DataFrame = clean_camera_dataframe(cameras)
 
     if context.has_labels:
-        label_read_result: Result[pl.DataFrame, str] = read_file(context.label_file)
+        label_read_result: Result[pl.DataFrame, str] = read_file(
+            context.label_file
+        )
         labels: list[str] = label_read_result.unwrap()
     else:
         labels = None
@@ -37,7 +41,9 @@ def prepare_camera_processing_data(
     return CameraFilteringData(cameras, labels)
 
 
-def filter_cameras_by_label(cameras: pl.DataFrame, labels: list[str]) -> pl.DataFrame:
+def filter_cameras_by_label(
+    cameras: pl.DataFrame, labels: list[str]
+) -> pl.DataFrame:
     """Filter a camera data frame by the given labels. Cameras whose label is not in the given label
     are discarded."""
 
@@ -52,7 +58,9 @@ def filter_cameras_by_label(cameras: pl.DataFrame, labels: list[str]) -> pl.Data
     return filtered_cameras
 
 
-def write_cameras_to_csv(cameras: pl.DataFrame, path: Path) -> Result[Path, str]:
+def write_cameras_to_csv(
+    cameras: pl.DataFrame, path: Path
+) -> Result[Path, str]:
     """Writes a camera data frame to a CSV file."""
     if not path.suffix == ".csv":
         return Err(f"invalid file extension: {path}")
