@@ -5,7 +5,6 @@ from pathlib import Path
 from typing import Any, Optional, TypeVar
 
 import click
-import dotenv
 import polars as pl
 
 
@@ -100,19 +99,24 @@ def handle_message_database_insertion(
 ) -> Result[None, str]:
     """Handle insertion of messages into a database."""
 
-    assert "PG_USERNAME" in env.env_values(), "missing environment key: PG_USERNAME"
-    assert "PG_PASSWORD" in env.env_values(), "missing environment key: PG_PASSWORD"
+    assert "PG_USERNAME" in env.env_values(), (
+        "missing environment key: PG_USERNAME"
+    )
+    assert "PG_PASSWORD" in env.env_values(), (
+        "missing environment key: PG_PASSWORD"
+    )
 
     engine: db.Engine | str = db.create_engine(
-        database=database, 
-        host=host, 
+        database=database,
+        host=host,
         port=port,
         username=env.get_env_value("PG_USERNAME"),
         password=env.get_env_value("PG_PASSWORD"),
     )
 
-    assert isinstance(engine, db.Engine), f"error while connecting to engine: {engine}"
-
+    assert isinstance(engine, db.Engine), (
+        f"error while connecting to engine: {engine}"
+    )
 
     table_names: Optional[dict[str, str]] = config.get("table_names")
 
@@ -158,7 +162,7 @@ def handle_message_database_insertion(
 
     # Create endpoint and insert
     _insert_results: dict[str, Result] = {
-        table: db.write_database_table(endpoint, table, dataframe)
+        table: db.write_database_table(engine, table, dataframe)
         for table, dataframe in dataframes.items()
     }
 

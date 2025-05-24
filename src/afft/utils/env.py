@@ -9,6 +9,7 @@ import dotenv
 # Set default env file path to .env file in project root
 DEFAULT_ENV_FILE: Path = Path(__file__).resolve().parents[3] / ".env"
 
+
 def get_default_path() -> Path:
     """Returns the path of the default .env file."""
     return DEFAULT_ENV_FILE
