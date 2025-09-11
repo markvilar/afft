@@ -2,22 +2,18 @@
 
 import polars as pl
 
-from ...utils.result import Ok, Err, Result
-
-from .endpoint import Endpoint
+from .engine import Engine
 
 
-def write_database(
-    endpoint: Endpoint, table: str, data: pl.DataFrame, **overrides
-) -> Result[int, str]:
+def write_database_table(engine: Engine, table: str, data: pl.DataFrame, **overrides) -> int | str:
     """Writes a data frame to database table."""
     try:
-        with endpoint.begin() as connection:
+        with engine.begin() as connection:
             rows: int = data.write_database(
                 table_name=table,
                 connection=connection,
                 **overrides,
             )
-        return Ok(rows)
+        return rows
     except (IOError, TypeError, ValueError) as error:
-        return Err(error)
+        return error

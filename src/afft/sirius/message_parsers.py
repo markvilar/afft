@@ -5,7 +5,7 @@ import re
 from pathlib import Path
 from typing import Optional
 
-from ...utils.result import Ok, Err, Result
+from afft.utils.result import Ok, Err, Result
 
 from .message_interfaces import MessageParser
 from .concrete_messages import (
@@ -314,7 +314,9 @@ def parse_ecopuck_message(line: str) -> Result[EcopuckMessage, str]:
     return Ok(EcopuckMessage(header, body))
 
 
-def parse_parosci_pressure_message(line: str) -> Result[ParosciPressureMessage, str]:
+def parse_parosci_pressure_message(
+    line: str,
+) -> Result[ParosciPressureMessage, str]:
     """Parses a message line as a Parosci pressure message."""
     pattern = re.compile(PAROSCI_REGEX, re.VERBOSE)
     match = pattern.match(line)
@@ -401,7 +403,9 @@ def parse_lq_modem_message(line: str) -> Result[TrackLinkModemMessage, str]:
     return Ok(TrackLinkModemMessage(header, body))
 
 
-def parse_evologics_modem_message(line: str) -> Result[EvologicsModemMessage, str]:
+def parse_evologics_modem_message(
+    line: str,
+) -> Result[EvologicsModemMessage, str]:
     """Parses a message line as an Evologics USBL message."""
 
     pattern = re.compile(EVOLOGICS_MODEM_REGEX, re.VERBOSE)
@@ -457,7 +461,9 @@ def parse_micron_sonar_message(line: str) -> Result[MicronSonarMessage, str]:
     return Ok(MicronSonarMessage(header, body))
 
 
-def parse_obstacle_avoidance_sonar_message(line: str) -> Result[OASonarMessage, str]:
+def parse_obstacle_avoidance_sonar_message(
+    line: str,
+) -> Result[OASonarMessage, str]:
     """Parses a message line as an OA sonar message."""
 
     pattern = re.compile(OAS_REGEX, re.VERBOSE)

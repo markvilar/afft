@@ -52,8 +52,12 @@ def transform_camera_attitude_to_vehicle(cameras: pl.DataFrame) -> pl.DataFrame:
 def add_image_labels(cameras: pl.DataFrame) -> pl.DataFrame:
     """Add image labels as the stem of the corresponding image files."""
 
-    stereo_left_image_names: list[str] = cameras["stereo_left_image_name"].to_list()
-    stereo_right_image_names: list[str] = cameras["stereo_right_image_name"].to_list()
+    stereo_left_image_names: list[str] = cameras[
+        "stereo_left_image_name"
+    ].to_list()
+    stereo_right_image_names: list[str] = cameras[
+        "stereo_right_image_name"
+    ].to_list()
 
     stereo_left_labels: list[str] = [
         Path(name).stem for name in stereo_left_image_names

@@ -65,7 +65,9 @@ Rclone actions:
 """
 
 
-def run_command(context: Context, command: str, args: list[str]) -> CommandLineOutput:
+def run_command(
+    context: Context, command: str, args: list[str]
+) -> CommandLineOutput:
     """Run a custom rclone command."""
     return rclone.with_config(context.config).run_cmd(
         command=command,
@@ -91,7 +93,9 @@ def list_directories(
     return parse_command_line_result(result)
 
 
-def copy(context: Context, source: str, destination: str, flags: list[str]) -> dict:
+def copy(
+    context: Context, source: str, destination: str, flags: list[str]
+) -> dict:
     """
     Copy a directory from the source to the destination.
 

@@ -5,7 +5,7 @@ from typing import Callable
 
 import polars as pl
 
-from afft.io.sql import Endpoint, read_database
+from afft.database import Engine, read_database_table
 from afft.utils.log import logger
 from afft.utils.result import Ok, Err, Result
 
@@ -21,15 +21,16 @@ class JoinTableConfig:
 
 
 def request_data_and_dispatch(
-    endpoint: Endpoint,
+    engine: Engine,
     queries: dict[str, str],
     data_callback: Callable[[dict], pl.DataFrame],
     error_callback: Callable[[str], None],
 ) -> None:
-    """Request data from an endpoint."""
+    """Request data from an engine."""
 
     read_results: dict[str, Result] = {
-        name: read_database(endpoint, query) for name, query in queries.items()
+        name: read_database_table(engine, query)
+        for name, query in queries.items()
     }
 
     dataframes: dict[str, pl.DataFrame] = dict()
@@ -65,7 +66,9 @@ def collect_camera_metadata(
 
     left: pl.DataFrame = dataframes.pop(base)
     for key, right in dataframes.items():
-        left: pl.DataFrame = left.join_asof(right, on=join_on, strategy="nearest")
+        left: pl.DataFrame = left.join_asof(
+            right, on=join_on, strategy="nearest"
+        )
 
     joined: pl.DataFrame = left
     return joined
@@ -91,7 +94,7 @@ def create_data_frame_processor(
 
 
 def join_database_tables(
-    endpoint: Endpoint,
+    engine: Engine,
     queries: dict[str, str],
     selections: dict[str, list],
     base: str,
@@ -113,7 +116,7 @@ def join_database_tables(
     )
 
     return request_data_and_dispatch(
-        endpoint,
+        engine,
         queries,
         data_callback=processor,
         error_callback=logger.error,
