@@ -39,22 +39,28 @@ def table_join(database: str, host: str, port: int, config: click.Path) -> None:
             logger.error(error)
             return
 
-    assert "PG_USERNAME" in env.env_values(), "missing environment key: PG_USERNAME"
-    assert "PG_PASSWORD" in env.env_values(), "missing environment key: PG_PASSWORD"
+    assert "PG_USERNAME" in env.env_values(), (
+        "missing environment key: PG_USERNAME"
+    )
+    assert "PG_PASSWORD" in env.env_values(), (
+        "missing environment key: PG_PASSWORD"
+    )
 
-    engine: db.Engine = create_engine(
-        database=database, 
-        host=host, 
+    engine: db.Engine = db.create_engine(
+        database=database,
+        host=host,
         port=port,
         username=env.get_env_value("PG_USERNAME"),
         password=env.get_env_value("PG_PASSWORD"),
     )
 
-    assert isinstance(engine, db.Engine), f"error when creating database engine: {engine}"
+    assert isinstance(engine, db.Engine), (
+        f"error when creating database engine: {engine}"
+    )
 
     results: dict[str, pl.DataFrame] = {
         config.label: join_database_tables(
-            endpoint,
+            engine,
             queries=config.queries,
             selections=config.selections,
             base=config.join.get("base"),
@@ -104,13 +110,12 @@ def table_write(
 
     data_frame: pl.DataFrame = pl.read_csv(source)
 
-    match create_endpoint(database=database, host=host, port=port):
-        case Ok(endpoint):
-            write_database(
-                endpoint,
-                table=name,
-                data=data_frame,
-                if_table_exists=if_table_exists,
-            ).unwrap()
-        case Err(error):
-            logger.error(error)
+    engine: db.Engine = db.create_engine(
+        database=database, host=host, port=port
+    )
+    db.write_database_table(
+        engine,
+        table=name,
+        data=data_frame,
+        if_table_exists=if_table_exists,
+    )

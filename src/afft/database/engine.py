@@ -1,9 +1,9 @@
 """Module for SQL database endpoints."""
 
-import sqlalchemy as db
+import sqlalchemy as sqla
 
 
-Engine = db.Engine
+Engine = sqla.Engine
 
 
 USER_KEY: str = "DB_USER"
@@ -20,7 +20,7 @@ def create_engine(
 ) -> Engine | str:
     """Creates an engine for a SQL database."""
 
-    url: db.engine.URL = db.engine.URL.create(
+    url: sqla.engine.URL = sqla.engine.URL.create(
         database=database,
         host=host,
         port=port,
@@ -29,4 +29,4 @@ def create_engine(
         drivername="postgresql",
     )
 
-    return db.create_engine(url)
+    return sqla.create_engine(url)
