@@ -5,9 +5,7 @@ import polars as pl
 from .engine import Engine
 
 
-def read_database_table(
-    engine: Engine, query: str, **kwargs
-) -> pl.DataFrame | str:
+def read_database_table(engine: Engine, query: str, **kwargs) -> pl.DataFrame:
     """Read data frame from a database."""
     try:
         with engine.connect() as connection:
@@ -15,5 +13,5 @@ def read_database_table(
                 connection=connection, query=query, **kwargs
             )
         return dataframe
-    except (IOError, TypeError, ValueError) as error:
-        return error
+    except (IOError, TypeError, ValueError) as exception:
+        raise exception

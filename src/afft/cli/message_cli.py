@@ -7,19 +7,16 @@ from typing import Any, Optional, TypeVar
 import click
 import polars as pl
 
-
 import afft.database as db
+import afft.io as io
+import afft.sirius as sirius
 import afft.utils.env as env
 
-from afft.io import read_config, read_lines
-from afft.sirius import Message, parse_message_lines
-
 from afft.utils.log import logger
-from afft.utils.result import Ok, Err, Result
 
 
 type Topic = str
-type Messages = Iterable[Message]
+type Messages = Iterable[sirius.Message]
 type MessageGroups = Mapping[Topic, Messages]
 
 
@@ -42,51 +39,37 @@ def message_cli(context: click.Context) -> None:
 def parse_messages(
     source: str,
     config: str,
-    database: Optional[str] = None,
-    host: Optional[str] = None,
-    port: Optional[int] = None,
-    prefix: Optional[str] = None,
+    database: str | None = None,
+    host: str | None = None,
+    port: int | None = None,
+    prefix: str | None = None,
 ) -> None:
     """CLI action for ingesting messages into a destination."""
 
-    config: dict = read_config(Path(config)).unwrap()
-
-    parse_result: Result[MessageGroups, str] = handle_message_parsing(
-        source, config
-    )
-    if parse_result.is_err():
-        logger.error(parse_result.err())
-        return
-
-    messages: MessageGroups = parse_result.ok()
+    config: dict = io.read_config(Path(config)).unwrap()
+    messages: MessageGroups = handle_message_parsing(source, config)
 
     # Write to database if a database is provided
     if database:
-        match handle_message_database_insertion(
+        handle_message_database_insertion(
             database, host, port, messages, config, prefix
-        ):
-            case Ok(None):
-                pass
-            case Err(error_message):
-                logger.error(error_message)
+        )
 
 
-def handle_message_parsing(
-    source: str | Path, config: dict
-) -> Result[MessageGroups, str]:
+def handle_message_parsing(source: str | Path, config: dict) -> MessageGroups:
     """Handle parsing of messages."""
-
-    lines: list[str] = read_lines(Path(source)).unwrap()
-
+    lines: list[str] = io.read_lines(Path(source)).unwrap()
     topic_types: Optional[dict[Topic, str]] = config.get("message_maps")
 
     if topic_types is None:
-        return Err("invalid config: missing topic types")
+        raise ValueError("invalid config: missing topic types")
 
     # Read the message lines
-    parsed_messages: MessageGroups = parse_message_lines(lines, topic_types)
+    parsed_messages: MessageGroups = sirius.parse_message_lines(
+        lines, topic_types
+    )
 
-    return Ok(parsed_messages)
+    return parsed_messages
 
 
 def handle_message_database_insertion(
@@ -95,8 +78,8 @@ def handle_message_database_insertion(
     port: int,
     message_groups: dict[str, Messages],
     config: dict[str, Any],
-    prefix: Optional[str] = None,
-) -> Result[None, str]:
+    prefix: str | None = None,
+) -> None:
     """Handle insertion of messages into a database."""
 
     assert "PG_USERNAME" in env.env_values(), (
@@ -118,10 +101,10 @@ def handle_message_database_insertion(
         f"error while connecting to engine: {engine}"
     )
 
-    table_names: Optional[dict[str, str]] = config.get("table_names")
+    table_names: dict[str, str] | None = config.get("table_names")
 
     if table_names is None:
-        return Err("invalid config: missing table names")
+        raise ValueError("invalid config: missing table names")
 
     if prefix is not None:
         table_names: dict[str, str] = {
@@ -132,7 +115,7 @@ def handle_message_database_insertion(
     # Validate that every message group has an assigned table
     for group, messages in message_groups.items():
         if group not in table_names:
-            return Err(f"missing table name for message group: {group}")
+            raise ValueError(f"missing table name for message group: {group}")
 
     # Group messages by database table name
     table_messages: dict[str, Messages] = dict()
@@ -161,7 +144,7 @@ def handle_message_database_insertion(
     logger.info("")
 
     # Create endpoint and insert
-    _insert_results: dict[str, Result] = {
+    _insert_results: dict[str, int] = {
         table: db.write_database_table(engine, table, dataframe)
         for table, dataframe in dataframes.items()
     }

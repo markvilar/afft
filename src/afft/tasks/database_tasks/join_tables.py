@@ -7,7 +7,6 @@ import polars as pl
 
 from afft.database import Engine, read_database_table
 from afft.utils.log import logger
-from afft.utils.result import Ok, Err, Result
 
 
 @dataclass
@@ -28,19 +27,10 @@ def request_data_and_dispatch(
 ) -> None:
     """Request data from an engine."""
 
-    read_results: dict[str, Result] = {
+    dataframes: dict[str, pl.DataFrame] = {
         name: read_database_table(engine, query)
         for name, query in queries.items()
     }
-
-    dataframes: dict[str, pl.DataFrame] = dict()
-    for name, result in read_results.items():
-        match result:
-            case Ok(dataframe):
-                dataframes[name] = dataframe
-            case Err(message):
-                error_callback(message)
-
     return data_callback(dataframes)
 
 

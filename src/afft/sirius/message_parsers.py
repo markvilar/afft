@@ -5,8 +5,6 @@ import re
 from pathlib import Path
 from typing import Optional
 
-from afft.utils.result import Ok, Err, Result
-
 from .message_interfaces import MessageParser
 from .concrete_messages import (
     MessageHeader,
@@ -192,31 +190,31 @@ BATTERY_REGEX = r"""
     """
 
 
-def parse_message_header(line: str) -> Result[MessageHeader, str]:
+def parse_message_header(line: str) -> MessageHeader:
     """Parses the header from a message line."""
 
     pattern = re.compile(MESSAGE_HEADER_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse header: {line}")
+        raise ValueError(f"failed to parse header: {line}")
 
     header = MessageHeader(
         topic=str(match["topic"]),
         timestamp=float(match["timestamp"]),
     )
 
-    return Ok(header)
+    return header
 
 
-def parse_image_message(line: str) -> Result[ImageCaptureMessage, str]:
+def parse_image_message(line: str) -> ImageCaptureMessage:
     """Parses a message line as an image capture message."""
 
     pattern = re.compile(IMAGE_CAPTURE_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse image message: {line}")
+        raise ValueError(f"failed to parse image message: {line}")
 
     header = ImageCaptureMessage.header_type(
         topic=str(match["topic"]),
@@ -238,17 +236,17 @@ def parse_image_message(line: str) -> Result[ImageCaptureMessage, str]:
         exposure=exposure,
     )
 
-    return Ok(ImageCaptureMessage(header, body))
+    return ImageCaptureMessage(header, body)
 
 
-def parse_seabird_ctd_message(line: str) -> Result[SeabirdCTDMessage, str]:
+def parse_seabird_ctd_message(line: str) -> SeabirdCTDMessage:
     """Parses a message line as a Seabird CTD message."""
 
     pattern = re.compile(SEABIRD_CTD_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse Seabird CTD message: {line}")
+        raise ValueError(f"failed to parse Seabird CTD message: {line}")
 
     header = SeabirdCTDMessage.header_type(
         topic=str(match["topic"]), timestamp=float(match["timestamp"])
@@ -262,17 +260,17 @@ def parse_seabird_ctd_message(line: str) -> Result[SeabirdCTDMessage, str]:
         sound_velocity=float(match["sound_velocity"]),
     )
 
-    return Ok(SeabirdCTDMessage(header, body))
+    return SeabirdCTDMessage(header, body)
 
 
-def parse_aanderaa_ctd_message(line: str) -> Result[AanderaaCTDMessage, str]:
+def parse_aanderaa_ctd_message(line: str) -> AanderaaCTDMessage:
     """Parses a message line as an Aanderaa CTD message."""
 
     pattern = re.compile(AANDERAA_CTD_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse Aanderaa CTD message: {line}")
+        raise ValueError(f"failed to parse Aanderaa CTD message: {line}")
 
     header = AanderaaCTDMessage.header_type(
         topic=str(match["topic"]),
@@ -287,17 +285,17 @@ def parse_aanderaa_ctd_message(line: str) -> Result[AanderaaCTDMessage, str]:
         sound_velocity=float(match["sound_velocity"]),
     )
 
-    return Ok(AanderaaCTDMessage(header, body))
+    return AanderaaCTDMessage(header, body)
 
 
-def parse_ecopuck_message(line: str) -> Result[EcopuckMessage, str]:
+def parse_ecopuck_message(line: str) -> EcopuckMessage:
     """Parses a message line as an Ecopuck water quality message."""
 
     pattern = re.compile(ECOPUCK_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse Ecopuck message: {line}")
+        raise ValueError(f"failed to parse Ecopuck message: {line}")
 
     header = EcopuckMessage.header_type(
         topic=str(match["topic"]),
@@ -311,18 +309,16 @@ def parse_ecopuck_message(line: str) -> Result[EcopuckMessage, str]:
         temperature=float(match["temperature"]),
     )
 
-    return Ok(EcopuckMessage(header, body))
+    return EcopuckMessage(header, body)
 
 
-def parse_parosci_pressure_message(
-    line: str,
-) -> Result[ParosciPressureMessage, str]:
+def parse_parosci_pressure_message(line: str) -> ParosciPressureMessage:
     """Parses a message line as a Parosci pressure message."""
     pattern = re.compile(PAROSCI_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse message line: {line}")
+        raise ValueError(f"failed to parse message line: {line}")
 
     header = ParosciPressureMessage.header_type(
         topic=str(match["topic"]),
@@ -333,17 +329,17 @@ def parse_parosci_pressure_message(
         depth=float(match["depth"]),
     )
 
-    return Ok(ParosciPressureMessage(header, body))
+    return ParosciPressureMessage(header, body)
 
 
-def parse_teledyne_dvl_message(line: str) -> Result[TeledyneDVLMessage, str]:
+def parse_teledyne_dvl_message(line: str) -> TeledyneDVLMessage:
     """Parses a message line as a Teledyne DVL message."""
 
     pattern = re.compile(TELEDYNE_DVL_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse message line: {line}")
+        raise ValueError(f"failed to parse message line: {line}")
 
     header: TeledyneDVLMessage.header_type = TeledyneDVLMessage.header_type(
         topic=str(match["topic"]), timestamp=float(match["timestamp"])
@@ -372,17 +368,17 @@ def parse_teledyne_dvl_message(line: str) -> Result[TeledyneDVLMessage, str]:
         bottom_track_status=int(match["bottom_track_status"]),
     )
 
-    return Ok(TeledyneDVLMessage(header, body))
+    return TeledyneDVLMessage(header, body)
 
 
-def parse_lq_modem_message(line: str) -> Result[TrackLinkModemMessage, str]:
+def parse_lq_modem_message(line: str) -> TrackLinkModemMessage:
     """Parses a message line as a LQ modem message."""
 
     pattern = re.compile(LQ_MODEM_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse message line: {line}")
+        raise ValueError(f"failed to parse message line: {line}")
 
     header: MessageHeader = TrackLinkModemMessage.header_type(
         topic=str(match["topic"]),
@@ -400,19 +396,17 @@ def parse_lq_modem_message(line: str) -> Result[TrackLinkModemMessage, str]:
         range=float(match["range"]),
     )
 
-    return Ok(TrackLinkModemMessage(header, body))
+    return TrackLinkModemMessage(header, body)
 
 
-def parse_evologics_modem_message(
-    line: str,
-) -> Result[EvologicsModemMessage, str]:
+def parse_evologics_modem_message(line: str) -> EvologicsModemMessage:
     """Parses a message line as an Evologics USBL message."""
 
     pattern = re.compile(EVOLOGICS_MODEM_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse message line: {line}")
+        raise ValueError(f"failed to parse message line: {line}")
 
     header = EvologicsModemMessage.header_type(
         topic=str(match["topic"]),
@@ -434,17 +428,17 @@ def parse_evologics_modem_message(
         ship_heading=float(match["ship_heading"]),
     )
 
-    return Ok(EvologicsModemMessage(header, body))
+    return EvologicsModemMessage(header, body)
 
 
-def parse_micron_sonar_message(line: str) -> Result[MicronSonarMessage, str]:
+def parse_micron_sonar_message(line: str) -> MicronSonarMessage:
     """Parses a message line as a Micron sonar message."""
 
     pattern = re.compile(MICRON_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse message line: {line}")
+        raise ValueError(f"failed to parse message line: {line}")
 
     header = MicronSonarMessage.header_type(
         topic=str(match["topic"]),
@@ -458,19 +452,17 @@ def parse_micron_sonar_message(line: str) -> Result[MicronSonarMessage, str]:
         angle=float(match["angle"]),
     )
 
-    return Ok(MicronSonarMessage(header, body))
+    return MicronSonarMessage(header, body)
 
 
-def parse_obstacle_avoidance_sonar_message(
-    line: str,
-) -> Result[OASonarMessage, str]:
+def parse_obstacle_avoidance_sonar_message(line: str) -> OASonarMessage:
     """Parses a message line as an OA sonar message."""
 
     pattern = re.compile(OAS_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse message line: {line}")
+        raise ValueError(f"failed to parse message line: {line}")
 
     header = OASonarMessage.header_type(
         topic=str(match["topic"]),
@@ -483,7 +475,7 @@ def parse_obstacle_avoidance_sonar_message(
         pseudo_forward_distance=float(match["pseudo_forward_distance"]),
     )
 
-    return Ok(OASonarMessage(header, body))
+    return OASonarMessage(header, body)
 
 
 BATTERY_TOPIC_TO_NAME: dict[str, str] = {
@@ -494,14 +486,14 @@ BATTERY_TOPIC_TO_NAME: dict[str, str] = {
 }
 
 
-def parse_battery_message(line: str) -> Result[BatteryMessage, str]:
+def parse_battery_message(line: str) -> BatteryMessage:
     """Parses a message line as a BatteryMessage object."""
 
     pattern = re.compile(BATTERY_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse message line: {line}")
+        raise ValueError(f"failed to parse message line: {line}")
 
     header = BatteryMessage.header_type(
         topic=str(match["topic"]), timestamp=float(match["timestamp"])
@@ -517,7 +509,7 @@ def parse_battery_message(line: str) -> Result[BatteryMessage, str]:
         charging=bool(int(match["charging"])),
     )
 
-    return Ok(BatteryMessage(header, body))
+    return BatteryMessage(header, body)
 
 
 THRUSTER_TOPIC_TO_NAME: dict[str, str] = {
@@ -527,14 +519,14 @@ THRUSTER_TOPIC_TO_NAME: dict[str, str] = {
 }
 
 
-def parse_thruster_message(line: str) -> Result[ThrusterMessage, str]:
+def parse_thruster_message(line: str) -> ThrusterMessage:
     """Parser function for thruster messages."""
 
     pattern = re.compile(THRUSTER_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        return Err(f"failed to parse message line: {line}")
+        raise ValueError(f"failed to parse message line: {line}")
 
     header = ThrusterMessage.header_type(
         topic=str(match["topic"]), timestamp=float(match["timestamp"])
@@ -548,7 +540,7 @@ def parse_thruster_message(line: str) -> Result[ThrusterMessage, str]:
         temperature=float(match["temperature"]),
     )
 
-    return Ok(ThrusterMessage(header, body))
+    return ThrusterMessage(header, body)
 
 
 MESSAGE_PARSERS: list[MessageParser] = [
