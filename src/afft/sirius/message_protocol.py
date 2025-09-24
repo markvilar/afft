@@ -8,7 +8,6 @@ from .message_parsers import get_message_parser
 from .concrete_messages import MessageHeader, get_message_type
 
 from afft.utils.log import logger
-from afft.utils.result import Ok, Err
 
 
 @dataclass
@@ -66,27 +65,23 @@ def parse_message_lines(
     """Parses lines as message types in the given protocol."""
 
     protocol: MessageProtocol = build_message_protocol(topic_types)
-    parsed: dict[str, list[Message]] = dict()
+    message_groups: dict[str, list[Message]] = dict()
 
     for line in lines:
-        header_parser: Optional[MessageParser] = get_message_parser(
-            MessageHeader
-        )
+        header_parser: MessageParser | None = get_message_parser(MessageHeader)
+        header: MessageHeader = header_parser(line)
+        item: MessageProtocol.Item | None = protocol.get_topic(header.topic)
 
-        header: MessageHeader = header_parser(line).unwrap()
-
-        item: Optional[MessageProtocol.Item] = protocol.get_topic(header.topic)
-
-        if not item:
+        if item is None:
+            logger.warning(
+                f"missing protocol item for message topic: {header.topic}"
+            )
             continue
 
-        # Parse message line and handle result
-        match item.message_parser(line):
-            case Ok(message):
-                if header.topic not in parsed:
-                    parsed[header.topic] = list()
-                parsed[header.topic].append(message)
-            case Err(error):
-                logger.warning(error)
+        # Parse message line and append to topic list
+        parsed_message: Message = item.message_parser(line)
+        if header.topic not in message_groups:
+            message_groups[header.topic] = list()
+        message_groups[header.topic].append(parsed_message)
 
-    return parsed
+    return message_groups

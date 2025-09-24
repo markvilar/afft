@@ -6,13 +6,11 @@ import click
 import polars as pl
 
 import afft.database as db
+import afft.io as io
+import afft.tasks.database_tasks as dbtasks
 import afft.utils.env as env
 
-from afft.io import read_config
-from afft.tasks.database_tasks import JoinTableConfig, join_database_tables
-
 from afft.utils.log import logger
-from afft.utils.result import Ok, Err
 
 
 @click.group()
@@ -26,18 +24,16 @@ def database_cli(context: click.Context) -> None:
 @click.argument("database", type=str)
 @click.argument("host", type=str)
 @click.argument("port", type=int)
-@click.argument("config", type=click.Path(exists=True))
-def table_join(database: str, host: str, port: int, config: click.Path) -> None:
+@click.argument("config_path", type=click.Path(exists=True))
+def table_join(
+    database: str, host: str, port: int, config_path: click.Path
+) -> None:
     """Join tables in the database."""
 
-    match read_config(Path(config)):
-        case Ok(config):
-            task_configs: list[JoinTableConfig] = [
-                JoinTableConfig(**task) for task in config.get("tasks")
-            ]
-        case Err(error):
-            logger.error(error)
-            return
+    config: dict = io.read_config(Path(config_path))
+    task_configs: list[dbtasks.JoinTableConfig] = [
+        dbtasks.JoinTableConfig(**task) for task in config.get("tasks")
+    ]
 
     assert "PG_USERNAME" in env.env_values(), (
         "missing environment key: PG_USERNAME"
@@ -59,7 +55,7 @@ def table_join(database: str, host: str, port: int, config: click.Path) -> None:
     )
 
     results: dict[str, pl.DataFrame] = {
-        config.label: join_database_tables(
+        config.label: dbtasks.join_database_tables(
             engine,
             queries=config.queries,
             selections=config.selections,
