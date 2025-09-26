@@ -19,7 +19,7 @@ class DownwardIrradianceRequest:
 SUPPORTED_TIME_STANDARD: list[str] = ["UTC", "LST"]
 
 
-def get_shortwave_downward_irradiance(
+def get_downward_irradiance(
     longitude: float,
     latitude: float,
     start_date: str,
@@ -88,11 +88,11 @@ def get_shortwave_downward_irradiance(
     return df
 
 
-def request_shortwave_downward_irradiance(
+def request_downward_irradiance(
     request: DownwardIrradianceRequest,
 ) -> pd.DataFrame:
-    """Request hourly downward irradiance from the NASA Power API."""
-    return get_shortwave_downward_irradiance(
+    """Request hourly shortwave downward irradiance from the NASA Power API."""
+    return get_downward_irradiance(
         longitude=request.longitude,
         latitude=request.latitude,
         start_date=request.start_date,
