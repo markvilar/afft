@@ -13,4 +13,6 @@ from .sea_level import (
     request_sea_level as request_sea_level,
 )
 
+from .zenith import get_solar_zenith_angle as get_solar_zenith_angle
+
 __all__ = []

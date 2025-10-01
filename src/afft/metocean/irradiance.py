@@ -24,7 +24,6 @@ def get_downward_irradiance(
     latitude: float,
     start_date: str,
     end_date: str,
-    time_standard: str = "UTC",
 ) -> pd.DataFrame:
     """
     Retrieve hourly all-sky surface shortwave downward irradiance (ALLSKY_SFC_SW_DWN) from NASA POWER API.
@@ -34,7 +33,6 @@ def get_downward_irradiance(
         latitude: Latitude in decimal degrees.
         start_date: Start date, format 'YYYYMMDD'.
         end_date: End date, format 'YYYYMMDD'.
-        time_standard: 'UTC' or 'LST' (Local Solar Time).
 
     Returns:
         pd.DataFrame: DataFrame of results.
@@ -44,9 +42,6 @@ def get_downward_irradiance(
     )
     assert latitude > -90 and latitude < 90, (
         f"latitude must be between -90 and 90, got: {latitude}"
-    )
-    assert time_standard in SUPPORTED_TIME_STANDARD, (
-        f"invalid time standard format, got {time_standard}, expected {SUPPORTED_TIME_STANDARD}"
     )
 
     url: str = (
@@ -58,7 +53,7 @@ def get_downward_irradiance(
         f"&start={start_date}"
         f"&end={end_date}"
         f"&format=JSON"
-        f"&time-standard={time_standard}"
+        f"&time-standard=UTC"
     )
 
     response: requests.Response = requests.get(url)
@@ -69,20 +64,20 @@ def get_downward_irradiance(
 
     # Parse data
     coordinates: list[float] = data["geometry"]["coordinates"]
-    hours: dict[str, float] = data["properties"]["parameter"][
+    hourly_records: dict[str, float] = data["properties"]["parameter"][
         "ALLSKY_SFC_SW_DWN"
     ]
-    records = [
+    rows: list[dict] = [
         {"datetime": date, "shortwave_downward_irradiance": value}
-        for date, value in hours.items()
+        for date, value in hourly_records.items()
     ]
 
-    df: pd.DataFrame = pd.DataFrame(records)
+    df: pd.DataFrame = pd.DataFrame(rows)
     df["datetime"] = pd.to_datetime(df["datetime"], format="%Y%m%d%H")
     df["longitude"] = coordinates[0]
     df["latitude"] = coordinates[1]
     df["height"] = coordinates[2]
-    df["time_standard"] = time_standard.lower()
+    df["time_standard"] = "UTC"
     df["irradiance_unit"] = "Wh/m2"
 
     return df
