@@ -6,7 +6,7 @@ import shutil
 from pathlib import Path
 from typing import Callable
 
-from ..utils.result import Ok, Err, Result
+from afft.utils.result import Ok, Err, Result
 
 
 def list_directory(
@@ -37,7 +37,9 @@ def copy_file(
 ) -> Result[Path, str]:
     """Copies a file from the source to the destination."""
     try:
-        shutil.copyfile(str(source), str(destination), follow_symlinks=follow_symlinks)
+        shutil.copyfile(
+            str(source), str(destination), follow_symlinks=follow_symlinks
+        )
     except shutil.SameFileError as error:
         return Err(str(error))
     except OSError as error:

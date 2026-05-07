@@ -15,30 +15,9 @@ The repository includes support for the following tools:
 
 ## Getting started
 
-### Install poetry
+TODO: Add instructions for installing and setting up uv
 
-```shell
-# Install pipenv
-pip3 install --user poetry
-```
 
-### Configure the project environment and install dependencies
-
-```shell
-# Set the Python version 3.12
-poetry env use 3.12
-
-# Validate the environment configuration
-poetry env info
-```
-
-```shell
-# Install dependencies
-poetry install
-
-# Build the project
-poetry build
-```
 
 ## Tasks
 
@@ -52,43 +31,7 @@ To ease interactions with Postgres databases we highly recommend installing PgAd
 To give AFFT access to your Postgres database, create a `.env` file at the root of the repository, and enter the login credentials of your Postgres user as seen below. Make sure that `.env` is added to the `.gitignore` so that it is not committed to `git` and pushed to a remote repository!
 
 ```text
-PG_USER=YOUR_POSTGRES_USER
+PG_USERNAME=YOUR_POSTGRES_USER
 PG_PASSWORD=YOUR_POSTGRES_PASSWORD
 ```
 
-
-## Other uses
-
-### Running unit tests
-
-```shell
-poetry run pytest
-```
-
-### Running notebooks
-
-```shell
-poetry run jupyter notebook
-```
-
-### Managing the project environment
-
-```shell
-poetry env info
-```
-
-```shell
-poetry env remove
-```
-
-### Activate the project environment in a shell
-
-```shell
-poetry shell
-```
-
-### Removing dependencies
-
-```shell
-poetry remove <package>
-```
