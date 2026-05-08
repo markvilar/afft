@@ -5,9 +5,6 @@ from typing import Callable
 
 import polars as pl
 
-from ...utils.result import Ok, Err, Result
-
-
 RENAV_SKIP_ROWS: int = 58
 RENAV_SEPARATOR: str = "\t"
 RENAV_DATAFRAME_COLUMNS: list = [
@@ -56,27 +53,24 @@ def preprocess_and_cast_columns(cameras: pl.DataFrame) -> pl.DataFrame:
 
 def read_cameras(
     path: Path, preprocessor: Callable[[pl.DataFrame], pl.DataFrame] = None
-) -> Result[pl.DataFrame, str]:
+) -> pl.DataFrame:
     """Reads cameras from a Renav file."""
 
     if not path.exists():
-        return Err(f"file does not exist: {path}")
+        raise FileNotFoundError(f"file does not exist: {path}")
 
-    try:
-        cameras: pl.DataFrame = pl.read_csv(
-            source=path,
-            new_columns=RENAV_DATAFRAME_COLUMNS,
-            has_header=False,
-            separator=RENAV_SEPARATOR,
-            skip_rows=RENAV_SKIP_ROWS,
-            infer_schema_length=0,  # NOTE: Makes sure all columns are interpreted as strings
-        )
-    except pl.exceptions.ComputeError as error:
-        return Err(error)
+    cameras: pl.DataFrame = pl.read_csv(
+        source=path,
+        new_columns=RENAV_DATAFRAME_COLUMNS,
+        has_header=False,
+        separator=RENAV_SEPARATOR,
+        skip_rows=RENAV_SKIP_ROWS,
+        infer_schema_length=0,  # NOTE: Makes sure all columns are interpreted as strings
+    )
 
-    cameras: pl.DataFrame = preprocess_and_cast_columns(cameras)
+    cameras = preprocess_and_cast_columns(cameras)
 
     if preprocessor:
-        cameras: pl.DataFrame = preprocessor(cameras)
+        cameras = preprocessor(cameras)
 
-    return Ok(cameras)
+    return cameras

@@ -3,9 +3,6 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from ..utils.result import Ok, Err, Result
-
-
 @dataclass
 class Endpoint:
     """Class representing an endpoint."""
@@ -18,17 +15,16 @@ class Endpoint:
         return self.host + ":" + str(self.path)
 
 
-def create_endpoint_from_string(string: str) -> Result[Endpoint, BaseException]:
+def create_endpoint_from_string(string: str) -> Endpoint:
     """
     Create an endpoint from a string consisting of hostname and path on the
     format <hostname>:<path>.
     """
     splits = string.split(":")
     if not len(splits) == 2:
-        return Err(f"invalid endpoint string: {string}")
+        raise ValueError(f"invalid endpoint string: {string}")
 
-    endpoint = Endpoint(host=splits[0], path=splits[1])
-    return Ok(endpoint)
+    return Endpoint(host=splits[0], path=splits[1])
 
 
 @dataclass(unsafe_hash=True)
