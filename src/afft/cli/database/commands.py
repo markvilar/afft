@@ -4,7 +4,7 @@ CLI commands for working with databases.
 
 import click
 
-from .actions import dispatch_table_join, dispatch_table_write
+from .actions import dispatch_table_export, dispatch_table_join, dispatch_table_write
 
 
 @click.group()
@@ -24,6 +24,29 @@ def table_join(
 ) -> None:
     """Join tables in the database."""
     dispatch_table_join(database, host, port, config_path)
+
+
+@database_group.command()
+@click.argument("database", type=str)
+@click.argument("host", type=str)
+@click.argument("port", type=int)
+@click.argument("output_dir", type=click.Path(file_okay=False))
+@click.option(
+    "--table",
+    "tables",
+    type=str,
+    multiple=True,
+    help="table to export (repeatable); omit to export all tables",
+)
+def table_export(
+    database: str,
+    host: str,
+    port: int,
+    output_dir: str,
+    tables: tuple[str, ...],
+) -> None:
+    """Export database tables to CSV files in OUTPUT_DIR."""
+    dispatch_table_export(database, host, port, output_dir, tables)
 
 
 # TODO: Add command to upload table
