@@ -3,7 +3,7 @@
 from collections.abc import Iterable, Mapping
 from pathlib import Path
 
-import polars as pl
+import pandas as pd
 
 import afft.database as db
 import afft.io as io
@@ -28,6 +28,7 @@ def run_parse_messages(command: ParseMessageCommand) -> None:
 
     messages = _parse_messages(command.source_file, config)
     dataframes = _build_dataframes(messages, config, command.prefix)
+    dataframes = _convert_timestamps(dataframes)
 
     if command.database:
         _insert_dataframes(command, dataframes)
@@ -59,7 +60,7 @@ def _build_dataframes(
     message_groups: MessageGroups,
     config: ParseMessageConfig,
     prefix: str | None,
-) -> dict[str, pl.DataFrame]:
+) -> dict[str, pd.DataFrame]:
     table_names = dict(config.table_names)
 
     if prefix is not None:
@@ -80,14 +81,23 @@ def _build_dataframes(
         table_messages[table_name].extend(messages)
 
     return {
-        name: pl.DataFrame([m.to_dict() for m in messages])
+        name: pd.DataFrame([m.to_dict() for m in messages])
         for name, messages in table_messages.items()
+    }
+
+
+def _convert_timestamps(
+    dataframes: dict[str, pd.DataFrame],
+) -> dict[str, pd.DataFrame]:
+    return {
+        name: df.assign(timestamp=pd.to_datetime(df["timestamp"], unit="s"))
+        for name, df in dataframes.items()
     }
 
 
 def _insert_dataframes(
     command: ParseMessageCommand,
-    dataframes: dict[str, pl.DataFrame],
+    dataframes: dict[str, pd.DataFrame],
 ) -> None:
     assert "PG_USERNAME" in env.env_values(), (
         "missing environment key: PG_USERNAME"
@@ -111,12 +121,12 @@ def _insert_dataframes(
     logger.info("Writing database tables:")
     for name, dataframe in dataframes.items():
         logger.info(f" - {name}: {len(dataframe)}")
-        db.write_database_table(engine, name, dataframe)
+        dataframe.to_sql(name, con=engine, if_exists="replace", index=False)
 
 
 def _export_dataframes(
     output_dir: Path,
-    dataframes: dict[str, pl.DataFrame],
+    dataframes: dict[str, pd.DataFrame],
 ) -> None:
     if not output_dir.is_dir():
         raise ValueError(f"output directory does not exist: {output_dir}")
@@ -124,5 +134,5 @@ def _export_dataframes(
     logger.info("Exporting tables to CSV:")
     for name, dataframe in dataframes.items():
         dest = output_dir / f"{name}.csv"
-        dataframe.write_csv(dest)
+        dataframe.to_csv(dest, index=False)
         logger.info(f" - {name}: {len(dataframe)} rows -> {dest}")
