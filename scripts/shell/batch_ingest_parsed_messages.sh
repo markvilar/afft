@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-MESSAGE_DIR="/data/kingston_snv_01/acfr_messages_merged"
+MESSAGE_DIR="/data/exos_01/acfr_messages_v1_merged"
 CONFIG="./config/protocol/protocol_v1.toml"
 
 DATABASE="acfr_auv_messages"

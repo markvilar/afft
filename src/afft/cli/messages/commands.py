@@ -23,6 +23,12 @@ def message_group(context: click.Context) -> None:
 @click.option(
     "--prefix", type=str, help="common prefix for exported message groups"
 )
+@click.option(
+    "--output-dir",
+    type=click.Path(file_okay=False),
+    default=None,
+    help="export parsed tables as CSV files to this directory",
+)
 def parse_messages(
     source: str,
     config: str,
@@ -30,6 +36,7 @@ def parse_messages(
     host: str | None = None,
     port: int | None = None,
     prefix: str | None = None,
+    output_dir: str | None = None,
 ) -> None:
     """CLI action for ingesting messages into a destination."""
-    dispatch_parse_messages(source, config, database, host, port, prefix)
+    dispatch_parse_messages(source, config, database, host, port, prefix, output_dir)
