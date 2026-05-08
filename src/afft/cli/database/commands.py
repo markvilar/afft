@@ -4,7 +4,11 @@ CLI commands for working with databases.
 
 import click
 
-from .actions import dispatch_table_export, dispatch_table_join, dispatch_table_write
+from .actions import (
+    dispatch_table_export,
+    dispatch_table_join,
+    dispatch_table_write,
+)
 
 
 @click.group()

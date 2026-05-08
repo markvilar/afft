@@ -3,6 +3,7 @@
 from glob import glob
 from pathlib import Path
 
+
 def search_directory_tree(search_path: Path) -> list[Path]:
     """Searches a directory tree from the root to find items that match the
     given pattern."""

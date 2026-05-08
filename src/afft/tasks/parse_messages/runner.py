@@ -46,7 +46,9 @@ def _load_config(raw: dict) -> ParseMessageConfig:
     if table_names is None:
         raise ValueError("invalid config: missing table_names")
 
-    return ParseMessageConfig(message_maps=message_maps, table_names=table_names)
+    return ParseMessageConfig(
+        message_maps=message_maps, table_names=table_names
+    )
 
 
 def _parse_messages(
@@ -65,8 +67,7 @@ def _build_dataframes(
 
     if prefix is not None:
         table_names = {
-            topic: f"{prefix}_{name}"
-            for topic, name in table_names.items()
+            topic: f"{prefix}_{name}" for topic, name in table_names.items()
         }
 
     for group in message_groups:

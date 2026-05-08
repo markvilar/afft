@@ -39,4 +39,6 @@ def parse_messages(
     output_dir: str | None = None,
 ) -> None:
     """CLI action for ingesting messages into a destination."""
-    dispatch_parse_messages(source, config, database, host, port, prefix, output_dir)
+    dispatch_parse_messages(
+        source, config, database, host, port, prefix, output_dir
+    )
