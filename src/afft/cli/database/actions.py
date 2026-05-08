@@ -1,8 +1,7 @@
-"""Module for invoking database task from the CLI."""
+"""Actions for database CLI commands."""
 
 from pathlib import Path
 
-import click
 import polars as pl
 
 import afft.database as db
@@ -13,23 +12,13 @@ import afft.utils.env as env
 from afft.utils.log import logger
 
 
-@click.group()
-@click.pass_context
-def database_cli(context: click.Context) -> None:
-    """CLI group for invoking database tasks."""
-    context.ensure_object(dict)
-
-
-@database_cli.command()
-@click.argument("database", type=str)
-@click.argument("host", type=str)
-@click.argument("port", type=int)
-@click.argument("config_path", type=click.Path(exists=True))
-def table_join(
-    database: str, host: str, port: int, config_path: click.Path
+def dispatch_table_join(
+    database: str,
+    host: str,
+    port: int,
+    config_path: str | Path,
 ) -> None:
-    """Join tables in the database."""
-
+    """Load join configs and execute each join against the database."""
     config: dict = io.read_config(Path(config_path))
     task_configs: list[dbtasks.JoinTableConfig] = [
         dbtasks.JoinTableConfig(**task) for task in config.get("tasks")
@@ -69,40 +58,21 @@ def table_join(
         logger.info(f"Label: {label}, dataframe: {len(dataframe)}")
 
 
-# TODO: Add command to upload table
-@database_cli.command()
-@click.argument("source", type=click.Path(exists=True))
-@click.argument("database", type=str)
-@click.argument("host", type=str)
-@click.argument("port", type=int)
-@click.option(
-    "--name", type=str, default=None, help="overwrite existing database"
-)
-@click.option(
-    "--overwrite",
-    is_flag=True,
-    default=False,
-    help="overwrite existing database",
-)
-def table_write(
-    source: click.Path,
+def dispatch_table_write(
+    source: str | Path,
     database: str,
     host: str,
     port: int,
-    name: str | None,
-    overwrite: bool,
+    name: str | None = None,
+    overwrite: bool = False,
 ) -> None:
-    """Write a table to a database."""
-
-    source: Path = Path(source)
+    """Write a CSV file to a database table."""
+    source = Path(source)
 
     if not name:
-        name: str = source.stem
+        name = source.stem
 
-    if overwrite:
-        if_table_exists: str = "replace"
-    else:
-        if_table_exists: str = "fail"
+    if_table_exists = "replace" if overwrite else "fail"
 
     data_frame: pl.DataFrame = pl.read_csv(source)
 
