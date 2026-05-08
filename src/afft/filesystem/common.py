@@ -6,6 +6,7 @@ import shutil
 from pathlib import Path
 from typing import Callable
 
+
 def list_directory(
     directory: Path,
     filter_fun: Callable[[Path], bool] = None,

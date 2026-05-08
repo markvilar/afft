@@ -4,8 +4,9 @@ import click
 
 from afft.utils.log import init_logger
 
-from .database.commands import database_group as database_commands 
+from .database.commands import database_group as database_commands
 from .messages.commands import message_group as message_commands
+from .tasks.commands import task_group as task_commands
 
 
 @click.group()
@@ -16,6 +17,7 @@ def cli() -> None:
 
 cli.add_command(database_commands, name="database")
 cli.add_command(message_commands, name="messages")
+cli.add_command(task_commands, name="tasks")
 
 
 def main():

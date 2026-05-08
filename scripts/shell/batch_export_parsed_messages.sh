@@ -1,0 +1,449 @@
+#!/usr/bin/bash
+
+MESSAGE_DIR="/data/exos_01/acfr_messages_v1_merged"
+CONFIG="./config/protocol/protocol_v1.toml"
+
+EXPORT_DIR="/data/exos_01/acfr_messages_v2_parsed"
+
+ENABLE_QD61G27J=true
+ENABLE_QDC5GHS3=true
+ENABLE_QDCH0FTQ=true
+ENABLE_QDCHDMY1=true
+ENABLE_QTQXSHXS=true
+ENABLE_R7JJSKXQ=true
+ENABLE_R7JJSS8N=true
+ENABLE_R7JJSSBH=true
+ENABLE_R23M7MS0=true
+ENABLE_R29MRD5H=true
+ENABLE_R29MRD12=true
+ENABLE_R234XGJE=true
+ENABLE_R23685BC=true
+
+
+# ------------------------------------------------------------------------------
+# QD61G27J
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_QD61G27J}"; then
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qd61g27j_20100421_022145_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qd61g27j_20100421_022145"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qd61g27j_20110410_011202_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qd61g27j_20110410_011202"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qd61g27j_20120422_043114_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qd61g27j_20120422_043114"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qd61g27j_20130414_013620_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qd61g27j_20130414_013620"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qd61g27j_20170523_040815_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qd61g27j_20170523_040815"
+
+fi
+
+
+# ------------------------------------------------------------------------------
+# QDC5GHS3
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_QDC5GHS3}"; then
+  
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdc5ghs3_20100430_024508_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdc5ghs3_20100430_024508"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdc5ghs3_20120501_033336_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdc5ghs3_20120501_033336"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdc5ghs3_20130405_103429_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdc5ghs3_20130405_103429"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdc5ghs3_20210315_230947_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdc5ghs3_20210315_230947"
+
+fi
+
+
+# ------------------------------------------------------------------------------
+# QDCH0FTQ
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_QDCH0FTQ}"; then
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdch0ftq_20100428_020202_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdch0ftq_20100428_020202"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdch0ftq_20110415_020103_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdch0ftq_20110415_020103"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdch0ftq_20120430_002423_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdch0ftq_20120430_002423"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdch0ftq_20130406_023610_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdch0ftq_20130406_023610"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdch0ftq_20140327_071251_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdch0ftq_20140327_071251"
+   
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdch0ftq_20170526_025746_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdch0ftq_20170526_025746"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdch0ftq_20210315_034028_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdch0ftq_20210315_034028"
+
+fi
+
+
+# ------------------------------------------------------------------------------
+# QDCHDMY1
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_QDCHDMY1}"; then
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdchdmy1_20110416_005411_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdchdmy1_20110416_005411"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdchdmy1_20120501_071203_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdchdmy1_20120501_071203"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdchdmy1_20130406_081713_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdchdmy1_20130406_081713"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdchdmy1_20140328_063358_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdchdmy1_20140328_063358"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdchdmy1_20170525_234624_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdchdmy1_20170525_234624"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qdchdmy1_20210315_081519_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qdchdmy1_20210315_081519"
+
+fi
+
+
+# ------------------------------------------------------------------------------
+# QTQXSHXS
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_QTQXSHXS}"; then
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qtqxshxs_20110815_102540_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qtqxshxs_20110815_102540"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qtqxshxs_20150327_015552_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qtqxshxs_20150327_015552"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qtqxshxs_20150328_000850_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qtqxshxs_20150328_000850"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/qtqxshxs_20150328_042551_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "qtqxshxs_20150328_042551"
+
+fi
+
+
+# ------------------------------------------------------------------------------
+# R7JJSKXQ
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_R7JJSKXQ}"; then
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r7jjskxq_20101023_210332_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r7jjskxq_20101023_210332"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r7jjskxq_20121013_060425_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r7jjskxq_20121013_060425"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r7jjskxq_20131022_004934_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r7jjskxq_20131022_004934"
+
+fi
+
+
+# ------------------------------------------------------------------------------
+# R7JJSS8N
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_R7JJSS8N}"; then
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r7jjss8n_20101023_210332_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r7jjss8n_20101023_210332"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r7jjss8n_20121013_060425_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r7jjss8n_20121013_060425"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r7jjss8n_20131022_004934_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r7jjss8n_20131022_004934"
+
+fi
+
+
+# ------------------------------------------------------------------------------
+# R7JJSSBH
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_R7JJSSBH}"; then
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r7jjssbh_20101023_210332_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r7jjssbh_20101023_210332"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r7jjssbh_20121013_060425_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r7jjssbh_20121013_060425"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r7jjssbh_20131022_004934_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r7jjssbh_20131022_004934"
+
+fi
+
+
+# ------------------------------------------------------------------------------
+# R23M7MS0
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_R23M7MS0}"; then
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r23m7ms0_20100606_001908_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r23m7ms0_20100606_001908"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r23m7ms0_20120601_070118_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r23m7ms0_20120601_070118"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r23m7ms0_20140616_044549_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r23m7ms0_20140616_044549"
+
+fi
+
+
+# ------------------------------------------------------------------------------
+# R29MRD5H
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_R29MRD5H}"; then
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r29mrd5h_20090612_225306_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r29mrd5h_20090612_225306"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r29mrd5h_20090613_100254_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r29mrd5h_20090613_100254"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r29mrd5h_20110612_033752_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r29mrd5h_20110612_033752"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r29mrd5h_20130611_002419_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r29mrd5h_20130611_002419"
+
+fi
+
+
+# ------------------------------------------------------------------------------
+# R29MRD12
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_R29MRD12}"; then
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r29mrd12_20090613_010853_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r29mrd12_20090613_010853"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r29mrd12_20090613_104954_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r29mrd12_20090613_104954"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r29mrd12_20110612_045149_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r29mrd12_20110612_045149"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r29mrd12_20130611_015335_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r29mrd12_20130611_015335"
+
+fi
+
+
+# ------------------------------------------------------------------------------
+# R234XGJE
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_R234XGJE}"; then
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r234xgje_20100604_230524_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r234xgje_20100604_230524"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r234xgje_20120530_064545_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r234xgje_20120530_064545"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r234xgje_20140616_205232_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r234xgje_20140616_205232"
+
+fi
+
+
+# ------------------------------------------------------------------------------
+# R23685BC
+# ------------------------------------------------------------------------------
+
+if "${ENABLE_R23685BC}"; then
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r23685bc_20100605_021022_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r23685bc_20100605_021022"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r23685bc_20120530_233021_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r23685bc_20120530_233021"
+
+  uv run afft messages parse-messages \
+    "${MESSAGE_DIR}/r23685bc_20140616_225022_messages.txt" \
+    "${CONFIG}" \
+    --output-dir "${EXPORT_DIR}" \
+    --prefix "r23685bc_20140616_225022"
+
+fi
