@@ -1,7 +1,7 @@
 # AUV File Formatting Tool
 
-![ci](https://github.com/markvilar/raft/actions/workflows/ci.yml/badge.svg)
-![pylint](https://github.com/markvilar/raft/actions/workflows/pylint.yml/badge.svg)
+![ci](https://github.com/markvilar/afft/actions/workflows/ci.yml/badge.svg)
+![pylint](https://github.com/markvilar/afft/actions/workflows/pylint.yml/badge.svg)
 
 Afft is a collection of tools for working with data from ACFRs AUVs. The
 tools consist of creating file queries from metadata, transferring files and 
