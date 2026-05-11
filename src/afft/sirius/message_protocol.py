@@ -95,7 +95,8 @@ def parse_message_lines(
                 len(skipped),
                 sum(skipped.values()),
                 "".join(
-                    f"\n  {topic}: {count}" for topic, count in sorted(skipped.items())
+                    f"\n  {topic}: {count}"
+                    for topic, count in sorted(skipped.items())
                 ),
             )
         )
@@ -106,7 +107,8 @@ def parse_message_lines(
                 len(failed),
                 sum(failed.values()),
                 "".join(
-                    f"\n  {topic}: {count}" for topic, count in sorted(failed.items())
+                    f"\n  {topic}: {count}"
+                    for topic, count in sorted(failed.items())
                 ),
             )
         )
