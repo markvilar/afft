@@ -15,23 +15,60 @@ The repository includes support for the following tools:
 
 ## Getting started
 
-TODO: Add instructions for installing and setting up uv
+### Prerequisites
 
+- Python 3.12 or later
+- [uv](https://docs.astral.sh/uv/getting-started/installation/) — used for dependency management and running the tool
 
+### Installation
 
-## Tasks
+Clone the repository and install the package with all extras in development mode:
 
-### Message parsing and database ingestion
+```bash
+git clone https://github.com/markvilar/afft.git
+cd afft
+uv sync --all-extras --dev
+```
 
-In order to use the AFFTs database ingestion tools, you first need to install
-Postgres on your computer, for instance by following this [guide](https://www.devart.com/dbforge/postgresql/how-to-install-postgresql-on-linux/). 
+The `afft` command is then available via `uv run`:
 
-To ease interactions with Postgres databases we highly recommend installing PgAdmin. PgAdmin is specifically designed for managing Postgres databases, and lets you create, delete, and inspect database through a graphical user interface. To get started with PgAdmin please refer to the following [guide](https://www.pgadmin.org/docs/pgadmin4/8.11/getting_started.html#).
+```bash
+uv run afft --help
+```
 
-To give AFFT access to your Postgres database, create a `.env` file at the root of the repository, and enter the login credentials of your Postgres user as seen below. Make sure that `.env` is added to the `.gitignore` so that it is not committed to `git` and pushed to a remote repository!
+### Environment
+
+Create a `.env` file at the root of the repository with your credentials and API keys. This file must not be committed to version control — confirm that `.env` is listed in `.gitignore`.
 
 ```text
+# PostgreSQL credentials (required for database commands)
 PG_USERNAME=YOUR_POSTGRES_USER
 PG_PASSWORD=YOUR_POSTGRES_PASSWORD
 ```
+
+## CLI Commands
+
+### `afft database` — Database operations
+
+| Command | Description |
+|---|---|
+| `afft database table-export DATABASE HOST PORT OUTPUT_DIR` | Export database tables to CSV files |
+| `afft database table-ingest DATABASE HOST PORT SOURCE_DIR` | Ingest CSV files from a directory as database tables |
+| `afft database table-join DATABASE HOST PORT CONFIG_PATH` | Join tables in the database using a config file |
+| `afft database table-write SOURCE DATABASE HOST PORT` | Write a single CSV file to a database table |
+
+### `afft messages` — Message processing
+
+| Command | Description |
+|---|---|
+| `afft messages parse-messages SOURCE_DIR OUTPUT_DIR` | Parse Sirius AUV message files and write results |
+
+### `afft tasks` — Data processing tasks
+
+| Command | Description |
+|---|---|
+| `afft tasks clip-tables SOURCE_DIR OUTPUT_DIR --start YYYYMMDD_HHmmSS --end YYYYMMDD_HHmmSS` | Clip CSV files to a time interval |
+| `afft tasks correct-pressure-tide READING_FILE SEALEVEL_FILE OUTPUT_FILE` | Tide-correct pressure sensor depth readings |
+
+Run any command with `--help` to see its full options.
 
