@@ -11,17 +11,14 @@ dependencies = [
     { name = "click" },
     { name = "geopandas" },
     { name = "loguru" },
-    { name = "matplotlib" },
     { name = "msgspec" },
     { name = "numpy" },
     { name = "pandas" },
-    { name = "plotly" },
     { name = "polars", extra = ["numpy", "pandas", "pyarrow"] },
     { name = "psycopg2-binary" },
     { name = "pyarrow" },
     { name = "python-dotenv" },
     { name = "python-rclone" },
-    { name = "seaborn" },
     { name = "sqlalchemy" },
     { name = "tqdm" },
 ]
@@ -32,6 +29,11 @@ dev = [
     { name = "pytest" },
     { name = "ruff" },
 ]
+plotting = [
+    { name = "matplotlib" },
+    { name = "plotly" },
+    { name = "seaborn" },
+]
 
 [package.metadata]
 requires-dist = [
@@ -39,17 +41,14 @@ requires-dist = [
     { name = "click", specifier = ">=8.2.1" },
     { name = "geopandas", specifier = ">=1.1.1" },
     { name = "loguru", specifier = ">=0.7.3" },
-    { name = "matplotlib", specifier = ">=3.10.6" },
     { name = "msgspec", specifier = ">=0.19.0" },
     { name = "numpy", specifier = ">=2.2.6" },
     { name = "pandas", specifier = ">=2.2.3" },
-    { name = "plotly", specifier = "==5.24.1" },
     { name = "polars", extras = ["numpy", "pandas", "pyarrow"], specifier = ">=1.30.0" },
     { name = "psycopg2-binary", specifier = ">=2.9.10" },
     { name = "pyarrow", specifier = ">=20.0.0" },
     { name = "python-dotenv", specifier = ">=1.1.0" },
     { name = "python-rclone", specifier = ">=0.0.2" },
-    { name = "seaborn", specifier = ">=0.13.2" },
     { name = "sqlalchemy", specifier = ">=2.0.41" },
     { name = "tqdm", specifier = ">=4.67.1" },
 ]
@@ -59,6 +58,11 @@ dev = [
     { name = "jupyter", specifier = ">=1.1.1" },
     { name = "pytest", specifier = ">=8.3.5" },
     { name = "ruff", specifier = ">=0.11.11" },
+]
+plotting = [
+    { name = "matplotlib", specifier = ">=3.10.6" },
+    { name = "plotly", specifier = ">=5.24.1" },
+    { name = "seaborn", specifier = ">=0.13.2" },
 ]
 
 [[package]]

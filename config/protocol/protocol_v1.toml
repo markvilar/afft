@@ -19,9 +19,10 @@ OAS = "OASonarMessage"
 MICRON = "MicronSonarMessage"
 MICRON_RETURNS = "MicronSonarMessage"
 
+GPS_GSV = "GpsGsvMessage"
+GPS_RMC = "GpsRmcMessage"
+
 # NOTE: Currently unimplemented messages
-# GPS_GSV = ""
-# GPS_RMC = ""
 # MICRON_TRACE = ""
 # MICRON_SECTOR = ""
 
@@ -46,3 +47,5 @@ THR_VERT = "thrusters"
 OAS = "sonar_obstacle_avoidance"
 MICRON = "sonar_micron"
 MICRON_RETURNS = "sonar_micron_returns"
+GPS_GSV = "gps_gsv"
+GPS_RMC = "gps_rmc"

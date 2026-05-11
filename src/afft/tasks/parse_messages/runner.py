@@ -8,7 +8,7 @@ import pandas as pd
 import afft.database as db
 import afft.io as io
 import afft.sirius as sirius
-import afft.utils.env as env
+from afft.env import requireenv
 
 from afft.utils.log import logger
 
@@ -100,19 +100,12 @@ def _insert_dataframes(
     command: ParseMessageCommand,
     dataframes: dict[str, pd.DataFrame],
 ) -> None:
-    assert "PG_USERNAME" in env.env_values(), (
-        "missing environment key: PG_USERNAME"
-    )
-    assert "PG_PASSWORD" in env.env_values(), (
-        "missing environment key: PG_PASSWORD"
-    )
-
     engine: db.Engine | str = db.create_engine(
         database=command.database,
         host=command.host,
         port=command.port,
-        username=env.get_env_value("PG_USERNAME"),
-        password=env.get_env_value("PG_PASSWORD"),
+        username=requireenv("PG_USERNAME"),
+        password=requireenv("PG_PASSWORD"),
     )
 
     assert isinstance(engine, db.Engine), (
