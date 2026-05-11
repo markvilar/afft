@@ -10,8 +10,9 @@ from tqdm import tqdm
 import afft.database as db
 import afft.io as io
 import afft.tasks.database_tasks as dbtasks
-import afft.utils.env as env
+from afft.env import requireenv
 
+from afft.tasks.ingest_tables import IngestTablesCommand, run_ingest_tables
 from afft.utils.log import logger
 
 
@@ -27,19 +28,12 @@ def dispatch_table_join(
         dbtasks.JoinTableConfig(**task) for task in config.get("tasks")
     ]
 
-    assert "PG_USERNAME" in env.env_values(), (
-        "missing environment key: PG_USERNAME"
-    )
-    assert "PG_PASSWORD" in env.env_values(), (
-        "missing environment key: PG_PASSWORD"
-    )
-
     engine: db.Engine = db.create_engine(
         database=database,
         host=host,
         port=port,
-        username=env.get_env_value("PG_USERNAME"),
-        password=env.get_env_value("PG_PASSWORD"),
+        username=requireenv("PG_USERNAME"),
+        password=requireenv("PG_PASSWORD"),
     )
 
     assert isinstance(engine, db.Engine), (
@@ -72,19 +66,12 @@ def dispatch_table_export(
 
     Exports all tables when tables is empty, otherwise only the named ones.
     """
-    assert "PG_USERNAME" in env.env_values(), (
-        "missing environment key: PG_USERNAME"
-    )
-    assert "PG_PASSWORD" in env.env_values(), (
-        "missing environment key: PG_PASSWORD"
-    )
-
     engine: db.Engine = db.create_engine(
         database=database,
         host=host,
         port=port,
-        username=env.get_env_value("PG_USERNAME"),
-        password=env.get_env_value("PG_PASSWORD"),
+        username=requireenv("PG_USERNAME"),
+        password=requireenv("PG_PASSWORD"),
     )
 
     output_dir = Path(output_dir)
@@ -107,6 +94,30 @@ def dispatch_table_export(
         df: pd.DataFrame = pd.read_sql_table(table, con=engine)
         dest = output_dir / f"{table}.csv"
         df.to_csv(dest, index=False)
+
+
+def dispatch_table_ingest(
+    source_dir: str | Path,
+    database: str,
+    host: str,
+    port: int,
+    pattern: str = "*.csv",
+    overwrite: bool = False,
+    verbose: bool = False,
+    timestamp_columns: tuple[str, ...] = ("timestamp",),
+) -> None:
+    """Ingest all files matching pattern in source_dir as database tables."""
+    command = IngestTablesCommand(
+        source_dir=Path(source_dir),
+        database=database,
+        host=host,
+        port=port,
+        pattern=pattern,
+        overwrite=overwrite,
+        verbose=verbose,
+        timestamp_columns=timestamp_columns,
+    )
+    run_ingest_tables(command)
 
 
 def dispatch_table_write(
