@@ -6,6 +6,7 @@ import click
 
 from .actions import (
     dispatch_table_export,
+    dispatch_table_ingest,
     dispatch_table_join,
     dispatch_table_write,
 )
@@ -53,7 +54,37 @@ def table_export(
     dispatch_table_export(database, host, port, output_dir, tables)
 
 
-# TODO: Add command to upload table
+@database_group.command()
+@click.argument("source_dir", type=click.Path(exists=True, file_okay=False))
+@click.option(
+    "--pattern",
+    type=str,
+    default="*.csv",
+    show_default=True,
+    help="glob pattern to select files in source_dir",
+)
+@click.option(
+    "--overwrite",
+    is_flag=True,
+    default=False,
+    help="replace existing tables instead of failing",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="log a summary of ingested files and row counts after completion",
+)
+def table_ingest(
+    source_dir: str,
+    pattern: str,
+    overwrite: bool,
+    verbose: bool,
+) -> None:
+    """Ingest files from SOURCE_DIR as database tables (reads DATABASE_URL from env)."""
+    dispatch_table_ingest(source_dir, pattern, overwrite, verbose)
+
+
 @database_group.command()
 @click.argument("source", type=click.Path(exists=True))
 @click.argument("database", type=str)

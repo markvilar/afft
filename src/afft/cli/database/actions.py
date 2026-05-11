@@ -12,6 +12,7 @@ import afft.io as io
 import afft.tasks.database_tasks as dbtasks
 import afft.utils.env as env
 
+from afft.tasks.ingest_tables import IngestTablesCommand, run_ingest_tables
 from afft.utils.log import logger
 
 
@@ -107,6 +108,22 @@ def dispatch_table_export(
         df: pd.DataFrame = pd.read_sql_table(table, con=engine)
         dest = output_dir / f"{table}.csv"
         df.to_csv(dest, index=False)
+
+
+def dispatch_table_ingest(
+    source_dir: str | Path,
+    pattern: str = "*.csv",
+    overwrite: bool = False,
+    verbose: bool = False,
+) -> None:
+    """Ingest all files matching pattern in source_dir as database tables."""
+    command = IngestTablesCommand(
+        source_dir=Path(source_dir),
+        pattern=pattern,
+        overwrite=overwrite,
+        verbose=verbose,
+    )
+    run_ingest_tables(command)
 
 
 def dispatch_table_write(
