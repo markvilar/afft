@@ -542,8 +542,8 @@ def parse_gps_rmc_message(line: str) -> GpsRmcMessage:
         longitude=float(match["longitude"]),
         bad=int(match["bad"]),
         status=str(match["status"]),
-        speed=float(match["speed"]),
-        course=float(match["course"]),
+        speed_knots=float(match["speed"]),
+        course_over_ground=float(match["course"]),
         magnetic_variation=float(match["magnetic_variation"]),
     )
 

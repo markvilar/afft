@@ -252,8 +252,8 @@ class GpsRmcData:
     longitude: float
     bad: int
     status: str
-    speed: float
-    course: float
+    speed_knots: float
+    course_over_ground: float
     magnetic_variation: float
 
     def to_dict(self: Self) -> dict:
