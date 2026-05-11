@@ -18,6 +18,8 @@ from .concrete_messages import (
     EvologicsModemMessage,
     MicronSonarMessage,
     OASonarMessage,
+    GpsGsvMessage,
+    GpsRmcMessage,
     BatteryMessage,
     ThrusterMessage,
 )
@@ -173,6 +175,28 @@ THRUSTER_REGEX = r"""
     A:\s*(?P<current>[-+]?\d*[.]\d*)\s+
     V:\s*(?P<voltage>[-+]?\d*[.]\d*)\s+
     T:\s*(?P<temperature>[-+]?\d*[.]\d*)\s*
+    $
+    """
+
+GPS_GSV_REGEX = r"""
+    ^
+    (?P<topic>.+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    SV:(?P<satellites_in_view>\d+)\s*
+    $
+    """
+
+GPS_RMC_REGEX = r"""
+    ^
+    (?P<topic>.+?):\s+
+    (?P<timestamp>\d+\.\d+)\s+
+    Lat:(?P<latitude>[-+]?\d+\.\d+)\s+[NS]\s+
+    Lon:(?P<longitude>[-+]?\d+\.\d+)\s+[EW]\s+
+    Bad:\s*(?P<bad>\d+)\s+
+    (?P<status>[AV])\s+
+    Spd:(?P<speed>[-+]?\d+\.\d+)\s+
+    Crs:(?P<course>[-+]?\d+\.\d+)\s+
+    Mg:(?P<magnetic_variation>[-+]?\d+\.\d+)\s*
     $
     """
 
@@ -478,6 +502,54 @@ def parse_obstacle_avoidance_sonar_message(line: str) -> OASonarMessage:
     return OASonarMessage(header, body)
 
 
+def parse_gps_gsv_message(line: str) -> GpsGsvMessage:
+    """Parses a message line as a GPS satellites-in-view message."""
+
+    pattern = re.compile(GPS_GSV_REGEX, re.VERBOSE)
+    match = pattern.match(line)
+
+    if not match:
+        raise ValueError(f"failed to parse GPS GSV message: {line}")
+
+    header = GpsGsvMessage.header_type(
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
+    )
+
+    body = GpsGsvMessage.body_type(
+        satellites_in_view=int(match["satellites_in_view"]),
+    )
+
+    return GpsGsvMessage(header, body)
+
+
+def parse_gps_rmc_message(line: str) -> GpsRmcMessage:
+    """Parses a message line as a GPS recommended minimum navigation message."""
+
+    pattern = re.compile(GPS_RMC_REGEX, re.VERBOSE)
+    match = pattern.match(line)
+
+    if not match:
+        raise ValueError(f"failed to parse GPS RMC message: {line}")
+
+    header = GpsRmcMessage.header_type(
+        topic=str(match["topic"]),
+        timestamp=float(match["timestamp"]),
+    )
+
+    body = GpsRmcMessage.body_type(
+        latitude=float(match["latitude"]),
+        longitude=float(match["longitude"]),
+        bad=int(match["bad"]),
+        status=str(match["status"]),
+        speed_knots=float(match["speed"]),
+        course_over_ground=float(match["course"]),
+        magnetic_variation=float(match["magnetic_variation"]),
+    )
+
+    return GpsRmcMessage(header, body)
+
+
 BATTERY_TOPIC_TO_NAME: dict[str, str] = {
     "BATT": "battery",
     "BATT0": "battery_00",
@@ -555,6 +627,8 @@ MESSAGE_PARSERS: list[MessageParser] = [
     parse_evologics_modem_message,
     parse_micron_sonar_message,
     parse_obstacle_avoidance_sonar_message,
+    parse_gps_gsv_message,
+    parse_gps_rmc_message,
     parse_battery_message,
     parse_thruster_message,
 ]
@@ -572,6 +646,8 @@ MESSAGE_TYPE_TO_PARSER: dict[type, MessageParser] = {
     EvologicsModemMessage: parse_evologics_modem_message,
     MicronSonarMessage: parse_micron_sonar_message,
     OASonarMessage: parse_obstacle_avoidance_sonar_message,
+    GpsGsvMessage: parse_gps_gsv_message,
+    GpsRmcMessage: parse_gps_rmc_message,
     BatteryMessage: parse_battery_message,
     ThrusterMessage: parse_thruster_message,
 }
