@@ -6,8 +6,6 @@ import shutil
 from pathlib import Path
 from typing import Callable
 
-from afft.utils.result import Ok, Err, Result
-
 
 def list_directory(
     directory: Path,
@@ -34,24 +32,17 @@ def make_directories(directory: Path, exist_ok: bool = False) -> None:
 
 def copy_file(
     source: Path, destination: Path, follow_symlinks: bool = True
-) -> Result[Path, str]:
+) -> Path:
     """Copies a file from the source to the destination."""
-    try:
-        shutil.copyfile(
-            str(source), str(destination), follow_symlinks=follow_symlinks
-        )
-    except shutil.SameFileError as error:
-        return Err(str(error))
-    except OSError as error:
-        return Err(str(error))
-
-    return Ok(destination)
+    shutil.copyfile(
+        str(source), str(destination), follow_symlinks=follow_symlinks
+    )
+    return destination
 
 
-def get_path_size(path: Path) -> Result[int, str]:
-    """Returns the size for a file path. Assumes that the path exists."""
+def get_path_size(path: Path) -> int:
+    """Returns the size for a file path."""
     if not path.exists():
-        return Err(f"path does not exist: {path}")
+        raise FileNotFoundError(f"path does not exist: {path}")
 
-    size: int = os.path.getsize(str(path))
-    return Ok(size)
+    return os.path.getsize(str(path))

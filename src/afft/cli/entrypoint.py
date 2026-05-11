@@ -4,24 +4,26 @@ import click
 
 from afft.utils.log import init_logger
 
-from .database_cli import database_cli
-from .message_cli import message_cli
+from .database.commands import database_group as database_commands
+from .messages.commands import message_group as message_commands
+from .tasks.commands import task_group as task_commands
 
 
-# Create the main CLI as a collection of task specific CLIs
-cli_services = click.CommandCollection(
-    sources=[
-        database_cli,
-        message_cli,
-    ]
-)
+@click.group()
+def cli() -> None:
+    """Main CLI command group."""
+    pass
+
+
+cli.add_command(database_commands, name="database")
+cli.add_command(message_commands, name="messages")
+cli.add_command(task_commands, name="tasks")
 
 
 def main():
     """Main entrypoint for the command-line interface."""
-
     init_logger()
-    cli_services()
+    cli()
 
 
 if __name__ == "__main__":

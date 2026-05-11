@@ -1,5 +1,6 @@
 """Module for building protocols."""
 
+from collections import Counter
 from dataclasses import dataclass
 from typing import Optional, Self
 
@@ -66,6 +67,8 @@ def parse_message_lines(
 
     protocol: MessageProtocol = build_message_protocol(topic_types)
     message_groups: dict[str, list[Message]] = dict()
+    skipped: Counter[str] = Counter()
+    failed: Counter[str] = Counter()
 
     for line in lines:
         header_parser: MessageParser | None = get_message_parser(MessageHeader)
@@ -73,15 +76,41 @@ def parse_message_lines(
         item: MessageProtocol.Item | None = protocol.get_topic(header.topic)
 
         if item is None:
-            logger.warning(
-                f"missing protocol item for message topic: {header.topic}"
-            )
+            skipped[header.topic] += 1
             continue
 
-        # Parse message line and append to topic list
-        parsed_message: Message = item.message_parser(line)
+        try:
+            parsed_message: Message = item.message_parser(line)
+        except ValueError:
+            failed[header.topic] += 1
+            continue
+
         if header.topic not in message_groups:
             message_groups[header.topic] = list()
         message_groups[header.topic].append(parsed_message)
+
+    if skipped:
+        logger.warning(
+            "Skipped messages with no protocol item ({} topics, {} total):{}".format(
+                len(skipped),
+                sum(skipped.values()),
+                "".join(
+                    f"\n  {topic}: {count}"
+                    for topic, count in sorted(skipped.items())
+                ),
+            )
+        )
+
+    if failed:
+        logger.warning(
+            "Failed to parse messages ({} topics, {} total):{}".format(
+                len(failed),
+                sum(failed.values()),
+                "".join(
+                    f"\n  {topic}: {count}"
+                    for topic, count in sorted(failed.items())
+                ),
+            )
+        )
 
     return message_groups
