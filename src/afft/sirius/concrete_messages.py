@@ -83,8 +83,10 @@ Navigation system data types:
 - EvologicsModemData
 - MicronSonarData
 - OASonarData
+- GpsGsvData
+- GpsRmcData
 
-- TODO: GPS_RMC, GPS_GSV, MICRON_TRACE, MICRON_SECTOR
+- TODO: MICRON_TRACE, MICRON_SECTOR
 """
 
 
@@ -232,6 +234,34 @@ class OASonarData:
 
 
 @dataclass
+class GpsGsvData:
+    """Class representing GPS satellites-in-view data (GPGSV)."""
+
+    satellites_in_view: int
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return self.__dict__
+
+
+@dataclass
+class GpsRmcData:
+    """Class representing GPS recommended minimum navigation data (GPRMC)."""
+
+    latitude: float
+    longitude: float
+    bad: int
+    status: str
+    speed: float
+    course: float
+    magnetic_variation: float
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        return self.__dict__
+
+
+@dataclass
 class BatteryData:
     """Class representing battery data."""
 
@@ -289,6 +319,8 @@ AUV message types:
  - EvologicsModemMessage
  - MicronSonarMessage
  - OASonarMessage
+ - GpsGsvMessage
+ - GpsRmcMessage
  - BatteryMessage
  - ThrusterMessage
 """
@@ -465,6 +497,40 @@ class OASonarMessage:
 
 
 @dataclass
+class GpsGsvMessage:
+    """Class representing a GPS satellites-in-view message."""
+
+    header_type = MessageHeader
+    body_type = GpsGsvData
+
+    header: MessageHeader
+    body: GpsGsvData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
+
+
+@dataclass
+class GpsRmcMessage:
+    """Class representing a GPS recommended minimum navigation message."""
+
+    header_type = MessageHeader
+    body_type = GpsRmcData
+
+    header: MessageHeader
+    body: GpsRmcData
+
+    def to_dict(self: Self) -> dict:
+        """Returns a dict representation of the object."""
+        data = self.header.to_dict()
+        data.update(self.body.to_dict())
+        return data
+
+
+@dataclass
 class BatteryMessage:
     """Class representing a battery message."""
 
@@ -509,6 +575,8 @@ MESSAGE_TYPES: list[type] = [
     EvologicsModemMessage,
     MicronSonarMessage,
     OASonarMessage,
+    GpsGsvMessage,
+    GpsRmcMessage,
     BatteryMessage,
     ThrusterMessage,
 ]
