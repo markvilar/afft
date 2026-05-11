@@ -10,7 +10,7 @@ from tqdm import tqdm
 import afft.database as db
 import afft.io as io
 import afft.tasks.database_tasks as dbtasks
-import afft.utils.env as env
+from afft.env import requireenv
 
 from afft.tasks.ingest_tables import IngestTablesCommand, run_ingest_tables
 from afft.utils.log import logger
@@ -28,19 +28,12 @@ def dispatch_table_join(
         dbtasks.JoinTableConfig(**task) for task in config.get("tasks")
     ]
 
-    assert "PG_USERNAME" in env.env_values(), (
-        "missing environment key: PG_USERNAME"
-    )
-    assert "PG_PASSWORD" in env.env_values(), (
-        "missing environment key: PG_PASSWORD"
-    )
-
     engine: db.Engine = db.create_engine(
         database=database,
         host=host,
         port=port,
-        username=env.get_env_value("PG_USERNAME"),
-        password=env.get_env_value("PG_PASSWORD"),
+        username=requireenv("PG_USERNAME"),
+        password=requireenv("PG_PASSWORD"),
     )
 
     assert isinstance(engine, db.Engine), (
@@ -73,19 +66,12 @@ def dispatch_table_export(
 
     Exports all tables when tables is empty, otherwise only the named ones.
     """
-    assert "PG_USERNAME" in env.env_values(), (
-        "missing environment key: PG_USERNAME"
-    )
-    assert "PG_PASSWORD" in env.env_values(), (
-        "missing environment key: PG_PASSWORD"
-    )
-
     engine: db.Engine = db.create_engine(
         database=database,
         host=host,
         port=port,
-        username=env.get_env_value("PG_USERNAME"),
-        password=env.get_env_value("PG_PASSWORD"),
+        username=requireenv("PG_USERNAME"),
+        password=requireenv("PG_PASSWORD"),
     )
 
     output_dir = Path(output_dir)

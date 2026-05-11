@@ -1,8 +1,8 @@
 """Runner for the table ingestion task."""
 
-import afft.env  # noqa: F401
-import os
 from pathlib import Path
+
+from afft.env import requireenv
 
 import pandas as pd
 import sqlalchemy as sqla
@@ -15,11 +15,7 @@ from .types import IngestTableResult, IngestTablesCommand
 
 def run_ingest_tables(command: IngestTablesCommand) -> None:
     """Read CSV files from a directory and ingest each as a database table."""
-    assert "DATABASE_URL" in os.environ, (
-        "missing environment variable: DATABASE_URL"
-    )
-
-    engine: sqla.Engine = sqla.create_engine(os.environ["DATABASE_URL"])
+    engine: sqla.Engine = sqla.create_engine(requireenv("DATABASE_URL"))
 
     files: list[Path] = sorted(command.source_dir.glob(command.pattern))
 
