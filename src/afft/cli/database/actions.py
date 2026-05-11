@@ -101,6 +101,7 @@ def dispatch_table_ingest(
     pattern: str = "*.csv",
     overwrite: bool = False,
     verbose: bool = False,
+    timestamp_columns: tuple[str, ...] = ("timestamp",),
 ) -> None:
     """Ingest all files matching pattern in source_dir as database tables."""
     command = IngestTablesCommand(
@@ -108,6 +109,7 @@ def dispatch_table_ingest(
         pattern=pattern,
         overwrite=overwrite,
         verbose=verbose,
+        timestamp_columns=timestamp_columns,
     )
     run_ingest_tables(command)
 

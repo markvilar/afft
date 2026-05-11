@@ -10,6 +10,7 @@ class IngestTablesCommand:
     pattern: str = "*.csv"
     overwrite: bool = False
     verbose: bool = False
+    timestamp_columns: tuple[str, ...] = ("timestamp",)
 
 
 @dataclass(slots=True, frozen=True)

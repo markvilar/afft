@@ -75,14 +75,26 @@ def table_export(
     default=False,
     help="log a summary of ingested files and row counts after completion",
 )
+@click.option(
+    "--timestamp-column",
+    "timestamp_columns",
+    type=str,
+    multiple=True,
+    default=("timestamp",),
+    show_default=True,
+    help="column(s) to parse as datetime (repeatable)",
+)
 def table_ingest(
     source_dir: str,
     pattern: str,
     overwrite: bool,
     verbose: bool,
+    timestamp_columns: tuple[str, ...],
 ) -> None:
     """Ingest files from SOURCE_DIR as database tables (reads DATABASE_URL from env)."""
-    dispatch_table_ingest(source_dir, pattern, overwrite, verbose)
+    dispatch_table_ingest(
+        source_dir, pattern, overwrite, verbose, timestamp_columns
+    )
 
 
 @database_group.command()

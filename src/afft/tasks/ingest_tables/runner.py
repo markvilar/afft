@@ -31,7 +31,9 @@ def run_ingest_tables(command: IngestTablesCommand) -> None:
     progress: tqdm = tqdm(files, unit="table")
     for file in progress:
         progress.set_description(file.stem)
-        df: pd.DataFrame = pd.read_csv(file)
+        df: pd.DataFrame = pd.read_csv(
+            file, parse_dates=list(command.timestamp_columns)
+        )
         df.to_sql(file.stem, con=engine, if_exists=if_exists, index=False)
         results.append(
             IngestTableResult(file=file, table=file.stem, rows=len(df))
