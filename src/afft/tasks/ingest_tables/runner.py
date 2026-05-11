@@ -5,8 +5,9 @@ from pathlib import Path
 from afft.env import requireenv
 
 import pandas as pd
-import sqlalchemy as sqla
 from tqdm import tqdm
+
+import afft.database as db
 
 from afft.utils.log import logger
 
@@ -15,7 +16,17 @@ from .types import IngestTableResult, IngestTablesCommand
 
 def run_ingest_tables(command: IngestTablesCommand) -> None:
     """Read CSV files from a directory and ingest each as a database table."""
-    engine: sqla.Engine = sqla.create_engine(requireenv("DATABASE_URL"))
+    engine: db.Engine = db.create_engine(
+        database=command.database,
+        host=command.host,
+        port=command.port,
+        username=requireenv("PG_USERNAME"),
+        password=requireenv("PG_PASSWORD"),
+    )
+
+    assert isinstance(engine, db.Engine), (
+        f"error while connecting to engine: {engine}"
+    )
 
     files: list[Path] = sorted(command.source_dir.glob(command.pattern))
 

@@ -7,6 +7,9 @@ from pathlib import Path
 @dataclass(slots=True, frozen=True)
 class IngestTablesCommand:
     source_dir: Path
+    database: str
+    host: str
+    port: int
     pattern: str = "*.csv"
     overwrite: bool = False
     verbose: bool = False

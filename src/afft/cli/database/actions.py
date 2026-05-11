@@ -98,6 +98,9 @@ def dispatch_table_export(
 
 def dispatch_table_ingest(
     source_dir: str | Path,
+    database: str,
+    host: str,
+    port: int,
     pattern: str = "*.csv",
     overwrite: bool = False,
     verbose: bool = False,
@@ -106,6 +109,9 @@ def dispatch_table_ingest(
     """Ingest all files matching pattern in source_dir as database tables."""
     command = IngestTablesCommand(
         source_dir=Path(source_dir),
+        database=database,
+        host=host,
+        port=port,
         pattern=pattern,
         overwrite=overwrite,
         verbose=verbose,

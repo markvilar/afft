@@ -55,6 +55,9 @@ def table_export(
 
 
 @database_group.command()
+@click.argument("database", type=str)
+@click.argument("host", type=str)
+@click.argument("port", type=int)
 @click.argument("source_dir", type=click.Path(exists=True, file_okay=False))
 @click.option(
     "--pattern",
@@ -85,15 +88,25 @@ def table_export(
     help="column(s) to parse as datetime (repeatable)",
 )
 def table_ingest(
+    database: str,
+    host: str,
+    port: int,
     source_dir: str,
     pattern: str,
     overwrite: bool,
     verbose: bool,
     timestamp_columns: tuple[str, ...],
 ) -> None:
-    """Ingest files from SOURCE_DIR as database tables (reads DATABASE_URL from env)."""
+    """Ingest files from SOURCE_DIR as database tables."""
     dispatch_table_ingest(
-        source_dir, pattern, overwrite, verbose, timestamp_columns
+        source_dir,
+        database,
+        host,
+        port,
+        pattern,
+        overwrite,
+        verbose,
+        timestamp_columns,
     )
 
 
