@@ -6,7 +6,11 @@ from datetime import datetime
 
 import click
 
-from .actions import dispatch_clip_tables, dispatch_correct_pressure_tide
+from .actions import (
+    dispatch_clip_tables,
+    dispatch_correct_pressure_tide,
+    dispatch_process_telemetry,
+)
 
 _TIMESTAMP_FORMAT = "%Y%m%d_%H%M%S"
 
@@ -80,6 +84,33 @@ def clip_tables(
         pattern,
         timestamp_column,
     )
+
+
+@task_group.command()
+@click.argument("source_dir", type=click.Path(exists=True, file_okay=False))
+@click.argument("output_dir", type=click.Path(file_okay=False))
+@click.option(
+    "--config",
+    "config_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="TOML pipeline config file",
+)
+@click.option(
+    "--pattern",
+    type=str,
+    default="*.csv",
+    show_default=True,
+    help="glob pattern to select input files in source_dir",
+)
+def process_telemetry(
+    source_dir: str,
+    output_dir: str,
+    config_file: str,
+    pattern: str,
+) -> None:
+    """Run the telemetry processing pipeline on CSV tables in SOURCE_DIR."""
+    dispatch_process_telemetry(source_dir, output_dir, config_file, pattern)
 
 
 @task_group.command()

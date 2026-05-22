@@ -1,0 +1,38 @@
+# Example pipeline config for the process-telemetry task.
+# Pass this file via: afft tasks process-telemetry SOURCE OUTPUT --config <this file>
+#
+# Each [[pipeline]] entry runs one processor in order.
+# The optional inline `config` table overrides the processor's defaults.
+# Omit `config` entirely to use all defaults.
+
+[[pipeline]]
+processor = "pair_stereo_images"
+inputs    = ["image_capture"]
+output    = "image_capture"
+config    = {left_suffix = "LC16", right_suffix = "RM16", max_offset_ms = 30.0}
+
+[[pipeline]]
+processor = "estimate_pressure_uncertainty"
+inputs    = ["parosci_pressure"]
+output    = "parosci_pressure"
+config    = {base_uncertainty = 0.1, depth_scale = 0.0}
+
+[[pipeline]]
+processor = "estimate_dvl_uncertainty"
+inputs    = ["teledyne_dvl"]
+output    = "teledyne_dvl"
+config    = {velocity_x_uncertainty = 0.003, velocity_y_uncertainty = 0.003, velocity_z_uncertainty = 0.003, roll_uncertainty = 0.25, pitch_uncertainty = 0.25, heading_uncertainty = 1.0}
+
+# resolve_usbl_position must run before estimate_usbl_uncertainty
+# so that horizontal_range is available.
+[[pipeline]]
+processor = "resolve_usbl_position"
+inputs    = ["lqmodem", "parosci_pressure"]
+output    = "lqmodem"
+config    = {bearing_reference = "absolute"}
+
+[[pipeline]]
+processor = "estimate_usbl_uncertainty"
+inputs    = ["lqmodem"]
+output    = "lqmodem"
+config    = {range_uncertainty = 15.0, bearing_uncertainty = 20.05}
