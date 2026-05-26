@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from afft.sensor_processing.camera import PairStereoImagesConfig, pair_stereo_images
+from afft.telemetry_processing.camera import PairStereoImagesConfig, pair_stereo_images
 
 
 def _make_row(

@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from afft.sensor_processing.dvl import DvlUncertaintyConfig, estimate_dvl_uncertainty
+from afft.telemetry_processing.dvl import DvlUncertaintyConfig, estimate_dvl_uncertainty
 
 _VELOCITY_COLS = [
     "velocity_x_uncertainty",

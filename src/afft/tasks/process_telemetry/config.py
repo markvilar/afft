@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from afft.io.config_io import read_config
-from afft.sensor_processing import (
+from afft.telemetry_processing import (
     PipelineConfig,
     ProcessorSpec,
     PairStereoImagesConfig,
@@ -33,12 +33,13 @@ def _build_processor_config(name: str, params: dict[str, Any]) -> Any:
 def load_pipeline_config(path: Path) -> PipelineConfig:
     """Load a TOML pipeline config file and return a PipelineConfig.
 
-    Each [[pipeline]] entry must have processor, inputs, and output fields.
-    An optional inline config table supplies parameters for the processor's
-    config dataclass; omitting it uses the processor's defaults.
+    Each [[telemetry_processing_pipeline]] entry must have processor, inputs,
+    and output fields. An optional inline config table supplies parameters
+    for the processor's config dataclass; omitting it uses the processor's
+    defaults.
 
     Example entry:
-        [[pipeline]]
+        [[telemetry_processing_pipeline]]
         processor = "pair_stereo_images"
         inputs    = ["image_capture"]
         output    = "image_capture"
@@ -47,7 +48,7 @@ def load_pipeline_config(path: Path) -> PipelineConfig:
     raw = read_config(path)
     specs = []
 
-    for entry in raw.get("pipeline", []):
+    for entry in raw.get("telemetry_processing_pipeline", []):
         name = entry["processor"]
         inputs = tuple(entry["inputs"])
         output = entry["output"]

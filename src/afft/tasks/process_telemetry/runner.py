@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from afft.sensor_processing import run_pipeline
+from afft.telemetry_processing import run_pipeline
 from afft.utils.log import logger
 
 from .config import load_pipeline_config
