@@ -103,14 +103,24 @@ def clip_tables(
     show_default=True,
     help="glob pattern to select input files in source_dir",
 )
+@click.option(
+    "--strategy",
+    type=click.Choice(["prefix", "suffix"], case_sensitive=False),
+    default="prefix",
+    show_default=True,
+    help="how to derive context keys from filenames",
+)
 def process_telemetry(
     source_dir: str,
     output_dir: str,
     config_file: str,
     pattern: str,
+    strategy: str,
 ) -> None:
     """Run the telemetry processing pipeline on CSV tables in SOURCE_DIR."""
-    dispatch_process_telemetry(source_dir, output_dir, config_file, pattern)
+    dispatch_process_telemetry(
+        source_dir, output_dir, config_file, pattern, strategy
+    )
 
 
 @task_group.command()

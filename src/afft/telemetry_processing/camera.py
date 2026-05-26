@@ -4,6 +4,8 @@ from dataclasses import dataclass
 
 import pandas as pd
 
+from afft.utils.log import logger
+
 from .pipeline import register_processor
 
 
@@ -15,7 +17,18 @@ class PairStereoImagesConfig:
     filename_col: str = "filename"
     trigger_col: str = "trigger_time"
     timestamp_col: str = "timestamp"
-    max_offset_ms: float = 30.0
+    max_offset_ms: float = 300.0
+
+
+def _to_float_seconds(series: pd.Series) -> pd.Series:
+    """Normalise a timestamp series to float seconds since epoch.
+
+    Handles both float Unix-second columns and ISO datetime strings.
+    """
+    numeric: pd.Series = pd.to_numeric(series, errors="coerce")
+    if numeric.notna().all():
+        return numeric
+    return pd.to_datetime(series).astype("int64") / 1e9
 
 
 @register_processor("pair_stereo_images")
@@ -28,8 +41,9 @@ def pair_stereo_images(
     Steps:
     1. Deduplicate rows by label (same image logged multiple times).
     2. Split into left (left_suffix) and right (right_suffix) groups.
-    3. Inner-join on trigger_time.
-    4. Validate that message timestamps are within max_offset_ms.
+    3. Nearest-timestamp join: each left image is matched to the closest
+       right image within max_offset_ms.
+    4. Drop unmatched rows; warn if > 20% are unmatched.
     """
     df = df.drop_duplicates(
         subset=[config.label_col], keep="first"
@@ -57,6 +71,9 @@ def pair_stereo_images(
             config.label_col: "left_label",
             config.filename_col: "left_filename",
             config.timestamp_col: "left_timestamp",
+            config.trigger_col: "left_trigger_time",
+            "exposure_logged": "left_exposure_logged",
+            "exposure": "left_exposure",
         }
     ).drop(columns=["topic"], errors="ignore")
 
@@ -65,42 +82,73 @@ def pair_stereo_images(
             config.label_col: "right_label",
             config.filename_col: "right_filename",
             config.timestamp_col: "right_timestamp",
+            config.trigger_col: "right_trigger_time",
+            "exposure_logged": "right_exposure_logged",
+            "exposure": "right_exposure",
         }
-    ).drop(columns=["topic", "exposure_logged", "exposure"], errors="ignore")
+    ).drop(columns=["topic"], errors="ignore")
 
-    paired: pd.DataFrame = pd.merge(
-        left, right, on=config.trigger_col, how="inner"
-    )
+    # Build a float-seconds key for merge_asof (handles both float Unix
+    # timestamps and ISO datetime strings).
+    tolerance_s: float = config.max_offset_ms / 1000.0
+    left["_ts"] = _to_float_seconds(left["left_timestamp"])
+    right["_ts"] = _to_float_seconds(right["right_timestamp"])
+
+    paired: pd.DataFrame = pd.merge_asof(
+        left.sort_values("_ts"),
+        right.sort_values("_ts"),
+        on="_ts",
+        tolerance=tolerance_s,
+        direction="nearest",
+    ).drop(columns=["_ts"])
+
+    n_unmatched: int = int(paired["right_label"].isna().sum())
+    if n_unmatched:
+        logger.info(
+            f"dropped {n_unmatched} left image(s) with no right match "
+            f"within {config.max_offset_ms} ms"
+        )
+        if n_unmatched / len(paired) > 0.20:
+            logger.warning(
+                f"{n_unmatched}/{len(paired)} left images "
+                f"({100 * n_unmatched / len(paired):.1f}%) "
+                f"had no matching right image within {config.max_offset_ms} ms"
+            )
+        paired = paired.dropna(subset=["right_label"]).reset_index(drop=True)
 
     if paired.empty:
-        raise ValueError(
-            f"no stereo pairs found — "
-            f"left: {len(left)} rows, right: {len(right)} rows"
-        )
+        raise ValueError("no stereo pairs remain after timestamp matching")
 
-    left_ts: pd.Series = pd.to_datetime(paired["left_timestamp"])
-    right_ts: pd.Series = pd.to_datetime(paired["right_timestamp"])
-    delta_ms: pd.Series = (left_ts - right_ts).abs().dt.total_seconds() * 1000.0
+    # Keep the closest left image for each right image.
+    delta: pd.Series = (
+        _to_float_seconds(paired["left_timestamp"])
+        - _to_float_seconds(paired["right_timestamp"])
+    ).abs()
+    paired = (
+        paired.assign(_delta=delta)
+        .sort_values("_delta")
+        .drop_duplicates(subset=["right_label"], keep="first")
+        .drop(columns=["_delta"])
+        .sort_values("left_timestamp")
+        .reset_index(drop=True)
+    )
 
-    exceeds: pd.Series = delta_ms > config.max_offset_ms
-    if exceeds.any():
-        n: int = int(exceeds.sum())
-        worst: float = float(delta_ms.max())
-        raise ValueError(
-            f"{n} stereo pair(s) exceed {config.max_offset_ms} ms timestamp "
-            f"offset (worst: {worst:.1f} ms)"
-        )
+    paired["timestamp"] = paired["left_timestamp"]
 
     return paired[
         [
-            config.trigger_col,
+            "timestamp",
+            "left_trigger_time",
+            "right_trigger_time",
             "left_label",
             "right_label",
             "left_filename",
             "right_filename",
             "left_timestamp",
             "right_timestamp",
-            "exposure_logged",
-            "exposure",
+            "left_exposure_logged",
+            "left_exposure",
+            "right_exposure_logged",
+            "right_exposure",
         ]
     ].reset_index(drop=True)

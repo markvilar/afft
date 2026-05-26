@@ -5,6 +5,7 @@ from pathlib import Path
 
 from afft.tasks.clip_tables import ClipTablesCommand, run_clip_tables
 from afft.tasks.process_telemetry import (
+    GroupingStrategy,
     ProcessTelemetryCommand,
     run_process_telemetry,
 )
@@ -40,6 +41,7 @@ def dispatch_process_telemetry(
     output_dir: str | Path,
     config_file: str | Path,
     pattern: str = "*.csv",
+    strategy: str = "prefix",
 ) -> None:
     """Dispatch the telemetry processing pipeline task."""
     command = ProcessTelemetryCommand(
@@ -47,6 +49,7 @@ def dispatch_process_telemetry(
         output_dir=Path(output_dir),
         config_file=Path(config_file),
         pattern=pattern,
+        strategy=GroupingStrategy(strategy),
     )
     run_process_telemetry(command)
 

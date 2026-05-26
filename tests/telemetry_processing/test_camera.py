@@ -49,21 +49,25 @@ def test_basic_pairing():
 
     assert len(result) == 2
     assert set(result.columns) == {
-        "trigger_time",
+        "timestamp",
+        "left_trigger_time",
+        "right_trigger_time",
         "left_label",
         "right_label",
         "left_filename",
         "right_filename",
         "left_timestamp",
         "right_timestamp",
-        "exposure_logged",
-        "exposure",
+        "left_exposure_logged",
+        "left_exposure",
+        "right_exposure_logged",
+        "right_exposure",
     }
 
 
 def test_deduplication():
     result = pair_stereo_images(_df(BASE_ROWS))
-    assert len(result[result["trigger_time"] == 1.0]) == 1
+    assert len(result[result["left_trigger_time"] == 1.0]) == 1
 
 
 def test_left_right_assignment():
@@ -116,5 +120,5 @@ def test_timestamp_offset_validation():
         ),
     ]
     config = PairStereoImagesConfig(max_offset_ms=30.0)
-    with pytest.raises(ValueError, match="exceed"):
+    with pytest.raises(ValueError, match="no stereo pairs remain"):
         pair_stereo_images(_df(rows), config)

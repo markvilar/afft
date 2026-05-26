@@ -13,12 +13,12 @@ output    = "image_capture"
 [telemetry_processing_pipeline.config]
 left_suffix   = "LC16"
 right_suffix  = "RM16"
-max_offset_ms = 30.0
+max_offset_ms = 300.0
 
 [[telemetry_processing_pipeline]]
 processor = "estimate_pressure_uncertainty"
-inputs    = ["parosci_pressure"]
-output    = "parosci_pressure"
+inputs    = ["pressure_parosci"]
+output    = "pressure_parosci"
 
 [telemetry_processing_pipeline.config]
 base_uncertainty = 0.1
@@ -41,7 +41,7 @@ heading_uncertainty    = 1.0
 # so that horizontal_range is available.
 [[telemetry_processing_pipeline]]
 processor = "resolve_usbl_position"
-inputs    = ["lqmodem", "parosci_pressure"]
+inputs    = ["lqmodem", "pressure_parosci"]
 output    = "lqmodem"
 
 [telemetry_processing_pipeline.config]
