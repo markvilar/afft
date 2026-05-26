@@ -1,6 +1,7 @@
 """Module for message classes."""
 
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Optional, Self
 
 
@@ -9,7 +10,7 @@ class MessageHeader:
     """Class representing an AUV message header."""
 
     topic: str
-    timestamp: float
+    timestamp: datetime
 
     def to_dict(self: Self) -> dict:
         """Returns a dict representation of the object."""
@@ -22,7 +23,7 @@ class ImageCaptureData:
 
     label: str
     filename: str
-    trigger_time: float
+    trigger_time: datetime
     exposure_logged: bool
     exposure: int = 0
 

@@ -28,7 +28,6 @@ def run_parse_messages(command: ParseMessageCommand) -> None:
 
     messages = _parse_messages(command.source_file, config)
     dataframes = _build_dataframes(messages, config, command.prefix)
-    dataframes = _convert_timestamps(dataframes)
 
     if command.database:
         _insert_dataframes(command, dataframes)
@@ -84,15 +83,6 @@ def _build_dataframes(
     return {
         name: pd.DataFrame([m.to_dict() for m in messages])
         for name, messages in table_messages.items()
-    }
-
-
-def _convert_timestamps(
-    dataframes: dict[str, pd.DataFrame],
-) -> dict[str, pd.DataFrame]:
-    return {
-        name: df.assign(timestamp=pd.to_datetime(df["timestamp"], unit="s"))
-        for name, df in dataframes.items()
     }
 
 
