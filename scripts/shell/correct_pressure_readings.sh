@@ -1,8 +1,10 @@
 #!/usr/bin/bash
 
+set -e
+
 READINGS_DIR="/data/exos_01/acfr_messages_v2_parsed"
 SEALEVEL_DIR="/data/exos_01/metocean_sea_level_hourly"
-OUTPUT_DIR="/data/exos_01/acfr_messages_v3_processed"
+OUTPUT_DIR="/data/exos_01/acfr_messages_v3_metocean_corrected"
 
 file_tuples=(
   # qd61g27j
