@@ -15,14 +15,14 @@ left_suffix   = "LC16"
 right_suffix  = "RM16"
 max_offset_ms = 300.0
 
-[[telemetry_processing_pipeline]]
-processor = "estimate_pressure_uncertainty"
-inputs    = ["pressure_parosci"]
-output    = "pressure_parosci"
-
-[telemetry_processing_pipeline.config]
-base_uncertainty = 0.1
-depth_scale      = 0.0
+#[[telemetry_processing_pipeline]]
+#processor = "estimate_pressure_uncertainty"
+#inputs    = ["pressure_parosci"]
+#output    = "pressure_parosci"
+#
+#[telemetry_processing_pipeline.config]
+#base_uncertainty = 0.1
+#depth_scale      = 0.0
 
 #[[telemetry_processing_pipeline]]
 #processor = "estimate_dvl_uncertainty"

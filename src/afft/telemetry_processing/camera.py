@@ -88,11 +88,10 @@ def pair_stereo_images(
         }
     ).drop(columns=["topic"], errors="ignore")
 
-    # Build a float-seconds key for merge_asof (handles both float Unix
-    # timestamps and ISO datetime strings).
+    # Build a float-seconds key from trigger_time for merge_asof.
     tolerance_s: float = config.max_offset_ms / 1000.0
-    left["_ts"] = _to_float_seconds(left["left_timestamp"])
-    right["_ts"] = _to_float_seconds(right["right_timestamp"])
+    left["_ts"] = _to_float_seconds(left["left_trigger_time"])
+    right["_ts"] = _to_float_seconds(right["right_trigger_time"])
 
     paired: pd.DataFrame = pd.merge_asof(
         left.sort_values("_ts"),
@@ -121,8 +120,8 @@ def pair_stereo_images(
 
     # Keep the closest left image for each right image.
     delta: pd.Series = (
-        _to_float_seconds(paired["left_timestamp"])
-        - _to_float_seconds(paired["right_timestamp"])
+        _to_float_seconds(paired["left_trigger_time"])
+        - _to_float_seconds(paired["right_trigger_time"])
     ).abs()
     paired = (
         paired.assign(_delta=delta)

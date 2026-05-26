@@ -1,6 +1,6 @@
 
-SOURCE_DIR="/data/exos_01/acfr_messages_v3_processed"
-OUTPUT_DIR="/data/exos_01/acfr_messages_v4_clipped"
+SOURCE_DIR="/data/exos_01/acfr_messages_v4_telemetry_processed"
+OUTPUT_DIR="/data/exos_01/acfr_messages_v5_clipped"
 
 # --------------------------------------------------------------------------------------
 # Site 1 - QDCH0FTQ

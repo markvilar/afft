@@ -110,13 +110,14 @@ def test_no_right_raises():
         pair_stereo_images(_df(rows))
 
 
-def test_timestamp_offset_validation():
+def test_trigger_time_offset_validation():
+    # Trigger times differ by 100 ms — exceeds the 30 ms tolerance.
     rows = [
         _make_row(
-            "PR_001_RM16", "PR_001_RM16.pgm", 1.0, "2010-04-21 02:27:56.000"
+            "PR_001_RM16", "PR_001_RM16.pgm", 1.000, "2010-04-21 02:27:56.000"
         ),
         _make_row(
-            "PR_001_LC16", "PR_001_LC16.pgm", 1.0, "2010-04-21 02:27:56.100"
+            "PR_001_LC16", "PR_001_LC16.pgm", 1.100, "2010-04-21 02:27:56.100"
         ),
     ]
     config = PairStereoImagesConfig(max_offset_ms=30.0)
