@@ -6,10 +6,15 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from afft.telemetry_processing.usbl import UsblUncertaintyConfig, estimate_usbl_uncertainty
+from afft.telemetry_processing.usbl import (
+    UsblUncertaintyConfig,
+    estimate_usbl_uncertainty,
+)
 
 
-def _make_df(slant_range: list[float], horizontal_range: list[float]) -> pd.DataFrame:
+def _make_df(
+    slant_range: list[float], horizontal_range: list[float]
+) -> pd.DataFrame:
     return pd.DataFrame(
         {
             "timestamp": "2010-04-21 02:22:30",
@@ -31,17 +36,25 @@ def test_input_rows_preserved():
 
 
 def test_range_term_only_when_bearing_uncertainty_zero():
-    config = UsblUncertaintyConfig(range_uncertainty=1.0, bearing_uncertainty=0.0)
+    config = UsblUncertaintyConfig(
+        range_uncertainty=1.0, bearing_uncertainty=0.0
+    )
     result = estimate_usbl_uncertainty(_make_df([10.0], [8.0]), config)
     expected = 1.0 * 10.0 / 8.0
-    assert math.isclose(result["position_uncertainty"].iloc[0], expected, rel_tol=1e-9)
+    assert math.isclose(
+        result["position_uncertainty"].iloc[0], expected, rel_tol=1e-9
+    )
 
 
 def test_bearing_term_only_when_range_uncertainty_zero():
-    config = UsblUncertaintyConfig(range_uncertainty=0.0, bearing_uncertainty=1.0)
+    config = UsblUncertaintyConfig(
+        range_uncertainty=0.0, bearing_uncertainty=1.0
+    )
     result = estimate_usbl_uncertainty(_make_df([10.0], [8.0]), config)
     expected = 8.0 * math.radians(1.0)
-    assert math.isclose(result["position_uncertainty"].iloc[0], expected, rel_tol=1e-9)
+    assert math.isclose(
+        result["position_uncertainty"].iloc[0], expected, rel_tol=1e-9
+    )
 
 
 def test_combined_uncertainty_in_quadrature():
@@ -50,9 +63,13 @@ def test_combined_uncertainty_in_quadrature():
     expected = math.sqrt(
         (sigma_r * R / h) ** 2 + (h * math.radians(sigma_theta_deg)) ** 2
     )
-    config = UsblUncertaintyConfig(range_uncertainty=sigma_r, bearing_uncertainty=sigma_theta_deg)
+    config = UsblUncertaintyConfig(
+        range_uncertainty=sigma_r, bearing_uncertainty=sigma_theta_deg
+    )
     result = estimate_usbl_uncertainty(_make_df([R], [h]), config)
-    assert math.isclose(result["position_uncertainty"].iloc[0], expected, rel_tol=1e-9)
+    assert math.isclose(
+        result["position_uncertainty"].iloc[0], expected, rel_tol=1e-9
+    )
 
 
 def test_uncertainty_increases_with_slant_range():

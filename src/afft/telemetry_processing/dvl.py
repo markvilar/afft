@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-from .pipeline import register
+from .pipeline import register_processor
 
 
 @dataclass(slots=True, frozen=True)
@@ -23,7 +23,7 @@ class DvlUncertaintyConfig:
     velocity_z_col: str = "velocity_z"
 
 
-@register("estimate_dvl_uncertainty")
+@register_processor("estimate_dvl_uncertainty")
 def estimate_dvl_uncertainty(
     df: pd.DataFrame,
     config: DvlUncertaintyConfig = DvlUncertaintyConfig(),
@@ -33,7 +33,7 @@ def estimate_dvl_uncertainty(
     All uncertainty values are constants taken from the sensor specification.
     Velocity uncertainties are in m/s; attitude uncertainties are in degrees.
     """
-    result = df.copy()
+    result: pd.DataFrame = df.copy()
 
     result["velocity_x_uncertainty"] = config.velocity_x_uncertainty
     result["velocity_y_uncertainty"] = config.velocity_y_uncertainty

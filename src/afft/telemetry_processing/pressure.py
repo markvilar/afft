@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-from .pipeline import register
+from .pipeline import register_processor
 
 
 @dataclass(slots=True, frozen=True)
@@ -14,7 +14,7 @@ class PressureUncertaintyConfig:
     depth_col: str = "depth"
 
 
-@register("estimate_pressure_uncertainty")
+@register_processor("estimate_pressure_uncertainty")
 def estimate_pressure_uncertainty(
     df: pd.DataFrame,
     config: PressureUncertaintyConfig = PressureUncertaintyConfig(),
@@ -27,7 +27,7 @@ def estimate_pressure_uncertainty(
     A non-zero depth_scale adds a depth-proportional term for sensors whose
     accuracy is specified as a percentage of reading.
     """
-    result = df.copy()
+    result: pd.DataFrame = df.copy()
     result["depth_uncertainty"] = (
         config.base_uncertainty + config.depth_scale * result[config.depth_col]
     )

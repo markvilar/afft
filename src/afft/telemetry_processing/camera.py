@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 import pandas as pd
 
-from .pipeline import register
+from .pipeline import register_processor
 
 
 @dataclass(slots=True, frozen=True)
@@ -18,7 +18,7 @@ class PairStereoImagesConfig:
     max_offset_ms: float = 30.0
 
 
-@register("pair_stereo_images")
+@register_processor("pair_stereo_images")
 def pair_stereo_images(
     df: pd.DataFrame,
     config: PairStereoImagesConfig = PairStereoImagesConfig(),
@@ -35,15 +35,15 @@ def pair_stereo_images(
         subset=[config.label_col], keep="first"
     ).reset_index(drop=True)
 
-    left_mask = df[config.filename_col].str.contains(
+    left_mask: pd.Series = df[config.filename_col].str.contains(
         config.left_suffix, regex=False
     )
-    right_mask = df[config.filename_col].str.contains(
+    right_mask: pd.Series = df[config.filename_col].str.contains(
         config.right_suffix, regex=False
     )
 
-    left = df[left_mask].copy()
-    right = df[right_mask].copy()
+    left: pd.DataFrame = df[left_mask].copy()
+    right: pd.DataFrame = df[right_mask].copy()
 
     if left.empty:
         raise ValueError(f"no rows matching left_suffix={config.left_suffix!r}")
@@ -68,7 +68,9 @@ def pair_stereo_images(
         }
     ).drop(columns=["topic", "exposure_logged", "exposure"], errors="ignore")
 
-    paired = pd.merge(left, right, on=config.trigger_col, how="inner")
+    paired: pd.DataFrame = pd.merge(
+        left, right, on=config.trigger_col, how="inner"
+    )
 
     if paired.empty:
         raise ValueError(
@@ -76,14 +78,14 @@ def pair_stereo_images(
             f"left: {len(left)} rows, right: {len(right)} rows"
         )
 
-    left_ts = pd.to_datetime(paired["left_timestamp"])
-    right_ts = pd.to_datetime(paired["right_timestamp"])
-    delta_ms = (left_ts - right_ts).abs().dt.total_seconds() * 1000.0
+    left_ts: pd.Series = pd.to_datetime(paired["left_timestamp"])
+    right_ts: pd.Series = pd.to_datetime(paired["right_timestamp"])
+    delta_ms: pd.Series = (left_ts - right_ts).abs().dt.total_seconds() * 1000.0
 
-    exceeds = delta_ms > config.max_offset_ms
+    exceeds: pd.Series = delta_ms > config.max_offset_ms
     if exceeds.any():
-        n = int(exceeds.sum())
-        worst = float(delta_ms.max())
+        n: int = int(exceeds.sum())
+        worst: float = float(delta_ms.max())
         raise ValueError(
             f"{n} stereo pair(s) exceed {config.max_offset_ms} ms timestamp "
             f"offset (worst: {worst:.1f} ms)"

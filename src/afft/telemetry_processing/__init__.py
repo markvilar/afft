@@ -1,8 +1,9 @@
 """Package for AUV telemetry processing."""
 
 from .pipeline import run_pipeline as run_pipeline
-from .types import PipelineConfig as PipelineConfig
-from .types import ProcessorSpec as ProcessorSpec
+from .types import TelemetryPipelineConfig as TelemetryPipelineConfig
+from .types import TelemetryProcessorSpec as TelemetryProcessorSpec
+from .types import TelemetryPipelineContext as TelemetryPipelineContext
 
 from . import camera as camera
 from . import dvl as dvl

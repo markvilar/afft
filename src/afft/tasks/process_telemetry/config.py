@@ -5,8 +5,8 @@ from typing import Any
 
 from afft.io.config_io import read_config
 from afft.telemetry_processing import (
-    PipelineConfig,
-    ProcessorSpec,
+    TelemetryPipelineConfig,
+    TelemetryProcessorSpec,
     PairStereoImagesConfig,
     DvlUncertaintyConfig,
     PressureUncertaintyConfig,
@@ -30,8 +30,8 @@ def _build_processor_config(name: str, params: dict[str, Any]) -> Any:
     return config_cls(**params)
 
 
-def load_pipeline_config(path: Path) -> PipelineConfig:
-    """Load a TOML pipeline config file and return a PipelineConfig.
+def load_pipeline_config(path: Path) -> TelemetryPipelineConfig:
+    """Load a TOML pipeline config file and return a TelemetryPipelineConfig.
 
     Each [[telemetry_processing_pipeline]] entry must have processor, inputs,
     and output fields. An optional inline config table supplies parameters
@@ -55,7 +55,7 @@ def load_pipeline_config(path: Path) -> PipelineConfig:
         params = entry.get("config", {})
         processor_config = _build_processor_config(name, params)
         specs.append(
-            ProcessorSpec(
+            TelemetryProcessorSpec(
                 processor=name,
                 inputs=inputs,
                 output=output,
@@ -63,4 +63,4 @@ def load_pipeline_config(path: Path) -> PipelineConfig:
             )
         )
 
-    return PipelineConfig(specs=tuple(specs))
+    return TelemetryPipelineConfig(specs=tuple(specs))

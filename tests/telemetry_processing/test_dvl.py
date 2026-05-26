@@ -2,14 +2,21 @@
 
 import pandas as pd
 
-from afft.telemetry_processing.dvl import DvlUncertaintyConfig, estimate_dvl_uncertainty
+from afft.telemetry_processing.dvl import (
+    DvlUncertaintyConfig,
+    estimate_dvl_uncertainty,
+)
 
 _VELOCITY_COLS = [
     "velocity_x_uncertainty",
     "velocity_y_uncertainty",
     "velocity_z_uncertainty",
 ]
-_ATTITUDE_COLS = ["roll_uncertainty", "pitch_uncertainty", "heading_uncertainty"]
+_ATTITUDE_COLS = [
+    "roll_uncertainty",
+    "pitch_uncertainty",
+    "heading_uncertainty",
+]
 
 
 def _make_df(rows: list[dict]) -> pd.DataFrame:

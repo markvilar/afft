@@ -3,7 +3,10 @@
 import pandas as pd
 import pytest
 
-from afft.telemetry_processing.camera import PairStereoImagesConfig, pair_stereo_images
+from afft.telemetry_processing.camera import (
+    PairStereoImagesConfig,
+    pair_stereo_images,
+)
 
 
 def _make_row(
@@ -71,8 +74,12 @@ def test_left_right_assignment():
 
 def test_custom_suffixes():
     rows = [
-        _make_row("img_LEFT_01", "img_LEFT_01.pgm", 1.0, "2010-04-21 02:27:56.341"),
-        _make_row("img_RIGHT_01", "img_RIGHT_01.pgm", 1.0, "2010-04-21 02:27:56.345"),
+        _make_row(
+            "img_LEFT_01", "img_LEFT_01.pgm", 1.0, "2010-04-21 02:27:56.341"
+        ),
+        _make_row(
+            "img_RIGHT_01", "img_RIGHT_01.pgm", 1.0, "2010-04-21 02:27:56.345"
+        ),
     ]
     config = PairStereoImagesConfig(left_suffix="LEFT", right_suffix="RIGHT")
     result = pair_stereo_images(_df(rows), config)
@@ -80,21 +87,33 @@ def test_custom_suffixes():
 
 
 def test_no_left_raises():
-    rows = [_make_row("PR_001_RM16", "PR_001_RM16.pgm", 1.0, "2010-04-21 02:27:56.341")]
+    rows = [
+        _make_row(
+            "PR_001_RM16", "PR_001_RM16.pgm", 1.0, "2010-04-21 02:27:56.341"
+        )
+    ]
     with pytest.raises(ValueError, match="left_suffix"):
         pair_stereo_images(_df(rows))
 
 
 def test_no_right_raises():
-    rows = [_make_row("PR_001_LC16", "PR_001_LC16.pgm", 1.0, "2010-04-21 02:27:56.341")]
+    rows = [
+        _make_row(
+            "PR_001_LC16", "PR_001_LC16.pgm", 1.0, "2010-04-21 02:27:56.341"
+        )
+    ]
     with pytest.raises(ValueError, match="right_suffix"):
         pair_stereo_images(_df(rows))
 
 
 def test_timestamp_offset_validation():
     rows = [
-        _make_row("PR_001_RM16", "PR_001_RM16.pgm", 1.0, "2010-04-21 02:27:56.000"),
-        _make_row("PR_001_LC16", "PR_001_LC16.pgm", 1.0, "2010-04-21 02:27:56.100"),
+        _make_row(
+            "PR_001_RM16", "PR_001_RM16.pgm", 1.0, "2010-04-21 02:27:56.000"
+        ),
+        _make_row(
+            "PR_001_LC16", "PR_001_LC16.pgm", 1.0, "2010-04-21 02:27:56.100"
+        ),
     ]
     config = PairStereoImagesConfig(max_offset_ms=30.0)
     with pytest.raises(ValueError, match="exceed"):

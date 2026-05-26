@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from afft.telemetry_processing import run_pipeline
+from afft.telemetry_processing import run_pipeline, TelemetryPipelineContext
 from afft.utils.log import logger
 
 from .config import load_pipeline_config
@@ -19,8 +19,10 @@ def run_process_telemetry(command: ProcessTelemetryCommand) -> None:
             f"no files matching '{command.pattern}' in {command.source_dir}"
         )
 
-    context: dict[str, pd.DataFrame] = {f.stem: pd.read_csv(f) for f in files}
-    logger.info(f"loaded {len(context)} table(s) from {command.source_dir}")
+    context = TelemetryPipelineContext({f.stem: pd.read_csv(f) for f in files})
+    logger.info(
+        f"loaded {len(context.tables)} table(s) from {command.source_dir}"
+    )
 
     context = run_pipeline(context, pipeline_config)
 
@@ -31,7 +33,7 @@ def run_process_telemetry(command: ProcessTelemetryCommand) -> None:
 
     output_names = {spec.output for spec in pipeline_config.specs}
     for name in output_names:
-        df = context[name]
+        df = context.get_table(name)
         dest = command.output_dir / f"{name}.csv"
         df.to_csv(dest, index=False)
         logger.info(f"  {name}: {len(df)} rows → {dest}")
