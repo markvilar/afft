@@ -4,7 +4,7 @@ import math
 
 import pandas as pd
 
-from afft.telemetry.usbl import UsblResolvePositionConfig, resolve_usbl_position
+from afft.sensor_processing.usbl import UsblResolvePositionConfig, resolve_usbl_position
 
 _EARTH_RADIUS_M = 6_371_000.0
 

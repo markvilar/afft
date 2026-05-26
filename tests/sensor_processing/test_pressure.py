@@ -4,7 +4,7 @@ import math
 
 import pandas as pd
 
-from afft.telemetry.pressure import PressureUncertaintyConfig, estimate_pressure_uncertainty
+from afft.sensor_processing.pressure import PressureUncertaintyConfig, estimate_pressure_uncertainty
 
 
 def _make_df(depths: list[float]) -> pd.DataFrame:

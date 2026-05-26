@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from afft.telemetry.usbl import UsblUncertaintyConfig, estimate_usbl_uncertainty
+from afft.sensor_processing.usbl import UsblUncertaintyConfig, estimate_usbl_uncertainty
 
 
 def _make_df(slant_range: list[float], horizontal_range: list[float]) -> pd.DataFrame:

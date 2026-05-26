@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Any
 
 from afft.io.config_io import read_config
-from afft.telemetry import (
+from afft.sensor_processing import (
     PipelineConfig,
     ProcessorSpec,
     PairStereoImagesConfig,

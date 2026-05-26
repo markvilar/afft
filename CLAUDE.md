@@ -51,3 +51,7 @@ The main package is at `src/afft/` with these modules:
 ## Notebooks
 
 `notebooks/` contains Jupyter notebooks demonstrating data workflows, organized into subdirectories by data type.
+
+## Conventions
+
+- Never reference Claude in commits, pull requests, source code, or documentation.
