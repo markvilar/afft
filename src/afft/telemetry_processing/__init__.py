@@ -5,15 +5,15 @@ from .types import TelemetryPipelineConfig as TelemetryPipelineConfig
 from .types import TelemetryProcessorSpec as TelemetryProcessorSpec
 from .types import TelemetryPipelineContext as TelemetryPipelineContext
 
-from . import camera as camera
-from . import dvl as dvl
-from . import pressure as pressure
-from . import usbl as usbl
+from . import acfr_vision as acfr_vision
+from . import dvl_teledyne as dvl_teledyne
+from . import pressure_parosci as pressure_parosci
+from . import usbl_linkquest as usbl_linkquest
 
-from .camera import PairStereoImagesConfig as PairStereoImagesConfig
-from .dvl import DvlUncertaintyConfig as DvlUncertaintyConfig
-from .pressure import PressureUncertaintyConfig as PressureUncertaintyConfig
-from .usbl import UsblResolvePositionConfig as UsblResolvePositionConfig
-from .usbl import UsblUncertaintyConfig as UsblUncertaintyConfig
+from .acfr_vision import PairStereoImagesConfig as PairStereoImagesConfig
+from .dvl_teledyne import DvlUncertaintyConfig as DvlUncertaintyConfig
+from .pressure_parosci import PressureUncertaintyConfig as PressureUncertaintyConfig
+from .usbl_linkquest import UsblResolvePositionConfig as UsblResolvePositionConfig
+from .usbl_linkquest import UsblUncertaintyConfig as UsblUncertaintyConfig
 
 __all__ = []
