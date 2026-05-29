@@ -2,6 +2,7 @@
 
 import numpy as np
 import pandas as pd
+import pymap3d
 
 from numpy.typing import NDArray
 
@@ -13,7 +14,6 @@ from .types import (
     UsblUncertaintyConfig,
 )
 
-_EARTH_RADIUS_M: float = 6_371_000.0
 _NS_PER_S: float = 1e9
 
 
@@ -27,10 +27,10 @@ def resolve_usbl_position(
 
     Depth from the pressure DataFrame is interpolated to USBL timestamps.
     Horizontal range is computed as sqrt(slant_range² - depth²).
-    The AUV position is projected from the ship position along the bearing
-    using a spherical-Earth forward geodesic.
+    The AUV position is projected from the ship position using
+    pymap3d.aer2geodetic on the WGS84 ellipsoid.
 
-    bearing_reference: "absolute" treats bearing as a compass bearing (default);
+    bearing_reference: "absolute" treats bearing as a compass bearing;
     "relative" adds ship heading to obtain the compass bearing first.
 
     Adds columns: target_depth, horizontal_range,
@@ -55,27 +55,25 @@ def resolve_usbl_position(
         np.maximum(slant_range**2 - depth**2, 0.0)
     )
 
-    ship_latitude: NDArray[np.float64] = np.radians(
-        result[config.ship_lat_col].to_numpy()
+    elevation: NDArray[np.float64] = -np.degrees(
+        np.arcsin(np.minimum(depth / slant_range, 1.0))
     )
-    ship_longitude: NDArray[np.float64] = np.radians(
-        result[config.ship_lon_col].to_numpy()
-    )
-    bearing_rad: NDArray[np.float64] = np.radians(bearing.to_numpy())
-    d_over_r: NDArray[np.float64] = horizontal_range / _EARTH_RADIUS_M
 
-    target_latitude: NDArray[np.float64] = np.arcsin(
-        np.sin(ship_latitude) * np.cos(d_over_r)
-        + np.cos(ship_latitude) * np.sin(d_over_r) * np.cos(bearing_rad)
-    )
-    target_longitude: NDArray[np.float64] = ship_longitude + np.arctan2(
-        np.sin(bearing_rad) * np.sin(d_over_r) * np.cos(ship_latitude),
-        np.cos(d_over_r) - np.sin(ship_latitude) * np.sin(target_latitude),
+    ship_lat: NDArray[np.float64] = result[config.ship_lat_col].to_numpy()
+    ship_lon: NDArray[np.float64] = result[config.ship_lon_col].to_numpy()
+
+    target_latitude, target_longitude, _ = pymap3d.aer2geodetic(
+        bearing.to_numpy(),
+        elevation,
+        slant_range,
+        ship_lat,
+        ship_lon,
+        np.zeros_like(ship_lat),
     )
 
     result["horizontal_range"] = horizontal_range
-    result["target_latitude"] = np.degrees(target_latitude)
-    result["target_longitude"] = np.degrees(target_longitude)
+    result["target_latitude"] = target_latitude
+    result["target_longitude"] = target_longitude
 
     return result
 
@@ -164,7 +162,9 @@ def _validate_time_alignment(
     config: Position resolution config supplying column names and the gap limit.
     """
     usbl_time: NDArray[np.float64] = (
-        pd.to_datetime(usbl[config.timestamp_col]).astype(np.int64).to_numpy()
+        pd.to_datetime(usbl[config.timestamp_col], format="ISO8601")
+        .astype(np.int64)
+        .to_numpy()
     )
     pressure_time: NDArray[np.float64] = (
         pd.to_datetime(pressure[config.timestamp_col], format="ISO8601")
@@ -207,7 +207,9 @@ def _interpolate_depth(
     Depth values interpolated at each USBL ping timestamp.
     """
     usbl_time: NDArray[np.float64] = (
-        pd.to_datetime(usbl[config.timestamp_col]).astype(np.int64).to_numpy()
+        pd.to_datetime(usbl[config.timestamp_col], format="ISO8601")
+        .astype(np.int64)
+        .to_numpy()
     )
     pressure_time_series: pd.Series = pd.to_datetime(
         pressure[config.timestamp_col], format="ISO8601"

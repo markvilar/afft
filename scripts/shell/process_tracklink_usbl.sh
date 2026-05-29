@@ -18,8 +18,6 @@ uv run afft sensors process-tracklink-usbl \
   --deployment-configs "${CONFIG_DIR}/deployment_configs_selected.toml" \
   --deployment "qdch0ftq_20100428_020202"
 
-exit 0
-
 uv run afft sensors process-tracklink-usbl \
   --usbl-file "${SOURCE_DIR}/qdch0ftq_20110415_020103_usbl_tracklink.csv" \
   --pressure-file "${SOURCE_DIR}/qdch0ftq_20110415_020103_pressure_parosci.csv" \

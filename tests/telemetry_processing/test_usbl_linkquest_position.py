@@ -10,7 +10,11 @@ from afft.sensors.usbl_linkquest import (
     resolve_usbl_position,
 )
 
-_EARTH_RADIUS_M = 6_371_000.0
+# WGS84 ellipsoid parameters used by pymap3d
+_WGS84_A_M: float = 6_378_137.0
+_WGS84_E2: float = 0.006_694_379_990_14
+# Radius of curvature at the equator in the meridional (north) direction
+_WGS84_M_EQUATOR_M: float = _WGS84_A_M * (1.0 - _WGS84_E2)
 
 
 def _usbl_row(
@@ -85,7 +89,7 @@ def test_projection_east_from_equator() -> None:
 
     result = resolve_usbl_position(usbl, pressure)
 
-    expected_lon = math.degrees(1000.0 / _EARTH_RADIUS_M)
+    expected_lon = math.degrees(1000.0 / _WGS84_A_M)
     assert math.isclose(result["target_latitude"].iloc[0], 0.0, abs_tol=1e-6)
     assert math.isclose(
         result["target_longitude"].iloc[0], expected_lon, rel_tol=1e-6
@@ -102,7 +106,7 @@ def test_projection_north_from_equator() -> None:
 
     result = resolve_usbl_position(usbl, pressure)
 
-    expected_lat = math.degrees(1000.0 / _EARTH_RADIUS_M)
+    expected_lat = math.degrees(1000.0 / _WGS84_M_EQUATOR_M)
     assert math.isclose(
         result["target_latitude"].iloc[0], expected_lat, rel_tol=1e-6
     )
