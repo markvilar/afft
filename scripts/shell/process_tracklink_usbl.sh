@@ -10,6 +10,7 @@ OUTPUT_DIR="/data/exos_01/acfr_messages_v4_telemetry_processed"
 # Site 1
 # --------------------------------------------------------------------------------------
 
+# NOTE: Test USBL processing
 uv run afft sensors process-tracklink-usbl \
   --usbl-file "${SOURCE_DIR}/qdch0ftq_20100428_020202_usbl_tracklink.csv" \
   --pressure-file "${SOURCE_DIR}/qdch0ftq_20100428_020202_pressure_parosci.csv" \

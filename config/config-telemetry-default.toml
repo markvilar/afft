@@ -45,7 +45,7 @@ inputs    = ["lqmodem", "pressure_parosci"]
 output    = "lqmodem"
 
 [telemetry_processing_pipeline.config]
-bearing_reference = "absolute"
+bearing_reference = "relative"
 
 [[telemetry_processing_pipeline]]
 processor = "estimate_usbl_uncertainty"

@@ -17,77 +17,6 @@ _EARTH_RADIUS_M: float = 6_371_000.0
 _NS_PER_S: float = 1e9
 
 
-def _validate_time_alignment(
-    usbl: pd.DataFrame,
-    pressure: pd.DataFrame,
-    config: UsblResolvePositionConfig,
-) -> None:
-    """Raise ValueError if USBL pings fall outside the pressure time window.
-
-    Arguments
-    ---------
-    usbl: USBL DataFrame with a timestamp column.
-    pressure: Pressure sensor DataFrame with a timestamp column.
-    config: Position resolution config supplying column names and the gap limit.
-    """
-    usbl_time: NDArray[np.float64] = (
-        pd.to_datetime(usbl[config.timestamp_col]).astype(np.int64).to_numpy()
-    )
-    pressure_time: NDArray[np.float64] = (
-        pd.to_datetime(pressure[config.timestamp_col], format="ISO8601")
-        .astype(np.int64)
-        .to_numpy()
-    )
-    early_gap_s: float = (
-        max(0.0, float(pressure_time.min() - usbl_time.min())) / _NS_PER_S
-    )
-    late_gap_s: float = (
-        max(0.0, float(usbl_time.max() - pressure_time.max())) / _NS_PER_S
-    )
-    if early_gap_s > config.max_time_gap_seconds:
-        raise ValueError(
-            f"First USBL ping precedes first pressure reading by "
-            f"{early_gap_s:.1f} s (limit: {config.max_time_gap_seconds} s)"
-        )
-    if late_gap_s > config.max_time_gap_seconds:
-        raise ValueError(
-            f"Last USBL ping follows last pressure reading by "
-            f"{late_gap_s:.1f} s (limit: {config.max_time_gap_seconds} s)"
-        )
-
-
-def _interpolate_depth(
-    usbl: pd.DataFrame,
-    pressure: pd.DataFrame,
-    config: UsblResolvePositionConfig,
-) -> NDArray[np.float64]:
-    """Interpolate pressure sensor depth to USBL ping timestamps.
-
-    Arguments
-    ---------
-    usbl: USBL DataFrame with a timestamp column.
-    pressure: Pressure sensor DataFrame with timestamp and depth columns.
-    config: Position resolution config supplying column names.
-
-    Returns
-    -------
-    Depth values interpolated at each USBL ping timestamp.
-    """
-    usbl_time: NDArray[np.float64] = (
-        pd.to_datetime(usbl[config.timestamp_col]).astype(np.int64).to_numpy()
-    )
-    pressure_time_series: pd.Series = pd.to_datetime(
-        pressure[config.timestamp_col], format="ISO8601"
-    ).sort_values()
-    pressure_time: NDArray[np.float64] = pressure_time_series.astype(
-        np.int64
-    ).to_numpy()
-    pressure_depth: NDArray[np.float64] = pressure.loc[
-        pressure_time_series.index, config.depth_col
-    ].to_numpy()
-    return np.interp(usbl_time, pressure_time, pressure_depth)
-
-
 @register_processor("resolve_usbl_position")
 def resolve_usbl_position(
     usbl: pd.DataFrame,
@@ -219,3 +148,74 @@ def process_tracklink_usbl(
     result: pd.DataFrame = resolve_usbl_position(usbl, pressure, config.resolve)
     result = estimate_usbl_uncertainty(result, config.uncertainty)
     return result
+
+
+def _validate_time_alignment(
+    usbl: pd.DataFrame,
+    pressure: pd.DataFrame,
+    config: UsblResolvePositionConfig,
+) -> None:
+    """Raise ValueError if USBL pings fall outside the pressure time window.
+
+    Arguments
+    ---------
+    usbl: USBL DataFrame with a timestamp column.
+    pressure: Pressure sensor DataFrame with a timestamp column.
+    config: Position resolution config supplying column names and the gap limit.
+    """
+    usbl_time: NDArray[np.float64] = (
+        pd.to_datetime(usbl[config.timestamp_col]).astype(np.int64).to_numpy()
+    )
+    pressure_time: NDArray[np.float64] = (
+        pd.to_datetime(pressure[config.timestamp_col], format="ISO8601")
+        .astype(np.int64)
+        .to_numpy()
+    )
+    early_gap_s: float = (
+        max(0.0, float(pressure_time.min() - usbl_time.min())) / _NS_PER_S
+    )
+    late_gap_s: float = (
+        max(0.0, float(usbl_time.max() - pressure_time.max())) / _NS_PER_S
+    )
+    if early_gap_s > config.max_time_gap_seconds:
+        raise ValueError(
+            f"First USBL ping precedes first pressure reading by "
+            f"{early_gap_s:.1f} s (limit: {config.max_time_gap_seconds} s)"
+        )
+    if late_gap_s > config.max_time_gap_seconds:
+        raise ValueError(
+            f"Last USBL ping follows last pressure reading by "
+            f"{late_gap_s:.1f} s (limit: {config.max_time_gap_seconds} s)"
+        )
+
+
+def _interpolate_depth(
+    usbl: pd.DataFrame,
+    pressure: pd.DataFrame,
+    config: UsblResolvePositionConfig,
+) -> NDArray[np.float64]:
+    """Interpolate pressure sensor depth to USBL ping timestamps.
+
+    Arguments
+    ---------
+    usbl: USBL DataFrame with a timestamp column.
+    pressure: Pressure sensor DataFrame with timestamp and depth columns.
+    config: Position resolution config supplying column names.
+
+    Returns
+    -------
+    Depth values interpolated at each USBL ping timestamp.
+    """
+    usbl_time: NDArray[np.float64] = (
+        pd.to_datetime(usbl[config.timestamp_col]).astype(np.int64).to_numpy()
+    )
+    pressure_time_series: pd.Series = pd.to_datetime(
+        pressure[config.timestamp_col], format="ISO8601"
+    ).sort_values()
+    pressure_time: NDArray[np.float64] = pressure_time_series.astype(
+        np.int64
+    ).to_numpy()
+    pressure_depth: NDArray[np.float64] = pressure.loc[
+        pressure_time_series.index, config.depth_col
+    ].to_numpy()
+    return np.interp(usbl_time, pressure_time, pressure_depth)

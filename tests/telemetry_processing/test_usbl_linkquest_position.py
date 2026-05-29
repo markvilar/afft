@@ -160,7 +160,11 @@ def test_relative_bearing_adds_ship_heading() -> None:
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
     )
 
-    result_abs = resolve_usbl_position(usbl_abs, pressure)
+    result_abs = resolve_usbl_position(
+        usbl_abs,
+        pressure,
+        UsblResolvePositionConfig(bearing_reference="absolute"),
+    )
     result_rel = resolve_usbl_position(
         usbl_rel,
         pressure,

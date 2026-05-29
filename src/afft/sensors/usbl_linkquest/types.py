@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 
 @dataclass(slots=True, frozen=True)
 class UsblResolvePositionConfig:
-    bearing_reference: str = "absolute"
+    bearing_reference: str = "relative"
     timestamp_col: str = "timestamp"
     bearing_col: str = "target_bearing"
     range_col: str = "target_slant_range"
