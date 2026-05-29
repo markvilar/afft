@@ -4,7 +4,7 @@ import math
 
 import pandas as pd
 
-from afft.telemetry_processing.usbl import (
+from afft.telemetry_processing.usbl_linkquest import (
     UsblResolvePositionConfig,
     resolve_usbl_position,
 )

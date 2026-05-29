@@ -33,9 +33,9 @@ output    = "teledyne_dvl"
 velocity_x_uncertainty = 0.003
 velocity_y_uncertainty = 0.003
 velocity_z_uncertainty = 0.003
-roll_uncertainty       = 0.25
-pitch_uncertainty      = 0.25
-heading_uncertainty    = 1.0
+roll_uncertainty       = 0.50
+pitch_uncertainty      = 0.50
+heading_uncertainty    = 2.00
 
 # resolve_usbl_position must run before estimate_usbl_uncertainty
 # so that horizontal_range is available.

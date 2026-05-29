@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from afft.telemetry_processing.camera import (
+from afft.telemetry_processing.acfr_vision import (
     PairStereoImagesConfig,
     pair_stereo_images,
 )
@@ -50,14 +50,14 @@ def test_basic_pairing():
     assert len(result) == 2
     assert set(result.columns) == {
         "timestamp",
-        "left_trigger_time",
-        "right_trigger_time",
         "left_label",
         "right_label",
         "left_filename",
         "right_filename",
         "left_timestamp",
         "right_timestamp",
+        "left_received_at",
+        "right_received_at",
         "left_exposure_logged",
         "left_exposure",
         "right_exposure_logged",
@@ -67,7 +67,7 @@ def test_basic_pairing():
 
 def test_deduplication():
     result = pair_stereo_images(_df(BASE_ROWS))
-    assert len(result[result["left_trigger_time"] == 1.0]) == 1
+    assert len(result[result["left_timestamp"] == 1.0]) == 1
 
 
 def test_left_right_assignment():

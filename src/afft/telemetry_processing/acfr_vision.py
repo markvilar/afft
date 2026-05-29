@@ -41,9 +41,13 @@ def pair_stereo_images(
     Steps:
     1. Deduplicate rows by label (same image logged multiple times).
     2. Split into left (left_suffix) and right (right_suffix) groups.
-    3. Nearest-timestamp join: each left image is matched to the closest
+    3. Nearest trigger-time join: each left image is matched to the closest
        right image within max_offset_ms.
     4. Drop unmatched rows; warn if > 20% are unmatched.
+
+    Output timestamps:
+      timestamp / left_timestamp / right_timestamp  — trigger time (capture time)
+      left_received_at / right_received_at          — message logging time
     """
     df = df.drop_duplicates(
         subset=[config.label_col], keep="first"
@@ -70,8 +74,8 @@ def pair_stereo_images(
         columns={
             config.label_col: "left_label",
             config.filename_col: "left_filename",
-            config.timestamp_col: "left_timestamp",
-            config.trigger_col: "left_trigger_time",
+            config.timestamp_col: "left_received_at",
+            config.trigger_col: "left_timestamp",
             "exposure_logged": "left_exposure_logged",
             "exposure": "left_exposure",
         }
@@ -81,17 +85,17 @@ def pair_stereo_images(
         columns={
             config.label_col: "right_label",
             config.filename_col: "right_filename",
-            config.timestamp_col: "right_timestamp",
-            config.trigger_col: "right_trigger_time",
+            config.timestamp_col: "right_received_at",
+            config.trigger_col: "right_timestamp",
             "exposure_logged": "right_exposure_logged",
             "exposure": "right_exposure",
         }
     ).drop(columns=["topic"], errors="ignore")
 
-    # Build a float-seconds key from trigger_time for merge_asof.
+    # Match on trigger time — both cameras receive the same trigger signal.
     tolerance_s: float = config.max_offset_ms / 1000.0
-    left["_ts"] = _to_float_seconds(left["left_trigger_time"])
-    right["_ts"] = _to_float_seconds(right["right_trigger_time"])
+    left["_ts"] = _to_float_seconds(left["left_timestamp"])
+    right["_ts"] = _to_float_seconds(right["right_timestamp"])
 
     paired: pd.DataFrame = pd.merge_asof(
         left.sort_values("_ts"),
@@ -120,8 +124,8 @@ def pair_stereo_images(
 
     # Keep the closest left image for each right image.
     delta: pd.Series = (
-        _to_float_seconds(paired["left_trigger_time"])
-        - _to_float_seconds(paired["right_trigger_time"])
+        _to_float_seconds(paired["left_timestamp"])
+        - _to_float_seconds(paired["right_timestamp"])
     ).abs()
     paired = (
         paired.assign(_delta=delta)
@@ -137,14 +141,14 @@ def pair_stereo_images(
     return paired[
         [
             "timestamp",
-            "left_trigger_time",
-            "right_trigger_time",
             "left_label",
             "right_label",
             "left_filename",
             "right_filename",
             "left_timestamp",
             "right_timestamp",
+            "left_received_at",
+            "right_received_at",
             "left_exposure_logged",
             "left_exposure",
             "right_exposure_logged",

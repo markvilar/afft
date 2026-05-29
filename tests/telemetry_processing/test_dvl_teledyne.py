@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from afft.telemetry_processing.dvl import (
+from afft.telemetry_processing.dvl_teledyne import (
     DvlUncertaintyConfig,
     estimate_dvl_uncertainty,
 )
