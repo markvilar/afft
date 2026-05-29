@@ -3,6 +3,7 @@
 import numpy as np
 import pandas as pd
 import pymap3d
+from scipy.spatial.transform import Rotation
 
 from numpy.typing import NDArray
 
@@ -11,10 +12,14 @@ from afft.telemetry_processing.pipeline import register_processor
 from .types import (
     UsblProcessingConfig,
     UsblResolvePositionConfig,
+    UsblTransceiverExtrinsics,
     UsblUncertaintyConfig,
 )
 
 _NS_PER_S: float = 1e9
+_ZERO_EXTRINSICS: UsblTransceiverExtrinsics = UsblTransceiverExtrinsics(
+    x=0.0, y=0.0, z=0.0
+)
 
 
 @register_processor("resolve_usbl_position")
@@ -26,12 +31,17 @@ def resolve_usbl_position(
     """Resolve AUV lat/lon from TrackLink USBL bearing, slant range, and depth.
 
     Depth from the pressure DataFrame is interpolated to USBL timestamps.
-    Horizontal range is computed as sqrt(slant_range² - depth²).
-    The AUV position is projected from the ship position using
-    pymap3d.aer2geodetic on the WGS84 ellipsoid.
+    The raw bearing is treated as an azimuth in the transceiver body frame
+    (0 = transceiver forward, clockwise). The ZYX attitude chain is applied:
+    transceiver → ship body (via extrinsics rotation) → NED (via ship attitude).
+    When config.extrinsics is None a zero-offset, zero-rotation transceiver is
+    used, so bearing is relative to the ship bow and heading is applied via the
+    rotation chain.
 
-    bearing_reference: "absolute" treats bearing as a compass bearing;
-    "relative" adds ship heading to obtain the compass bearing first.
+    The transceiver geodetic position is computed by rotating the body-frame
+    translation through the ship attitude and calling pymap3d.ned2geodetic.
+    The corrected direction vector × slant range gives the target NED offset
+    from the transceiver, which is converted to geodetic via ned2geodetic.
 
     Adds columns: target_depth, horizontal_range,
                   target_latitude, target_longitude.
@@ -39,36 +49,89 @@ def resolve_usbl_position(
     _validate_time_alignment(usbl, pressure, config)
 
     result: pd.DataFrame = usbl.copy()
-
     result["target_depth"] = _interpolate_depth(usbl, pressure, config)
 
-    if config.bearing_reference == "relative":
-        bearing: pd.Series = (
-            result[config.bearing_col] + result[config.ship_heading_col]
-        ) % 360.0
-    else:
-        bearing = result[config.bearing_col]
+    extrinsics: UsblTransceiverExtrinsics = (
+        config.extrinsics if config.extrinsics is not None else _ZERO_EXTRINSICS
+    )
 
     depth: NDArray[np.float64] = result["target_depth"].to_numpy()
     slant_range: NDArray[np.float64] = result[config.range_col].to_numpy()
-    horizontal_range: NDArray[np.float64] = np.sqrt(
-        np.maximum(slant_range**2 - depth**2, 0.0)
-    )
-
-    elevation: NDArray[np.float64] = -np.degrees(
-        np.arcsin(np.minimum(depth / slant_range, 1.0))
-    )
-
     ship_lat: NDArray[np.float64] = result[config.ship_lat_col].to_numpy()
     ship_lon: NDArray[np.float64] = result[config.ship_lon_col].to_numpy()
+    n_rows: int = len(depth)
 
-    target_latitude, target_longitude, _ = pymap3d.aer2geodetic(
-        bearing.to_numpy(),
-        elevation,
-        slant_range,
+    ship_heading: NDArray[np.float64] = result[
+        config.ship_heading_col
+    ].to_numpy()
+    ship_pitch: NDArray[np.float64] = result[config.ship_pitch_col].to_numpy()
+    ship_roll: NDArray[np.float64] = result[config.ship_roll_col].to_numpy()
+
+    # Per-row ship body → NED rotation (ZYX intrinsic: heading, pitch, roll).
+    R_ship: Rotation = Rotation.from_euler(
+        "zyx",
+        np.column_stack([ship_heading, ship_pitch, ship_roll]),
+        degrees=True,
+    )
+
+    # Transceiver NED offset from ship GPS, then geodetic position.
+    trans_body: NDArray[np.float64] = np.array(
+        [extrinsics.x, extrinsics.y, extrinsics.z], dtype=np.float64
+    )
+    trans_ned: NDArray[np.float64] = R_ship.apply(
+        np.tile(trans_body, (n_rows, 1))
+    )
+    trans_lat: NDArray[np.float64]
+    trans_lon: NDArray[np.float64]
+    trans_alt: NDArray[np.float64]
+    trans_lat, trans_lon, trans_alt = pymap3d.ned2geodetic(
+        trans_ned[:, 0],
+        trans_ned[:, 1],
+        trans_ned[:, 2],
         ship_lat,
         ship_lon,
         np.zeros_like(ship_lat),
+    )
+
+    # AUV depth relative to transceiver and resulting horizontal range.
+    depth_rel: NDArray[np.float64] = depth - trans_ned[:, 2]
+    horizontal_range: NDArray[np.float64] = np.sqrt(
+        np.maximum(slant_range**2 - depth_rel**2, 0.0)
+    )
+
+    # Direction unit vector in transceiver frame from bearing and depth.
+    bearing_t_rad: NDArray[np.float64] = np.radians(
+        result[config.bearing_col].to_numpy()
+    )
+    el_t: NDArray[np.float64] = -np.arcsin(
+        np.minimum(depth_rel / slant_range, 1.0)
+    )
+    cos_el_t: NDArray[np.float64] = np.cos(el_t)
+    dirs_transceiver: NDArray[np.float64] = np.column_stack(
+        [
+            cos_el_t * np.cos(bearing_t_rad),
+            cos_el_t * np.sin(bearing_t_rad),
+            -np.sin(el_t),
+        ]
+    )
+
+    # Rotate transceiver frame → ship body (constant) → NED (per-row).
+    R_ext: Rotation = Rotation.from_euler(
+        "zyx", [extrinsics.psi, extrinsics.theta, extrinsics.phi]
+    )
+    dirs_ned: NDArray[np.float64] = R_ship.apply(R_ext.apply(dirs_transceiver))
+
+    # Target geodetic position: transceiver origin + NED offset.
+    target_ned: NDArray[np.float64] = dirs_ned * slant_range[:, np.newaxis]
+    target_latitude: NDArray[np.float64]
+    target_longitude: NDArray[np.float64]
+    target_latitude, target_longitude, _ = pymap3d.ned2geodetic(
+        target_ned[:, 0],
+        target_ned[:, 1],
+        target_ned[:, 2],
+        trans_lat,
+        trans_lon,
+        trans_alt,
     )
 
     result["horizontal_range"] = horizontal_range
@@ -211,7 +274,7 @@ def _interpolate_depth(
         .astype(np.int64)
         .to_numpy()
     )
-    pressure_time_series: pd.Series = pd.to_datetime(
+    pressure_time_series: pd.Series[int] = pd.to_datetime(
         pressure[config.timestamp_col], format="ISO8601"
     ).sort_values()
     pressure_time: NDArray[np.float64] = pressure_time_series.astype(

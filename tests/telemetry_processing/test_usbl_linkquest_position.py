@@ -7,6 +7,7 @@ import pytest
 
 from afft.sensors.usbl_linkquest import (
     UsblResolvePositionConfig,
+    UsblTransceiverExtrinsics,
     resolve_usbl_position,
 )
 
@@ -153,36 +154,31 @@ def test_depth_interpolation() -> None:
     assert math.isclose(result["target_depth"].iloc[0], 15.0, abs_tol=0.1)
 
 
-def test_relative_bearing_adds_ship_heading() -> None:
-    usbl_abs = _usbl_df(
-        [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 90.0, 135.0, 1000.0)]
-    )
-    usbl_rel = _usbl_df(
+def test_bearing_and_heading_compose() -> None:
+    """Ship-body bearing and heading compose to the same compass direction."""
+    # bearing=45° in ship body + heading=90° → compass 135°
+    # bearing=135° in ship body + heading=0° → compass 135°
+    usbl_a = _usbl_df(
         [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 90.0, 45.0, 1000.0)]
+    )
+    usbl_b = _usbl_df(
+        [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 135.0, 1000.0)]
     )
     pressure = _pressure_df(
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
     )
 
-    result_abs = resolve_usbl_position(
-        usbl_abs,
-        pressure,
-        UsblResolvePositionConfig(bearing_reference="absolute"),
-    )
-    result_rel = resolve_usbl_position(
-        usbl_rel,
-        pressure,
-        UsblResolvePositionConfig(bearing_reference="relative"),
-    )
+    result_a = resolve_usbl_position(usbl_a, pressure)
+    result_b = resolve_usbl_position(usbl_b, pressure)
 
     assert math.isclose(
-        result_abs["target_latitude"].iloc[0],
-        result_rel["target_latitude"].iloc[0],
+        result_a["target_latitude"].iloc[0],
+        result_b["target_latitude"].iloc[0],
         rel_tol=1e-9,
     )
     assert math.isclose(
-        result_abs["target_longitude"].iloc[0],
-        result_rel["target_longitude"].iloc[0],
+        result_a["target_longitude"].iloc[0],
+        result_b["target_longitude"].iloc[0],
         rel_tol=1e-9,
     )
 
@@ -220,3 +216,106 @@ def test_usbl_within_time_margin_does_not_raise() -> None:
     )
     config = UsblResolvePositionConfig(max_time_gap_seconds=60.0)
     resolve_usbl_position(usbl, pressure, config)
+
+
+# ---------------------------------------------------------------------------
+# Extrinsics tests
+# ---------------------------------------------------------------------------
+
+
+def test_extrinsics_yaw_rotates_bearing() -> None:
+    """90° transceiver yaw: bearing 0° in transceiver frame → East compass."""
+    # Default config (zero extrinsics): bearing 90° in ship body → East.
+    usbl_ref = _usbl_df(
+        [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 90.0, 1000.0)]
+    )
+    # 90° yaw extrinsics: transceiver points East; bearing 0° in transceiver
+    # frame should also resolve to East in the world frame.
+    usbl_ext = _usbl_df(
+        [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 0.0, 1000.0)]
+    )
+    pressure = _pressure_df(
+        ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
+    )
+
+    result_ref = resolve_usbl_position(usbl_ref, pressure)
+    result_ext = resolve_usbl_position(
+        usbl_ext,
+        pressure,
+        UsblResolvePositionConfig(
+            extrinsics=UsblTransceiverExtrinsics(
+                x=0.0, y=0.0, z=0.0, psi=math.radians(90.0)
+            )
+        ),
+    )
+
+    assert math.isclose(
+        result_ref["target_latitude"].iloc[0],
+        result_ext["target_latitude"].iloc[0],
+        abs_tol=1e-6,
+    )
+    assert math.isclose(
+        result_ref["target_longitude"].iloc[0],
+        result_ext["target_longitude"].iloc[0],
+        rel_tol=1e-6,
+    )
+
+
+def test_extrinsics_translation_shifts_origin() -> None:
+    """100 m starboard translation: transceiver is 100 m East of GPS (N-heading)."""
+    # Ship heading North, level. Target at bearing 0° (North) at 500 m.
+    usbl = _usbl_df(
+        [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 0.0, 500.0)]
+    )
+    pressure = _pressure_df(
+        ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
+    )
+
+    # Default (zero extrinsics): origin at GPS, target 500 m North.
+    result_ref = resolve_usbl_position(usbl, pressure)
+    # 100 m starboard translation: transceiver is 100 m East of GPS.
+    result_ext = resolve_usbl_position(
+        usbl,
+        pressure,
+        UsblResolvePositionConfig(
+            extrinsics=UsblTransceiverExtrinsics(x=0.0, y=100.0, z=0.0)
+        ),
+    )
+
+    # Target longitude should be ~100 m East of the reference result.
+    expected_lon_offset = math.degrees(100.0 / _WGS84_A_M)
+    assert math.isclose(
+        result_ext["target_longitude"].iloc[0],
+        result_ref["target_longitude"].iloc[0] + expected_lon_offset,
+        rel_tol=1e-4,
+    )
+    assert math.isclose(
+        result_ext["target_latitude"].iloc[0],
+        result_ref["target_latitude"].iloc[0],
+        rel_tol=1e-6,
+    )
+
+
+def test_extrinsics_ship_heading_applied() -> None:
+    """Heading 90° (East) + zero extrinsics: forward bearing resolves East."""
+    usbl = _usbl_df(
+        [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 90.0, 0.0, 1000.0)]
+    )
+    pressure = _pressure_df(
+        ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
+    )
+
+    result = resolve_usbl_position(
+        usbl,
+        pressure,
+        UsblResolvePositionConfig(
+            extrinsics=UsblTransceiverExtrinsics(x=0.0, y=0.0, z=0.0)
+        ),
+    )
+
+    # Target 1000 m ahead of an East-heading ship → 1000 m East of GPS.
+    expected_lon = math.degrees(1000.0 / _WGS84_A_M)
+    assert math.isclose(result["target_latitude"].iloc[0], 0.0, abs_tol=1e-6)
+    assert math.isclose(
+        result["target_longitude"].iloc[0], expected_lon, rel_tol=1e-6
+    )
