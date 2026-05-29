@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from afft.telemetry_processing.usbl_linkquest import (
+from afft.sensors.usbl_linkquest import (
     UsblUncertaintyConfig,
     estimate_usbl_uncertainty,
 )

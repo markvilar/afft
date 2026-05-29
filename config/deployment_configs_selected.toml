@@ -1,0 +1,349 @@
+# USBL transceiver extrinsics relative to the ship reference frame.
+# Collected from SEABED.localiser.cfg files across all deployment directories.
+# Each entry is one distinct active (used) calibration identified by ship and campaign date.
+# All angles are in radians, all distances in metres.
+
+[[ship_sensor_configs]]
+label = "200906_rv_challenger"
+ship_name = "RV Challenger"
+date = "200906"
+x = 0.53
+y = 4.33
+z = 3.29
+phi = 0.0
+theta = 0.0
+psi = 0.0
+
+[[ship_sensor_configs]]
+label = "201004_rv_linnaeus"
+ship_name = "RV Linnaeus"
+date = "201004"
+comment = "Date inferred from deployment timestamps (no explicit date in source comment)."
+x = -5.715
+y = -1.258
+z = 1.352
+phi = 0.3316
+theta = 0.0
+psi = 0.0
+
+[[ship_sensor_configs]]
+label = "201006_rv_challenger"
+ship_name = "RV Challenger"
+date = "201006"
+x = 1.21
+y = 2.97
+z = 2.27
+phi = -0.5058
+theta = -0.0042
+psi = 0.3138
+
+[[ship_sensor_configs]]
+label = "201010_rv_tom_marshall"
+ship_name = "R/V Tom Marshall"
+date = "201010"
+x = -4.46
+y = -4.826
+z = 2.48
+phi = 0.50839
+theta = -0.06217
+psi = -0.050944
+
+[[ship_sensor_configs]]
+label = "201102_rv_cape_ferguson"
+ship_name = "RV Cape Ferguson"
+date = "201102"
+comment = "Estimated."
+x = -2.6902
+y = -0.2213
+z = 5.5554
+phi = 0.5389
+theta = -0.0016
+psi = -0.0106
+
+[[ship_sensor_configs]]
+label = "201104_rv_naturaliste"
+ship_name = "RV Naturaliste"
+date = "201104"
+comment = "Optimized. Hand measurements highly suspect."
+x = -5.21
+y = -3.34
+z = 3.14
+phi = 0.5250
+theta = -0.0007
+psi = 0.0375
+
+[[ship_sensor_configs]]
+label = "201106_rv_challenger"
+ship_name = "RV Challenger"
+date = "201106"
+comment = "Hand measured. Measurements noted as highly suspect."
+x = 2.379
+y = 4.46
+z = 3.69
+phi = -0.5236
+theta = 0.0
+psi = 0.0
+
+[[ship_sensor_configs]]
+label = "201108_solander"
+ship_name = "Solander"
+date = "201108"
+comment = "Uncalibrated, based on 200907 calibration."
+x = -19.057
+y = 3.18
+z = 4.88
+phi = -0.5117
+theta = 0.0410
+psi = -0.0609
+
+[[ship_sensor_configs]]
+label = "201204_rv_linnaeus"
+ship_name = "RV Linnaeus"
+date = "201204"
+comment = "Optimized."
+x = -6.1558
+y = -1.4774
+z = 1.5667
+phi = 0.3529
+theta = 0.0010
+psi = 0.2548
+
+[[ship_sensor_configs]]
+label = "201205_rv_challenger"
+ship_name = "RV Challenger"
+date = "201205"
+x = 3.497401813766183
+y = 3.229945910119044
+z = 3.678587568145880
+phi = -0.428316396304003
+theta = -0.042853222061798
+psi = 0.186068163213061
+
+[[ship_sensor_configs]]
+label = "201210_rv_tom_marshall"
+ship_name = "R/V Tom Marshall"
+date = "201210"
+x = -5.7233
+y = -5.2351
+z = 1.7692
+phi = 0.5553
+theta = -0.0036
+psi = -0.0511
+
+[[ship_sensor_configs]]
+label = "201304_rv_linnaeus"
+ship_name = "RV Linnaeus"
+date = "201304"
+comment = "Uncalibrated. Source comment uses full date 20130404."
+x = -1.18
+y = 0.70
+z = 2.0
+phi = 0.0
+theta = 0.0
+psi = 0.0
+
+[[ship_sensor_configs]]
+label = "201306_rv_challenger"
+ship_name = "RV Challenger"
+date = "201306"
+x = 7.61514402
+y = 6.32896821
+z = 4.52875681
+phi = -0.42826441
+theta = 0.01764728
+psi = -0.28145407
+
+[[ship_sensor_configs]]
+label = "201310_rv_tom_marshall"
+ship_name = "R/V Tom Marshall"
+date = "201310"
+comment = "Month (10) inferred from deployment timestamps. USBL transceiver mount ended up rotated 14 deg forward relative to the ship (rather than looking straight to the port side)."
+x = -5.541090901139703
+y = -5.363842843909218
+z = 3.224003903060761
+phi = 0.567756355
+theta = 0.002150414
+psi = 0.249884341
+
+[[ship_sensor_configs]]
+label = "201403_rv_linnaeus_uncalibrated"
+ship_name = "RV Linnaeus"
+date = "201403"
+comment = "Uncalibrated."
+x = -1.18
+y = 0.70
+z = 2.0
+phi = 0.0
+theta = 0.0
+psi = 0.0
+
+[[ship_sensor_configs]]
+label = "201403_rv_linnaeus_calibrated"
+ship_name = "RV Linnaeus"
+date = "201403"
+comment = "Calibrated."
+x = -1.26016
+y = 0.704182
+z = 2.1945
+phi = 0.0254243
+theta = -0.0126365
+psi = -0.0685389
+
+[[ship_sensor_configs]]
+label = "201406_tasmania_bluefin"
+ship_name = "Tasmania Bluefin"
+date = "201406"
+comment = "Calibrated."
+x = -11.91642212
+y = 4.76065464
+z = 10.75251812
+phi = -0.50261765
+theta = -0.01030618
+psi = -0.03274401
+
+[[ship_sensor_configs]]
+label = "201502_tasmania_bluefin"
+ship_name = "Tasmania Bluefin"
+date = "201502"
+comment = "Calibrated."
+x = -11.06197886
+y = -6.65624488
+z = 9.99815286
+phi = 0.01590778
+theta = 0.01953048
+psi = -0.04636926
+
+[[ship_sensor_configs]]
+label = "201705_silver_streak"
+ship_name = "Silver Streak"
+date = "201705"
+x = -4.79286559
+y = 4.30177987
+z = 4.04273479
+phi = -0.00667731
+theta = 0.00317232
+psi = 0.47133307
+
+[[ship_sensor_configs]]
+label = "202102_poppag"
+ship_name = "PoppaG"
+date = "202102"
+x = -9.4
+y = -3.72
+z = 7.49
+phi = 0.0
+theta = 0.23
+psi = -0.21
+
+
+# --------------------------------------------------------------------------------------
+# Site - QDCH0FTQ
+# --------------------------------------------------------------------------------------
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20100428_020202"
+ship_sensor_config = "201004_rv_linnaeus"
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20110415_020103"
+ship_sensor_config = "201104_rv_naturaliste"
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20120430_002423"
+ship_sensor_config = "201204_rv_linnaeus"
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20130406_023610"
+ship_sensor_config = "201304_rv_linnaeus"
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20140327_071251"
+ship_sensor_config = "201403_rv_linnaeus_uncalibrated"
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20170526_025746"
+ship_sensor_config = "201705_silver_streak"
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20210315_034028"
+ship_sensor_config = "202102_poppag"
+
+# --------------------------------------------------------------------------------------
+# Site - QDCHDMY1
+# --------------------------------------------------------------------------------------
+
+[[deployment_configs]]
+deployment_label = "qdchdmy1_20110416_005411"
+ship_sensor_config = "201104_rv_naturaliste"
+
+[[deployment_configs]]
+deployment_label = "qdchdmy1_20120501_071203"
+ship_sensor_config = "201204_rv_linnaeus"
+
+[[deployment_configs]]
+deployment_label = "qdchdmy1_20130406_081713"
+ship_sensor_config = "201304_rv_linnaeus"
+
+[[deployment_configs]]
+deployment_label = "qdchdmy1_20140328_063358"
+ship_sensor_config = "201403_rv_linnaeus_calibrated"
+
+[[deployment_configs]]
+deployment_label = "qdchdmy1_20170525_234624"
+ship_sensor_config = "201705_silver_streak"
+
+[[deployment_configs]]
+deployment_label = "qdchdmy1_20210315_081519"
+ship_sensor_config = "202102_poppag"
+
+# --------------------------------------------------------------------------------------
+# Site - R23685BC
+# --------------------------------------------------------------------------------------
+
+[[deployment_configs]]
+deployment_label = "r23685bc_20100605_021022"
+ship_sensor_config = "201006_rv_challenger"
+
+[[deployment_configs]]
+deployment_label = "r23685bc_20120530_233021"
+ship_sensor_config = "201205_rv_challenger"
+
+[[deployment_configs]]
+deployment_label = "r23685bc_20140616_225022"
+ship_sensor_config = "201406_tasmania_bluefin"
+
+# --------------------------------------------------------------------------------------
+# Site - R29MRD5h
+# --------------------------------------------------------------------------------------
+
+[[deployment_configs]]
+deployment_label = "r29mrd5h_20090612_225306"
+ship_sensor_config = "200906_rv_challenger"
+
+[[deployment_configs]]
+deployment_label = "r29mrd5h_20090613_100254"
+ship_sensor_config = "200906_rv_challenger"
+
+[[deployment_configs]]
+deployment_label = "r29mrd5h_20110612_033752"
+ship_sensor_config = "201106_rv_challenger"
+
+[[deployment_configs]]
+deployment_label = "r29mrd5h_20130611_002419"
+ship_sensor_config = "201306_rv_challenger"
+
+# --------------------------------------------------------------------------------------
+# Site - R7JJSKXQ
+# --------------------------------------------------------------------------------------
+
+[[deployment_configs]]
+deployment_label = "r7jjskxq_20101023_210332"
+ship_sensor_config = "201010_rv_tom_marshall"
+
+[[deployment_configs]]
+deployment_label = "r7jjskxq_20121013_060425"
+ship_sensor_config = "201210_rv_tom_marshall"
+
+[[deployment_configs]]
+deployment_label = "r7jjskxq_20131022_004934"
+ship_sensor_config = "201310_rv_tom_marshall"

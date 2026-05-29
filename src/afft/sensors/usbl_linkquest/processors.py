@@ -1,34 +1,17 @@
-"""USBL position resolution and uncertainty processors."""
-
-from dataclasses import dataclass
+"""Position resolution, uncertainty, and orchestration for TrackLink USBL."""
 
 import numpy as np
 import pandas as pd
 
-from .pipeline import register_processor
+from afft.telemetry_processing.pipeline import register_processor
+
+from .types import (
+    UsblProcessingConfig,
+    UsblResolvePositionConfig,
+    UsblUncertaintyConfig,
+)
 
 _EARTH_RADIUS_M: float = 6_371_000.0
-
-
-@dataclass(slots=True, frozen=True)
-class UsblResolvePositionConfig:
-    bearing_reference: str = "absolute"
-    timestamp_col: str = "timestamp"
-    bearing_col: str = "bearing"
-    range_col: str = "range"
-    ship_lat_col: str = "latitude"
-    ship_lon_col: str = "longitude"
-    ship_heading_col: str = "heading"
-    depth_col: str = "depth"
-
-
-@dataclass(slots=True, frozen=True)
-class UsblUncertaintyConfig:
-    range_uncertainty: float = 15.0
-    bearing_uncertainty: float = 20.05
-    range_col: str = "range"
-    horizontal_range_col: str = "horizontal_range"
-    min_horizontal_range: float = 0.1
 
 
 @register_processor("resolve_usbl_position")
@@ -141,4 +124,26 @@ def estimate_usbl_uncertainty(
 
     result["position_uncertainty"] = np.sqrt(range_term**2 + bearing_term**2)
 
+    return result
+
+
+def process_tracklink_usbl(
+    usbl: pd.DataFrame,
+    pressure: pd.DataFrame,
+    config: UsblProcessingConfig = UsblProcessingConfig(),
+) -> pd.DataFrame:
+    """Resolve positions and estimate uncertainty from TrackLink USBL data.
+
+    Arguments
+    ---------
+    usbl: TrackLink USBL observations with bearing, range, and ship position.
+    pressure: Pressure sensor depth readings to interpolate at USBL timestamps.
+    config: Combined configuration for position resolution and uncertainty estimation.
+
+    Returns
+    -------
+    DataFrame with resolved target positions and position uncertainty column.
+    """
+    result: pd.DataFrame = resolve_usbl_position(usbl, pressure, config.resolve)
+    result = estimate_usbl_uncertainty(result, config.uncertainty)
     return result

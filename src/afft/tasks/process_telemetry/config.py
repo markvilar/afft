@@ -4,14 +4,16 @@ from pathlib import Path
 from typing import Any
 
 from afft.io.config_io import read_config
+from afft.sensors.acfr_vision import PairStereoImagesConfig
+from afft.sensors.dvl_teledyne import DvlUncertaintyConfig
+from afft.sensors.pressure_parosci import PressureUncertaintyConfig
+from afft.sensors.usbl_linkquest import (
+    UsblResolvePositionConfig,
+    UsblUncertaintyConfig,
+)
 from afft.telemetry_processing import (
     TelemetryPipelineConfig,
     TelemetryProcessorSpec,
-    PairStereoImagesConfig,
-    DvlUncertaintyConfig,
-    PressureUncertaintyConfig,
-    UsblResolvePositionConfig,
-    UsblUncertaintyConfig,
 )
 
 _CONFIG_CLASSES: dict[str, type] = {

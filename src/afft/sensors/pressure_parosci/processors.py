@@ -1,17 +1,10 @@
-"""Pressure sensor uncertainty processor."""
-
-from dataclasses import dataclass
+"""Pressure sensor uncertainty processor for Paroscientific instruments."""
 
 import pandas as pd
 
-from .pipeline import register_processor
+from afft.telemetry_processing.pipeline import register_processor
 
-
-@dataclass(slots=True, frozen=True)
-class PressureUncertaintyConfig:
-    base_uncertainty: float = 0.005
-    depth_scale: float = 0.0
-    depth_col: str = "depth"
+from .types import PressureUncertaintyConfig
 
 
 @register_processor("estimate_pressure_uncertainty")

@@ -4,7 +4,7 @@ import math
 
 import pandas as pd
 
-from afft.telemetry_processing.pressure_parosci import (
+from afft.sensors.pressure_parosci import (
     PressureUncertaintyConfig,
     estimate_pressure_uncertainty,
 )

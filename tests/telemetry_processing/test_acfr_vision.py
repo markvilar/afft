@@ -3,7 +3,7 @@
 import pandas as pd
 import pytest
 
-from afft.telemetry_processing.acfr_vision import (
+from afft.sensors.acfr_vision import (
     PairStereoImagesConfig,
     pair_stereo_images,
 )
