@@ -1,5 +1,7 @@
 """Module with functionality to obtain solar zenith angles using NASAs POWER API."""
 
+from typing import Any
+
 import requests
 
 import arrow
@@ -51,11 +53,11 @@ def get_solar_zenith_angle(
     response.raise_for_status()
 
     # NOTE: Data keys: 'type', 'geometry', 'properties', 'header', 'messages', 'parameters', 'times'
-    data: dict = response.json()
+    data: dict[str, Any] = response.json()
 
     coordinates: list[float] = data["geometry"]["coordinates"]
     hourly_records: dict[str, float] = data["properties"]["parameter"]["SZA"]
-    rows: list[dict] = [
+    rows: list[dict[str, Any]] = [
         {"datetime": date, "solar_zenthic_angle": value}
         for date, value in hourly_records.items()
     ]

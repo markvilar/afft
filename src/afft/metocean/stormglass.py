@@ -1,5 +1,7 @@
 """Module for functionality for the Stormglass API."""
 
+from typing import Any
+
 import requests
 
 import arrow
@@ -48,7 +50,7 @@ def get_sea_level_stormglass(
     )
 
     response.raise_for_status()
-    data: dict = response.json()
+    data: dict[str, Any] = response.json()
 
     # Parse data
     df: pd.DataFrame = _tabulate_reponse_stormglass(data)
@@ -59,26 +61,30 @@ def get_sea_level_stormglass(
     return df
 
 
-def _tabulate_reponse_stormglass(response: dict) -> pd.DataFrame:
+def _tabulate_reponse_stormglass(response: dict[str, Any]) -> pd.DataFrame:
     """Converts a Stormglass reponse to a data frame."""
     df: pd.DataFrame = pd.DataFrame(response.get("data"))
-    metadata: dict = _format_sealevel_response_metadata(response.get("meta"))
+    meta = response.get("meta")
+    assert meta is not None, "missing 'meta' in Stormglass response"
+    metadata: dict[str, Any] = _format_sealevel_response_metadata(meta)
     for key, value in metadata.items():
         df[key] = value
     return df
 
 
-def _format_sealevel_response_metadata(metadata: dict) -> dict:
+def _format_sealevel_response_metadata(
+    metadata: dict[str, Any],
+) -> dict[str, Any]:
     """Formats the metadata of a Stormglass response."""
-    station: dict = metadata.get("station")
-    station_metadata: dict = {
+    station: dict[str, Any] = metadata.get("station") or {}
+    station_metadata: dict[str, Any] = {
         "longitude": station.get("lng"),
         "latitude": station.get("lat"),
         "distance": station.get("distance"),
         "name": station.get("name"),
         "source": station.get("source"),
     }
-    request_metadata: dict = {
+    request_metadata: dict[str, Any] = {
         "longitude": metadata.get("lng"),
         "latitude": metadata.get("lat"),
         "datum": metadata.get("datum"),
@@ -86,7 +92,7 @@ def _format_sealevel_response_metadata(metadata: dict) -> dict:
         "end": metadata.get("end"),
     }
 
-    merged: dict = dict()
+    merged: dict[str, Any] = dict()
     for key, value in request_metadata.items():
         merged[f"request_{key}"] = value
 

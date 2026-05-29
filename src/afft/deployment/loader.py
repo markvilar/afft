@@ -1,6 +1,7 @@
 """Loader for deployment configuration from TOML files."""
 
 from pathlib import Path
+from typing import Any
 
 from afft.io.config_io import read_config
 
@@ -22,13 +23,13 @@ def load_deployment_config(
     -------
     Resolved DeploymentConfig for the given deployment.
     """
-    raw: dict = read_config(path)
+    raw: dict[str, Any] = read_config(path)
 
-    sensor_configs: dict[str, dict] = {
+    sensor_configs: dict[str, dict[str, Any]] = {
         entry["label"]: entry for entry in raw.get("ship_sensor_configs", [])
     }
 
-    deployment_entry: dict | None = None
+    deployment_entry: dict[str, Any] | None = None
     for entry in raw.get("deployment_configs", []):
         if entry["deployment_label"] == deployment_label:
             deployment_entry = entry
@@ -41,7 +42,7 @@ def load_deployment_config(
     if config_label not in sensor_configs:
         raise KeyError(f"ship sensor config not found: {config_label!r}")
 
-    sensor_config: dict = sensor_configs[config_label]
+    sensor_config: dict[str, Any] = sensor_configs[config_label]
 
     usbl_modem = TopsideUsblModemConfig(
         x=sensor_config["x"],

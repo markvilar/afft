@@ -4,12 +4,12 @@ import os
 import shutil
 
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Optional
 
 
 def list_directory(
     directory: Path,
-    filter_fun: Callable[[Path], bool] = None,
+    filter_fun: Optional[Callable[[Path], bool]] = None,
 ) -> list[Path]:
     """list file paths in a directory with the possibility to filter.
     filter:
@@ -20,8 +20,8 @@ def list_directory(
         Path(os.path.abspath(os.path.join(directory, filename)))
         for filename in os.listdir(directory)
     ]
-    if filter_fun:
-        paths: list[Path] = [path for path in paths if filter_fun(path)]
+    if filter_fun is not None:
+        paths = [path for path in paths if filter_fun(path)]
     return paths
 
 

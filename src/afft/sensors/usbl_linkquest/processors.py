@@ -3,6 +3,8 @@
 import numpy as np
 import pandas as pd
 
+from numpy.typing import NDArray
+
 from afft.telemetry_processing.pipeline import register_processor
 
 from .types import (
@@ -35,19 +37,21 @@ def resolve_usbl_position(
     """
     result: pd.DataFrame = usbl.copy()
 
-    usbl_t: np.ndarray = (
+    usbl_t: NDArray[np.float64] = (
         pd.to_datetime(result[config.timestamp_col]).astype(np.int64).to_numpy()
     )
 
     pressure_t_series: pd.Series = pd.to_datetime(
         pressure[config.timestamp_col]
     ).sort_values()
-    pressure_depth: np.ndarray = pressure.loc[
+    pressure_depth: NDArray[np.float64] = pressure.loc[
         pressure_t_series.index, config.depth_col
     ].to_numpy()
-    pressure_t: np.ndarray = pressure_t_series.astype(np.int64).to_numpy()
+    pressure_t: NDArray[np.float64] = pressure_t_series.astype(
+        np.int64
+    ).to_numpy()
 
-    depth: np.ndarray = np.interp(usbl_t, pressure_t, pressure_depth)
+    depth: NDArray[np.float64] = np.interp(usbl_t, pressure_t, pressure_depth)
 
     if config.bearing_reference == "relative":
         bearing: pd.Series = (
@@ -56,21 +60,25 @@ def resolve_usbl_position(
     else:
         bearing = result[config.bearing_col]
 
-    slant_range: np.ndarray = result[config.range_col].to_numpy()
-    horizontal_range: np.ndarray = np.sqrt(
+    slant_range: NDArray[np.float64] = result[config.range_col].to_numpy()
+    horizontal_range: NDArray[np.float64] = np.sqrt(
         np.maximum(slant_range**2 - depth**2, 0.0)
     )
 
-    lat1: np.ndarray = np.radians(result[config.ship_lat_col].to_numpy())
-    lon1: np.ndarray = np.radians(result[config.ship_lon_col].to_numpy())
-    bearing_rad: np.ndarray = np.radians(bearing.to_numpy())
-    d_over_r: np.ndarray = horizontal_range / _EARTH_RADIUS_M
+    lat1: NDArray[np.float64] = np.radians(
+        result[config.ship_lat_col].to_numpy()
+    )
+    lon1: NDArray[np.float64] = np.radians(
+        result[config.ship_lon_col].to_numpy()
+    )
+    bearing_rad: NDArray[np.float64] = np.radians(bearing.to_numpy())
+    d_over_r: NDArray[np.float64] = horizontal_range / _EARTH_RADIUS_M
 
-    lat2: np.ndarray = np.arcsin(
+    lat2: NDArray[np.float64] = np.arcsin(
         np.sin(lat1) * np.cos(d_over_r)
         + np.cos(lat1) * np.sin(d_over_r) * np.cos(bearing_rad)
     )
-    lon2: np.ndarray = lon1 + np.arctan2(
+    lon2: NDArray[np.float64] = lon1 + np.arctan2(
         np.sin(bearing_rad) * np.sin(d_over_r) * np.cos(lat1),
         np.cos(d_over_r) - np.sin(lat1) * np.sin(lat2),
     )
@@ -110,17 +118,21 @@ def estimate_usbl_uncertainty(
 
     result: pd.DataFrame = df.copy()
 
-    slant_range: np.ndarray = result[config.range_col].to_numpy()
-    horizontal_range: np.ndarray = result[
+    slant_range: NDArray[np.float64] = result[config.range_col].to_numpy()
+    horizontal_range: NDArray[np.float64] = result[
         config.horizontal_range_col
     ].to_numpy()
     bearing_uncertainty_rad: float = np.radians(config.bearing_uncertainty)
 
-    h_safe: np.ndarray = np.maximum(
+    h_safe: NDArray[np.float64] = np.maximum(
         horizontal_range, config.min_horizontal_range
     )
-    range_term: np.ndarray = config.range_uncertainty * slant_range / h_safe
-    bearing_term: np.ndarray = horizontal_range * bearing_uncertainty_rad
+    range_term: NDArray[np.float64] = (
+        config.range_uncertainty * slant_range / h_safe
+    )
+    bearing_term: NDArray[np.float64] = (
+        horizontal_range * bearing_uncertainty_rad
+    )
 
     result["position_uncertainty"] = np.sqrt(range_term**2 + bearing_term**2)
 

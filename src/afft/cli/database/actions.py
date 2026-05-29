@@ -1,6 +1,7 @@
 """Actions for database CLI commands."""
 
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 import polars as pl
@@ -23,12 +24,15 @@ def dispatch_table_join(
     config_path: str | Path,
 ) -> None:
     """Load join configs and execute each join against the database."""
-    config: dict = io.read_config(Path(config_path))
+    config: dict[str, Any] = io.read_config(Path(config_path))
+    tasks = config.get("tasks")
+    if tasks is None:
+        raise ValueError("missing 'tasks' key in config")
     task_configs: list[dbtasks.JoinTableConfig] = [
-        dbtasks.JoinTableConfig(**task) for task in config.get("tasks")
+        dbtasks.JoinTableConfig(**task) for task in tasks
     ]
 
-    engine: db.Engine = db.create_engine(
+    engine: db.Engine | str = db.create_engine(
         database=database,
         host=host,
         port=port,
@@ -45,8 +49,8 @@ def dispatch_table_join(
             engine,
             queries=config.queries,
             selections=config.selections,
-            base=config.join.get("base"),
-            join_on=config.join.get("field"),
+            base=config.join["base"],
+            join_on=config.join["field"],
         )
         for config in task_configs
     }
@@ -66,12 +70,16 @@ def dispatch_table_export(
 
     Exports all tables when tables is empty, otherwise only the named ones.
     """
-    engine: db.Engine = db.create_engine(
+    engine: db.Engine | str = db.create_engine(
         database=database,
         host=host,
         port=port,
         username=requireenv("PG_USERNAME"),
         password=requireenv("PG_PASSWORD"),
+    )
+
+    assert isinstance(engine, db.Engine), (
+        f"error when creating database engine: {engine}"
     )
 
     output_dir = Path(output_dir)
@@ -138,8 +146,15 @@ def dispatch_table_write(
 
     data_frame: pl.DataFrame = pl.read_csv(source)
 
-    engine: db.Engine = db.create_engine(
-        database=database, host=host, port=port
+    engine: db.Engine | str = db.create_engine(
+        database=database,
+        host=host,
+        port=port,
+        username=requireenv("PG_USERNAME"),
+        password=requireenv("PG_PASSWORD"),
+    )
+    assert isinstance(engine, db.Engine), (
+        f"error when creating database engine: {engine}"
     )
     db.write_database_table(
         engine,

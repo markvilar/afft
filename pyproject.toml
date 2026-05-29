@@ -39,6 +39,12 @@ afft = "afft.cli.entrypoint:main"
 [tool.uv]
 package = true
 
+[tool.mypy]
+mypy_path = "src"
+explicit_package_bases = true
+strict = true
+ignore_missing_imports = true
+
 [tool.ruff]
 line-length = 80
 

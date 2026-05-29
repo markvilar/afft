@@ -1,13 +1,13 @@
 """Module for reading cameras from Renav files."""
 
 from pathlib import Path
-from typing import Callable
+from typing import Callable, Optional
 
 import polars as pl
 
 RENAV_SKIP_ROWS: int = 58
 RENAV_SEPARATOR: str = "\t"
-RENAV_DATAFRAME_COLUMNS: list = [
+RENAV_DATAFRAME_COLUMNS: list[str] = [
     "identifier",
     "timestamp",
     "latitude",
@@ -29,7 +29,7 @@ RENAV_DATAFRAME_COLUMNS: list = [
 def preprocess_and_cast_columns(cameras: pl.DataFrame) -> pl.DataFrame:
     """Preprocesses column string values and casts them to the polars data types."""
 
-    cameras: pl.DataFrame = cameras.with_columns(
+    cameras = cameras.with_columns(
         [
             pl.col("identifier").str.strip_chars().cast(pl.Int64),
             pl.col("timestamp").str.strip_chars().cast(pl.Float64),
@@ -52,7 +52,8 @@ def preprocess_and_cast_columns(cameras: pl.DataFrame) -> pl.DataFrame:
 
 
 def read_cameras(
-    path: Path, preprocessor: Callable[[pl.DataFrame], pl.DataFrame] = None
+    path: Path,
+    preprocessor: Optional[Callable[[pl.DataFrame], pl.DataFrame]] = None,
 ) -> pl.DataFrame:
     """Reads cameras from a Renav file."""
 
@@ -70,7 +71,7 @@ def read_cameras(
 
     cameras = preprocess_and_cast_columns(cameras)
 
-    if preprocessor:
+    if preprocessor is not None:
         cameras = preprocessor(cameras)
 
     return cameras

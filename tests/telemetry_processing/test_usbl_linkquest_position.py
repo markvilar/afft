@@ -19,7 +19,7 @@ def _usbl_row(
     heading: float,
     bearing: float,
     range_m: float,
-) -> dict:
+) -> dict[str, object]:
     return {
         "timestamp": timestamp,
         "latitude": ship_lat,
@@ -32,7 +32,7 @@ def _usbl_row(
     }
 
 
-def _usbl_df(rows: list[dict]) -> pd.DataFrame:
+def _usbl_df(rows: list[dict[str, object]]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
@@ -40,7 +40,7 @@ def _pressure_df(timestamps: list[str], depths: list[float]) -> pd.DataFrame:
     return pd.DataFrame({"timestamp": timestamps, "depth": depths})
 
 
-def test_output_columns():
+def test_output_columns() -> None:
     usbl = _usbl_df(
         [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 90.0, 100.0)]
     )
@@ -59,7 +59,7 @@ def test_output_columns():
         assert col in result.columns
 
 
-def test_zero_depth_horizontal_range_equals_slant_range():
+def test_zero_depth_horizontal_range_equals_slant_range() -> None:
     usbl = _usbl_df(
         [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 90.0, 1000.0)]
     )
@@ -74,7 +74,7 @@ def test_zero_depth_horizontal_range_equals_slant_range():
     )
 
 
-def test_projection_east_from_equator():
+def test_projection_east_from_equator() -> None:
     usbl = _usbl_df(
         [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 90.0, 1000.0)]
     )
@@ -91,7 +91,7 @@ def test_projection_east_from_equator():
     )
 
 
-def test_projection_north_from_equator():
+def test_projection_north_from_equator() -> None:
     usbl = _usbl_df(
         [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 0.0, 1000.0)]
     )
@@ -108,7 +108,7 @@ def test_projection_north_from_equator():
     assert math.isclose(result["target_longitude"].iloc[0], 0.0, abs_tol=1e-6)
 
 
-def test_depth_reduces_horizontal_range():
+def test_depth_reduces_horizontal_range() -> None:
     usbl = _usbl_df(
         [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 90.0, 5.0)]
     )
@@ -121,7 +121,7 @@ def test_depth_reduces_horizontal_range():
     assert math.isclose(result["horizontal_range"].iloc[0], 4.0, rel_tol=1e-9)
 
 
-def test_depth_exceeds_slant_range_clamps_to_zero():
+def test_depth_exceeds_slant_range_clamps_to_zero() -> None:
     usbl = _usbl_df(
         [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 90.0, 3.0)]
     )
@@ -134,7 +134,7 @@ def test_depth_exceeds_slant_range_clamps_to_zero():
     assert result["horizontal_range"].iloc[0] == 0.0
 
 
-def test_depth_interpolation():
+def test_depth_interpolation() -> None:
     usbl = _usbl_df(
         [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 90.0, 100.0)]
     )
@@ -148,7 +148,7 @@ def test_depth_interpolation():
     assert math.isclose(result["interpolated_depth"].iloc[0], 15.0, abs_tol=0.1)
 
 
-def test_relative_bearing_adds_ship_heading():
+def test_relative_bearing_adds_ship_heading() -> None:
     usbl_abs = _usbl_df(
         [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 90.0, 135.0, 1000.0)]
     )

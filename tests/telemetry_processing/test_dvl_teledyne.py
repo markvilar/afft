@@ -19,11 +19,13 @@ _ATTITUDE_COLS = [
 ]
 
 
-def _make_df(rows: list[dict]) -> pd.DataFrame:
+def _make_df(rows: list[dict[str, object]]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def _row(vx: float = 1.0, vy: float = 0.0, vz: float = 0.0) -> dict:
+def _row(
+    vx: float = 1.0, vy: float = 0.0, vz: float = 0.0
+) -> dict[str, object]:
     return {
         "timestamp": "2010-04-21 02:27:56.000",
         "velocity_x": vx,
@@ -40,13 +42,13 @@ def _row(vx: float = 1.0, vy: float = 0.0, vz: float = 0.0) -> dict:
 BASE_ROWS = [_row(1.0, 0.0, 0.0), _row(0.0, 2.0, 0.0), _row(0.0, 0.0, 3.0)]
 
 
-def test_output_columns():
+def test_output_columns() -> None:
     result = estimate_dvl_uncertainty(_make_df(BASE_ROWS))
     for col in _VELOCITY_COLS + _ATTITUDE_COLS:
         assert col in result.columns
 
 
-def test_velocity_uncertainties_are_constant():
+def test_velocity_uncertainties_are_constant() -> None:
     config = DvlUncertaintyConfig(
         velocity_x_uncertainty=0.003,
         velocity_y_uncertainty=0.003,
@@ -58,7 +60,7 @@ def test_velocity_uncertainties_are_constant():
     assert (result["velocity_z_uncertainty"] == 0.003).all()
 
 
-def test_attitude_uncertainties_are_constant():
+def test_attitude_uncertainties_are_constant() -> None:
     config = DvlUncertaintyConfig(
         roll_uncertainty=0.25,
         pitch_uncertainty=0.25,
@@ -70,7 +72,7 @@ def test_attitude_uncertainties_are_constant():
     assert (result["heading_uncertainty"] == 1.0).all()
 
 
-def test_per_axis_velocity_uncertainties_can_differ():
+def test_per_axis_velocity_uncertainties_can_differ() -> None:
     config = DvlUncertaintyConfig(
         velocity_x_uncertainty=0.001,
         velocity_y_uncertainty=0.002,
@@ -82,7 +84,7 @@ def test_per_axis_velocity_uncertainties_can_differ():
     assert result["velocity_z_uncertainty"].iloc[0] == 0.004
 
 
-def test_roll_pitch_heading_can_differ():
+def test_roll_pitch_heading_can_differ() -> None:
     config = DvlUncertaintyConfig(
         roll_uncertainty=0.25,
         pitch_uncertainty=0.25,
@@ -94,7 +96,7 @@ def test_roll_pitch_heading_can_differ():
     assert result["heading_uncertainty"].iloc[0] == 2.0
 
 
-def test_defaults_match_rdi_spec():
+def test_defaults_match_rdi_spec() -> None:
     result = estimate_dvl_uncertainty(_make_df([_row()]))
     assert result["velocity_x_uncertainty"].iloc[0] == 0.003
     assert result["velocity_y_uncertainty"].iloc[0] == 0.003
@@ -104,7 +106,7 @@ def test_defaults_match_rdi_spec():
     assert result["heading_uncertainty"].iloc[0] == 1.0
 
 
-def test_input_rows_preserved():
+def test_input_rows_preserved() -> None:
     df = _make_df(BASE_ROWS)
     result = estimate_dvl_uncertainty(df)
     assert len(result) == len(df)

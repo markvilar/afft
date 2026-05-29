@@ -22,7 +22,7 @@ cli.add_command(sensor_commands, name="sensors")
 cli.add_command(task_commands, name="tasks")
 
 
-def main():
+def main() -> None:
     """Main entrypoint for the command-line interface."""
     init_logger()
     cli()

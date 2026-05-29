@@ -16,7 +16,7 @@ def _make_row(
     timestamp: str,
     exposure_logged: bool = False,
     exposure: int = 0,
-) -> dict:
+) -> dict[str, object]:
     return {
         "topic": "VIS",
         "timestamp": timestamp,
@@ -40,11 +40,11 @@ BASE_ROWS = [
 ]
 
 
-def _df(rows: list[dict]) -> pd.DataFrame:
+def _df(rows: list[dict[str, object]]) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def test_basic_pairing():
+def test_basic_pairing() -> None:
     result = pair_stereo_images(_df(BASE_ROWS))
 
     assert len(result) == 2
@@ -65,18 +65,18 @@ def test_basic_pairing():
     }
 
 
-def test_deduplication():
+def test_deduplication() -> None:
     result = pair_stereo_images(_df(BASE_ROWS))
     assert len(result[result["left_timestamp"] == 1.0]) == 1
 
 
-def test_left_right_assignment():
+def test_left_right_assignment() -> None:
     result = pair_stereo_images(_df(BASE_ROWS))
     assert result["left_filename"].str.contains("LC16").all()
     assert result["right_filename"].str.contains("RM16").all()
 
 
-def test_custom_suffixes():
+def test_custom_suffixes() -> None:
     rows = [
         _make_row(
             "img_LEFT_01", "img_LEFT_01.pgm", 1.0, "2010-04-21 02:27:56.341"
@@ -90,7 +90,7 @@ def test_custom_suffixes():
     assert len(result) == 1
 
 
-def test_no_left_raises():
+def test_no_left_raises() -> None:
     rows = [
         _make_row(
             "PR_001_RM16", "PR_001_RM16.pgm", 1.0, "2010-04-21 02:27:56.341"
@@ -100,7 +100,7 @@ def test_no_left_raises():
         pair_stereo_images(_df(rows))
 
 
-def test_no_right_raises():
+def test_no_right_raises() -> None:
     rows = [
         _make_row(
             "PR_001_LC16", "PR_001_LC16.pgm", 1.0, "2010-04-21 02:27:56.341"
@@ -110,7 +110,7 @@ def test_no_right_raises():
         pair_stereo_images(_df(rows))
 
 
-def test_trigger_time_offset_validation():
+def test_trigger_time_offset_validation() -> None:
     # Trigger times differ by 100 ms — exceeds the 30 ms tolerance.
     rows = [
         _make_row(

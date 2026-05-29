@@ -374,12 +374,12 @@ def parse_teledyne_dvl_message(line: str) -> TeledyneDVLMessage:
     if not match:
         raise ValueError(f"failed to parse message line: {line}")
 
-    header: TeledyneDVLMessage.header_type = TeledyneDVLMessage.header_type(
+    header: MessageHeader = TeledyneDVLMessage.header_type(
         topic=str(match["topic"]),
         timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
-    body: TeledyneDVLMessage.body_type = TeledyneDVLMessage.body_type(
+    body = TeledyneDVLMessage.body_type(
         altitude=float(match["altitude"]),
         range_01=float(match["range_01"]),
         range_02=float(match["range_02"]),
