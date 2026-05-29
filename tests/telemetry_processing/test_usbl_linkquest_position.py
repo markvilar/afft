@@ -3,6 +3,7 @@
 import math
 
 import pandas as pd
+import pytest
 
 from afft.sensors.usbl_linkquest import (
     UsblResolvePositionConfig,
@@ -22,13 +23,13 @@ def _usbl_row(
 ) -> dict[str, object]:
     return {
         "timestamp": timestamp,
-        "latitude": ship_lat,
-        "longitude": ship_lon,
-        "heading": heading,
-        "roll": 0.0,
-        "pitch": 0.0,
-        "bearing": bearing,
-        "range": range_m,
+        "ship_latitude": ship_lat,
+        "ship_longitude": ship_lon,
+        "ship_heading": heading,
+        "ship_roll": 0.0,
+        "ship_pitch": 0.0,
+        "target_bearing": bearing,
+        "target_slant_range": range_m,
     }
 
 
@@ -51,7 +52,7 @@ def test_output_columns() -> None:
     result = resolve_usbl_position(usbl, pressure)
 
     for col in (
-        "interpolated_depth",
+        "target_depth",
         "horizontal_range",
         "target_latitude",
         "target_longitude",
@@ -145,7 +146,7 @@ def test_depth_interpolation() -> None:
 
     result = resolve_usbl_position(usbl, pressure)
 
-    assert math.isclose(result["interpolated_depth"].iloc[0], 15.0, abs_tol=0.1)
+    assert math.isclose(result["target_depth"].iloc[0], 15.0, abs_tol=0.1)
 
 
 def test_relative_bearing_adds_ship_heading() -> None:
@@ -176,3 +177,38 @@ def test_relative_bearing_adds_ship_heading() -> None:
         result_rel["target_longitude"].iloc[0],
         rel_tol=1e-9,
     )
+
+
+def test_usbl_before_pressure_window_raises() -> None:
+    usbl = _usbl_df(
+        [_usbl_row("2010-04-21 02:20:00", 0.0, 0.0, 0.0, 90.0, 100.0)]
+    )
+    pressure = _pressure_df(
+        ["2010-04-21 02:22:00", "2010-04-21 02:23:00"], [10.0, 10.0]
+    )
+    config = UsblResolvePositionConfig(max_time_gap_seconds=60.0)
+    with pytest.raises(ValueError, match="precedes first pressure reading"):
+        resolve_usbl_position(usbl, pressure, config)
+
+
+def test_usbl_after_pressure_window_raises() -> None:
+    usbl = _usbl_df(
+        [_usbl_row("2010-04-21 02:25:00", 0.0, 0.0, 0.0, 90.0, 100.0)]
+    )
+    pressure = _pressure_df(
+        ["2010-04-21 02:22:00", "2010-04-21 02:23:00"], [10.0, 10.0]
+    )
+    config = UsblResolvePositionConfig(max_time_gap_seconds=60.0)
+    with pytest.raises(ValueError, match="follows last pressure reading"):
+        resolve_usbl_position(usbl, pressure, config)
+
+
+def test_usbl_within_time_margin_does_not_raise() -> None:
+    usbl = _usbl_df(
+        [_usbl_row("2010-04-21 02:21:30", 0.0, 0.0, 0.0, 90.0, 100.0)]
+    )
+    pressure = _pressure_df(
+        ["2010-04-21 02:22:00", "2010-04-21 02:23:00"], [10.0, 10.0]
+    )
+    config = UsblResolvePositionConfig(max_time_gap_seconds=60.0)
+    resolve_usbl_position(usbl, pressure, config)

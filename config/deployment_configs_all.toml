@@ -1,3 +1,266 @@
+# Links each deployment to its active ship sensor configuration.
+
+[[deployment_configs]]
+deployment_label = "qd61g27j_20100421_022145"
+ship_sensor_config = "201004_rv_linnaeus"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qd61g27j_20110410_011202"
+ship_sensor_config = "201102_rv_cape_ferguson"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qd61g27j_20120422_043114"
+ship_sensor_config = "201204_rv_linnaeus"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qd61g27j_20130414_013620"
+ship_sensor_config = "201304_rv_linnaeus"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qd61g27j_20170523_040815"
+ship_sensor_config = "201705_silver_streak"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_evologics"]
+
+[[deployment_configs]]
+deployment_label = "qdc5ghs3_20100430_024508"
+ship_sensor_config = "201004_rv_linnaeus"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qdc5ghs3_20120501_033336"
+ship_sensor_config = "201204_rv_linnaeus"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qdc5ghs3_20130405_103429"
+ship_sensor_config = "201304_rv_linnaeus"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qdc5ghs3_20210315_230947"
+ship_sensor_config = "202102_poppag"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_evologics"]
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20100428_020202"
+ship_sensor_config = "201004_rv_linnaeus"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20110415_020103"
+ship_sensor_config = "201104_rv_naturaliste"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20120430_002423"
+ship_sensor_config = "201204_rv_linnaeus"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20130406_023610"
+ship_sensor_config = "201304_rv_linnaeus"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20140327_071251"
+ship_sensor_config = "201403_rv_linnaeus_uncalibrated"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20170526_025746"
+ship_sensor_config = "201705_silver_streak"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_evologics"]
+
+[[deployment_configs]]
+deployment_label = "qdch0ftq_20210315_034028"
+ship_sensor_config = "202102_poppag"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_evologics"]
+
+[[deployment_configs]]
+deployment_label = "qdchdmy1_20110416_005411"
+ship_sensor_config = "201104_rv_naturaliste"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qdchdmy1_20120501_071203"
+ship_sensor_config = "201204_rv_linnaeus"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qdchdmy1_20130406_081713"
+ship_sensor_config = "201304_rv_linnaeus"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qdchdmy1_20140328_063358"
+ship_sensor_config = "201403_rv_linnaeus_calibrated"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qdchdmy1_20170525_234624"
+ship_sensor_config = "201705_silver_streak"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_evologics"]
+
+[[deployment_configs]]
+deployment_label = "qdchdmy1_20210315_081519"
+ship_sensor_config = "202102_poppag"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_evologics"]
+
+[[deployment_configs]]
+deployment_label = "qtqxshxs_20110815_102540"
+ship_sensor_config = "201108_solander"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "qtqxshxs_20150327_015552"
+ship_sensor_config = "201502_tasmania_bluefin"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_evologics"]
+
+[[deployment_configs]]
+deployment_label = "qtqxshxs_20150328_000850"
+ship_sensor_config = "201502_tasmania_bluefin"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_evologics"]
+
+[[deployment_configs]]
+deployment_label = "qtqxshxs_20150328_042551"
+ship_sensor_config = "201502_tasmania_bluefin"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_evologics"]
+
+[[deployment_configs]]
+deployment_label = "r234xgje_20100604_230524"
+ship_sensor_config = "201006_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r234xgje_20120530_064545"
+ship_sensor_config = "201205_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r234xgje_20140616_205232"
+ship_sensor_config = "201406_tasmania_bluefin"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r23685bc_20100605_021022"
+ship_sensor_config = "201006_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r23685bc_20120530_233021"
+ship_sensor_config = "201205_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r23685bc_20140616_225022"
+ship_sensor_config = "201406_tasmania_bluefin"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r23m7ms0_20100606_001908"
+ship_sensor_config = "201006_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r23m7ms0_20120601_070118"
+ship_sensor_config = "201205_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r23m7ms0_20140616_044549"
+ship_sensor_config = "201406_tasmania_bluefin"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r29mrd12_20090613_010853"
+ship_sensor_config = "200906_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r29mrd12_20090613_104954"
+ship_sensor_config = "200906_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r29mrd12_20110612_045149"
+ship_sensor_config = "201106_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r29mrd12_20130611_015335"
+ship_sensor_config = "201306_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r29mrd5h_20090612_225306"
+ship_sensor_config = "200906_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r29mrd5h_20090613_100254"
+ship_sensor_config = "200906_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r29mrd5h_20110612_033752"
+ship_sensor_config = "201106_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r29mrd5h_20130611_002419"
+ship_sensor_config = "201306_rv_challenger"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r7jjskxq_20101023_210332"
+ship_sensor_config = "201010_rv_tom_marshall"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r7jjskxq_20121013_060425"
+ship_sensor_config = "201210_rv_tom_marshall"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r7jjskxq_20131022_004934"
+ship_sensor_config = "201310_rv_tom_marshall"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r7jjss8n_20101023_210332"
+ship_sensor_config = "201010_rv_tom_marshall"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r7jjss8n_20121013_060425"
+ship_sensor_config = "201210_rv_tom_marshall"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r7jjss8n_20131022_004934"
+ship_sensor_config = "201310_rv_tom_marshall"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r7jjssbh_20101023_210332"
+ship_sensor_config = "201010_rv_tom_marshall"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r7jjssbh_20121013_060425"
+ship_sensor_config = "201210_rv_tom_marshall"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+[[deployment_configs]]
+deployment_label = "r7jjssbh_20131022_004934"
+ship_sensor_config = "201310_rv_tom_marshall"
+sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
+
+
 # USBL transceiver extrinsics relative to the ship reference frame.
 # Collected from SEABED.localiser.cfg files across all deployment directories.
 # Each entry is one distinct active (used) calibration identified by ship and campaign date.
@@ -234,214 +497,3 @@ z = 7.49
 phi = 0.0
 theta = 0.23
 psi = -0.21
-
-
-# Links each deployment to its active ship sensor configuration.
-
-[[deployment_configs]]
-deployment_label = "qd61g27j_20100421_022145"
-ship_sensor_config = "201004_rv_linnaeus"
-
-[[deployment_configs]]
-deployment_label = "qd61g27j_20110410_011202"
-ship_sensor_config = "201102_rv_cape_ferguson"
-
-[[deployment_configs]]
-deployment_label = "qd61g27j_20120422_043114"
-ship_sensor_config = "201204_rv_linnaeus"
-
-[[deployment_configs]]
-deployment_label = "qd61g27j_20130414_013620"
-ship_sensor_config = "201304_rv_linnaeus"
-
-[[deployment_configs]]
-deployment_label = "qd61g27j_20170523_040815"
-ship_sensor_config = "201705_silver_streak"
-
-[[deployment_configs]]
-deployment_label = "qdc5ghs3_20100430_024508"
-ship_sensor_config = "201004_rv_linnaeus"
-
-[[deployment_configs]]
-deployment_label = "qdc5ghs3_20120501_033336"
-ship_sensor_config = "201204_rv_linnaeus"
-
-[[deployment_configs]]
-deployment_label = "qdc5ghs3_20130405_103429"
-ship_sensor_config = "201304_rv_linnaeus"
-
-[[deployment_configs]]
-deployment_label = "qdc5ghs3_20210315_230947"
-ship_sensor_config = "202102_poppag"
-
-[[deployment_configs]]
-deployment_label = "qdch0ftq_20100428_020202"
-ship_sensor_config = "201004_rv_linnaeus"
-
-[[deployment_configs]]
-deployment_label = "qdch0ftq_20110415_020103"
-ship_sensor_config = "201104_rv_naturaliste"
-
-[[deployment_configs]]
-deployment_label = "qdch0ftq_20120430_002423"
-ship_sensor_config = "201204_rv_linnaeus"
-
-[[deployment_configs]]
-deployment_label = "qdch0ftq_20130406_023610"
-ship_sensor_config = "201304_rv_linnaeus"
-
-[[deployment_configs]]
-deployment_label = "qdch0ftq_20140327_071251"
-ship_sensor_config = "201403_rv_linnaeus_uncalibrated"
-
-[[deployment_configs]]
-deployment_label = "qdch0ftq_20170526_025746"
-ship_sensor_config = "201705_silver_streak"
-
-[[deployment_configs]]
-deployment_label = "qdch0ftq_20210315_034028"
-ship_sensor_config = "202102_poppag"
-
-[[deployment_configs]]
-deployment_label = "qdchdmy1_20110416_005411"
-ship_sensor_config = "201104_rv_naturaliste"
-
-[[deployment_configs]]
-deployment_label = "qdchdmy1_20120501_071203"
-ship_sensor_config = "201204_rv_linnaeus"
-
-[[deployment_configs]]
-deployment_label = "qdchdmy1_20130406_081713"
-ship_sensor_config = "201304_rv_linnaeus"
-
-[[deployment_configs]]
-deployment_label = "qdchdmy1_20140328_063358"
-ship_sensor_config = "201403_rv_linnaeus_calibrated"
-
-[[deployment_configs]]
-deployment_label = "qdchdmy1_20170525_234624"
-ship_sensor_config = "201705_silver_streak"
-
-[[deployment_configs]]
-deployment_label = "qdchdmy1_20210315_081519"
-ship_sensor_config = "202102_poppag"
-
-[[deployment_configs]]
-deployment_label = "qtqxshxs_20110815_102540"
-ship_sensor_config = "201108_solander"
-
-[[deployment_configs]]
-deployment_label = "qtqxshxs_20150327_015552"
-ship_sensor_config = "201502_tasmania_bluefin"
-
-[[deployment_configs]]
-deployment_label = "qtqxshxs_20150328_000850"
-ship_sensor_config = "201502_tasmania_bluefin"
-
-[[deployment_configs]]
-deployment_label = "qtqxshxs_20150328_042551"
-ship_sensor_config = "201502_tasmania_bluefin"
-
-[[deployment_configs]]
-deployment_label = "r234xgje_20100604_230524"
-ship_sensor_config = "201006_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r234xgje_20120530_064545"
-ship_sensor_config = "201205_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r234xgje_20140616_205232"
-ship_sensor_config = "201406_tasmania_bluefin"
-
-[[deployment_configs]]
-deployment_label = "r23685bc_20100605_021022"
-ship_sensor_config = "201006_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r23685bc_20120530_233021"
-ship_sensor_config = "201205_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r23685bc_20140616_225022"
-ship_sensor_config = "201406_tasmania_bluefin"
-
-[[deployment_configs]]
-deployment_label = "r23m7ms0_20100606_001908"
-ship_sensor_config = "201006_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r23m7ms0_20120601_070118"
-ship_sensor_config = "201205_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r23m7ms0_20140616_044549"
-ship_sensor_config = "201406_tasmania_bluefin"
-
-[[deployment_configs]]
-deployment_label = "r29mrd12_20090613_010853"
-ship_sensor_config = "200906_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r29mrd12_20090613_104954"
-ship_sensor_config = "200906_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r29mrd12_20110612_045149"
-ship_sensor_config = "201106_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r29mrd12_20130611_015335"
-ship_sensor_config = "201306_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r29mrd5h_20090612_225306"
-ship_sensor_config = "200906_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r29mrd5h_20090613_100254"
-ship_sensor_config = "200906_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r29mrd5h_20110612_033752"
-ship_sensor_config = "201106_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r29mrd5h_20130611_002419"
-ship_sensor_config = "201306_rv_challenger"
-
-[[deployment_configs]]
-deployment_label = "r7jjskxq_20101023_210332"
-ship_sensor_config = "201010_rv_tom_marshall"
-
-[[deployment_configs]]
-deployment_label = "r7jjskxq_20121013_060425"
-ship_sensor_config = "201210_rv_tom_marshall"
-
-[[deployment_configs]]
-deployment_label = "r7jjskxq_20131022_004934"
-ship_sensor_config = "201310_rv_tom_marshall"
-
-[[deployment_configs]]
-deployment_label = "r7jjss8n_20101023_210332"
-ship_sensor_config = "201010_rv_tom_marshall"
-
-[[deployment_configs]]
-deployment_label = "r7jjss8n_20121013_060425"
-ship_sensor_config = "201210_rv_tom_marshall"
-
-[[deployment_configs]]
-deployment_label = "r7jjss8n_20131022_004934"
-ship_sensor_config = "201310_rv_tom_marshall"
-
-[[deployment_configs]]
-deployment_label = "r7jjssbh_20101023_210332"
-ship_sensor_config = "201010_rv_tom_marshall"
-
-[[deployment_configs]]
-deployment_label = "r7jjssbh_20121013_060425"
-ship_sensor_config = "201210_rv_tom_marshall"
-
-[[deployment_configs]]
-deployment_label = "r7jjssbh_20131022_004934"
-ship_sensor_config = "201310_rv_tom_marshall"

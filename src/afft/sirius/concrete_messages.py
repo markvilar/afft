@@ -144,16 +144,16 @@ class TeledyneDVLData:
 class TrackLinkModemData:
     """Class representing TrackLink modem data."""
 
-    latitude: float
-    longitude: float
+    ship_latitude: float
+    ship_longitude: float
 
-    roll: float
-    pitch: float
-    heading: float
+    ship_roll: float
+    ship_pitch: float
+    ship_heading: float
 
-    time: float
-    bearing: float
-    range: float
+    device_time: float
+    target_bearing: float
+    target_slant_range: float
 
     def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""

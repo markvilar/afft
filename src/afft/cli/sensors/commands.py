@@ -13,12 +13,30 @@ def sensors_group(context: click.Context) -> None:
 
 
 @sensors_group.command()
-@click.argument("usbl_file", type=click.Path(exists=True, dir_okay=False))
-@click.argument("pressure_file", type=click.Path(exists=True, dir_okay=False))
-@click.argument("output_file", type=click.Path(dir_okay=False))
 @click.option(
-    "--ship-sensor-configs",
-    "ship_sensor_configs",
+    "--usbl-file",
+    "usbl_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="CSV file with TrackLink USBL observations (bearing, range, ship position).",
+)
+@click.option(
+    "--pressure-file",
+    "pressure_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="CSV file with pressure sensor depth readings.",
+)
+@click.option(
+    "--output-file",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="Destination CSV path for the processed output.",
+)
+@click.option(
+    "--deployment-configs",
+    "deployment_configs",
     type=click.Path(exists=True, dir_okay=False),
     required=True,
     help="TOML file containing ship sensor configurations and deployment mappings.",
@@ -34,22 +52,14 @@ def process_tracklink_usbl(
     usbl_file: str,
     pressure_file: str,
     output_file: str,
-    ship_sensor_configs: str,
+    deployment_configs: str,
     deployment_label: str,
 ) -> None:
-    """Resolve positions and estimate uncertainty from TrackLink USBL data.
-
-    USBL_FILE: CSV file with TrackLink USBL observations (bearing, range, ship
-    position).
-
-    PRESSURE_FILE: CSV file with pressure sensor depth readings.
-
-    OUTPUT_FILE: destination CSV path for the processed output.
-    """
+    """Resolve positions and estimate uncertainty from TrackLink USBL data."""
     dispatch_process_tracklink_usbl(
         usbl_file,
         pressure_file,
         output_file,
-        ship_sensor_configs,
+        deployment_configs,
         deployment_label,
     )

@@ -7,19 +7,20 @@ from dataclasses import dataclass, field
 class UsblResolvePositionConfig:
     bearing_reference: str = "absolute"
     timestamp_col: str = "timestamp"
-    bearing_col: str = "bearing"
-    range_col: str = "range"
-    ship_lat_col: str = "latitude"
-    ship_lon_col: str = "longitude"
-    ship_heading_col: str = "heading"
+    bearing_col: str = "target_bearing"
+    range_col: str = "target_slant_range"
+    ship_lat_col: str = "ship_latitude"
+    ship_lon_col: str = "ship_longitude"
+    ship_heading_col: str = "ship_heading"
     depth_col: str = "depth"
+    max_time_gap_seconds: float = 60.0
 
 
 @dataclass(slots=True, frozen=True)
 class UsblUncertaintyConfig:
     range_uncertainty: float = 15.0
     bearing_uncertainty: float = 20.05
-    range_col: str = "range"
+    range_col: str = "target_slant_range"
     horizontal_range_col: str = "horizontal_range"
     min_horizontal_range: float = 0.1
 

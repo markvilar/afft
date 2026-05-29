@@ -14,6 +14,78 @@ from .types import (
 )
 
 _EARTH_RADIUS_M: float = 6_371_000.0
+_NS_PER_S: float = 1e9
+
+
+def _validate_time_alignment(
+    usbl: pd.DataFrame,
+    pressure: pd.DataFrame,
+    config: UsblResolvePositionConfig,
+) -> None:
+    """Raise ValueError if USBL pings fall outside the pressure time window.
+
+    Arguments
+    ---------
+    usbl: USBL DataFrame with a timestamp column.
+    pressure: Pressure sensor DataFrame with a timestamp column.
+    config: Position resolution config supplying column names and the gap limit.
+    """
+    usbl_time: NDArray[np.float64] = (
+        pd.to_datetime(usbl[config.timestamp_col]).astype(np.int64).to_numpy()
+    )
+    pressure_time: NDArray[np.float64] = (
+        pd.to_datetime(pressure[config.timestamp_col], format="ISO8601")
+        .astype(np.int64)
+        .to_numpy()
+    )
+    early_gap_s: float = (
+        max(0.0, float(pressure_time.min() - usbl_time.min())) / _NS_PER_S
+    )
+    late_gap_s: float = (
+        max(0.0, float(usbl_time.max() - pressure_time.max())) / _NS_PER_S
+    )
+    if early_gap_s > config.max_time_gap_seconds:
+        raise ValueError(
+            f"First USBL ping precedes first pressure reading by "
+            f"{early_gap_s:.1f} s (limit: {config.max_time_gap_seconds} s)"
+        )
+    if late_gap_s > config.max_time_gap_seconds:
+        raise ValueError(
+            f"Last USBL ping follows last pressure reading by "
+            f"{late_gap_s:.1f} s (limit: {config.max_time_gap_seconds} s)"
+        )
+
+
+def _interpolate_depth(
+    usbl: pd.DataFrame,
+    pressure: pd.DataFrame,
+    config: UsblResolvePositionConfig,
+) -> NDArray[np.float64]:
+    """Interpolate pressure sensor depth to USBL ping timestamps.
+
+    Arguments
+    ---------
+    usbl: USBL DataFrame with a timestamp column.
+    pressure: Pressure sensor DataFrame with timestamp and depth columns.
+    config: Position resolution config supplying column names.
+
+    Returns
+    -------
+    Depth values interpolated at each USBL ping timestamp.
+    """
+    usbl_time: NDArray[np.float64] = (
+        pd.to_datetime(usbl[config.timestamp_col]).astype(np.int64).to_numpy()
+    )
+    pressure_time_series: pd.Series = pd.to_datetime(
+        pressure[config.timestamp_col], format="ISO8601"
+    ).sort_values()
+    pressure_time: NDArray[np.float64] = pressure_time_series.astype(
+        np.int64
+    ).to_numpy()
+    pressure_depth: NDArray[np.float64] = pressure.loc[
+        pressure_time_series.index, config.depth_col
+    ].to_numpy()
+    return np.interp(usbl_time, pressure_time, pressure_depth)
 
 
 @register_processor("resolve_usbl_position")
@@ -32,26 +104,14 @@ def resolve_usbl_position(
     bearing_reference: "absolute" treats bearing as a compass bearing (default);
     "relative" adds ship heading to obtain the compass bearing first.
 
-    Adds columns: interpolated_depth, horizontal_range,
+    Adds columns: target_depth, horizontal_range,
                   target_latitude, target_longitude.
     """
+    _validate_time_alignment(usbl, pressure, config)
+
     result: pd.DataFrame = usbl.copy()
 
-    usbl_t: NDArray[np.float64] = (
-        pd.to_datetime(result[config.timestamp_col]).astype(np.int64).to_numpy()
-    )
-
-    pressure_t_series: pd.Series = pd.to_datetime(
-        pressure[config.timestamp_col]
-    ).sort_values()
-    pressure_depth: NDArray[np.float64] = pressure.loc[
-        pressure_t_series.index, config.depth_col
-    ].to_numpy()
-    pressure_t: NDArray[np.float64] = pressure_t_series.astype(
-        np.int64
-    ).to_numpy()
-
-    depth: NDArray[np.float64] = np.interp(usbl_t, pressure_t, pressure_depth)
+    result["target_depth"] = _interpolate_depth(usbl, pressure, config)
 
     if config.bearing_reference == "relative":
         bearing: pd.Series = (
@@ -60,33 +120,33 @@ def resolve_usbl_position(
     else:
         bearing = result[config.bearing_col]
 
+    depth: NDArray[np.float64] = result["target_depth"].to_numpy()
     slant_range: NDArray[np.float64] = result[config.range_col].to_numpy()
     horizontal_range: NDArray[np.float64] = np.sqrt(
         np.maximum(slant_range**2 - depth**2, 0.0)
     )
 
-    lat1: NDArray[np.float64] = np.radians(
+    ship_latitude: NDArray[np.float64] = np.radians(
         result[config.ship_lat_col].to_numpy()
     )
-    lon1: NDArray[np.float64] = np.radians(
+    ship_longitude: NDArray[np.float64] = np.radians(
         result[config.ship_lon_col].to_numpy()
     )
     bearing_rad: NDArray[np.float64] = np.radians(bearing.to_numpy())
     d_over_r: NDArray[np.float64] = horizontal_range / _EARTH_RADIUS_M
 
-    lat2: NDArray[np.float64] = np.arcsin(
-        np.sin(lat1) * np.cos(d_over_r)
-        + np.cos(lat1) * np.sin(d_over_r) * np.cos(bearing_rad)
+    target_latitude: NDArray[np.float64] = np.arcsin(
+        np.sin(ship_latitude) * np.cos(d_over_r)
+        + np.cos(ship_latitude) * np.sin(d_over_r) * np.cos(bearing_rad)
     )
-    lon2: NDArray[np.float64] = lon1 + np.arctan2(
-        np.sin(bearing_rad) * np.sin(d_over_r) * np.cos(lat1),
-        np.cos(d_over_r) - np.sin(lat1) * np.sin(lat2),
+    target_longitude: NDArray[np.float64] = ship_longitude + np.arctan2(
+        np.sin(bearing_rad) * np.sin(d_over_r) * np.cos(ship_latitude),
+        np.cos(d_over_r) - np.sin(ship_latitude) * np.sin(target_latitude),
     )
 
-    result["interpolated_depth"] = depth
     result["horizontal_range"] = horizontal_range
-    result["target_latitude"] = np.degrees(lat2)
-    result["target_longitude"] = np.degrees(lon2)
+    result["target_latitude"] = np.degrees(target_latitude)
+    result["target_longitude"] = np.degrees(target_longitude)
 
     return result
 

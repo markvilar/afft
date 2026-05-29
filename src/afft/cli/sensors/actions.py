@@ -13,12 +13,12 @@ def dispatch_process_tracklink_usbl(
     usbl_file: str | Path,
     pressure_file: str | Path,
     output_file: str | Path,
-    ship_sensor_configs: str | Path,
+    deployment_configs: str | Path,
     deployment_label: str,
 ) -> None:
     """Resolve positions and estimate uncertainty from TrackLink USBL data."""
     deployment = load_deployment_config(
-        Path(ship_sensor_configs), deployment_label
+        Path(deployment_configs), deployment_label
     )
     logger.info(
         f"deployment {deployment.label!r}: {deployment.ship_name}, "

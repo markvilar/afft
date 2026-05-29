@@ -117,14 +117,14 @@ LQ_MODEM_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
-    time:\s*(?P<time>[-+]?\d*[.]\d*)\s+
-    Lat:\s*(?P<latitude>[-+]?\d*[.]\d*)\s+
-    Lon:\s*(?P<longitude>[-+]?\d*[.]\d*)\s+
-    hdg:\s*(?P<heading>[-+]?\d*[.]\d*)\s+
-    roll:\s*(?P<roll>[-+]?\d*[.]\d*)\s+
-    pitch:\s*(?P<pitch>[-+]?\d*[.]\d*)\s+
-    bear:\s*(?P<bearing>[-+]?\d*[.]\d*)\s+
-    rng:\s*(?P<range>[-+]?\d*[.]\d*)\s*
+    time:\s*(?P<device_time>[-+]?\d*[.]\d*)\s+
+    Lat:\s*(?P<ship_latitude>[-+]?\d*[.]\d*)\s+
+    Lon:\s*(?P<ship_longitude>[-+]?\d*[.]\d*)\s+
+    hdg:\s*(?P<ship_heading>[-+]?\d*[.]\d*)\s+
+    roll:\s*(?P<ship_roll>[-+]?\d*[.]\d*)\s+
+    pitch:\s*(?P<ship_pitch>[-+]?\d*[.]\d*)\s+
+    bear:\s*(?P<target_bearing>[-+]?\d*[.]\d*)\s+
+    rng:\s*(?P<target_slant_range>[-+]?\d*[.]\d*)\s*
     $
     """
 
@@ -420,14 +420,14 @@ def parse_lq_modem_message(line: str) -> TrackLinkModemMessage:
     )
 
     body = TrackLinkModemMessage.body_type(
-        latitude=float(match["latitude"]),
-        longitude=float(match["longitude"]),
-        roll=float(match["roll"]),
-        pitch=float(match["pitch"]),
-        heading=float(match["heading"]),
-        time=float(match["time"]),
-        bearing=float(match["bearing"]),
-        range=float(match["range"]),
+        ship_latitude=float(match["ship_latitude"]),
+        ship_longitude=float(match["ship_longitude"]),
+        ship_roll=float(match["ship_roll"]),
+        ship_pitch=float(match["ship_pitch"]),
+        ship_heading=float(match["ship_heading"]),
+        device_time=float(match["device_time"]),
+        target_bearing=float(match["target_bearing"]),
+        target_slant_range=float(match["target_slant_range"]),
     )
 
     return TrackLinkModemMessage(header, body)
