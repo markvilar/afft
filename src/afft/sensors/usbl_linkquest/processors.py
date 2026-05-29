@@ -117,7 +117,7 @@ def resolve_usbl_position(
 
     # Rotate transceiver frame → ship body (constant) → NED (per-row).
     R_ext: Rotation = Rotation.from_euler(
-        "zyx", [extrinsics.psi, extrinsics.theta, extrinsics.phi]
+        "zyx", [extrinsics.psi, extrinsics.theta, extrinsics.phi], degrees=False
     )
     dirs_ned: NDArray[np.float64] = R_ship.apply(R_ext.apply(dirs_transceiver))
 

@@ -40,6 +40,12 @@ def dispatch_process_tracklink_usbl(
         theta=deployment.usbl_modem.theta,
         psi=deployment.usbl_modem.psi,
     )
+    logger.info(
+        f"USBL transceiver extrinsics: "
+        f"translation=({extrinsics.x:.3f}, {extrinsics.y:.3f}, {extrinsics.z:.3f}) m, "
+        f"rotation=(phi={extrinsics.phi:.4f}, theta={extrinsics.theta:.4f}, "
+        f"psi={extrinsics.psi:.4f}) rad"
+    )
     config = UsblProcessingConfig(
         resolve=UsblResolvePositionConfig(extrinsics=extrinsics),
     )

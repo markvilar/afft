@@ -17,8 +17,8 @@ class UsblTransceiverExtrinsics:
     x: Forward offset from ship reference point in metres.
     y: Lateral offset in metres (positive starboard).
     z: Vertical offset in metres (positive down).
-    phi: Roll in radians.
-    theta: Pitch in radians.
+    phi: Roll in radians (positive: starboard down).
+    theta: Pitch in radians (positive: bow up).
     psi: Yaw in radians (positive clockwise viewed from above).
     """
 
