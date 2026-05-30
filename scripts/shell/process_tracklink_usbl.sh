@@ -39,7 +39,7 @@ uv run afft sensors process-tracklink-usbl \
   --deployment-configs "${CONFIG_DIR}/deployment_configs_selected.toml" \
   --deployment "qdch0ftq_20130406_023610"
 
-exit 0
+# exit 0
 
 # --------------------------------------------------------------------------------------
 # Site 2
@@ -66,6 +66,9 @@ uv run afft sensors process-tracklink-usbl \
   --deployment-configs "${CONFIG_DIR}/deployment_configs_selected.toml" \
   --deployment "qdchdmy1_20130406_081713"
 
+exit 0
+
+# NOTE: Change to Evologics USBL
 uv run afft sensors process-tracklink-usbl \
   --usbl-file "${SOURCE_DIR}/qdchdmy1_20170525_234624_usbl_tracklink.csv" \
   --pressure-file "${SOURCE_DIR}/qdchdmy1_20170525_234624_pressure_parosci.csv" \
