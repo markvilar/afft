@@ -43,8 +43,8 @@ def resolve_usbl_position(
     The corrected direction vector × slant range gives the target NED offset
     from the transceiver, which is converted to geodetic via ned2geodetic.
 
-    Adds columns: target_depth, horizontal_range,
-                  target_latitude, target_longitude.
+    Adds columns: target_depth, target_x, target_y, target_z,
+                  horizontal_range, target_latitude, target_longitude.
     """
     _validate_time_alignment(usbl, pressure, config)
 
@@ -55,85 +55,80 @@ def resolve_usbl_position(
         config.extrinsics if config.extrinsics is not None else _ZERO_EXTRINSICS
     )
 
-    depth: NDArray[np.float64] = result["target_depth"].to_numpy()
-    slant_range: NDArray[np.float64] = result[config.range_col].to_numpy()
-    ship_lat: NDArray[np.float64] = result[config.ship_lat_col].to_numpy()
-    ship_lon: NDArray[np.float64] = result[config.ship_lon_col].to_numpy()
-    n_rows: int = len(depth)
+    ship_attitudes_ypr: NDArray[np.float64] = np.column_stack(
+        [
+            result[config.ship_heading_col].to_numpy(),
+            result[config.ship_pitch_col].to_numpy(),
+            result[config.ship_roll_col].to_numpy(),
+        ]
+    )
 
-    ship_heading: NDArray[np.float64] = result[
-        config.ship_heading_col
-    ].to_numpy()
-    ship_pitch: NDArray[np.float64] = result[config.ship_pitch_col].to_numpy()
-    ship_roll: NDArray[np.float64] = result[config.ship_roll_col].to_numpy()
+    ship_locations_geo: NDArray[np.float64] = np.column_stack(
+        [
+            result[config.ship_lat_col].to_numpy(),
+            result[config.ship_lon_col].to_numpy(),
+            np.zeros_like(result[config.ship_lat_col].to_numpy()),
+        ]
+    )
 
     # Per-row ship body → NED rotation (ZYX intrinsic: heading, pitch, roll).
     R_ship: Rotation = Rotation.from_euler(
-        "zyx",
-        np.column_stack([ship_heading, ship_pitch, ship_roll]),
-        degrees=True,
+        "zyx", ship_attitudes_ypr, degrees=True
     )
 
-    # Transceiver NED offset from ship GPS, then geodetic position.
-    trans_body: NDArray[np.float64] = np.array(
-        [extrinsics.x, extrinsics.y, extrinsics.z], dtype=np.float64
-    )
-    trans_ned: NDArray[np.float64] = R_ship.apply(
-        np.tile(trans_body, (n_rows, 1))
-    )
-    trans_lat: NDArray[np.float64]
-    trans_lon: NDArray[np.float64]
-    trans_alt: NDArray[np.float64]
-    trans_lat, trans_lon, trans_alt = pymap3d.ned2geodetic(
-        trans_ned[:, 0],
-        trans_ned[:, 1],
-        trans_ned[:, 2],
-        ship_lat,
-        ship_lon,
-        np.zeros_like(ship_lat),
+    # Step 1 - Transceiver NED offset from the ship GPS antenna.
+    transceiver_ned: NDArray[np.float64] = R_ship.apply(
+        np.tile(extrinsics.translation, (len(result), 1))
     )
 
-    # AUV depth relative to transceiver and resulting horizontal range.
-    depth_rel: NDArray[np.float64] = depth - trans_ned[:, 2]
+    # Step 2 - Target position in transceiver sensor frame: bearing + slant range + depth
+    # relative to the transceiver origin.
+    depth: NDArray[np.float64] = result["target_depth"].to_numpy()
+    slant_range: NDArray[np.float64] = result[config.range_col].to_numpy()
+    depth_rel: NDArray[np.float64] = depth - transceiver_ned[:, 2]
+    target_xyz_sensor: NDArray[np.float64] = (
+        _calculate_target_xyz_from_range_bearing(
+            slant_range=slant_range,
+            bearing_deg=result[config.bearing_col].to_numpy(),
+            depth=depth_rel,
+        )
+    )
     horizontal_range: NDArray[np.float64] = np.sqrt(
         np.maximum(slant_range**2 - depth_rel**2, 0.0)
     )
 
-    # Direction unit vector in transceiver frame from bearing and depth.
-    bearing_t_rad: NDArray[np.float64] = np.radians(
-        result[config.bearing_col].to_numpy()
-    )
-    el_t: NDArray[np.float64] = -np.arcsin(
-        np.minimum(depth_rel / slant_range, 1.0)
-    )
-    cos_el_t: NDArray[np.float64] = np.cos(el_t)
-    dirs_transceiver: NDArray[np.float64] = np.column_stack(
-        [
-            cos_el_t * np.cos(bearing_t_rad),
-            cos_el_t * np.sin(bearing_t_rad),
-            -np.sin(el_t),
-        ]
+    # Step 3 - Rotate target from transceiver frame → ship body → NED, then convert the
+    # transceiver and target positions to geodetic (WGS84).
+    target_ned: NDArray[np.float64] = R_ship.apply(
+        extrinsics.rotation.apply(target_xyz_sensor)
     )
 
-    # Rotate transceiver frame → ship body (constant) → NED (per-row).
-    R_ext: Rotation = Rotation.from_euler(
-        "zyx", [extrinsics.psi, extrinsics.theta, extrinsics.phi], degrees=False
+    transceiver_lat: NDArray[np.float64]
+    transceiver_lon: NDArray[np.float64]
+    transceiver_alt: NDArray[np.float64]
+    transceiver_lat, transceiver_lon, transceiver_alt = pymap3d.ned2geodetic(
+        transceiver_ned[:, 0],
+        transceiver_ned[:, 1],
+        transceiver_ned[:, 2],
+        ship_locations_geo[:, 0],
+        ship_locations_geo[:, 1],
+        ship_locations_geo[:, 2],
     )
-    dirs_ned: NDArray[np.float64] = R_ship.apply(R_ext.apply(dirs_transceiver))
 
-    # Target geodetic position: transceiver origin + NED offset.
-    target_ned: NDArray[np.float64] = dirs_ned * slant_range[:, np.newaxis]
     target_latitude: NDArray[np.float64]
     target_longitude: NDArray[np.float64]
     target_latitude, target_longitude, _ = pymap3d.ned2geodetic(
         target_ned[:, 0],
         target_ned[:, 1],
         target_ned[:, 2],
-        trans_lat,
-        trans_lon,
-        trans_alt,
+        transceiver_lat,
+        transceiver_lon,
+        transceiver_alt,
     )
 
+    result["target_x"] = target_xyz_sensor[:, 0]
+    result["target_y"] = target_xyz_sensor[:, 1]
+    result["target_z"] = target_xyz_sensor[:, 2]
     result["horizontal_range"] = horizontal_range
     result["target_latitude"] = target_latitude
     result["target_longitude"] = target_longitude
@@ -284,3 +279,36 @@ def _interpolate_depth(
         pressure_time_series.index, config.depth_col
     ].to_numpy()
     return np.interp(usbl_time, pressure_time, pressure_depth)
+
+
+def _calculate_target_xyz_from_range_bearing(
+    slant_range: NDArray[np.float64],
+    bearing_deg: NDArray[np.float64],
+    depth: NDArray[np.float64],
+) -> NDArray[np.float64]:
+    """Compute target position in sensor frame from slant range, bearing, and depth.
+
+    Converts spherical USBL observations to a Cartesian (x, y, z) position in
+    the transceiver sensor frame. No extrinsics or attitude compensation applied.
+
+    Arguments
+    ---------
+    slant_range: Slant range from transceiver to target (m).
+    bearing_deg: Bearing from transceiver to target (degrees).
+    depth: Interpolated target depth (m, positive downward).
+
+    Returns
+    -------
+    Array of shape (N, 3) with columns [x, y, z] in the sensor frame.
+    """
+    bearing_rad: NDArray[np.float64] = np.radians(bearing_deg)
+    horizontal_range: NDArray[np.float64] = np.sqrt(
+        np.maximum(slant_range**2 - depth**2, 0.0)
+    )
+    return np.column_stack(
+        [
+            horizontal_range * np.cos(bearing_rad),
+            horizontal_range * np.sin(bearing_rad),
+            depth,
+        ]
+    )

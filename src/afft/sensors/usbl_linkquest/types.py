@@ -1,6 +1,14 @@
 """Configuration types for LinkQuest TrackLink USBL processing."""
 
+import numpy as np
+
 from dataclasses import dataclass, field
+
+from numpy.typing import NDArray
+from scipy.spatial.transform import (
+    RigidTransform,
+    Rotation,
+)
 
 
 @dataclass(slots=True, frozen=True)
@@ -28,6 +36,23 @@ class UsblTransceiverExtrinsics:
     phi: float = 0.0
     theta: float = 0.0
     psi: float = 0.0
+
+    @property
+    def translation(self) -> NDArray[np.float64]:
+        return np.array([self.x, self.y, self.z], dtype=np.float64)
+
+    @property
+    def rotation(self) -> Rotation:
+        return Rotation.from_euler(
+            "zyx", [self.psi, self.theta, self.phi], degrees=False
+        )
+
+    @property
+    def transform(self) -> RigidTransform:
+        return RigidTransform.from_components(
+            translation=self.translation,
+            rotation=self.rotation,
+        )
 
 
 @dataclass(slots=True, frozen=True)
