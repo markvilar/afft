@@ -154,6 +154,14 @@ def estimate_usbl_uncertainty(
     When horizontal_range is near zero the range term is clamped to avoid
     division by zero; the AUV is directly below the ship and position
     uncertainty collapses to the range measurement error.
+
+    References
+    ----------
+    JCGM 100:2008. Evaluation of measurement data — Guide to the Expression
+        of Uncertainty in Measurement (GUM). BIPM, IEC, IFCC, ILAC, ISO,
+        IUPAC, IUPAP, OIML.
+    Milne, P. H. (1983). Underwater Acoustic Positioning Systems.
+        Gulf Publishing Company.
     """
     if config.horizontal_range_col not in df.columns:
         raise KeyError(
