@@ -84,7 +84,7 @@ class UsblResolvePositionConfig:
     """
 
     timestamp_col: str = "timestamp"
-    bearing_col: str = "target_bearing"
+    bearing_col: str = "target_bearing_angle"
     range_col: str = "target_slant_range"
     ship_lat_col: str = "ship_latitude"
     ship_lon_col: str = "ship_longitude"

@@ -33,7 +33,7 @@ def _usbl_row(
         "ship_heading": heading,
         "ship_roll": 0.0,
         "ship_pitch": 0.0,
-        "target_bearing": bearing,
+        "target_bearing_angle": bearing,
         "target_slant_range": range_m,
     }
 

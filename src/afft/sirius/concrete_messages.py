@@ -152,7 +152,7 @@ class TrackLinkModemData:
     ship_heading: float
 
     device_time: float
-    target_bearing: float
+    target_bearing_angle: float
     target_slant_range: float
 
     def to_dict(self: Self) -> dict[str, Any]:
