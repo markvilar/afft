@@ -58,7 +58,8 @@ def test_output_columns() -> None:
 
     for col in (
         "target_depth",
-        "horizontal_range",
+        "target_horizontal_range",
+        "target_inclination_angle",
         "target_latitude",
         "target_longitude",
     ):
@@ -76,7 +77,7 @@ def test_zero_depth_horizontal_range_equals_slant_range() -> None:
     result = resolve_usbl_position(usbl, pressure)
 
     assert math.isclose(
-        result["horizontal_range"].iloc[0], 1000.0, rel_tol=1e-9
+        result["target_horizontal_range"].iloc[0], 1000.0, rel_tol=1e-9
     )
 
 
@@ -124,7 +125,39 @@ def test_depth_reduces_horizontal_range() -> None:
 
     result = resolve_usbl_position(usbl, pressure)
 
-    assert math.isclose(result["horizontal_range"].iloc[0], 4.0, rel_tol=1e-9)
+    assert math.isclose(result["target_horizontal_range"].iloc[0], 4.0, rel_tol=1e-9)
+
+
+def test_inclination_angle_3_4_5_triangle() -> None:
+    # Slant range 5 m, depth 3 m → arcsin(3/5) ≈ 36.87°
+    usbl = _usbl_df(
+        [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 90.0, 5.0)]
+    )
+    pressure = _pressure_df(
+        ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [3.0, 3.0]
+    )
+
+    result = resolve_usbl_position(usbl, pressure)
+
+    expected = math.degrees(math.asin(3.0 / 5.0))
+    assert math.isclose(
+        result["target_inclination_angle"].iloc[0], expected, rel_tol=1e-9
+    )
+
+
+def test_inclination_angle_zero_at_zero_depth() -> None:
+    usbl = _usbl_df(
+        [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 90.0, 1000.0)]
+    )
+    pressure = _pressure_df(
+        ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
+    )
+
+    result = resolve_usbl_position(usbl, pressure)
+
+    assert math.isclose(
+        result["target_inclination_angle"].iloc[0], 0.0, abs_tol=1e-9
+    )
 
 
 def test_depth_exceeds_slant_range_clamps_to_zero() -> None:
@@ -137,7 +170,7 @@ def test_depth_exceeds_slant_range_clamps_to_zero() -> None:
 
     result = resolve_usbl_position(usbl, pressure)
 
-    assert result["horizontal_range"].iloc[0] == 0.0
+    assert result["target_horizontal_range"].iloc[0] == 0.0
 
 
 def test_depth_interpolation() -> None:

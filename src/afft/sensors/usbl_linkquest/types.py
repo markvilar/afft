@@ -106,14 +106,14 @@ class UsblUncertaintyConfig:
     range_uncertainty: 1-sigma slant range measurement error in metres.
     bearing_uncertainty: 1-sigma bearing measurement error in degrees.
     range_col: Name of the slant range column.
-    horizontal_range_col: Name of the horizontal range column.
+    horizontal_range_col: Name of the target horizontal range column.
     min_horizontal_range: Minimum horizontal range for numerical stability (metres).
     """
 
     range_uncertainty: float = 15.0
     bearing_uncertainty: float = 20.05
     range_col: str = "target_slant_range"
-    horizontal_range_col: str = "horizontal_range"
+    horizontal_range_col: str = "target_horizontal_range"
     min_horizontal_range: float = 0.1
 
 

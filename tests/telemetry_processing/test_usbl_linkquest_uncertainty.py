@@ -19,7 +19,7 @@ def _make_df(
         {
             "timestamp": "2010-04-21 02:22:30",
             "target_slant_range": slant_range,
-            "horizontal_range": horizontal_range,
+            "target_horizontal_range": horizontal_range,
         }
     )
 
@@ -88,5 +88,5 @@ def test_missing_horizontal_range_raises() -> None:
     df = pd.DataFrame(
         {"timestamp": ["2010-04-21 02:22:30"], "target_slant_range": [10.0]}
     )
-    with pytest.raises(KeyError, match="horizontal_range"):
+    with pytest.raises(KeyError, match="target_horizontal_range"):
         estimate_usbl_uncertainty(df)

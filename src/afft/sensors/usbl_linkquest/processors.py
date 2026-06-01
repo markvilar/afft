@@ -44,7 +44,8 @@ def resolve_usbl_position(
     from the transceiver, which is converted to geodetic via ned2geodetic.
 
     Adds columns: target_depth, target_x, target_y, target_z,
-                  horizontal_range, target_latitude, target_longitude.
+                  target_horizontal_range, target_inclination_angle,
+                  target_latitude, target_longitude.
     """
     _validate_time_alignment(usbl, pressure, config)
 
@@ -96,6 +97,9 @@ def resolve_usbl_position(
     horizontal_range: NDArray[np.float64] = np.sqrt(
         np.maximum(slant_range**2 - depth_rel**2, 0.0)
     )
+    inclination_angle: NDArray[np.float64] = np.degrees(
+        np.arcsin(np.clip(depth_rel / np.maximum(slant_range, 1e-9), -1.0, 1.0))
+    )
 
     # Step 3 - Rotate target from transceiver frame → ship body → NED, then convert the
     # transceiver and target positions to geodetic (WGS84).
@@ -129,7 +133,8 @@ def resolve_usbl_position(
     result["target_x"] = target_xyz_sensor[:, 0]
     result["target_y"] = target_xyz_sensor[:, 1]
     result["target_z"] = target_xyz_sensor[:, 2]
-    result["horizontal_range"] = horizontal_range
+    result["target_horizontal_range"] = horizontal_range
+    result["target_inclination_angle"] = inclination_angle
     result["target_latitude"] = target_latitude
     result["target_longitude"] = target_longitude
 
@@ -150,8 +155,8 @@ def estimate_usbl_uncertainty(
     where R is slant range, h is horizontal range, σ_R is range_uncertainty
     in metres, and σ_θ is bearing_uncertainty converted to radians.
 
-    horizontal_range must already be present (produced by resolve_usbl_position).
-    When horizontal_range is near zero the range term is clamped to avoid
+    target_horizontal_range must already be present (produced by resolve_usbl_position).
+    When target_horizontal_range is near zero the range term is clamped to avoid
     division by zero; the AUV is directly below the ship and position
     uncertainty collapses to the range measurement error.
 
