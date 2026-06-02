@@ -7,8 +7,6 @@ from scipy.spatial.transform import Rotation
 
 from numpy.typing import NDArray
 
-from afft.telemetry_processing.pipeline import register_processor
-
 from .types import (
     UsblProcessingConfig,
     UsblResolvePositionConfig,
@@ -22,7 +20,6 @@ _ZERO_EXTRINSICS: UsblTransceiverExtrinsics = UsblTransceiverExtrinsics(
 )
 
 
-@register_processor("resolve_usbl_position")
 def resolve_usbl_position(
     usbl: pd.DataFrame,
     pressure: pd.DataFrame,
@@ -100,7 +97,9 @@ def resolve_usbl_position(
     )
 
     # Step 4 - Calculate target XYZ in vessel frame
-    target_xyz_vessel: NDArray[np.float64] = extrinsics.transform.apply(target_xyz_sensor)
+    target_xyz_vessel: NDArray[np.float64] = extrinsics.transform.apply(
+        target_xyz_sensor
+    )
 
     # Calculate horizontal range to target
     target_horizontal_range: NDArray[np.float64] = np.sqrt(
@@ -140,7 +139,6 @@ def resolve_usbl_position(
     return result
 
 
-@register_processor("estimate_usbl_uncertainty")
 def estimate_usbl_uncertainty(
     df: pd.DataFrame,
     config: UsblUncertaintyConfig = UsblUncertaintyConfig(),

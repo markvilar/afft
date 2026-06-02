@@ -127,7 +127,9 @@ def test_depth_reduces_horizontal_range() -> None:
 
     result = resolve_usbl_position(usbl, pressure)
 
-    assert math.isclose(result["target_horizontal_range"].iloc[0], 4.0, rel_tol=1e-9)
+    assert math.isclose(
+        result["target_horizontal_range"].iloc[0], 4.0, rel_tol=1e-9
+    )
 
 
 def test_depth_exceeds_slant_range_clamps_to_zero() -> None:
