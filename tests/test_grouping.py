@@ -17,7 +17,7 @@ def _paths(stems: list[str]) -> list[Path]:
 # --- PREFIX ---
 
 
-def test_prefix_common_label():
+def test_prefix_common_label() -> None:
     files = _paths(
         [
             "qd61g27j_20100421_022145_dvl_teledyne",
@@ -39,14 +39,14 @@ def test_prefix_common_label():
     }
 
 
-def test_prefix_single_file_raises():
+def test_prefix_single_file_raises() -> None:
     files = _paths(["qd61g27j_20100421_022145_dvl_teledyne"])
     grouper = create_file_grouper(GroupingStrategy.PREFIX)
     with pytest.raises(ValueError, match="at least 2 files"):
         grouper(files)
 
 
-def test_prefix_no_common_prefix_raises():
+def test_prefix_no_common_prefix_raises() -> None:
     files = _paths(
         [
             "qd61g27j_20100421_dvl_teledyne",
@@ -58,7 +58,7 @@ def test_prefix_no_common_prefix_raises():
         grouper(files)
 
 
-def test_prefix_paths_preserved():
+def test_prefix_paths_preserved() -> None:
     files = _paths(
         [
             "dep_20100421_dvl",
@@ -75,7 +75,7 @@ def test_prefix_paths_preserved():
 # --- SUFFIX ---
 
 
-def test_suffix_common_label():
+def test_suffix_common_label() -> None:
     files = _paths(
         [
             "dep_a_dvl_teledyne",
@@ -90,7 +90,7 @@ def test_suffix_common_label():
     assert set(grouping.files.keys()) == {"dep_a", "dep_b"}
 
 
-def test_suffix_no_common_suffix_raises():
+def test_suffix_no_common_suffix_raises() -> None:
     files = _paths(
         [
             "dep_a_dvl_teledyne",
@@ -102,7 +102,7 @@ def test_suffix_no_common_suffix_raises():
         grouper(files)
 
 
-def test_suffix_paths_preserved():
+def test_suffix_paths_preserved() -> None:
     files = _paths(
         [
             "dep_a_dvl_teledyne",
@@ -119,6 +119,6 @@ def test_suffix_paths_preserved():
 # --- factory ---
 
 
-def test_unknown_strategy_raises():
+def test_unknown_strategy_raises() -> None:
     with pytest.raises(ValueError, match="unknown grouping strategy"):
         create_file_grouper("invalid")  # type: ignore[arg-type]

@@ -16,7 +16,7 @@ from .types import IngestTableResult, IngestTablesCommand
 
 def run_ingest_tables(command: IngestTablesCommand) -> None:
     """Read CSV files from a directory and ingest each as a database table."""
-    engine: db.Engine = db.create_engine(
+    engine: db.Engine | str = db.create_engine(
         database=command.database,
         host=command.host,
         port=command.port,

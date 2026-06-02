@@ -25,7 +25,7 @@ def create_endpoint_from_string(string: str) -> Endpoint:
     if not len(splits) == 2:
         raise ValueError(f"invalid endpoint string: {string}")
 
-    return Endpoint(host=splits[0], path=splits[1])
+    return Endpoint(host=splits[0], path=Path(splits[1]))
 
 
 @dataclass(unsafe_hash=True)

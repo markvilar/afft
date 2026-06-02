@@ -2,6 +2,7 @@
 
 from collections.abc import Iterable, Mapping
 from pathlib import Path
+from typing import Any
 
 import pandas as pd
 
@@ -16,14 +17,14 @@ from .types import ParseMessageCommand, ParseMessageConfig
 
 
 type Topic = str
-type Messages = Iterable[sirius.Message]
+type Messages = Iterable[sirius.Message[Any, Any]]
 type MessageGroups = Mapping[Topic, Messages]
 
 
 def run_parse_messages(command: ParseMessageCommand) -> None:
     """Parse messages from source file and optionally ingest into a database
     and/or export to CSV files."""
-    raw_config: dict = io.read_config(command.config_file)
+    raw_config: dict[str, Any] = io.read_config(command.config_file)
     config = _load_config(raw_config)
 
     messages = _parse_messages(command.source_file, config)
@@ -36,7 +37,7 @@ def run_parse_messages(command: ParseMessageCommand) -> None:
         _export_dataframes(command.output_dir, dataframes)
 
 
-def _load_config(raw: dict) -> ParseMessageConfig:
+def _load_config(raw: dict[str, Any]) -> ParseMessageConfig:
     message_maps = raw.get("message_maps")
     table_names = raw.get("table_names")
 
@@ -73,7 +74,7 @@ def _build_dataframes(
         if group not in table_names:
             raise ValueError(f"missing table name for message group: {group}")
 
-    table_messages: dict[str, list] = {}
+    table_messages: dict[str, list[sirius.Message[Any, Any]]] = {}
     for group, messages in message_groups.items():
         table_name = table_names[group]
         if table_name not in table_messages:
@@ -90,6 +91,9 @@ def _insert_dataframes(
     command: ParseMessageCommand,
     dataframes: dict[str, pd.DataFrame],
 ) -> None:
+    assert command.database is not None, "database is required for ingestion"
+    assert command.host is not None, "host is required for ingestion"
+    assert command.port is not None, "port is required for ingestion"
     engine: db.Engine | str = db.create_engine(
         database=command.database,
         host=command.host,

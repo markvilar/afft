@@ -24,9 +24,7 @@ def database_group(context: click.Context) -> None:
 @click.argument("host", type=str)
 @click.argument("port", type=int)
 @click.argument("config_path", type=click.Path(exists=True))
-def table_join(
-    database: str, host: str, port: int, config_path: click.Path
-) -> None:
+def table_join(database: str, host: str, port: int, config_path: str) -> None:
     """Join tables in the database."""
     dispatch_table_join(database, host, port, config_path)
 
@@ -125,7 +123,7 @@ def table_ingest(
     help="overwrite existing database",
 )
 def table_write(
-    source: click.Path,
+    source: str,
     database: str,
     host: str,
     port: int,

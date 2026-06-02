@@ -4,6 +4,8 @@ from collections import Counter
 from dataclasses import dataclass
 from typing import Optional, Self
 
+from typing import Any
+
 from .message_interfaces import Message, MessageParser
 from .message_parsers import get_message_parser
 from .concrete_messages import MessageHeader, get_message_type
@@ -43,7 +45,7 @@ def build_message_protocol(topic_to_name: dict[str, str]) -> MessageProtocol:
 
     items: list[MessageProtocol.Item] = list()
     for topic, name in topic_to_name.items():
-        message_type: type = get_message_type(name)
+        message_type: type | None = get_message_type(name)
 
         if not message_type:
             continue
@@ -62,16 +64,18 @@ def build_message_protocol(topic_to_name: dict[str, str]) -> MessageProtocol:
 
 def parse_message_lines(
     lines: list[str], topic_types: dict[str, str]
-) -> dict[str, Message]:
+) -> dict[str, list[Message[Any, Any]]]:
     """Parses lines as message types in the given protocol."""
 
     protocol: MessageProtocol = build_message_protocol(topic_types)
-    message_groups: dict[str, list[Message]] = dict()
+    message_groups: dict[str, list[Message[Any, Any]]] = dict()
     skipped: Counter[str] = Counter()
     failed: Counter[str] = Counter()
 
+    header_parser: MessageParser | None = get_message_parser(MessageHeader)
+    assert header_parser is not None
+
     for line in lines:
-        header_parser: MessageParser | None = get_message_parser(MessageHeader)
         header: MessageHeader = header_parser(line)
         item: MessageProtocol.Item | None = protocol.get_topic(header.topic)
 
@@ -80,7 +84,7 @@ def parse_message_lines(
             continue
 
         try:
-            parsed_message: Message = item.message_parser(line)
+            parsed_message: Message[Any, Any] = item.message_parser(line)
         except ValueError:
             failed[header.topic] += 1
             continue

@@ -1,23 +1,11 @@
-"""Stereo camera pair processor."""
-
-from dataclasses import dataclass
+"""Stereo camera pair processor for ACFR vision systems."""
 
 import pandas as pd
 
+from afft.telemetry_processing.pipeline import register_processor
 from afft.utils.log import logger
 
-from .pipeline import register_processor
-
-
-@dataclass(slots=True, frozen=True)
-class PairStereoImagesConfig:
-    left_suffix: str = "LC16"
-    right_suffix: str = "RM16"
-    label_col: str = "label"
-    filename_col: str = "filename"
-    trigger_col: str = "trigger_time"
-    timestamp_col: str = "timestamp"
-    max_offset_ms: float = 300.0
+from .types import PairStereoImagesConfig
 
 
 def _to_float_seconds(series: pd.Series) -> pd.Series:

@@ -5,6 +5,8 @@ import requests
 
 import pandas as pd
 
+from typing import Any
+
 
 @dataclasses.dataclass(frozen=True)
 class DownwardIrradianceRequest:
@@ -60,14 +62,14 @@ def get_downward_irradiance(
     response.raise_for_status()
 
     # NOTE: Data keys: 'type', 'geometry', 'properties', 'header', 'messages', 'parameters', 'times'
-    data: dict = response.json()
+    data: dict[str, Any] = response.json()
 
     # Parse data
     coordinates: list[float] = data["geometry"]["coordinates"]
     hourly_records: dict[str, float] = data["properties"]["parameter"][
         "ALLSKY_SFC_SW_DWN"
     ]
-    rows: list[dict] = [
+    rows: list[dict[str, Any]] = [
         {"datetime": date, "shortwave_downward_irradiance": value}
         for date, value in hourly_records.items()
     ]

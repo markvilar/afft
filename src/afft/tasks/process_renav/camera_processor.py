@@ -11,7 +11,7 @@ def convert_camera_attitude_to_degrees(cameras: pl.DataFrame) -> pl.DataFrame:
     """Converts the Euler angles representing the camera attitude from radians
     to degrees."""
     # Convert attitude to degrees
-    cameras: pl.DataFrame = cameras.with_columns(
+    cameras = cameras.with_columns(
         [
             cameras["euler_x"] * 180.0 / math.pi,
             cameras["euler_y"] * 180.0 / math.pi,
@@ -27,7 +27,7 @@ def transform_camera_attitude_to_vehicle(cameras: pl.DataFrame) -> pl.DataFrame:
     Assumes the camera attitude is given in degrees."""
 
     # Shift z-rotation to get vehicle heading
-    cameras: pl.DataFrame = cameras.with_columns(
+    cameras = cameras.with_columns(
         [
             (pl.col("euler_z") - 90.0).alias("heading"),
         ]
@@ -66,7 +66,7 @@ def add_image_labels(cameras: pl.DataFrame) -> pl.DataFrame:
         Path(name).stem for name in stereo_right_image_names
     ]
 
-    cameras: pl.DataFrame = cameras.with_columns(
+    cameras = cameras.with_columns(
         [
             pl.Series(name="stereo_left_label", values=stereo_left_labels),
             pl.Series(name="stereo_right_label", values=stereo_right_labels),
@@ -82,7 +82,7 @@ def clean_camera_dataframe(cameras: pl.DataFrame) -> pl.DataFrame:
     dropped from the dataframe."""
 
     # Rename image filename columns to highlight that they are capture by a stereo camera
-    cameras: pl.DataFrame = cameras.rename(
+    cameras = cameras.rename(
         {
             "left_image_name": "stereo_left_image_name",
             "right_image_name": "stereo_right_image_name",
@@ -90,7 +90,7 @@ def clean_camera_dataframe(cameras: pl.DataFrame) -> pl.DataFrame:
     )
 
     # Add negative and positive z-position as height and depth, respectively
-    cameras: pl.DataFrame = cameras.with_columns(
+    cameras = cameras.with_columns(
         [
             -pl.col("position_z").alias("height"),
             pl.col("position_z").alias("depth"),
@@ -98,14 +98,14 @@ def clean_camera_dataframe(cameras: pl.DataFrame) -> pl.DataFrame:
     )
 
     # Create image labels and file names
-    cameras: pl.DataFrame = add_image_labels(cameras)
+    cameras = add_image_labels(cameras)
 
     # Convert and transform camera / vehicle attitudes
-    cameras: pl.DataFrame = convert_camera_attitude_to_degrees(cameras)
-    cameras: pl.DataFrame = transform_camera_attitude_to_vehicle(cameras)
+    cameras = convert_camera_attitude_to_degrees(cameras)
+    cameras = transform_camera_attitude_to_vehicle(cameras)
 
     # Drop unnecessary columns
-    cameras: pl.DataFrame = cameras.drop(
+    cameras = cameras.drop(
         [
             "identifier",
             "likely_crossover",
@@ -119,7 +119,7 @@ def clean_camera_dataframe(cameras: pl.DataFrame) -> pl.DataFrame:
     )
 
     # Reorder columns in dataframe
-    cameras: pl.DataFrame = cameras.select(
+    cameras = cameras.select(
         [
             pl.col("stereo_left_label"),
             pl.col("stereo_right_label"),

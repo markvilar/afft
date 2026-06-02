@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from afft.telemetry_processing.usbl_linkquest import (
+from afft.sensors.usbl_linkquest import (
     UsblUncertaintyConfig,
     estimate_usbl_uncertainty,
 )
@@ -18,24 +18,24 @@ def _make_df(
     return pd.DataFrame(
         {
             "timestamp": "2010-04-21 02:22:30",
-            "range": slant_range,
-            "horizontal_range": horizontal_range,
+            "target_slant_range": slant_range,
+            "target_horizontal_range": horizontal_range,
         }
     )
 
 
-def test_output_column_present():
+def test_output_column_present() -> None:
     result = estimate_usbl_uncertainty(_make_df([10.0], [8.0]))
     assert "position_uncertainty" in result.columns
 
 
-def test_input_rows_preserved():
+def test_input_rows_preserved() -> None:
     df = _make_df([10.0, 20.0], [8.0, 16.0])
     result = estimate_usbl_uncertainty(df)
     assert len(result) == len(df)
 
 
-def test_range_term_only_when_bearing_uncertainty_zero():
+def test_range_term_only_when_bearing_uncertainty_zero() -> None:
     config = UsblUncertaintyConfig(
         range_uncertainty=1.0, bearing_uncertainty=0.0
     )
@@ -46,7 +46,7 @@ def test_range_term_only_when_bearing_uncertainty_zero():
     )
 
 
-def test_bearing_term_only_when_range_uncertainty_zero():
+def test_bearing_term_only_when_range_uncertainty_zero() -> None:
     config = UsblUncertaintyConfig(
         range_uncertainty=0.0, bearing_uncertainty=1.0
     )
@@ -57,7 +57,7 @@ def test_bearing_term_only_when_range_uncertainty_zero():
     )
 
 
-def test_combined_uncertainty_in_quadrature():
+def test_combined_uncertainty_in_quadrature() -> None:
     R, h = 5.0, 3.0
     sigma_r, sigma_theta_deg = 0.5, 0.5
     expected = math.sqrt(
@@ -72,19 +72,21 @@ def test_combined_uncertainty_in_quadrature():
     )
 
 
-def test_uncertainty_increases_with_slant_range():
+def test_uncertainty_increases_with_slant_range() -> None:
     df = _make_df([10.0, 50.0, 100.0], [10.0, 50.0, 100.0])
     result = estimate_usbl_uncertainty(df)
     uncertainty = result["position_uncertainty"].to_numpy()
     assert (np.diff(uncertainty) > 0).all()
 
 
-def test_zero_horizontal_range_does_not_raise():
+def test_zero_horizontal_range_does_not_raise() -> None:
     result = estimate_usbl_uncertainty(_make_df([5.0], [0.0]))
     assert np.isfinite(result["position_uncertainty"].iloc[0])
 
 
-def test_missing_horizontal_range_raises():
-    df = pd.DataFrame({"timestamp": ["2010-04-21 02:22:30"], "range": [10.0]})
-    with pytest.raises(KeyError, match="horizontal_range"):
+def test_missing_horizontal_range_raises() -> None:
+    df = pd.DataFrame(
+        {"timestamp": ["2010-04-21 02:22:30"], "target_slant_range": [10.0]}
+    )
+    with pytest.raises(KeyError, match="target_horizontal_range"):
         estimate_usbl_uncertainty(df)
