@@ -44,8 +44,7 @@ def resolve_usbl_position(
     from the transceiver, which is converted to geodetic via ned2geodetic.
 
     Adds columns: target_depth, target_x, target_y, target_z,
-                  target_horizontal_range, target_inclination_angle,
-                  target_latitude, target_longitude.
+                  target_horizontal_range, target_latitude, target_longitude.
     """
     _validate_time_alignment(usbl, pressure, config)
 
@@ -94,20 +93,19 @@ def resolve_usbl_position(
             depth=depth_rel,
         )
     )
-    horizontal_range: NDArray[np.float64] = np.sqrt(
-        np.maximum(slant_range**2 - depth_rel**2, 0.0)
-    )
-    inclination_angle: NDArray[np.float64] = np.degrees(
-        np.arcsin(np.clip(depth_rel / np.maximum(slant_range, 1e-9), -1.0, 1.0))
-    )
-
     # Step 3 - Rotate target from transceiver frame → ship body → NED, then convert the
     # transceiver and target positions to geodetic (WGS84).
     target_ned: NDArray[np.float64] = R_ship.apply(
         extrinsics.rotation.apply(target_xyz_sensor)
     )
 
-    # TODO: Calculate target_xyz_vessel in vessel frame: 
+    # Step 4 - Calculate target XYZ in vessel frame
+    target_xyz_vessel: NDArray[np.float64] = extrinsics.transform.apply(target_xyz_sensor)
+
+    # Calculate horizontal range to target
+    target_horizontal_range: NDArray[np.float64] = np.sqrt(
+        target_xyz_vessel[:, 0] ** 2 + target_xyz_vessel[:, 1] ** 2
+    )
 
     transceiver_lat: NDArray[np.float64]
     transceiver_lon: NDArray[np.float64]
@@ -132,11 +130,10 @@ def resolve_usbl_position(
         transceiver_alt,
     )
 
-    result["target_x"] = target_xyz_sensor[:, 0]
-    result["target_y"] = target_xyz_sensor[:, 1]
-    result["target_z"] = target_xyz_sensor[:, 2]
-    result["target_horizontal_range"] = horizontal_range
-    result["target_inclination_angle"] = inclination_angle
+    result["target_x"] = target_xyz_vessel[:, 0]
+    result["target_y"] = target_xyz_vessel[:, 1]
+    result["target_z"] = target_xyz_vessel[:, 2]
+    result["target_horizontal_range"] = target_horizontal_range
     result["target_latitude"] = target_latitude
     result["target_longitude"] = target_longitude
 
