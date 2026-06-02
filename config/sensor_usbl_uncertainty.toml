@@ -1,0 +1,733 @@
+# USBL observation uncertainty parameters extracted from SEABED localiser configs.
+# Most deployments use standard deviation (STD) parameters.
+# Four 2009 deployments use variance (VAR) parameters (SURFACE_USBLFIX_OBS_*_VAR).
+
+[[usbl_uncertainty]]
+deployment_label = "qd61g27j_20100421_022145"
+datetime = 2010-04-21T02:21:45
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 5.0
+bearing_std = 0.17435595774163
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "qd61g27j_20110410_011202"
+datetime = 2011-04-10T01:12:02
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 5.0
+bearing_std = 0.17435595774163
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "qd61g27j_20120422_043114"
+datetime = 2012-04-22T04:31:14
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 5.0
+bearing_std = 0.17435595774163
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "qd61g27j_20130414_013620"
+datetime = 2013-04-14T01:36:20
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qd61g27j_20170523_040815"
+datetime = 2017-05-23T04:08:15
+x_std = 7.0
+y_std = 7.0
+slantrange_std = 10.0
+bearing_std = 0.1
+ship_x_std = 10.0
+ship_y_std = 10.0
+ship_z_std = 1.0
+ship_heading_std = 0.04717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdc5ghs3_20100430_024508"
+datetime = 2010-04-30T02:45:08
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 5.0
+bearing_std = 0.17435595774163
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "qdc5ghs3_20120501_033336"
+datetime = 2012-05-01T03:33:36
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdc5ghs3_20130405_103429"
+datetime = 2013-04-05T10:34:29
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdc5ghs3_20210315_230947"
+datetime = 2021-03-15T23:09:47
+x_std = 7.0
+y_std = 7.0
+slantrange_std = 10.0
+bearing_std = 0.1
+ship_x_std = 10.0
+ship_y_std = 10.0
+ship_z_std = 1.0
+ship_heading_std = 0.04717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdch0ftq_20100428_020202"
+datetime = 2010-04-28T02:02:02
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 5.0
+bearing_std = 0.17435595774163
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "qdch0ftq_20110415_020103"
+datetime = 2011-04-15T02:01:03
+x_std = 30.0
+y_std = 30.0
+slantrange_std = 10.0
+bearing_std = 0.34
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "qdch0ftq_20120430_002423"
+datetime = 2012-04-30T00:24:23
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdch0ftq_20130406_023610"
+datetime = 2013-04-06T02:36:10
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdch0ftq_20140327_071251"
+datetime = 2014-03-27T07:12:51
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdch0ftq_20170526_025746"
+datetime = 2017-05-26T02:57:46
+x_std = 7.0
+y_std = 7.0
+slantrange_std = 10.0
+bearing_std = 0.1
+ship_x_std = 10.0
+ship_y_std = 10.0
+ship_z_std = 1.0
+ship_heading_std = 0.04717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdch0ftq_20210315_034028"
+datetime = 2021-03-15T03:40:28
+x_std = 7.0
+y_std = 7.0
+slantrange_std = 10.0
+bearing_std = 0.1
+ship_x_std = 10.0
+ship_y_std = 10.0
+ship_z_std = 1.0
+ship_heading_std = 0.04717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdchdmy1_20110416_005411"
+datetime = 2011-04-16T00:54:11
+x_std = 30.0
+y_std = 30.0
+slantrange_std = 10.0
+bearing_std = 0.34
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "qdchdmy1_20120501_071203"
+datetime = 2012-05-01T07:12:03
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdchdmy1_20130406_081713"
+datetime = 2013-04-06T08:17:13
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdchdmy1_20140328_063358"
+datetime = 2014-03-28T06:33:58
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdchdmy1_20170525_234624"
+datetime = 2017-05-25T23:46:24
+x_std = 7.0
+y_std = 7.0
+slantrange_std = 10.0
+bearing_std = 0.1
+ship_x_std = 10.0
+ship_y_std = 10.0
+ship_z_std = 1.0
+ship_heading_std = 0.04717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qdchdmy1_20210315_081519"
+datetime = 2021-03-15T08:15:19
+x_std = 7.0
+y_std = 7.0
+slantrange_std = 10.0
+bearing_std = 0.1
+ship_x_std = 10.0
+ship_y_std = 10.0
+ship_z_std = 1.0
+ship_heading_std = 0.04717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qtqxshxs_20110815_102540"
+datetime = 2011-08-15T10:25:40
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 10.0
+bearing_std = 0.25
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "qtqxshxs_20150327_015552"
+datetime = 2015-03-27T01:55:52
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.1
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qtqxshxs_20150328_000850"
+datetime = 2015-03-28T00:08:50
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.1
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "qtqxshxs_20150328_042551"
+datetime = 2015-03-28T04:25:51
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.1
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r234xgje_20100604_230524"
+datetime = 2010-06-04T23:05:24
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 5.0
+bearing_std = 0.17435595774163
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "r234xgje_20120530_064545"
+datetime = 2012-05-30T06:45:45
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r234xgje_20140616_205232"
+datetime = 2014-06-16T20:52:32
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r23685bc_20100605_021022"
+datetime = 2010-06-05T02:10:22
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 5.0
+bearing_std = 0.17435595774163
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "r23685bc_20120530_233021"
+datetime = 2012-05-30T23:30:21
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r23685bc_20140616_225022"
+datetime = 2014-06-16T22:50:22
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r23m7ms0_20100606_001908"
+datetime = 2010-06-06T00:19:08
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 5.0
+bearing_std = 0.17435595774163
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "r23m7ms0_20120601_070118"
+datetime = 2012-06-01T07:01:18
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r23m7ms0_20140616_044549"
+datetime = 2014-06-16T04:45:49
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+# 2009 deployments use SURFACE_USBLFIX_OBS_*_VAR (variance) instead of STD parameters.
+
+[[usbl_uncertainty]]
+deployment_label = "r29mrd12_20090613_010853"
+datetime = 2009-06-13T01:08:53
+x_var = 250.0
+y_var = 250.0
+slantrange_var = 25.0
+bearing_var = 0.295
+ship_x_var = 4.0
+ship_y_var = 4.0
+ship_z_var = 1.0
+ship_heading_var = 0.0076
+ship_roll_var = 0.0003
+ship_pitch_var = 0.0003
+
+[[usbl_uncertainty]]
+deployment_label = "r29mrd12_20090613_104954"
+datetime = 2009-06-13T10:49:54
+x_var = 250.0
+y_var = 250.0
+slantrange_var = 25.0
+bearing_var = 0.295
+ship_x_var = 4.0
+ship_y_var = 4.0
+ship_z_var = 1.0
+ship_heading_var = 0.0076
+ship_roll_var = 0.0003
+ship_pitch_var = 0.0003
+
+[[usbl_uncertainty]]
+deployment_label = "r29mrd12_20110612_045149"
+datetime = 2011-06-12T04:51:49
+x_std = 30.0
+y_std = 30.0
+slantrange_std = 10.0
+bearing_std = 0.34
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "r29mrd12_20130611_015335"
+datetime = 2013-06-11T01:53:35
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r29mrd5h_20090612_225306"
+datetime = 2009-06-12T22:53:06
+x_var = 250.0
+y_var = 250.0
+slantrange_var = 25.0
+bearing_var = 0.295
+ship_x_var = 4.0
+ship_y_var = 4.0
+ship_z_var = 1.0
+ship_heading_var = 0.0076
+ship_roll_var = 0.0003
+ship_pitch_var = 0.0003
+
+[[usbl_uncertainty]]
+deployment_label = "r29mrd5h_20090613_100254"
+datetime = 2009-06-13T10:02:54
+x_var = 250.0
+y_var = 250.0
+slantrange_var = 25.0
+bearing_var = 0.295
+ship_x_var = 4.0
+ship_y_var = 4.0
+ship_z_var = 1.0
+ship_heading_var = 0.0076
+ship_roll_var = 0.0003
+ship_pitch_var = 0.0003
+
+[[usbl_uncertainty]]
+deployment_label = "r29mrd5h_20110612_033752"
+datetime = 2011-06-12T03:37:52
+x_std = 30.0
+y_std = 30.0
+slantrange_std = 10.0
+bearing_std = 0.34
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "r29mrd5h_20130611_002419"
+datetime = 2013-06-11T00:24:19
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r7jjskxq_20101023_210332"
+datetime = 2010-10-23T21:03:32
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 5.0
+bearing_std = 0.17435595774163
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "r7jjskxq_20121013_060425"
+datetime = 2012-10-13T06:04:25
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r7jjskxq_20131022_004934"
+datetime = 2013-10-22T00:49:34
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r7jjss8n_20101023_210332"
+datetime = 2010-10-23T21:03:32
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 5.0
+bearing_std = 0.17435595774163
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "r7jjss8n_20121013_060425"
+datetime = 2012-10-13T06:04:25
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r7jjss8n_20131022_004934"
+datetime = 2013-10-22T00:49:34
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r7jjssbh_20101023_210332"
+datetime = 2010-10-23T21:03:32
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 5.0
+bearing_std = 0.17435595774163
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.01732050807569
+ship_pitch_std = 0.01732050807569
+
+[[usbl_uncertainty]]
+deployment_label = "r7jjssbh_20121013_060425"
+datetime = 2012-10-13T06:04:25
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035
+
+[[usbl_uncertainty]]
+deployment_label = "r7jjssbh_20131022_004934"
+datetime = 2013-10-22T00:49:34
+x_std = 15.8113883008419
+y_std = 15.8113883008419
+slantrange_std = 15.0
+bearing_std = 0.35
+ship_x_std = 5.0
+ship_y_std = 5.0
+ship_z_std = 1.0
+ship_heading_std = 0.08717797887081
+ship_roll_std = 0.035
+ship_pitch_std = 0.035

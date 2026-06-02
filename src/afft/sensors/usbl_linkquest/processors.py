@@ -107,6 +107,8 @@ def resolve_usbl_position(
         extrinsics.rotation.apply(target_xyz_sensor)
     )
 
+    # TODO: Calculate target_xyz_vessel in vessel frame: 
+
     transceiver_lat: NDArray[np.float64]
     transceiver_lon: NDArray[np.float64]
     transceiver_alt: NDArray[np.float64]
