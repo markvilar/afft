@@ -6,8 +6,8 @@ import pandas as pd
 import pytest
 
 from afft.sensors.usbl_linkquest import (
-    UsblResolvePositionConfig,
-    UsblTransceiverExtrinsics,
+    TrackLinkResolvePositionConfig,
+    TrackLinkTransceiverExtrinsics,
     resolve_usbl_position,
 )
 
@@ -58,12 +58,21 @@ def test_output_columns() -> None:
 
     for col in (
         "target_depth",
-        "target_x",
-        "target_y",
-        "target_z",
+        "target_x_sensor",
+        "target_y_sensor",
+        "target_z_sensor",
+        "target_x_vessel",
+        "target_y_vessel",
+        "target_z_vessel",
         "target_horizontal_range",
         "target_latitude",
         "target_longitude",
+        "usbl_extrinsics_x",
+        "usbl_extrinsics_y",
+        "usbl_extrinsics_z",
+        "usbl_extrinsics_phi",
+        "usbl_extrinsics_theta",
+        "usbl_extrinsics_psi",
     ):
         assert col in result.columns
 
@@ -195,7 +204,7 @@ def test_usbl_before_pressure_window_raises() -> None:
     pressure = _pressure_df(
         ["2010-04-21 02:22:00", "2010-04-21 02:23:00"], [10.0, 10.0]
     )
-    config = UsblResolvePositionConfig(max_time_gap_seconds=60.0)
+    config = TrackLinkResolvePositionConfig(max_time_gap_seconds=60.0)
     with pytest.raises(ValueError, match="precedes first pressure reading"):
         resolve_usbl_position(usbl, pressure, config)
 
@@ -207,7 +216,7 @@ def test_usbl_after_pressure_window_raises() -> None:
     pressure = _pressure_df(
         ["2010-04-21 02:22:00", "2010-04-21 02:23:00"], [10.0, 10.0]
     )
-    config = UsblResolvePositionConfig(max_time_gap_seconds=60.0)
+    config = TrackLinkResolvePositionConfig(max_time_gap_seconds=60.0)
     with pytest.raises(ValueError, match="follows last pressure reading"):
         resolve_usbl_position(usbl, pressure, config)
 
@@ -219,13 +228,50 @@ def test_usbl_within_time_margin_does_not_raise() -> None:
     pressure = _pressure_df(
         ["2010-04-21 02:22:00", "2010-04-21 02:23:00"], [10.0, 10.0]
     )
-    config = UsblResolvePositionConfig(max_time_gap_seconds=60.0)
+    config = TrackLinkResolvePositionConfig(max_time_gap_seconds=60.0)
     resolve_usbl_position(usbl, pressure, config)
 
 
 # ---------------------------------------------------------------------------
 # Extrinsics tests
 # ---------------------------------------------------------------------------
+
+
+def test_extrinsics_columns_written() -> None:
+    usbl = _usbl_df(
+        [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 90.0, 100.0)]
+    )
+    pressure = _pressure_df(
+        ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [5.0, 5.0]
+    )
+    config = TrackLinkResolvePositionConfig(
+        extrinsics=TrackLinkTransceiverExtrinsics(
+            x=1.0, y=2.0, z=3.0, phi=0.1, theta=0.2, psi=0.3
+        )
+    )
+    result = resolve_usbl_position(usbl, pressure, config)
+    assert (result["usbl_extrinsics_x"] == 1.0).all()
+    assert (result["usbl_extrinsics_y"] == 2.0).all()
+    assert (result["usbl_extrinsics_z"] == 3.0).all()
+    assert (result["usbl_extrinsics_phi"] == 0.1).all()
+    assert (result["usbl_extrinsics_theta"] == 0.2).all()
+    assert (result["usbl_extrinsics_psi"] == 0.3).all()
+
+
+def test_sensor_frame_columns_present_and_unrotated() -> None:
+    """Sensor-frame XYZ is the raw transceiver-body value before extrinsics."""
+    # bearing=90° (starboard in transceiver frame), zero depth → x=0, y=range
+    usbl = _usbl_df(
+        [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 90.0, 1000.0)]
+    )
+    pressure = _pressure_df(
+        ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
+    )
+    result = resolve_usbl_position(usbl, pressure)
+
+    assert math.isclose(result["target_x_sensor"].iloc[0], 0.0, abs_tol=1e-9)
+    assert math.isclose(result["target_y_sensor"].iloc[0], 1000.0, rel_tol=1e-9)
+    assert math.isclose(result["target_z_sensor"].iloc[0], 0.0, abs_tol=1e-9)
 
 
 def test_extrinsics_yaw_rotates_bearing() -> None:
@@ -247,8 +293,8 @@ def test_extrinsics_yaw_rotates_bearing() -> None:
     result_ext = resolve_usbl_position(
         usbl_ext,
         pressure,
-        UsblResolvePositionConfig(
-            extrinsics=UsblTransceiverExtrinsics(
+        TrackLinkResolvePositionConfig(
+            extrinsics=TrackLinkTransceiverExtrinsics(
                 x=0.0, y=0.0, z=0.0, psi=math.radians(90.0)
             )
         ),
@@ -282,8 +328,8 @@ def test_extrinsics_translation_shifts_origin() -> None:
     result_ext = resolve_usbl_position(
         usbl,
         pressure,
-        UsblResolvePositionConfig(
-            extrinsics=UsblTransceiverExtrinsics(x=0.0, y=100.0, z=0.0)
+        TrackLinkResolvePositionConfig(
+            extrinsics=TrackLinkTransceiverExtrinsics(x=0.0, y=100.0, z=0.0)
         ),
     )
 
@@ -313,8 +359,8 @@ def test_extrinsics_ship_heading_applied() -> None:
     result = resolve_usbl_position(
         usbl,
         pressure,
-        UsblResolvePositionConfig(
-            extrinsics=UsblTransceiverExtrinsics(x=0.0, y=0.0, z=0.0)
+        TrackLinkResolvePositionConfig(
+            extrinsics=TrackLinkTransceiverExtrinsics(x=0.0, y=0.0, z=0.0)
         ),
     )
 

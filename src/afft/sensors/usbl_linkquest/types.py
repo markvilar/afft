@@ -1,4 +1,4 @@
-"""Configuration types for LinkQuest TrackLink USBL processing."""
+"""Configuration types for the LinkQuest TrackLink 1500HA USBL processor."""
 
 import numpy as np
 
@@ -12,7 +12,7 @@ from scipy.spatial.transform import (
 
 
 @dataclass(slots=True, frozen=True)
-class UsblTransceiverExtrinsics:
+class TrackLinkTransceiverExtrinsics:
     """
     Rigid-body extrinsics of the USBL transceiver in the ship body frame.
 
@@ -56,7 +56,7 @@ class UsblTransceiverExtrinsics:
 
 
 @dataclass(slots=True, frozen=True)
-class UsblResolvePositionConfig:
+class TrackLinkResolvePositionConfig:
     """
     Configuration for the USBL position resolution step.
 
@@ -93,11 +93,11 @@ class UsblResolvePositionConfig:
     ship_pitch_col: str = "ship_pitch"
     depth_col: str = "depth"
     max_time_gap_seconds: float = 60.0
-    extrinsics: UsblTransceiverExtrinsics | None = None
+    extrinsics: TrackLinkTransceiverExtrinsics | None = None
 
 
 @dataclass(slots=True, frozen=True)
-class UsblUncertaintyConfig:
+class TrackLinkUncertaintyConfig:
     """
     Deployment-calibrated uncertainty values for TrackLink USBL processing.
 
@@ -112,7 +112,7 @@ class UsblUncertaintyConfig:
 
 
 @dataclass(slots=True, frozen=True)
-class UsblProcessingConfig:
+class TrackLinkProcessingConfig:
     """
     Combined configuration for the full TrackLink USBL processing pipeline.
 
@@ -122,9 +122,9 @@ class UsblProcessingConfig:
     uncertainty: Configuration for uncertainty estimation.
     """
 
-    resolve: UsblResolvePositionConfig = field(
-        default_factory=UsblResolvePositionConfig
+    resolve: TrackLinkResolvePositionConfig = field(
+        default_factory=TrackLinkResolvePositionConfig
     )
-    uncertainty: UsblUncertaintyConfig = field(
-        default_factory=UsblUncertaintyConfig
+    uncertainty: TrackLinkUncertaintyConfig = field(
+        default_factory=TrackLinkUncertaintyConfig
     )

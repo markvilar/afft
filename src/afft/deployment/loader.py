@@ -5,7 +5,11 @@ from typing import Any
 
 from afft.io.config_io import read_config
 
-from .types import DeploymentConfig, TopsideUsblModemConfig, UsblUncertaintyProfile
+from .types import (
+    DeploymentConfig,
+    TopsideUsblModemConfig,
+    UsblUncertaintyProfile,
+)
 
 
 def load_deployment_config(
@@ -26,10 +30,12 @@ def load_deployment_config(
     raw: dict[str, Any] = read_config(path)
 
     topside_extrinsics: dict[str, dict[str, Any]] = {
-        entry["label"]: entry for entry in raw.get("usbl_extrinsics_profiles", [])
+        entry["label"]: entry
+        for entry in raw.get("usbl_extrinsics_profiles", [])
     }
     uncertainty_profiles: dict[str, dict[str, Any]] = {
-        entry["label"]: entry for entry in raw.get("usbl_uncertainty_profiles", [])
+        entry["label"]: entry
+        for entry in raw.get("usbl_uncertainty_profiles", [])
     }
 
     deployment_entry: dict[str, Any] | None = None
@@ -43,11 +49,15 @@ def load_deployment_config(
 
     extrinsics_label: str = deployment_entry["usbl_extrinsics_profile"]
     if extrinsics_label not in topside_extrinsics:
-        raise KeyError(f"usbl_extrinsics_profile not found: {extrinsics_label!r}")
+        raise KeyError(
+            f"usbl_extrinsics_profile not found: {extrinsics_label!r}"
+        )
 
     uncertainty_label: str = deployment_entry["usbl_uncertainty_profile"]
     if uncertainty_label not in uncertainty_profiles:
-        raise KeyError(f"usbl_uncertainty_profile not found: {uncertainty_label!r}")
+        raise KeyError(
+            f"usbl_uncertainty_profile not found: {uncertainty_label!r}"
+        )
 
     extrinsics_entry: dict[str, Any] = topside_extrinsics[extrinsics_label]
     uncertainty_entry: dict[str, Any] = uncertainty_profiles[uncertainty_label]

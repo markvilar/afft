@@ -3,7 +3,7 @@
 import pandas as pd
 
 from afft.sensors.usbl_linkquest import (
-    UsblUncertaintyConfig,
+    TrackLinkUncertaintyConfig,
     estimate_usbl_uncertainty,
 )
 
@@ -24,13 +24,17 @@ def test_input_rows_preserved() -> None:
 
 
 def test_horizontal_position_std_value() -> None:
-    config = UsblUncertaintyConfig(horizontal_position_std=12.5, depth_position_std=3.0)
+    config = TrackLinkUncertaintyConfig(
+        horizontal_position_std=12.5, depth_position_std=3.0
+    )
     result = estimate_usbl_uncertainty(_make_df(), config)
     assert (result["horizontal_position_std"] == 12.5).all()
 
 
 def test_depth_position_std_value() -> None:
-    config = UsblUncertaintyConfig(horizontal_position_std=12.5, depth_position_std=3.0)
+    config = TrackLinkUncertaintyConfig(
+        horizontal_position_std=12.5, depth_position_std=3.0
+    )
     result = estimate_usbl_uncertainty(_make_df(), config)
     assert (result["depth_position_std"] == 3.0).all()
 

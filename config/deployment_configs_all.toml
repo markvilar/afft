@@ -80,7 +80,7 @@ sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkques
 
 [[deployment_configs]]
 deployment_label = "qdch0ftq_20140327_071251"
-usbl_extrinsics_profile = "201403_rv_linnaeus_uncalibrated"
+usbl_extrinsics_profile = "201403_rv_linnaeus_calibrated"
 usbl_uncertainty_profile = "201204_rv_linnaeus"
 sensor_keys = ["acfr_vision", "dvl_teledyne", "pressure_parosci", "usbl_linkquest"]
 
@@ -394,13 +394,13 @@ psi = 0.0375
 label = "201106_rv_challenger"
 ship_name = "RV Challenger"
 date = "201106"
-comment = "Hand measured. Measurements noted as highly suspect."
-x = 2.379
-y = 4.46
-z = 3.69
-phi = -0.5236
-theta = 0.0
-psi = 0.0
+comment = "Optimized."
+x = 1.4044
+y = 4.4116
+z = 4.5342
+phi = -0.5409
+theta = -0.0605
+psi = -0.2400
 
 [[usbl_extrinsics_profiles]]
 label = "201108_solander"
