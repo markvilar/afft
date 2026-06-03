@@ -99,22 +99,16 @@ class UsblResolvePositionConfig:
 @dataclass(slots=True, frozen=True)
 class UsblUncertaintyConfig:
     """
-    Configuration for USBL position uncertainty estimation.
+    Deployment-calibrated uncertainty values for TrackLink USBL processing.
 
     Attributes
     ----------
-    range_uncertainty: 1-sigma slant range measurement error in metres.
-    bearing_uncertainty: 1-sigma bearing measurement error in degrees.
-    range_col: Name of the slant range column.
-    horizontal_range_col: Name of the target horizontal range column.
-    min_horizontal_range: Minimum horizontal range for numerical stability (metres).
+    horizontal_position_std: 1σ horizontal position uncertainty in metres.
+    depth_position_std: 1σ depth uncertainty in metres.
     """
 
-    range_uncertainty: float = 15.0
-    bearing_uncertainty: float = 20.05
-    range_col: str = "target_slant_range"
-    horizontal_range_col: str = "target_horizontal_range"
-    min_horizontal_range: float = 0.1
+    horizontal_position_std: float = 15.8
+    depth_position_std: float = 5.0
 
 
 @dataclass(slots=True, frozen=True)
