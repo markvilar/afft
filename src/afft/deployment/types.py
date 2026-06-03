@@ -10,8 +10,7 @@ class UsblUncertaintyProfile:
 
     Attributes
     ----------
-    x_std: Lateral position uncertainty in metres.
-    y_std: Longitudinal position uncertainty in metres.
+    horizontal_position_std: Horizontal position uncertainty in metres (isotropic).
     slant_range_std: Slant-range measurement uncertainty in metres.
     bearing_std: Bearing measurement uncertainty in radians.
     ship_x_std: Ship GPS x uncertainty in metres.
@@ -22,8 +21,7 @@ class UsblUncertaintyProfile:
     ship_pitch_std: Ship pitch uncertainty in radians.
     """
 
-    x_std: float
-    y_std: float
+    horizontal_position_std: float
     slant_range_std: float
     bearing_std: float
     ship_x_std: float

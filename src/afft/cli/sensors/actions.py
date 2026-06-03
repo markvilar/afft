@@ -12,6 +12,7 @@ from afft.sensors.usbl_linkquest import (
 from afft.sensors.usbl_linkquest.types import (
     UsblProcessingConfig,
     UsblResolvePositionConfig,
+    UsblUncertaintyConfig,
 )
 from afft.utils.log import logger
 
@@ -48,6 +49,10 @@ def dispatch_process_tracklink_usbl(
     )
     config = UsblProcessingConfig(
         resolve=UsblResolvePositionConfig(extrinsics=extrinsics),
+        uncertainty=UsblUncertaintyConfig(
+            horizontal_position_std=deployment.usbl_uncertainty.horizontal_position_std,
+            depth_position_std=deployment.usbl_uncertainty.slant_range_std,
+        ),
     )
 
     usbl: pd.DataFrame = pd.read_csv(Path(usbl_file))

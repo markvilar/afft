@@ -41,7 +41,8 @@ def resolve_usbl_position(
     from the transceiver, which is converted to geodetic via ned2geodetic.
 
     Adds columns: target_depth, target_x, target_y, target_z,
-                  target_horizontal_range, target_latitude, target_longitude.
+                  target_horizontal_range, target_inclination_angle,
+                  target_latitude, target_longitude.
     """
     _validate_time_alignment(usbl, pressure, config)
 
@@ -82,12 +83,12 @@ def resolve_usbl_position(
     # relative to the transceiver origin.
     depth: NDArray[np.float64] = result["target_depth"].to_numpy()
     slant_range: NDArray[np.float64] = result[config.range_col].to_numpy()
-    depth_rel: NDArray[np.float64] = depth - transceiver_ned[:, 2]
+    depth_relative: NDArray[np.float64] = depth - transceiver_ned[:, 2]
     target_xyz_sensor: NDArray[np.float64] = (
         _calculate_target_xyz_from_range_bearing(
             slant_range=slant_range,
             bearing_deg=result[config.bearing_col].to_numpy(),
-            depth=depth_rel,
+            depth=depth_relative,
         )
     )
     # Step 3 - Rotate target from transceiver frame → ship body → NED, then convert the
@@ -101,9 +102,12 @@ def resolve_usbl_position(
         target_xyz_sensor
     )
 
-    # Calculate horizontal range to target
+    # Calculate horizontal range and inclination angle to target
     target_horizontal_range: NDArray[np.float64] = np.sqrt(
         target_xyz_vessel[:, 0] ** 2 + target_xyz_vessel[:, 1] ** 2
+    )
+    target_inclination_angle: NDArray[np.float64] = np.degrees(
+        np.arcsin(np.clip(depth_relative / slant_range, -1.0, 1.0))
     )
 
     transceiver_lat: NDArray[np.float64]
@@ -133,6 +137,7 @@ def resolve_usbl_position(
     result["target_y"] = target_xyz_vessel[:, 1]
     result["target_z"] = target_xyz_vessel[:, 2]
     result["target_horizontal_range"] = target_horizontal_range
+    result["target_inclination_angle"] = target_inclination_angle
     result["target_latitude"] = target_latitude
     result["target_longitude"] = target_longitude
 
@@ -143,54 +148,23 @@ def estimate_usbl_uncertainty(
     df: pd.DataFrame,
     config: UsblUncertaintyConfig = UsblUncertaintyConfig(),
 ) -> pd.DataFrame:
-    """Add a position_uncertainty column to a resolved USBL table.
+    """Add horizontal_position_std and depth_position_std columns to a resolved USBL table.
 
-    Propagates two independent error sources through the slant-range geometry:
+    Values are deployment-calibrated scalars read directly from config rather
+    than derived from a quadrature formula.
 
-        σ_pos = sqrt((σ_R · R / h)² + (h · σ_θ)²)
+    Arguments
+    ---------
+    df: Resolved USBL DataFrame.
+    config: Deployment-calibrated uncertainty values.
 
-    where R is slant range, h is horizontal range, σ_R is range_uncertainty
-    in metres, and σ_θ is bearing_uncertainty converted to radians.
-
-    target_horizontal_range must already be present (produced by resolve_usbl_position).
-    When target_horizontal_range is near zero the range term is clamped to avoid
-    division by zero; the AUV is directly below the ship and position
-    uncertainty collapses to the range measurement error.
-
-    References
-    ----------
-    JCGM 100:2008. Evaluation of measurement data — Guide to the Expression
-        of Uncertainty in Measurement (GUM). BIPM, IEC, IFCC, ILAC, ISO,
-        IUPAC, IUPAP, OIML.
-    Milne, P. H. (1983). Underwater Acoustic Positioning Systems.
-        Gulf Publishing Company.
+    Returns
+    -------
+    DataFrame with horizontal_position_std and depth_position_std columns added.
     """
-    if config.horizontal_range_col not in df.columns:
-        raise KeyError(
-            f"{config.horizontal_range_col!r} not found — "
-            "run resolve_usbl_position before estimate_usbl_uncertainty"
-        )
-
     result: pd.DataFrame = df.copy()
-
-    slant_range: NDArray[np.float64] = result[config.range_col].to_numpy()
-    horizontal_range: NDArray[np.float64] = result[
-        config.horizontal_range_col
-    ].to_numpy()
-    bearing_uncertainty_rad: float = np.radians(config.bearing_uncertainty)
-
-    h_safe: NDArray[np.float64] = np.maximum(
-        horizontal_range, config.min_horizontal_range
-    )
-    range_term: NDArray[np.float64] = (
-        config.range_uncertainty * slant_range / h_safe
-    )
-    bearing_term: NDArray[np.float64] = (
-        horizontal_range * bearing_uncertainty_rad
-    )
-
-    result["position_uncertainty"] = np.sqrt(range_term**2 + bearing_term**2)
-
+    result["horizontal_position_std"] = config.horizontal_position_std
+    result["depth_position_std"] = config.depth_position_std
     return result
 
 
@@ -209,7 +183,7 @@ def process_tracklink_usbl(
 
     Returns
     -------
-    DataFrame with resolved target positions and position uncertainty column.
+    DataFrame with resolved target positions and uncertainty columns.
     """
     result: pd.DataFrame = resolve_usbl_position(usbl, pressure, config.resolve)
     result = estimate_usbl_uncertainty(result, config.uncertainty)

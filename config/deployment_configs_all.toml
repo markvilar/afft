@@ -567,9 +567,8 @@ psi = -0.21
 
 [[usbl_uncertainty_profiles]]
 label = "200906_rv_challenger"
-x_std = 15.8                # x_var = 250.0
-y_std = 15.8                # y_var = 250.0
-slant_range_std = 5.0       # slantrange_var = 25.0
+horizontal_position_std = 15.8  # x_var = y_var = 250.0
+slant_range_std = 5.0           # slantrange_var = 25.0
 bearing_std = 0.55          # bearing_var = 0.295
 ship_x_std = 2.0            # ship_x_var = 4.0
 ship_y_std = 2.0            # ship_y_var = 4.0
@@ -580,8 +579,7 @@ ship_pitch_std = 0.017      # ship_pitch_var = 0.0003
 
 [[usbl_uncertainty_profiles]]
 label = "201004_rv_linnaeus"
-x_std = 15.8
-y_std = 15.8
+horizontal_position_std = 15.8
 slant_range_std = 5.0
 bearing_std = 0.17436
 ship_x_std = 5.0
@@ -593,8 +591,7 @@ ship_pitch_std = 0.0173
 
 [[usbl_uncertainty_profiles]]
 label = "201104_rv_naturaliste"
-x_std = 30.0
-y_std = 30.0
+horizontal_position_std = 30.0
 slant_range_std = 10.0
 bearing_std = 0.34
 ship_x_std = 5.0
@@ -606,8 +603,7 @@ ship_pitch_std = 0.0173
 
 [[usbl_uncertainty_profiles]]
 label = "201108_solander"
-x_std = 15.8
-y_std = 15.8
+horizontal_position_std = 15.8
 slant_range_std = 10.0
 bearing_std = 0.25
 ship_x_std = 5.0
@@ -619,8 +615,7 @@ ship_pitch_std = 0.0173
 
 [[usbl_uncertainty_profiles]]
 label = "201204_rv_linnaeus"
-x_std = 15.8
-y_std = 15.8
+horizontal_position_std = 15.8
 slant_range_std = 15.0
 bearing_std = 0.35
 ship_x_std = 5.0
@@ -632,8 +627,7 @@ ship_pitch_std = 0.035
 
 [[usbl_uncertainty_profiles]]
 label = "201502_tasmania_bluefin"
-x_std = 15.8
-y_std = 15.8
+horizontal_position_std = 15.8
 slant_range_std = 15.0
 bearing_std = 0.1
 ship_x_std = 5.0
@@ -645,8 +639,7 @@ ship_pitch_std = 0.035
 
 [[usbl_uncertainty_profiles]]
 label = "201705_silver_streak"
-x_std = 7.0
-y_std = 7.0
+horizontal_position_std = 7.0
 slant_range_std = 10.0
 bearing_std = 0.1
 ship_x_std = 10.0

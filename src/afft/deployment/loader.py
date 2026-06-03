@@ -63,8 +63,7 @@ def load_deployment_config(
     )
 
     usbl_uncertainty = UsblUncertaintyProfile(
-        x_std=uncertainty_entry["x_std"],
-        y_std=uncertainty_entry["y_std"],
+        horizontal_position_std=uncertainty_entry["horizontal_position_std"],
         slant_range_std=uncertainty_entry["slant_range_std"],
         bearing_std=uncertainty_entry["bearing_std"],
         ship_x_std=uncertainty_entry["ship_x_std"],
