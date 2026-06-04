@@ -7,8 +7,8 @@ from numpy.typing import NDArray
 
 from .types import EvologicsProcessingConfig
 
-# Constant frame flip: USBL-Frame (X=right, Y=fwd, Z=up) → Vessel-Frame (X=fwd, Y=stbd, Z=down).
-_USBL_TO_VESSEL: NDArray[np.float64] = np.array(
+# Permutation from Right-Forward-Up (USBL frame) to Forward-Right-Down (vessel frame).
+_RFU_TO_FRD: NDArray[np.float64] = np.array(
     [[0.0, 1.0, 0.0], [1.0, 0.0, 0.0], [0.0, 0.0, -1.0]],
     dtype=np.float64,
 )
@@ -69,7 +69,7 @@ def process_evologics_usbl(
 
     # Apply frame flip (USBL-Frame → intermediate aligned with vessel axes).
     target_flipped: NDArray[np.float64] = (
-        _USBL_TO_VESSEL @ target_xyz_usbl.T
+        _RFU_TO_FRD @ target_xyz_usbl.T
     ).T
 
     # Apply extrinsics rotation and translation to reach Vessel-Frame.
