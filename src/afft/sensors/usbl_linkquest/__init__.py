@@ -6,6 +6,8 @@ from .parsers import parse_tracklink_log as parse_tracklink_log
 from .processors import estimate_usbl_uncertainty as estimate_usbl_uncertainty
 from .processors import process_tracklink_usbl as process_tracklink_usbl
 from .processors import resolve_usbl_position as resolve_usbl_position
+from .types import TrackLinkFixEntry as TrackLinkFixEntry
+from .types import TrackLinkRawEntry as TrackLinkRawEntry
 from .types import TrackLinkProcessingConfig as TrackLinkProcessingConfig
 from .types import (
     TrackLinkResolvePositionConfig as TrackLinkResolvePositionConfig,

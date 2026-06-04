@@ -1,4 +1,4 @@
-"""Configuration types for the LinkQuest TrackLink 1500HA USBL processor."""
+"""Types for the LinkQuest TrackLink 1500HA USBL sensor."""
 
 import numpy as np
 
@@ -9,6 +9,57 @@ from scipy.spatial.transform import (
     RigidTransform,
     Rotation,
 )
+
+
+@dataclass(slots=True, frozen=True)
+class TrackLinkFixEntry:
+    """
+    Parsed USBL_FIX entry from a TrackLink log file.
+
+    Attributes
+    ----------
+    unix_timestamp: Unix timestamp in seconds.
+    ship_latitude: Ship latitude in decimal degrees.
+    ship_longitude: Ship longitude in decimal degrees.
+    ship_heading: Ship heading in degrees from North, clockwise.
+    ship_roll: Ship roll in degrees.
+    ship_pitch: Ship pitch in degrees.
+    target_bearing_angle: Bearing to target in degrees, relative to the
+        transceiver frame (0 = forward, clockwise).
+    target_slant_range: Slant range to target in metres.
+    """
+
+    unix_timestamp: float
+    ship_latitude: float
+    ship_longitude: float
+    ship_heading: float
+    ship_roll: float
+    ship_pitch: float
+    target_bearing_angle: float
+    target_slant_range: float
+
+
+@dataclass(slots=True, frozen=True)
+class TrackLinkRawEntry:
+    """
+    Parsed USBL_RAW entry from a TrackLink log file.
+
+    X, Y, Z are the target offsets in metres in the physical sensor frame.
+    The TrackLink log outputs X and Y swapped; the parser corrects this so
+    that X = forward, Y = starboard, Z = down.
+
+    Attributes
+    ----------
+    unix_timestamp: Unix timestamp in seconds.
+    target_x: Target offset in metres along the forward direction.
+    target_y: Target offset in metres along the starboard direction.
+    target_z: Target offset in metres along the down direction (positive down).
+    """
+
+    unix_timestamp: float
+    target_x: float
+    target_y: float
+    target_z: float
 
 
 @dataclass(slots=True, frozen=True)

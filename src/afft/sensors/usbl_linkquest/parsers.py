@@ -1,5 +1,6 @@
 """Parser for the LinkQuest TrackLink USBL raw log format."""
 
+import dataclasses
 import re
 
 from datetime import datetime, timezone
@@ -9,12 +10,23 @@ import pandas as pd
 
 from afft.utils.log import logger
 
+from .types import TrackLinkFixEntry, TrackLinkRawEntry
+
 
 _FIX_RE: re.Pattern[str] = re.compile(
     r"^USBL_FIX:\s+(\S+)"
     r"\s+X:(\S+)\s+Y:(\S+)"
     r"\s+hdg:(\S+)\s+roll:(\S+)\s+pitch:(\S+)"
     r"\s+bear:(\S+)\s+rng:(\S+)"
+)
+
+# Optional counter token appears after the timestamp on all pings except the
+# first, making field positions variable from the front — match from the end.
+_RAW_RE: re.Pattern[str] = re.compile(
+    r"^USBL_RAW:\s+(\S+)"  # timestamp
+    r"(?:\s+\S+)?"  # optional counter
+    r"(?:\s+\S+){4}"  # HH:MM:SS, flag, bearing, range
+    r"\s+(\S+)\s+(\S+)\s+(\S+)"  # x, y, z
 )
 
 
@@ -27,45 +39,31 @@ def parse_fix_entries(path: Path) -> pd.DataFrame:
 
     Returns
     -------
-    DataFrame with columns: unix_timestamp, timestamp, ship_latitude,
-    ship_longitude, ship_heading, ship_roll, ship_pitch,
-    target_bearing_angle, target_slant_range.
+    DataFrame with columns: unix_timestamp, ship_latitude, ship_longitude,
+    ship_heading, ship_roll, ship_pitch, target_bearing_angle,
+    target_slant_range.
     """
-    records: list[dict[str, object]] = []
+    entries: list[TrackLinkFixEntry] = []
 
     with open(path) as file:
         for line in file:
             if not line.startswith("USBL_FIX:"):
                 continue
-            match = _FIX_RE.match(line)
-            if match is None:
+            entry: TrackLinkFixEntry | None = _parse_fix_line(line)
+            if entry is None:
                 continue
-            ts, lat, lon, heading, roll, pitch, bearing, slant_range = (
-                match.groups()
-            )
-            unix_ts = float(ts)
-            records.append(
-                {
-                    "unix_timestamp": unix_ts,
-                    "timestamp": _unix_to_iso(unix_ts),
-                    "ship_latitude": float(lat),
-                    "ship_longitude": float(lon),
-                    "ship_heading": float(heading),
-                    "ship_roll": float(roll),
-                    "ship_pitch": float(pitch),
-                    "target_bearing_angle": float(bearing),
-                    "target_slant_range": float(slant_range),
-                }
-            )
+            entries.append(entry)
 
-    return pd.DataFrame(records)
+    dataframe: pd.DataFrame = pd.DataFrame(
+        [dataclasses.asdict(entry) for entry in entries]
+    )
+    if not dataframe.empty:
+        dataframe["timestamp"] = dataframe["unix_timestamp"].apply(_unix_to_iso)
+    return dataframe
 
 
 def parse_raw_entries(path: Path) -> pd.DataFrame:
     """Parse USBL_RAW lines from a TrackLink log file.
-
-    The east, north, and depth fields are the horizontal NED displacements and
-    target depth pre-computed by the TrackLink hardware.
 
     Arguments
     ---------
@@ -73,29 +71,20 @@ def parse_raw_entries(path: Path) -> pd.DataFrame:
 
     Returns
     -------
-    DataFrame with columns: unix_timestamp, target_x, target_y,
-    target_z.
+    DataFrame with columns: unix_timestamp, target_x, target_y, target_z.
     """
-    records: list[dict[str, object]] = []
+    entries: list[TrackLinkRawEntry] = []
 
     with open(path) as file:
         for line in file:
             if not line.startswith("USBL_RAW:"):
                 continue
-            parsed = _parse_raw_line(line)
-            if parsed is None:
+            entry: TrackLinkRawEntry | None = _parse_raw_line(line)
+            if entry is None:
                 continue
-            unix_ts, east, north, depth = parsed
-            records.append(
-                {
-                    "unix_timestamp": unix_ts,
-                    "target_x": east,
-                    "target_y": north,
-                    "target_z": depth,
-                }
-            )
+            entries.append(entry)
 
-    return pd.DataFrame(records)
+    return pd.DataFrame([dataclasses.asdict(entry) for entry in entries])
 
 
 def parse_novatel_entries(path: Path) -> pd.DataFrame:
@@ -119,9 +108,14 @@ def parse_novatel_entries(path: Path) -> pd.DataFrame:
         for line in file:
             if not line.startswith("NOVATEL:"):
                 continue
-            parsed = _parse_novatel_line(line)
+            parsed: tuple[float, float, float] | None = _parse_novatel_line(
+                line
+            )
             if parsed is None:
                 continue
+            unix_ts: float
+            ship_lat: float
+            ship_lon: float
             unix_ts, ship_lat, ship_lon = parsed
             records.append(
                 {
@@ -156,8 +150,8 @@ def parse_tracklink_log(path: Path) -> pd.DataFrame:
     ship_heading, ship_roll, ship_pitch, target_bearing_angle,
     target_slant_range, target_x, target_y, target_z.
     """
-    fix = parse_fix_entries(path)
-    raw = parse_raw_entries(path)
+    fix: pd.DataFrame = parse_fix_entries(path)
+    raw: pd.DataFrame = parse_raw_entries(path)
 
     if fix.empty:
         return pd.DataFrame(
@@ -176,7 +170,7 @@ def parse_tracklink_log(path: Path) -> pd.DataFrame:
             ]
         )
 
-    fix_sorted = fix.sort_values("unix_timestamp")
+    fix_sorted: pd.DataFrame = fix.sort_values("unix_timestamp")
 
     if raw.empty:
         logger.warning(
@@ -195,7 +189,7 @@ def parse_tracklink_log(path: Path) -> pd.DataFrame:
             tolerance=1.0,
         )
 
-    column_order = [
+    column_order: list[str] = [
         "timestamp",
         "ship_latitude",
         "ship_longitude",
@@ -215,26 +209,48 @@ def parse_tracklink_log(path: Path) -> pd.DataFrame:
     )
 
 
-def _parse_raw_line(
-    line: str,
-) -> tuple[float, float, float, float] | None:
-    """Extract (unix_timestamp, east, north, depth) from a USBL_RAW line.
-
-    Fields are indexed from the end to handle the optional counter token
-    that appears after the timestamp in all but the first ping.
-
-    Format (whitespace-separated):
-        USBL_RAW:  <timestamp>  [counter]  <HH:MM:SS>  <flag>
-                   <bearing>  <range>  <x>  <y>  <z>  0.0
-    """
-    parts = line.split()
-    if len(parts) < 8:
+def _parse_fix_line(line: str) -> TrackLinkFixEntry | None:
+    """Parse a single USBL_FIX line into a TrackLinkFixEntry."""
+    match: re.Match[str] | None = _FIX_RE.match(line)
+    if match is None:
         return None
-    return (
-        float(parts[1]),
-        float(parts[-4]),
-        float(parts[-3]),
-        float(parts[-2]),
+    ts: str
+    lat: str
+    lon: str
+    heading: str
+    roll: str
+    pitch: str
+    bearing: str
+    slant_range: str
+    ts, lat, lon, heading, roll, pitch, bearing, slant_range = match.groups()
+    unix_ts: float = float(ts)
+    return TrackLinkFixEntry(
+        unix_timestamp=unix_ts,
+        ship_latitude=float(lat),
+        ship_longitude=float(lon),
+        ship_heading=float(heading),
+        ship_roll=float(roll),
+        ship_pitch=float(pitch),
+        target_bearing_angle=float(bearing),
+        target_slant_range=float(slant_range),
+    )
+
+
+def _parse_raw_line(line: str) -> TrackLinkRawEntry | None:
+    """Parse a single USBL_RAW line into a TrackLinkRawEntry."""
+    match: re.Match[str] | None = _RAW_RE.match(line)
+    if match is None:
+        return None
+    ts: str
+    pos_a: str
+    pos_b: str
+    pos_c: str
+    ts, pos_a, pos_b, pos_c = match.groups()
+    return TrackLinkRawEntry(
+        unix_timestamp=float(ts),
+        target_x=float(pos_b),
+        target_y=float(pos_a),
+        target_z=float(pos_c),
     )
 
 
@@ -248,7 +264,7 @@ def _parse_novatel_line(
     Format (whitespace-separated):
         NOVATEL:  <timestamp>  <  <count>  <gps_time>  <lat>  <lon>  ...
     """
-    parts = line.split()
+    parts: list[str] = line.split()
     if len(parts) < 7 or parts[2] != "<":
         return None
     try:
