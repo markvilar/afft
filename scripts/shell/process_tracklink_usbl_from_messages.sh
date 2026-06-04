@@ -39,7 +39,7 @@ uv run afft sensors process-tracklink-usbl-from-messages \
   --deployment-configs "${CONFIG_DIR}/deployment_configs_selected.toml" \
   --deployment "qdch0ftq_20130406_023610"
 
-# exit 0
+exit 0
 
 # --------------------------------------------------------------------------------------
 # Site 2

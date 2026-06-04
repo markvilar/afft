@@ -90,12 +90,12 @@ def resolve_target_position_from_messages(
     depth: NDArray[np.float64] = result["target_depth"].to_numpy()
     slant_range: NDArray[np.float64] = result[config.range_col].to_numpy()
     depth_relative: NDArray[np.float64] = depth - transceiver_ned[:, 2]
-    target_xyz_usbl: NDArray[np.float64] = (
-        _calculate_target_xyz_from_range_bearing(
-            slant_range=slant_range,
-            bearing_deg=result[config.bearing_col].to_numpy(),
-            depth=depth_relative,
-        )
+    target_xyz_usbl: NDArray[np.float64] = _solve_target_xyz_sensor_frame(
+        slant_range=slant_range,
+        bearing_deg=result[config.bearing_col].to_numpy(),
+        depth=depth_relative,
+        ship_rotation=R_ship,
+        extrinsics_rotation=extrinsics.rotation,
     )
     # Step 3 - Rotate target from transceiver frame → ship body → NED, then convert the
     # transceiver and target positions to geodetic (WGS84).
@@ -113,7 +113,7 @@ def resolve_target_position_from_messages(
         target_xyz_vessel[:, 0] ** 2 + target_xyz_vessel[:, 1] ** 2
     )
     target_inclination_angle: NDArray[np.float64] = np.degrees(
-        np.arcsin(np.clip(depth_relative / slant_range, -1.0, 1.0))
+        np.arcsin(np.clip(target_xyz_usbl[:, 2] / slant_range, -1.0, 1.0))
     )
 
     transceiver_lat: NDArray[np.float64]
@@ -467,34 +467,100 @@ def _interpolate_depth(
     return np.interp(usbl_time, pressure_time, pressure_depth)
 
 
-def _calculate_target_xyz_from_range_bearing(
+def _solve_target_xyz_sensor_frame(
     slant_range: NDArray[np.float64],
     bearing_deg: NDArray[np.float64],
     depth: NDArray[np.float64],
+    ship_rotation: Rotation,
+    extrinsics_rotation: Rotation,
 ) -> NDArray[np.float64]:
     """Compute target position in sensor frame from slant range, bearing, and depth.
 
-    Converts spherical USBL observations to a Cartesian (x, y, z) position in
-    the transceiver sensor frame. No extrinsics or attitude compensation applied.
+    Solves for the sensor-frame Cartesian position consistent with the measured
+    slant range, a bearing defined in the sensor horizontal plane, and the known
+    world-frame (NED) depth of the target. Accounts for the full rotation chain
+    R_total = R_ship @ R_extrinsics, so the result is correct even when the
+    transceiver is mounted at a roll or pitch angle.
+
+    Assumption: bearing is measured in the sensor horizontal plane (perpendicular
+    to the sensor Z-axis), not as a compass-referenced azimuth.
+
+    Steps:
+    1. Extract the world-down direction in sensor coordinates from the third row
+       of R_total = R_ship @ R_extrinsics.
+    2. Project that row onto the bearing direction (bearing_projection, A) and
+       the sensor Z-axis (z_projection, B), giving depth = A·r_h + B·z_s.
+    3. Combine with the slant-range constraint r_h² + z_s² = r² to form a
+       quadratic in r_h; select the non-negative root.
+    4. Recover z_s from the depth constraint: z_s = (d − A·r_h) / B.
+    5. Return [r_h·cos(b), r_h·sin(b), z_s].
+
+    See issue #110 for the full derivation.
 
     Arguments
     ---------
     slant_range: Slant range from transceiver to target (m).
-    bearing_deg: Bearing from transceiver to target (degrees).
-    depth: Interpolated target depth (m, positive downward).
+    bearing_deg: Bearing in the sensor horizontal plane (degrees, 0 = sensor
+        X-axis, clockwise).
+    depth: Target depth relative to the transceiver origin in the world NED
+        frame (m, positive downward).
+    ship_rotation: Per-row batch rotation from ship body frame to NED frame.
+    extrinsics_rotation: Single rotation from sensor frame to ship body frame.
 
     Returns
     -------
-    Array of shape (N, 3) with columns [x, y, z] in the sensor frame.
+    Array of shape (N, 3) with columns [x_s, y_s, z_s] in the sensor frame.
     """
+    # Step 1 — Extract the world-depth (NED Z) direction in sensor coordinates.
+    # The third row of R_total = R_ship @ R_extrinsics is a unit vector whose
+    # dot product with any sensor-frame vector gives the world-down component.
+    depth_row: NDArray[np.float64] = (
+        ship_rotation * extrinsics_rotation
+    ).as_matrix()[:, 2, :]  # (N, 3)
+
+    # Step 2 — Project the depth row onto the bearing direction and sensor Z-axis.
+    # bearing_projection (A) and z_projection (B) satisfy:
+    #   depth = A * horizontal_range + B * sensor_z
     bearing_rad: NDArray[np.float64] = np.radians(bearing_deg)
-    horizontal_range: NDArray[np.float64] = np.sqrt(
-        np.maximum(slant_range**2 - depth**2, 0.0)
+    cos_bearing: NDArray[np.float64] = np.cos(bearing_rad)
+    sin_bearing: NDArray[np.float64] = np.sin(bearing_rad)
+
+    bearing_projection: NDArray[np.float64] = (
+        depth_row[:, 0] * cos_bearing + depth_row[:, 1] * sin_bearing
     )
+    z_projection: NDArray[np.float64] = depth_row[:, 2]
+
+    # Step 3 — Solve the quadratic in horizontal_range (positive root).
+    # Substituting sensor_z = (depth - A * r_h) / B into r_h² + sensor_z² = r²
+    # yields: (A² + B²) * r_h² - 2*A*d*r_h + (d² - r²*B²) = 0
+    # Discriminant = 4*B²*(r²*(A²+B²) - d²)
+    discriminant_inner: NDArray[np.float64] = (
+        slant_range**2 * (bearing_projection**2 + z_projection**2) - depth**2
+    )
+    horizontal_range: NDArray[np.float64] = np.maximum(
+        (
+            bearing_projection * depth
+            + np.abs(z_projection)
+            * np.sqrt(np.maximum(discriminant_inner, 0.0))
+        )
+        / np.maximum(bearing_projection**2 + z_projection**2, 1e-18),
+        0.0,
+    )
+
+    # Step 4 — Recover the sensor-frame Z component from the depth constraint.
+    safe_z_projection: NDArray[np.float64] = np.where(
+        np.abs(z_projection) > 1e-9,
+        z_projection,
+        np.copysign(1e-9, z_projection),
+    )
+    sensor_z: NDArray[np.float64] = (
+        depth - bearing_projection * horizontal_range
+    ) / safe_z_projection
+
     return np.column_stack(
         [
-            horizontal_range * np.cos(bearing_rad),
-            horizontal_range * np.sin(bearing_rad),
-            depth,
+            horizontal_range * cos_bearing,
+            horizontal_range * sin_bearing,
+            sensor_z,
         ]
     )

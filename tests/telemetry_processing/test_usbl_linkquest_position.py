@@ -355,6 +355,40 @@ def test_extrinsics_translation_shifts_origin() -> None:
     )
 
 
+def test_extrinsics_roll_sensor_z_corrected() -> None:
+    """Extrinsics roll φ: sensor_z must equal depth / cos(φ) when bearing = 0°.
+
+    With only a roll rotation around the sensor X-axis:
+      depth_row = [0, sin(φ), cos(φ)]
+      bearing_projection (A) = 0  (bearing = 0° → cos = 1, sin = 0)
+      z_projection (B)       = cos(φ)
+
+    So sensor_z = depth / cos(φ), not depth (which the old implementation returned).
+    """
+    roll_rad: float = math.radians(30.0)
+    slant_range_m: float = 1000.0
+    depth_m: float = (
+        500.0  # discriminant_inner = r²·cos²(φ) - d² = 750000-250000 > 0
+    )
+
+    usbl = _usbl_df(
+        [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 0.0, slant_range_m)]
+    )
+    pressure = _pressure_df(
+        ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [depth_m, depth_m]
+    )
+    config = TrackLinkResolvePositionFromMessagesConfig(
+        extrinsics=TrackLinkTransceiverExtrinsics(rotx=roll_rad)
+    )
+
+    result = resolve_target_position_from_messages(usbl, pressure, config)
+
+    expected_sensor_z: float = depth_m / math.cos(roll_rad)
+    assert math.isclose(
+        result["target_z_sensor"].iloc[0], expected_sensor_z, rel_tol=1e-6
+    )
+
+
 def test_extrinsics_ship_heading_applied() -> None:
     """Heading 90° (East) + zero extrinsics: forward bearing resolves East."""
     usbl = _usbl_df(

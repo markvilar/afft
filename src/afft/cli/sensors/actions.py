@@ -47,6 +47,7 @@ def dispatch_process_tracklink_usbl_from_messages(
     output_file: str | Path,
     deployment_configs: str | Path,
     deployment_label: str,
+    ignore_extrinsics: bool = False,
 ) -> None:
     """Resolve positions and estimate uncertainty from TrackLink AUV messages."""
     deployment = load_deployment_config(
@@ -57,20 +58,24 @@ def dispatch_process_tracklink_usbl_from_messages(
         f"{deployment.date}, sensor_keys={list(deployment.sensor_keys)}"
     )
 
-    extrinsics = TrackLinkTransceiverExtrinsics(
-        locx=deployment.usbl_modem.locx,
-        locy=deployment.usbl_modem.locy,
-        locz=deployment.usbl_modem.locz,
-        rotx=deployment.usbl_modem.rotx,
-        roty=deployment.usbl_modem.roty,
-        rotz=deployment.usbl_modem.rotz,
-    )
-    logger.info(
-        f"USBL transceiver extrinsics: "
-        f"translation=({extrinsics.locx:.3f}, {extrinsics.locy:.3f}, {extrinsics.locz:.3f}) m, "
-        f"rotation=(rotx={extrinsics.rotx:.4f}, roty={extrinsics.roty:.4f}, "
-        f"rotz={extrinsics.rotz:.4f}) rad"
-    )
+    if ignore_extrinsics:
+        extrinsics = TrackLinkTransceiverExtrinsics()
+        logger.info("USBL transceiver extrinsics: ignored (zero extrinsics)")
+    else:
+        extrinsics = TrackLinkTransceiverExtrinsics(
+            locx=deployment.usbl_modem.locx,
+            locy=deployment.usbl_modem.locy,
+            locz=deployment.usbl_modem.locz,
+            rotx=deployment.usbl_modem.rotx,
+            roty=deployment.usbl_modem.roty,
+            rotz=deployment.usbl_modem.rotz,
+        )
+        logger.info(
+            f"USBL transceiver extrinsics: "
+            f"translation=({extrinsics.locx:.3f}, {extrinsics.locy:.3f}, {extrinsics.locz:.3f}) m, "
+            f"rotation=(rotx={extrinsics.rotx:.4f}, roty={extrinsics.roty:.4f}, "
+            f"rotz={extrinsics.rotz:.4f}) rad"
+        )
     config = TrackLinkProcessingFromMessagesConfig(
         resolve=TrackLinkResolvePositionFromMessagesConfig(
             extrinsics=extrinsics

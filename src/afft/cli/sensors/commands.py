@@ -74,12 +74,20 @@ def parse_tracklink_log(
     required=True,
     help="Deployment label to look up in the ship sensor configurations file.",
 )
+@click.option(
+    "--ignore-extrinsics",
+    "ignore_extrinsics",
+    is_flag=True,
+    default=False,
+    help="Use zero extrinsics instead of the calibrated values from the deployment config.",
+)
 def process_tracklink_usbl_from_messages(
     usbl_file: str,
     pressure_file: str,
     output_file: str,
     deployment_configs: str,
     deployment_label: str,
+    ignore_extrinsics: bool,
 ) -> None:
     """Resolve positions and estimate uncertainty from TrackLink AUV messages."""
     dispatch_process_tracklink_usbl_from_messages(
@@ -88,6 +96,7 @@ def process_tracklink_usbl_from_messages(
         output_file,
         deployment_configs,
         deployment_label,
+        ignore_extrinsics=ignore_extrinsics,
     )
 
 
