@@ -5,7 +5,10 @@ import pandas as pd
 
 from numpy.typing import NDArray
 
-from .types import EvologicsProcessingConfig
+from .types import (
+    EvologicsProcessingConfig,
+    EvologicsTransceiverExtrinsics,
+)
 
 # Permutation from Right-Forward-Up (USBL frame) to Forward-Right-Down (vessel frame).
 _RFU_TO_FRD: NDArray[np.float64] = np.array(
@@ -67,16 +70,19 @@ def process_evologics_usbl(
         np.arcsin(np.clip(depth_rel / slant_range, -1.0, 1.0))
     )
 
+    extrinsics: EvologicsTransceiverExtrinsics = (
+        config.extrinsics
+        if config.extrinsics is not None
+        else EvologicsTransceiverExtrinsics()
+    )
+
     # Apply frame flip (USBL-Frame → intermediate aligned with vessel axes).
     target_flipped: NDArray[np.float64] = (_RFU_TO_FRD @ target_xyz_usbl.T).T
 
     # Apply extrinsics rotation and translation to reach Vessel-Frame.
-    if config.extrinsics is not None:
-        target_xyz_vessel: NDArray[np.float64] = (
-            config.extrinsics.transform.apply(target_flipped)
-        )
-    else:
-        target_xyz_vessel = target_flipped
+    target_xyz_vessel: NDArray[np.float64] = extrinsics.transform.apply(
+        target_flipped
+    )
 
     target_horizontal_range: NDArray[np.float64] = np.sqrt(
         target_xyz_vessel[:, 0] ** 2 + target_xyz_vessel[:, 1] ** 2
@@ -88,35 +94,17 @@ def process_evologics_usbl(
     result["target_x_vessel"] = target_xyz_vessel[:, 0]
     result["target_y_vessel"] = target_xyz_vessel[:, 1]
     result["target_z_vessel"] = target_xyz_vessel[:, 2]
-    extrinsics_x: float = (
-        config.extrinsics.locx if config.extrinsics is not None else 0.0
-    )
-    extrinsics_y: float = (
-        config.extrinsics.locy if config.extrinsics is not None else 0.0
-    )
-    extrinsics_z: float = (
-        config.extrinsics.locz if config.extrinsics is not None else 0.0
-    )
-    extrinsics_phi: float = (
-        config.extrinsics.rotx if config.extrinsics is not None else 0.0
-    )
-    extrinsics_theta: float = (
-        config.extrinsics.roty if config.extrinsics is not None else 0.0
-    )
-    extrinsics_psi: float = (
-        config.extrinsics.rotz if config.extrinsics is not None else 0.0
-    )
 
     result["target_horizontal_range"] = target_horizontal_range
     result["target_inclination_angle"] = target_inclination_angle
     result["horizontal_position_std"] = config.horizontal_position_std
     result["depth_position_std"] = config.depth_position_std
-    result["usbl_extrinsics_locx"] = extrinsics_x
-    result["usbl_extrinsics_locy"] = extrinsics_y
-    result["usbl_extrinsics_locz"] = extrinsics_z
-    result["usbl_extrinsics_rotx"] = extrinsics_phi
-    result["usbl_extrinsics_roty"] = extrinsics_theta
-    result["usbl_extrinsics_rotz"] = extrinsics_psi
+    result["usbl_extrinsics_locx"] = extrinsics.locx
+    result["usbl_extrinsics_locy"] = extrinsics.locy
+    result["usbl_extrinsics_locz"] = extrinsics.locz
+    result["usbl_extrinsics_rotx"] = extrinsics.rotx
+    result["usbl_extrinsics_roty"] = extrinsics.roty
+    result["usbl_extrinsics_rotz"] = extrinsics.rotz
     result = result.rename(columns={"accuracy": "evologics_accuracy"})
 
     return result

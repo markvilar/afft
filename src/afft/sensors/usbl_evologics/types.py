@@ -30,9 +30,9 @@ class EvologicsTransceiverExtrinsics:
     rotz: Yaw in radians (positive clockwise viewed from above).
     """
 
-    locx: float
-    locy: float
-    locz: float
+    locx: float = 0.0
+    locy: float = 0.0
+    locz: float = 0.0
     rotx: float = 0.0
     roty: float = 0.0
     rotz: float = 0.0
