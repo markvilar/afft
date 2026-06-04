@@ -6,9 +6,9 @@ import pandas as pd
 import pytest
 
 from afft.sensors.usbl_linkquest import (
-    TrackLinkResolvePositionConfig,
+    TrackLinkResolvePositionFromMessagesConfig,
     TrackLinkTransceiverExtrinsics,
-    resolve_usbl_position,
+    resolve_target_position_from_messages,
 )
 
 # WGS84 ellipsoid parameters used by pymap3d
@@ -54,7 +54,7 @@ def test_output_columns() -> None:
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [5.0, 5.0]
     )
 
-    result = resolve_usbl_position(usbl, pressure)
+    result = resolve_target_position_from_messages(usbl, pressure)
 
     for col in (
         "target_depth",
@@ -85,7 +85,7 @@ def test_zero_depth_horizontal_range_equals_slant_range() -> None:
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
     )
 
-    result = resolve_usbl_position(usbl, pressure)
+    result = resolve_target_position_from_messages(usbl, pressure)
 
     assert math.isclose(
         result["target_horizontal_range"].iloc[0], 1000.0, rel_tol=1e-9
@@ -100,7 +100,7 @@ def test_projection_east_from_equator() -> None:
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
     )
 
-    result = resolve_usbl_position(usbl, pressure)
+    result = resolve_target_position_from_messages(usbl, pressure)
 
     expected_lon = math.degrees(1000.0 / _WGS84_A_M)
     assert math.isclose(result["target_latitude"].iloc[0], 0.0, abs_tol=1e-6)
@@ -117,7 +117,7 @@ def test_projection_north_from_equator() -> None:
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
     )
 
-    result = resolve_usbl_position(usbl, pressure)
+    result = resolve_target_position_from_messages(usbl, pressure)
 
     expected_lat = math.degrees(1000.0 / _WGS84_M_EQUATOR_M)
     assert math.isclose(
@@ -134,7 +134,7 @@ def test_depth_reduces_horizontal_range() -> None:
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [3.0, 3.0]
     )
 
-    result = resolve_usbl_position(usbl, pressure)
+    result = resolve_target_position_from_messages(usbl, pressure)
 
     assert math.isclose(
         result["target_horizontal_range"].iloc[0], 4.0, rel_tol=1e-9
@@ -149,7 +149,7 @@ def test_depth_exceeds_slant_range_clamps_to_zero() -> None:
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [5.0, 5.0]
     )
 
-    result = resolve_usbl_position(usbl, pressure)
+    result = resolve_target_position_from_messages(usbl, pressure)
 
     assert result["target_horizontal_range"].iloc[0] == 0.0
 
@@ -163,7 +163,7 @@ def test_depth_interpolation() -> None:
         [10.0, 20.0],
     )
 
-    result = resolve_usbl_position(usbl, pressure)
+    result = resolve_target_position_from_messages(usbl, pressure)
 
     assert math.isclose(result["target_depth"].iloc[0], 15.0, abs_tol=0.1)
 
@@ -182,8 +182,8 @@ def test_bearing_and_heading_compose() -> None:
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
     )
 
-    result_a = resolve_usbl_position(usbl_a, pressure)
-    result_b = resolve_usbl_position(usbl_b, pressure)
+    result_a = resolve_target_position_from_messages(usbl_a, pressure)
+    result_b = resolve_target_position_from_messages(usbl_b, pressure)
 
     assert math.isclose(
         result_a["target_latitude"].iloc[0],
@@ -204,9 +204,11 @@ def test_usbl_before_pressure_window_raises() -> None:
     pressure = _pressure_df(
         ["2010-04-21 02:22:00", "2010-04-21 02:23:00"], [10.0, 10.0]
     )
-    config = TrackLinkResolvePositionConfig(max_time_gap_seconds=60.0)
+    config = TrackLinkResolvePositionFromMessagesConfig(
+        max_time_gap_seconds=60.0
+    )
     with pytest.raises(ValueError, match="precedes first pressure reading"):
-        resolve_usbl_position(usbl, pressure, config)
+        resolve_target_position_from_messages(usbl, pressure, config)
 
 
 def test_usbl_after_pressure_window_raises() -> None:
@@ -216,9 +218,11 @@ def test_usbl_after_pressure_window_raises() -> None:
     pressure = _pressure_df(
         ["2010-04-21 02:22:00", "2010-04-21 02:23:00"], [10.0, 10.0]
     )
-    config = TrackLinkResolvePositionConfig(max_time_gap_seconds=60.0)
+    config = TrackLinkResolvePositionFromMessagesConfig(
+        max_time_gap_seconds=60.0
+    )
     with pytest.raises(ValueError, match="follows last pressure reading"):
-        resolve_usbl_position(usbl, pressure, config)
+        resolve_target_position_from_messages(usbl, pressure, config)
 
 
 def test_usbl_within_time_margin_does_not_raise() -> None:
@@ -228,8 +232,10 @@ def test_usbl_within_time_margin_does_not_raise() -> None:
     pressure = _pressure_df(
         ["2010-04-21 02:22:00", "2010-04-21 02:23:00"], [10.0, 10.0]
     )
-    config = TrackLinkResolvePositionConfig(max_time_gap_seconds=60.0)
-    resolve_usbl_position(usbl, pressure, config)
+    config = TrackLinkResolvePositionFromMessagesConfig(
+        max_time_gap_seconds=60.0
+    )
+    resolve_target_position_from_messages(usbl, pressure, config)
 
 
 # ---------------------------------------------------------------------------
@@ -244,12 +250,12 @@ def test_extrinsics_columns_written() -> None:
     pressure = _pressure_df(
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [5.0, 5.0]
     )
-    config = TrackLinkResolvePositionConfig(
+    config = TrackLinkResolvePositionFromMessagesConfig(
         extrinsics=TrackLinkTransceiverExtrinsics(
             x=1.0, y=2.0, z=3.0, phi=0.1, theta=0.2, psi=0.3
         )
     )
-    result = resolve_usbl_position(usbl, pressure, config)
+    result = resolve_target_position_from_messages(usbl, pressure, config)
     assert (result["usbl_extrinsics_x"] == 1.0).all()
     assert (result["usbl_extrinsics_y"] == 2.0).all()
     assert (result["usbl_extrinsics_z"] == 3.0).all()
@@ -267,7 +273,7 @@ def test_sensor_frame_columns_present_and_unrotated() -> None:
     pressure = _pressure_df(
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
     )
-    result = resolve_usbl_position(usbl, pressure)
+    result = resolve_target_position_from_messages(usbl, pressure)
 
     assert math.isclose(result["target_x_sensor"].iloc[0], 0.0, abs_tol=1e-9)
     assert math.isclose(result["target_y_sensor"].iloc[0], 1000.0, rel_tol=1e-9)
@@ -289,11 +295,11 @@ def test_extrinsics_yaw_rotates_bearing() -> None:
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
     )
 
-    result_ref = resolve_usbl_position(usbl_ref, pressure)
-    result_ext = resolve_usbl_position(
+    result_ref = resolve_target_position_from_messages(usbl_ref, pressure)
+    result_ext = resolve_target_position_from_messages(
         usbl_ext,
         pressure,
-        TrackLinkResolvePositionConfig(
+        TrackLinkResolvePositionFromMessagesConfig(
             extrinsics=TrackLinkTransceiverExtrinsics(
                 x=0.0, y=0.0, z=0.0, psi=math.radians(90.0)
             )
@@ -323,12 +329,12 @@ def test_extrinsics_translation_shifts_origin() -> None:
     )
 
     # Default (zero extrinsics): origin at GPS, target 500 m North.
-    result_ref = resolve_usbl_position(usbl, pressure)
+    result_ref = resolve_target_position_from_messages(usbl, pressure)
     # 100 m starboard translation: transceiver is 100 m East of GPS.
-    result_ext = resolve_usbl_position(
+    result_ext = resolve_target_position_from_messages(
         usbl,
         pressure,
-        TrackLinkResolvePositionConfig(
+        TrackLinkResolvePositionFromMessagesConfig(
             extrinsics=TrackLinkTransceiverExtrinsics(x=0.0, y=100.0, z=0.0)
         ),
     )
@@ -356,10 +362,10 @@ def test_extrinsics_ship_heading_applied() -> None:
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [0.0, 0.0]
     )
 
-    result = resolve_usbl_position(
+    result = resolve_target_position_from_messages(
         usbl,
         pressure,
-        TrackLinkResolvePositionConfig(
+        TrackLinkResolvePositionFromMessagesConfig(
             extrinsics=TrackLinkTransceiverExtrinsics(x=0.0, y=0.0, z=0.0)
         ),
     )

@@ -68,9 +68,7 @@ def process_evologics_usbl(
     )
 
     # Apply frame flip (USBL-Frame → intermediate aligned with vessel axes).
-    target_flipped: NDArray[np.float64] = (
-        _RFU_TO_FRD @ target_xyz_usbl.T
-    ).T
+    target_flipped: NDArray[np.float64] = (_RFU_TO_FRD @ target_xyz_usbl.T).T
 
     # Apply extrinsics rotation and translation to reach Vessel-Frame.
     if config.extrinsics is not None:

@@ -81,9 +81,9 @@ class TrackLinkTransceiverExtrinsics:
     psi: Yaw in radians (positive clockwise viewed from above).
     """
 
-    x: float
-    y: float
-    z: float
+    x: float = 0.0
+    y: float = 0.0
+    z: float = 0.0
     phi: float = 0.0
     theta: float = 0.0
     psi: float = 0.0
@@ -107,9 +107,9 @@ class TrackLinkTransceiverExtrinsics:
 
 
 @dataclass(slots=True, frozen=True)
-class TrackLinkResolvePositionConfig:
+class TrackLinkResolvePositionFromMessagesConfig:
     """
-    Configuration for the USBL position resolution step.
+    Configuration for the USBL position resolution step from AUV messages.
 
     The raw bearing is always treated as an azimuth in the transceiver body
     frame (0 = transceiver forward, clockwise). The full ZYX attitude chain
@@ -148,6 +148,47 @@ class TrackLinkResolvePositionConfig:
 
 
 @dataclass(slots=True, frozen=True)
+class TrackLinkResolvePositionFromLogsConfig:
+    """
+    Configuration for the USBL position resolution step from log entries.
+
+    Target XYZ in the sensor frame is taken directly from the log entries.
+    The full ZYX attitude chain (transceiver → ship body → NED) is applied
+    on every call. When no extrinsics are provided a zero-offset,
+    zero-rotation transceiver is assumed.
+
+    Attributes
+    ----------
+    timestamp_col: Name of the timestamp column in the DataFrame.
+    target_x_col: Name of the target X column (forward, sensor frame).
+    target_y_col: Name of the target Y column (starboard, sensor frame).
+    target_z_col: Name of the target Z column (down, sensor frame).
+    bearing_col: Name of the bearing column in the USBL DataFrame.
+    range_col: Name of the slant range column in the USBL DataFrame.
+    ship_lat_col: Name of the ship latitude column.
+    ship_lon_col: Name of the ship longitude column.
+    ship_heading_col: Name of the ship heading column (degrees, clockwise from N).
+    ship_roll_col: Name of the ship roll column (degrees).
+    ship_pitch_col: Name of the ship pitch column (degrees).
+    extrinsics: Transceiver extrinsics relative to the ship body frame. Defaults
+        to zero offset and zero rotation when not provided.
+    """
+
+    timestamp_col: str = "timestamp"
+    target_x_col: str = "target_x"
+    target_y_col: str = "target_y"
+    target_z_col: str = "target_z"
+    bearing_col: str = "target_bearing_angle"
+    range_col: str = "target_slant_range"
+    ship_lat_col: str = "ship_latitude"
+    ship_lon_col: str = "ship_longitude"
+    ship_heading_col: str = "ship_heading"
+    ship_roll_col: str = "ship_roll"
+    ship_pitch_col: str = "ship_pitch"
+    extrinsics: TrackLinkTransceiverExtrinsics | None = None
+
+
+@dataclass(slots=True, frozen=True)
 class TrackLinkUncertaintyConfig:
     """
     Deployment-calibrated uncertainty values for TrackLink USBL processing.
@@ -163,18 +204,37 @@ class TrackLinkUncertaintyConfig:
 
 
 @dataclass(slots=True, frozen=True)
-class TrackLinkProcessingConfig:
+class TrackLinkProcessingFromMessagesConfig:
     """
-    Combined configuration for the full TrackLink USBL processing pipeline.
+    Combined configuration for the TrackLink USBL processing pipeline from AUV messages.
 
     Attributes
     ----------
-    resolve: Configuration for position resolution.
+    resolve: Configuration for position resolution from messages.
     uncertainty: Configuration for uncertainty estimation.
     """
 
-    resolve: TrackLinkResolvePositionConfig = field(
-        default_factory=TrackLinkResolvePositionConfig
+    resolve: TrackLinkResolvePositionFromMessagesConfig = field(
+        default_factory=TrackLinkResolvePositionFromMessagesConfig
+    )
+    uncertainty: TrackLinkUncertaintyConfig = field(
+        default_factory=TrackLinkUncertaintyConfig
+    )
+
+
+@dataclass(slots=True, frozen=True)
+class TrackLinkProcessingFromLogsConfig:
+    """
+    Combined configuration for the TrackLink USBL processing pipeline from log entries.
+
+    Attributes
+    ----------
+    resolve: Configuration for position resolution from log entries.
+    uncertainty: Configuration for uncertainty estimation.
+    """
+
+    resolve: TrackLinkResolvePositionFromLogsConfig = field(
+        default_factory=TrackLinkResolvePositionFromLogsConfig
     )
     uncertainty: TrackLinkUncertaintyConfig = field(
         default_factory=TrackLinkUncertaintyConfig

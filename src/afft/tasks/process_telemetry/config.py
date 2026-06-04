@@ -8,7 +8,7 @@ from afft.sensors.acfr_vision import PairStereoImagesConfig
 from afft.sensors.dvl_teledyne import DvlUncertaintyConfig
 from afft.sensors.pressure_parosci import PressureUncertaintyConfig
 from afft.sensors.usbl_linkquest import (
-    TrackLinkResolvePositionConfig,
+    TrackLinkResolvePositionFromMessagesConfig,
     TrackLinkUncertaintyConfig,
 )
 from afft.telemetry_processing import (
@@ -20,7 +20,7 @@ _CONFIG_CLASSES: dict[str, type] = {
     "pair_stereo_images": PairStereoImagesConfig,
     "estimate_dvl_uncertainty": DvlUncertaintyConfig,
     "estimate_pressure_uncertainty": PressureUncertaintyConfig,
-    "resolve_usbl_position": TrackLinkResolvePositionConfig,
+    "resolve_usbl_position": TrackLinkResolvePositionFromMessagesConfig,
     "estimate_usbl_uncertainty": TrackLinkUncertaintyConfig,
 }
 
