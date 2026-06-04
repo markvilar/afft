@@ -14,19 +14,19 @@ from .types import TrackLinkFixEntry, TrackLinkRawEntry
 
 
 _FIX_RE: re.Pattern[str] = re.compile(
-    r"^USBL_FIX:\s+(\S+)"
-    r"\s+X:(\S+)\s+Y:(\S+)"
-    r"\s+hdg:(\S+)\s+roll:(\S+)\s+pitch:(\S+)"
-    r"\s+bear:(\S+)\s+rng:(\S+)"
+    r"^USBL_FIX:\s+(?P<timestamp>\S+)"
+    r"\s+X:(?P<ship_latitude>\S+)\s+Y:(?P<ship_longitude>\S+)"
+    r"\s+hdg:(?P<ship_heading>\S+)\s+roll:(?P<ship_roll>\S+)\s+pitch:(?P<ship_pitch>\S+)"
+    r"\s+bear:(?P<target_bearing_angle>\S+)\s+rng:(?P<target_slant_range>\S+)"
 )
 
-# Optional counter token appears after the timestamp on all pings except the
-# first, making field positions variable from the front — match from the end.
 _RAW_RE: re.Pattern[str] = re.compile(
-    r"^USBL_RAW:\s+(\S+)"  # timestamp
-    r"(?:\s+\S+)?"  # optional counter
-    r"(?:\s+\S+){4}"  # HH:MM:SS, flag, bearing, range
-    r"\s+(\S+)\s+(\S+)\s+(\S+)"  # x, y, z
+    r"^USBL_RAW:\s+(?P<timestamp>\S+)"  # timestamp
+    r"(?:\s+(?P<flag1>\d+))?"  # optional flag1 (absent on first ping)
+    r"\s+\d+:\d+:\d+"  # HH:MM:SS (skip)
+    r"\s+(?P<flag2>\S+)"  # flag2
+    r"(?:\s+\S+){2}"  # bearing, range (skip)
+    r"\s+(?P<log_x>\S+)\s+(?P<log_y>\S+)\s+(?P<log_z>\S+)"  # XYZ as logged (X/Y swapped)
 )
 
 
@@ -71,7 +71,8 @@ def parse_raw_entries(path: Path) -> pd.DataFrame:
 
     Returns
     -------
-    DataFrame with columns: unix_timestamp, target_x, target_y, target_z.
+    DataFrame with columns: unix_timestamp, flag1, flag2, target_x,
+    target_y, target_z.
     """
     entries: list[TrackLinkRawEntry] = []
 
@@ -148,7 +149,7 @@ def parse_tracklink_log(path: Path) -> pd.DataFrame:
     -------
     DataFrame with columns: timestamp, ship_latitude, ship_longitude,
     ship_heading, ship_roll, ship_pitch, target_bearing_angle,
-    target_slant_range, target_x, target_y, target_z.
+    target_slant_range, flag1, flag2, target_x, target_y, target_z.
     """
     fix: pd.DataFrame = parse_fix_entries(path)
     raw: pd.DataFrame = parse_raw_entries(path)
@@ -164,6 +165,8 @@ def parse_tracklink_log(path: Path) -> pd.DataFrame:
                 "ship_pitch",
                 "target_bearing_angle",
                 "target_slant_range",
+                "flag1",
+                "flag2",
                 "target_x",
                 "target_y",
                 "target_z",
@@ -177,6 +180,8 @@ def parse_tracklink_log(path: Path) -> pd.DataFrame:
             f"{path.name}: no USBL_RAW entries — "
             f"target_x, target_y, target_z will be NaN"
         )
+        fix_sorted["flag1"] = float("nan")
+        fix_sorted["flag2"] = float("nan")
         fix_sorted["target_x"] = float("nan")
         fix_sorted["target_y"] = float("nan")
         fix_sorted["target_z"] = float("nan")
@@ -198,6 +203,8 @@ def parse_tracklink_log(path: Path) -> pd.DataFrame:
         "ship_pitch",
         "target_bearing_angle",
         "target_slant_range",
+        "flag1",
+        "flag2",
         "target_x",
         "target_y",
         "target_z",
@@ -214,25 +221,15 @@ def _parse_fix_line(line: str) -> TrackLinkFixEntry | None:
     match: re.Match[str] | None = _FIX_RE.match(line)
     if match is None:
         return None
-    ts: str
-    lat: str
-    lon: str
-    heading: str
-    roll: str
-    pitch: str
-    bearing: str
-    slant_range: str
-    ts, lat, lon, heading, roll, pitch, bearing, slant_range = match.groups()
-    unix_ts: float = float(ts)
     return TrackLinkFixEntry(
-        unix_timestamp=unix_ts,
-        ship_latitude=float(lat),
-        ship_longitude=float(lon),
-        ship_heading=float(heading),
-        ship_roll=float(roll),
-        ship_pitch=float(pitch),
-        target_bearing_angle=float(bearing),
-        target_slant_range=float(slant_range),
+        unix_timestamp=float(match["timestamp"]),
+        ship_latitude=float(match["ship_latitude"]),
+        ship_longitude=float(match["ship_longitude"]),
+        ship_heading=float(match["ship_heading"]),
+        ship_roll=float(match["ship_roll"]),
+        ship_pitch=float(match["ship_pitch"]),
+        target_bearing_angle=float(match["target_bearing_angle"]),
+        target_slant_range=float(match["target_slant_range"]),
     )
 
 
@@ -241,16 +238,14 @@ def _parse_raw_line(line: str) -> TrackLinkRawEntry | None:
     match: re.Match[str] | None = _RAW_RE.match(line)
     if match is None:
         return None
-    ts: str
-    pos_a: str
-    pos_b: str
-    pos_c: str
-    ts, pos_a, pos_b, pos_c = match.groups()
+    flag1_str: str | None = match["flag1"]
     return TrackLinkRawEntry(
-        unix_timestamp=float(ts),
-        target_x=float(pos_b),
-        target_y=float(pos_a),
-        target_z=float(pos_c),
+        unix_timestamp=float(match["timestamp"]),
+        flag1=int(flag1_str) if flag1_str is not None else None,
+        flag2=int(match["flag2"]),
+        target_x=float(match["log_y"]),  # TrackLink logs X and Y swapped
+        target_y=float(match["log_x"]),
+        target_z=float(match["log_z"]),
     )
 
 

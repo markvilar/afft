@@ -51,12 +51,17 @@ class TrackLinkRawEntry:
     Attributes
     ----------
     unix_timestamp: Unix timestamp in seconds.
+    flag1: Integer flag preceding the time field. Absent on the first ping
+        (None in that case).
+    flag2: Integer flag following the time field.
     target_x: Target offset in metres along the forward direction.
     target_y: Target offset in metres along the starboard direction.
     target_z: Target offset in metres along the down direction (positive down).
     """
 
     unix_timestamp: float
+    flag1: int | None
+    flag2: int
     target_x: float
     target_y: float
     target_z: float
