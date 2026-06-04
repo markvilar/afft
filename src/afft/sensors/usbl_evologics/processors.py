@@ -36,8 +36,8 @@ def process_evologics_usbl(
           target_x_vessel, target_y_vessel, target_z_vessel (Vessel-Frame),
           target_horizontal_range, target_inclination_angle,
           horizontal_position_std, depth_position_std, evologics_accuracy,
-          usbl_extrinsics_x, usbl_extrinsics_y, usbl_extrinsics_z,
-          usbl_extrinsics_phi, usbl_extrinsics_theta, usbl_extrinsics_psi.
+          usbl_extrinsics_locx, usbl_extrinsics_locy, usbl_extrinsics_locz,
+          usbl_extrinsics_rotx, usbl_extrinsics_roty, usbl_extrinsics_rotz.
     Removes: accuracy (renamed to evologics_accuracy).
 
     Arguments
@@ -89,34 +89,34 @@ def process_evologics_usbl(
     result["target_y_vessel"] = target_xyz_vessel[:, 1]
     result["target_z_vessel"] = target_xyz_vessel[:, 2]
     extrinsics_x: float = (
-        config.extrinsics.x if config.extrinsics is not None else 0.0
+        config.extrinsics.locx if config.extrinsics is not None else 0.0
     )
     extrinsics_y: float = (
-        config.extrinsics.y if config.extrinsics is not None else 0.0
+        config.extrinsics.locy if config.extrinsics is not None else 0.0
     )
     extrinsics_z: float = (
-        config.extrinsics.z if config.extrinsics is not None else 0.0
+        config.extrinsics.locz if config.extrinsics is not None else 0.0
     )
     extrinsics_phi: float = (
-        config.extrinsics.phi if config.extrinsics is not None else 0.0
+        config.extrinsics.rotx if config.extrinsics is not None else 0.0
     )
     extrinsics_theta: float = (
-        config.extrinsics.theta if config.extrinsics is not None else 0.0
+        config.extrinsics.roty if config.extrinsics is not None else 0.0
     )
     extrinsics_psi: float = (
-        config.extrinsics.psi if config.extrinsics is not None else 0.0
+        config.extrinsics.rotz if config.extrinsics is not None else 0.0
     )
 
     result["target_horizontal_range"] = target_horizontal_range
     result["target_inclination_angle"] = target_inclination_angle
     result["horizontal_position_std"] = config.horizontal_position_std
     result["depth_position_std"] = config.depth_position_std
-    result["usbl_extrinsics_x"] = extrinsics_x
-    result["usbl_extrinsics_y"] = extrinsics_y
-    result["usbl_extrinsics_z"] = extrinsics_z
-    result["usbl_extrinsics_phi"] = extrinsics_phi
-    result["usbl_extrinsics_theta"] = extrinsics_theta
-    result["usbl_extrinsics_psi"] = extrinsics_psi
+    result["usbl_extrinsics_locx"] = extrinsics_x
+    result["usbl_extrinsics_locy"] = extrinsics_y
+    result["usbl_extrinsics_locz"] = extrinsics_z
+    result["usbl_extrinsics_rotx"] = extrinsics_phi
+    result["usbl_extrinsics_roty"] = extrinsics_theta
+    result["usbl_extrinsics_rotz"] = extrinsics_psi
     result = result.rename(columns={"accuracy": "evologics_accuracy"})
 
     return result

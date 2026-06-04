@@ -58,18 +58,18 @@ def dispatch_process_tracklink_usbl_from_messages(
     )
 
     extrinsics = TrackLinkTransceiverExtrinsics(
-        x=deployment.usbl_modem.x,
-        y=deployment.usbl_modem.y,
-        z=deployment.usbl_modem.z,
-        phi=deployment.usbl_modem.phi,
-        theta=deployment.usbl_modem.theta,
-        psi=deployment.usbl_modem.psi,
+        locx=deployment.usbl_modem.locx,
+        locy=deployment.usbl_modem.locy,
+        locz=deployment.usbl_modem.locz,
+        rotx=deployment.usbl_modem.rotx,
+        roty=deployment.usbl_modem.roty,
+        rotz=deployment.usbl_modem.rotz,
     )
     logger.info(
         f"USBL transceiver extrinsics: "
-        f"translation=({extrinsics.x:.3f}, {extrinsics.y:.3f}, {extrinsics.z:.3f}) m, "
-        f"rotation=(phi={extrinsics.phi:.4f}, theta={extrinsics.theta:.4f}, "
-        f"psi={extrinsics.psi:.4f}) rad"
+        f"translation=({extrinsics.locx:.3f}, {extrinsics.locy:.3f}, {extrinsics.locz:.3f}) m, "
+        f"rotation=(rotx={extrinsics.rotx:.4f}, roty={extrinsics.roty:.4f}, "
+        f"rotz={extrinsics.rotz:.4f}) rad"
     )
     config = TrackLinkProcessingFromMessagesConfig(
         resolve=TrackLinkResolvePositionFromMessagesConfig(
@@ -115,18 +115,18 @@ def dispatch_process_tracklink_usbl_from_logs(
         logger.info("USBL transceiver extrinsics: ignored (zero extrinsics)")
     else:
         extrinsics = TrackLinkTransceiverExtrinsics(
-            x=deployment.usbl_modem.x,
-            y=deployment.usbl_modem.y,
-            z=deployment.usbl_modem.z,
-            phi=deployment.usbl_modem.phi,
-            theta=deployment.usbl_modem.theta,
-            psi=deployment.usbl_modem.psi,
+            locx=deployment.usbl_modem.locx,
+            locy=deployment.usbl_modem.locy,
+            locz=deployment.usbl_modem.locz,
+            rotx=deployment.usbl_modem.rotx,
+            roty=deployment.usbl_modem.roty,
+            rotz=deployment.usbl_modem.rotz,
         )
         logger.info(
             f"USBL transceiver extrinsics: "
-            f"translation=({extrinsics.x:.3f}, {extrinsics.y:.3f}, {extrinsics.z:.3f}) m, "
-            f"rotation=(phi={extrinsics.phi:.4f}, theta={extrinsics.theta:.4f}, "
-            f"psi={extrinsics.psi:.4f}) rad"
+            f"translation=({extrinsics.locx:.3f}, {extrinsics.locy:.3f}, {extrinsics.locz:.3f}) m, "
+            f"rotation=(rotx={extrinsics.rotx:.4f}, roty={extrinsics.roty:.4f}, "
+            f"rotz={extrinsics.rotz:.4f}) rad"
         )
     config = TrackLinkProcessingFromLogsConfig(
         resolve=TrackLinkResolvePositionFromLogsConfig(extrinsics=extrinsics),
@@ -166,18 +166,18 @@ def dispatch_process_evologics_usbl(
     )
 
     extrinsics = EvologicsTransceiverExtrinsics(
-        x=deployment.usbl_modem.x,
-        y=deployment.usbl_modem.y,
-        z=deployment.usbl_modem.z,
-        phi=deployment.usbl_modem.phi,
-        theta=deployment.usbl_modem.theta,
-        psi=deployment.usbl_modem.psi,
+        locx=deployment.usbl_modem.locx,
+        locy=deployment.usbl_modem.locy,
+        locz=deployment.usbl_modem.locz,
+        rotx=deployment.usbl_modem.rotx,
+        roty=deployment.usbl_modem.roty,
+        rotz=deployment.usbl_modem.rotz,
     )
     logger.info(
         f"USBL transceiver extrinsics: "
-        f"translation=({extrinsics.x:.3f}, {extrinsics.y:.3f}, {extrinsics.z:.3f}) m, "
-        f"rotation=(phi={extrinsics.phi:.4f}, theta={extrinsics.theta:.4f}, "
-        f"psi={extrinsics.psi:.4f}) rad"
+        f"translation=({extrinsics.locx:.3f}, {extrinsics.locy:.3f}, {extrinsics.locz:.3f}) m, "
+        f"rotation=(rotx={extrinsics.rotx:.4f}, roty={extrinsics.roty:.4f}, "
+        f"rotz={extrinsics.rotz:.4f}) rad"
     )
 
     config = EvologicsProcessingConfig(

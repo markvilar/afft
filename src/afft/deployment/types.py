@@ -39,21 +39,21 @@ class TopsideUsblModemConfig:
 
     Attributes
     ----------
-    x: X position in metres.
-    y: Y position in metres.
-    z: Z position in metres.
-    phi: Roll angle in radians.
-    theta: Pitch angle in radians.
-    psi: Yaw angle in radians.
+    locx: X position in metres.
+    locy: Y position in metres.
+    locz: Z position in metres.
+    rotx: Roll angle in radians.
+    roty: Pitch angle in radians.
+    rotz: Yaw angle in radians.
     comment: Optional note about the calibration.
     """
 
-    x: float
-    y: float
-    z: float
-    phi: float
-    theta: float
-    psi: float
+    locx: float
+    locy: float
+    locz: float
+    rotx: float
+    roty: float
+    rotz: float
     comment: str = ""
 
 

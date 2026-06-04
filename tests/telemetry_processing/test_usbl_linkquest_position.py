@@ -67,12 +67,12 @@ def test_output_columns() -> None:
         "target_horizontal_range",
         "target_latitude",
         "target_longitude",
-        "usbl_extrinsics_x",
-        "usbl_extrinsics_y",
-        "usbl_extrinsics_z",
-        "usbl_extrinsics_phi",
-        "usbl_extrinsics_theta",
-        "usbl_extrinsics_psi",
+        "usbl_extrinsics_locx",
+        "usbl_extrinsics_locy",
+        "usbl_extrinsics_locz",
+        "usbl_extrinsics_rotx",
+        "usbl_extrinsics_roty",
+        "usbl_extrinsics_rotz",
     ):
         assert col in result.columns
 
@@ -252,16 +252,16 @@ def test_extrinsics_columns_written() -> None:
     )
     config = TrackLinkResolvePositionFromMessagesConfig(
         extrinsics=TrackLinkTransceiverExtrinsics(
-            x=1.0, y=2.0, z=3.0, phi=0.1, theta=0.2, psi=0.3
+            locx=1.0, locy=2.0, locz=3.0, rotx=0.1, roty=0.2, rotz=0.3
         )
     )
     result = resolve_target_position_from_messages(usbl, pressure, config)
-    assert (result["usbl_extrinsics_x"] == 1.0).all()
-    assert (result["usbl_extrinsics_y"] == 2.0).all()
-    assert (result["usbl_extrinsics_z"] == 3.0).all()
-    assert (result["usbl_extrinsics_phi"] == 0.1).all()
-    assert (result["usbl_extrinsics_theta"] == 0.2).all()
-    assert (result["usbl_extrinsics_psi"] == 0.3).all()
+    assert (result["usbl_extrinsics_locx"] == 1.0).all()
+    assert (result["usbl_extrinsics_locy"] == 2.0).all()
+    assert (result["usbl_extrinsics_locz"] == 3.0).all()
+    assert (result["usbl_extrinsics_rotx"] == 0.1).all()
+    assert (result["usbl_extrinsics_roty"] == 0.2).all()
+    assert (result["usbl_extrinsics_rotz"] == 0.3).all()
 
 
 def test_sensor_frame_columns_present_and_unrotated() -> None:
@@ -301,7 +301,7 @@ def test_extrinsics_yaw_rotates_bearing() -> None:
         pressure,
         TrackLinkResolvePositionFromMessagesConfig(
             extrinsics=TrackLinkTransceiverExtrinsics(
-                x=0.0, y=0.0, z=0.0, psi=math.radians(90.0)
+                locx=0.0, locy=0.0, locz=0.0, rotz=math.radians(90.0)
             )
         ),
     )
@@ -335,7 +335,9 @@ def test_extrinsics_translation_shifts_origin() -> None:
         usbl,
         pressure,
         TrackLinkResolvePositionFromMessagesConfig(
-            extrinsics=TrackLinkTransceiverExtrinsics(x=0.0, y=100.0, z=0.0)
+            extrinsics=TrackLinkTransceiverExtrinsics(
+                locx=0.0, locy=100.0, locz=0.0
+            )
         ),
     )
 
@@ -366,7 +368,9 @@ def test_extrinsics_ship_heading_applied() -> None:
         usbl,
         pressure,
         TrackLinkResolvePositionFromMessagesConfig(
-            extrinsics=TrackLinkTransceiverExtrinsics(x=0.0, y=0.0, z=0.0)
+            extrinsics=TrackLinkTransceiverExtrinsics(
+                locx=0.0, locy=0.0, locz=0.0
+            )
         ),
     )
 

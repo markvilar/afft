@@ -63,12 +63,12 @@ def load_deployment_config(
     uncertainty_entry: dict[str, Any] = uncertainty_profiles[uncertainty_label]
 
     usbl_modem = TopsideUsblModemConfig(
-        x=extrinsics_entry["x"],
-        y=extrinsics_entry["y"],
-        z=extrinsics_entry["z"],
-        phi=extrinsics_entry["phi"],
-        theta=extrinsics_entry["theta"],
-        psi=extrinsics_entry["psi"],
+        locx=extrinsics_entry["locx"],
+        locy=extrinsics_entry["locy"],
+        locz=extrinsics_entry["locz"],
+        rotx=extrinsics_entry["rotx"],
+        roty=extrinsics_entry["roty"],
+        rotz=extrinsics_entry["rotz"],
         comment=extrinsics_entry.get("comment", ""),
     )
 

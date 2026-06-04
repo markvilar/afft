@@ -22,29 +22,29 @@ class EvologicsTransceiverExtrinsics:
 
     Attributes
     ----------
-    x: Forward offset from ship reference point in metres.
-    y: Lateral offset in metres (positive starboard).
-    z: Vertical offset in metres (positive down).
-    phi: Roll in radians (positive: starboard down).
-    theta: Pitch in radians (positive: bow up).
-    psi: Yaw in radians (positive clockwise viewed from above).
+    locx: Forward offset from ship reference point in metres.
+    locy: Lateral offset in metres (positive starboard).
+    locz: Vertical offset in metres (positive down).
+    rotx: Roll in radians (positive: starboard down).
+    roty: Pitch in radians (positive: bow up).
+    rotz: Yaw in radians (positive clockwise viewed from above).
     """
 
-    x: float
-    y: float
-    z: float
-    phi: float = 0.0
-    theta: float = 0.0
-    psi: float = 0.0
+    locx: float
+    locy: float
+    locz: float
+    rotx: float = 0.0
+    roty: float = 0.0
+    rotz: float = 0.0
 
     @property
     def translation(self) -> NDArray[np.float64]:
-        return np.array([self.x, self.y, self.z], dtype=np.float64)
+        return np.array([self.locx, self.locy, self.locz], dtype=np.float64)
 
     @property
     def rotation(self) -> Rotation:
         return Rotation.from_euler(
-            "zyx", [self.psi, self.theta, self.phi], degrees=False
+            "zyx", [self.rotz, self.roty, self.rotx], degrees=False
         )
 
     @property

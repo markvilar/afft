@@ -45,8 +45,8 @@ def resolve_target_position_from_messages(
                   target_x_vessel, target_y_vessel, target_z_vessel,
                   target_horizontal_range, target_inclination_angle,
                   target_latitude, target_longitude, target_height,
-                  usbl_extrinsics_x, usbl_extrinsics_y, usbl_extrinsics_z,
-                  usbl_extrinsics_phi, usbl_extrinsics_theta, usbl_extrinsics_psi.
+                  usbl_extrinsics_locx, usbl_extrinsics_locy, usbl_extrinsics_locz,
+                  usbl_extrinsics_rotx, usbl_extrinsics_roty, usbl_extrinsics_rotz.
     """
     _validate_time_alignment(usbl, pressure, config)
 
@@ -151,12 +151,12 @@ def resolve_target_position_from_messages(
     result["target_latitude"] = target_latitude
     result["target_longitude"] = target_longitude
     result["target_height"] = target_height
-    result["usbl_extrinsics_x"] = extrinsics.x
-    result["usbl_extrinsics_y"] = extrinsics.y
-    result["usbl_extrinsics_z"] = extrinsics.z
-    result["usbl_extrinsics_phi"] = extrinsics.phi
-    result["usbl_extrinsics_theta"] = extrinsics.theta
-    result["usbl_extrinsics_psi"] = extrinsics.psi
+    result["usbl_extrinsics_locx"] = extrinsics.locx
+    result["usbl_extrinsics_locy"] = extrinsics.locy
+    result["usbl_extrinsics_locz"] = extrinsics.locz
+    result["usbl_extrinsics_rotx"] = extrinsics.rotx
+    result["usbl_extrinsics_roty"] = extrinsics.roty
+    result["usbl_extrinsics_rotz"] = extrinsics.rotz
 
     return result
 
@@ -229,8 +229,8 @@ def resolve_target_position_from_logs(
                   target_x_vessel, target_y_vessel, target_z_vessel,
                   target_horizontal_range, target_inclination_angle,
                   target_latitude, target_longitude, target_height,
-                  usbl_extrinsics_x, usbl_extrinsics_y, usbl_extrinsics_z,
-                  usbl_extrinsics_phi, usbl_extrinsics_theta, usbl_extrinsics_psi.
+                  usbl_extrinsics_locx, usbl_extrinsics_locy, usbl_extrinsics_locz,
+                  usbl_extrinsics_rotx, usbl_extrinsics_roty, usbl_extrinsics_rotz.
     """
     _validate_logs_contain_target_xyz(usbl, config)
 
@@ -331,12 +331,12 @@ def resolve_target_position_from_logs(
     result["target_latitude"] = target_latitude
     result["target_longitude"] = target_longitude
     result["target_height"] = target_height
-    result["usbl_extrinsics_x"] = extrinsics.x
-    result["usbl_extrinsics_y"] = extrinsics.y
-    result["usbl_extrinsics_z"] = extrinsics.z
-    result["usbl_extrinsics_phi"] = extrinsics.phi
-    result["usbl_extrinsics_theta"] = extrinsics.theta
-    result["usbl_extrinsics_psi"] = extrinsics.psi
+    result["usbl_extrinsics_locx"] = extrinsics.locx
+    result["usbl_extrinsics_locy"] = extrinsics.locy
+    result["usbl_extrinsics_locz"] = extrinsics.locz
+    result["usbl_extrinsics_rotx"] = extrinsics.rotx
+    result["usbl_extrinsics_roty"] = extrinsics.roty
+    result["usbl_extrinsics_rotz"] = extrinsics.rotz
 
     return result
 

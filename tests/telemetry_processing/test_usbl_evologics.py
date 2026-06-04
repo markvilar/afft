@@ -46,12 +46,12 @@ def test_output_columns_present() -> None:
         "horizontal_position_std",
         "depth_position_std",
         "evologics_accuracy",
-        "usbl_extrinsics_x",
-        "usbl_extrinsics_y",
-        "usbl_extrinsics_z",
-        "usbl_extrinsics_phi",
-        "usbl_extrinsics_theta",
-        "usbl_extrinsics_psi",
+        "usbl_extrinsics_locx",
+        "usbl_extrinsics_locy",
+        "usbl_extrinsics_locz",
+        "usbl_extrinsics_rotx",
+        "usbl_extrinsics_roty",
+        "usbl_extrinsics_rotz",
     ]:
         assert col in result.columns
 
@@ -150,27 +150,27 @@ def test_uncertainty_values() -> None:
 
 def test_extrinsics_columns_written() -> None:
     extrinsics = EvologicsTransceiverExtrinsics(
-        x=1.0, y=2.0, z=3.0, phi=0.1, theta=0.2, psi=0.3
+        locx=1.0, locy=2.0, locz=3.0, rotx=0.1, roty=0.2, rotz=0.3
     )
     config = EvologicsProcessingConfig(extrinsics=extrinsics)
     result = process_evologics_usbl(_make_df(), config)
-    assert (result["usbl_extrinsics_x"] == 1.0).all()
-    assert (result["usbl_extrinsics_y"] == 2.0).all()
-    assert (result["usbl_extrinsics_z"] == 3.0).all()
-    assert (result["usbl_extrinsics_phi"] == 0.1).all()
-    assert (result["usbl_extrinsics_theta"] == 0.2).all()
-    assert (result["usbl_extrinsics_psi"] == 0.3).all()
+    assert (result["usbl_extrinsics_locx"] == 1.0).all()
+    assert (result["usbl_extrinsics_locy"] == 2.0).all()
+    assert (result["usbl_extrinsics_locz"] == 3.0).all()
+    assert (result["usbl_extrinsics_rotx"] == 0.1).all()
+    assert (result["usbl_extrinsics_roty"] == 0.2).all()
+    assert (result["usbl_extrinsics_rotz"] == 0.3).all()
 
 
 def test_extrinsics_columns_zero_when_none() -> None:
     result = process_evologics_usbl(_make_df())
     for col in [
-        "usbl_extrinsics_x",
-        "usbl_extrinsics_y",
-        "usbl_extrinsics_z",
-        "usbl_extrinsics_phi",
-        "usbl_extrinsics_theta",
-        "usbl_extrinsics_psi",
+        "usbl_extrinsics_locx",
+        "usbl_extrinsics_locy",
+        "usbl_extrinsics_locz",
+        "usbl_extrinsics_rotx",
+        "usbl_extrinsics_roty",
+        "usbl_extrinsics_rotz",
     ]:
         assert (result[col] == 0.0).all()
 
@@ -190,7 +190,7 @@ def test_sensor_frame_preserves_usbl_frame_input() -> None:
 def test_extrinsics_translation_applied() -> None:
     # With only translation (no rotation), vessel-frame target = flipped + translation.
     # USBL (x=0, y=1, z=0) → flip → (x=1, y=0, z=0) → + (2, 3, 4) → (3, 3, 4)
-    extrinsics = EvologicsTransceiverExtrinsics(x=2.0, y=3.0, z=4.0)
+    extrinsics = EvologicsTransceiverExtrinsics(locx=2.0, locy=3.0, locz=4.0)
     config = EvologicsProcessingConfig(extrinsics=extrinsics)
     df = _make_df(rows=1)
     df["target_x"] = 0.0
