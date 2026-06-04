@@ -1,4 +1,4 @@
-"""Position resolution, uncertainty, and orchestration for TrackLink USBL."""
+"""Position resolution, uncertainty, and orchestration for the LinkQuest TrackLink 1500HA USBL."""
 
 import numpy as np
 import pandas as pd
@@ -7,23 +7,24 @@ from scipy.spatial.transform import Rotation
 
 from numpy.typing import NDArray
 
+from afft.utils.log import logger
+
 from .types import (
-    UsblProcessingConfig,
-    UsblResolvePositionConfig,
-    UsblTransceiverExtrinsics,
-    UsblUncertaintyConfig,
+    TrackLinkProcessingFromLogsConfig,
+    TrackLinkProcessingFromMessagesConfig,
+    TrackLinkResolvePositionFromLogsConfig,
+    TrackLinkResolvePositionFromMessagesConfig,
+    TrackLinkTransceiverExtrinsics,
+    TrackLinkUncertaintyConfig,
 )
 
 _NS_PER_S: float = 1e9
-_ZERO_EXTRINSICS: UsblTransceiverExtrinsics = UsblTransceiverExtrinsics(
-    x=0.0, y=0.0, z=0.0
-)
 
 
-def resolve_usbl_position(
+def resolve_target_position_from_messages(
     usbl: pd.DataFrame,
     pressure: pd.DataFrame,
-    config: UsblResolvePositionConfig = UsblResolvePositionConfig(),
+    config: TrackLinkResolvePositionFromMessagesConfig = TrackLinkResolvePositionFromMessagesConfig(),
 ) -> pd.DataFrame:
     """Resolve AUV lat/lon from TrackLink USBL bearing, slant range, and depth.
 
@@ -40,17 +41,22 @@ def resolve_usbl_position(
     The corrected direction vector × slant range gives the target NED offset
     from the transceiver, which is converted to geodetic via ned2geodetic.
 
-    Adds columns: target_depth, target_x, target_y, target_z,
+    Adds columns: target_depth, target_x_sensor, target_y_sensor, target_z_sensor,
+                  target_x_vessel, target_y_vessel, target_z_vessel,
                   target_horizontal_range, target_inclination_angle,
-                  target_latitude, target_longitude.
+                  target_latitude, target_longitude, target_height,
+                  usbl_extrinsics_locx, usbl_extrinsics_locy, usbl_extrinsics_locz,
+                  usbl_extrinsics_rotx, usbl_extrinsics_roty, usbl_extrinsics_rotz.
     """
     _validate_time_alignment(usbl, pressure, config)
 
     result: pd.DataFrame = usbl.copy()
     result["target_depth"] = _interpolate_depth(usbl, pressure, config)
 
-    extrinsics: UsblTransceiverExtrinsics = (
-        config.extrinsics if config.extrinsics is not None else _ZERO_EXTRINSICS
+    extrinsics: TrackLinkTransceiverExtrinsics = (
+        config.extrinsics
+        if config.extrinsics is not None
+        else TrackLinkTransceiverExtrinsics()
     )
 
     ship_attitudes_ypr: NDArray[np.float64] = np.column_stack(
@@ -84,7 +90,7 @@ def resolve_usbl_position(
     depth: NDArray[np.float64] = result["target_depth"].to_numpy()
     slant_range: NDArray[np.float64] = result[config.range_col].to_numpy()
     depth_relative: NDArray[np.float64] = depth - transceiver_ned[:, 2]
-    target_xyz_sensor: NDArray[np.float64] = (
+    target_xyz_usbl: NDArray[np.float64] = (
         _calculate_target_xyz_from_range_bearing(
             slant_range=slant_range,
             bearing_deg=result[config.bearing_col].to_numpy(),
@@ -94,12 +100,12 @@ def resolve_usbl_position(
     # Step 3 - Rotate target from transceiver frame → ship body → NED, then convert the
     # transceiver and target positions to geodetic (WGS84).
     target_ned: NDArray[np.float64] = R_ship.apply(
-        extrinsics.rotation.apply(target_xyz_sensor)
+        extrinsics.rotation.apply(target_xyz_usbl)
     )
 
     # Step 4 - Calculate target XYZ in vessel frame
     target_xyz_vessel: NDArray[np.float64] = extrinsics.transform.apply(
-        target_xyz_sensor
+        target_xyz_usbl
     )
 
     # Calculate horizontal range and inclination angle to target
@@ -124,7 +130,8 @@ def resolve_usbl_position(
 
     target_latitude: NDArray[np.float64]
     target_longitude: NDArray[np.float64]
-    target_latitude, target_longitude, _ = pymap3d.ned2geodetic(
+    target_height: NDArray[np.float64]
+    target_latitude, target_longitude, target_height = pymap3d.ned2geodetic(
         target_ned[:, 0],
         target_ned[:, 1],
         target_ned[:, 2],
@@ -133,20 +140,30 @@ def resolve_usbl_position(
         transceiver_alt,
     )
 
-    result["target_x"] = target_xyz_vessel[:, 0]
-    result["target_y"] = target_xyz_vessel[:, 1]
-    result["target_z"] = target_xyz_vessel[:, 2]
+    result["target_x_sensor"] = target_xyz_usbl[:, 0]
+    result["target_y_sensor"] = target_xyz_usbl[:, 1]
+    result["target_z_sensor"] = target_xyz_usbl[:, 2]
+    result["target_x_vessel"] = target_xyz_vessel[:, 0]
+    result["target_y_vessel"] = target_xyz_vessel[:, 1]
+    result["target_z_vessel"] = target_xyz_vessel[:, 2]
     result["target_horizontal_range"] = target_horizontal_range
     result["target_inclination_angle"] = target_inclination_angle
     result["target_latitude"] = target_latitude
     result["target_longitude"] = target_longitude
+    result["target_height"] = target_height
+    result["usbl_extrinsics_locx"] = extrinsics.locx
+    result["usbl_extrinsics_locy"] = extrinsics.locy
+    result["usbl_extrinsics_locz"] = extrinsics.locz
+    result["usbl_extrinsics_rotx"] = extrinsics.rotx
+    result["usbl_extrinsics_roty"] = extrinsics.roty
+    result["usbl_extrinsics_rotz"] = extrinsics.rotz
 
     return result
 
 
 def estimate_usbl_uncertainty(
     df: pd.DataFrame,
-    config: UsblUncertaintyConfig = UsblUncertaintyConfig(),
+    config: TrackLinkUncertaintyConfig = TrackLinkUncertaintyConfig(),
 ) -> pd.DataFrame:
     """Add horizontal_position_std and depth_position_std columns to a resolved USBL table.
 
@@ -168,12 +185,12 @@ def estimate_usbl_uncertainty(
     return result
 
 
-def process_tracklink_usbl(
+def process_tracklink_usbl_from_messages(
     usbl: pd.DataFrame,
     pressure: pd.DataFrame,
-    config: UsblProcessingConfig = UsblProcessingConfig(),
+    config: TrackLinkProcessingFromMessagesConfig = TrackLinkProcessingFromMessagesConfig(),
 ) -> pd.DataFrame:
-    """Resolve positions and estimate uncertainty from TrackLink USBL data.
+    """Resolve positions and estimate uncertainty from TrackLink AUV messages.
 
     Arguments
     ---------
@@ -185,15 +202,200 @@ def process_tracklink_usbl(
     -------
     DataFrame with resolved target positions and uncertainty columns.
     """
-    result: pd.DataFrame = resolve_usbl_position(usbl, pressure, config.resolve)
+    result: pd.DataFrame = resolve_target_position_from_messages(
+        usbl, pressure, config.resolve
+    )
     result = estimate_usbl_uncertainty(result, config.uncertainty)
     return result
+
+
+def resolve_target_position_from_logs(
+    usbl: pd.DataFrame,
+    config: TrackLinkResolvePositionFromLogsConfig = TrackLinkResolvePositionFromLogsConfig(),
+) -> pd.DataFrame:
+    """Resolve AUV lat/lon from TrackLink USBL log entries with target XYZ.
+
+    Target XYZ in the sensor frame is taken directly from the log DataFrame.
+    The ZYX attitude chain is applied: transceiver → ship body (via extrinsics
+    rotation) → NED (via ship attitude). When config.extrinsics is None a
+    zero-offset, zero-rotation transceiver is assumed.
+
+    The transceiver geodetic position is computed by rotating the body-frame
+    translation through the ship attitude and calling pymap3d.ned2geodetic.
+    The target NED offset from the transceiver is converted to geodetic via
+    ned2geodetic.
+
+    Adds columns: target_depth, target_x_sensor, target_y_sensor, target_z_sensor,
+                  target_x_vessel, target_y_vessel, target_z_vessel,
+                  target_horizontal_range, target_inclination_angle,
+                  target_latitude, target_longitude, target_height,
+                  usbl_extrinsics_locx, usbl_extrinsics_locy, usbl_extrinsics_locz,
+                  usbl_extrinsics_rotx, usbl_extrinsics_roty, usbl_extrinsics_rotz.
+    """
+    _validate_logs_contain_target_xyz(usbl, config)
+
+    result: pd.DataFrame = usbl.copy()
+
+    extrinsics: TrackLinkTransceiverExtrinsics = (
+        config.extrinsics
+        if config.extrinsics is not None
+        else TrackLinkTransceiverExtrinsics()
+    )
+
+    ship_attitudes_ypr: NDArray[np.float64] = np.column_stack(
+        [
+            result[config.ship_heading_col].to_numpy(),
+            result[config.ship_pitch_col].to_numpy(),
+            result[config.ship_roll_col].to_numpy(),
+        ]
+    )
+
+    ship_locations_geo: NDArray[np.float64] = np.column_stack(
+        [
+            result[config.ship_lat_col].to_numpy(),
+            result[config.ship_lon_col].to_numpy(),
+            np.zeros_like(result[config.ship_lat_col].to_numpy()),
+        ]
+    )
+
+    R_ship: Rotation = Rotation.from_euler(
+        "zyx", ship_attitudes_ypr, degrees=True
+    )
+
+    # Step 1 - Transceiver NED offset from the ship GPS antenna.
+    transceiver_ned: NDArray[np.float64] = R_ship.apply(
+        np.tile(extrinsics.translation, (len(result), 1))
+    )
+
+    # Step 2 - Target position in sensor frame, taken directly from log entries.
+    target_xyz_sensor: NDArray[np.float64] = np.column_stack(
+        [
+            result[config.target_x_col].to_numpy(),
+            result[config.target_y_col].to_numpy(),
+            result[config.target_z_col].to_numpy(),
+        ]
+    )
+
+    # Step 3 - Rotate target from transceiver frame → ship body → NED.
+    target_ned: NDArray[np.float64] = R_ship.apply(
+        extrinsics.rotation.apply(target_xyz_sensor)
+    )
+
+    # Step 4 - Calculate target XYZ in vessel frame.
+    target_xyz_vessel: NDArray[np.float64] = extrinsics.transform.apply(
+        target_xyz_sensor
+    )
+
+    target_depth: NDArray[np.float64] = transceiver_ned[:, 2] + target_ned[:, 2]
+    target_horizontal_range: NDArray[np.float64] = np.sqrt(
+        target_xyz_vessel[:, 0] ** 2 + target_xyz_vessel[:, 1] ** 2
+    )
+    slant_range: NDArray[np.float64] = result[config.range_col].to_numpy()
+    target_inclination_angle: NDArray[np.float64] = np.degrees(
+        np.arcsin(np.clip(target_xyz_sensor[:, 2] / slant_range, -1.0, 1.0))
+    )
+
+    transceiver_lat: NDArray[np.float64]
+    transceiver_lon: NDArray[np.float64]
+    transceiver_alt: NDArray[np.float64]
+    transceiver_lat, transceiver_lon, transceiver_alt = pymap3d.ned2geodetic(
+        transceiver_ned[:, 0],
+        transceiver_ned[:, 1],
+        transceiver_ned[:, 2],
+        ship_locations_geo[:, 0],
+        ship_locations_geo[:, 1],
+        ship_locations_geo[:, 2],
+    )
+
+    target_latitude: NDArray[np.float64]
+    target_longitude: NDArray[np.float64]
+    target_height: NDArray[np.float64]
+    target_latitude, target_longitude, target_height = pymap3d.ned2geodetic(
+        target_ned[:, 0],
+        target_ned[:, 1],
+        target_ned[:, 2],
+        transceiver_lat,
+        transceiver_lon,
+        transceiver_alt,
+    )
+
+    result["target_depth"] = target_depth
+    result["target_x_sensor"] = target_xyz_sensor[:, 0]
+    result["target_y_sensor"] = target_xyz_sensor[:, 1]
+    result["target_z_sensor"] = target_xyz_sensor[:, 2]
+    result["target_x_vessel"] = target_xyz_vessel[:, 0]
+    result["target_y_vessel"] = target_xyz_vessel[:, 1]
+    result["target_z_vessel"] = target_xyz_vessel[:, 2]
+    result["target_horizontal_range"] = target_horizontal_range
+    result["target_inclination_angle"] = target_inclination_angle
+    result["target_latitude"] = target_latitude
+    result["target_longitude"] = target_longitude
+    result["target_height"] = target_height
+    result["usbl_extrinsics_locx"] = extrinsics.locx
+    result["usbl_extrinsics_locy"] = extrinsics.locy
+    result["usbl_extrinsics_locz"] = extrinsics.locz
+    result["usbl_extrinsics_rotx"] = extrinsics.rotx
+    result["usbl_extrinsics_roty"] = extrinsics.roty
+    result["usbl_extrinsics_rotz"] = extrinsics.rotz
+
+    return result
+
+
+def process_tracklink_usbl_from_logs(
+    usbl: pd.DataFrame,
+    config: TrackLinkProcessingFromLogsConfig = TrackLinkProcessingFromLogsConfig(),
+) -> pd.DataFrame:
+    """Resolve positions and estimate uncertainty from TrackLink USBL log entries.
+
+    Arguments
+    ---------
+    usbl: Merged TrackLink log DataFrame with ship position, ship attitude,
+        and target XYZ in sensor frame.
+    config: Combined configuration for position resolution and uncertainty estimation.
+
+    Returns
+    -------
+    DataFrame with resolved target positions and uncertainty columns.
+    """
+    result: pd.DataFrame = resolve_target_position_from_logs(
+        usbl, config.resolve
+    )
+    result = estimate_usbl_uncertainty(result, config.uncertainty)
+    return result
+
+
+def _validate_logs_contain_target_xyz(
+    usbl: pd.DataFrame,
+    config: TrackLinkResolvePositionFromLogsConfig,
+) -> None:
+    """Raise ValueError if target XYZ columns are missing or entirely NaN.
+
+    Arguments
+    ---------
+    usbl: USBL DataFrame to validate.
+    config: Position resolution config supplying target XYZ column names.
+    """
+    xyz_cols: list[str] = [
+        config.target_x_col,
+        config.target_y_col,
+        config.target_z_col,
+    ]
+    missing: list[str] = [col for col in xyz_cols if col not in usbl.columns]
+    if missing:
+        logger.warning(f"Target XYZ columns missing from DataFrame: {missing}")
+        raise ValueError(
+            f"Target XYZ columns missing from DataFrame: {missing}"
+        )
+    all_nan: list[str] = [col for col in xyz_cols if usbl[col].isna().all()]
+    if all_nan:
+        logger.warning(f"Target XYZ columns are all NaN: {all_nan}")
+        raise ValueError(f"Target XYZ columns are all NaN: {all_nan}")
 
 
 def _validate_time_alignment(
     usbl: pd.DataFrame,
     pressure: pd.DataFrame,
-    config: UsblResolvePositionConfig,
+    config: TrackLinkResolvePositionFromMessagesConfig,
 ) -> None:
     """Raise ValueError if USBL pings fall outside the pressure time window.
 
@@ -234,7 +436,7 @@ def _validate_time_alignment(
 def _interpolate_depth(
     usbl: pd.DataFrame,
     pressure: pd.DataFrame,
-    config: UsblResolvePositionConfig,
+    config: TrackLinkResolvePositionFromMessagesConfig,
 ) -> NDArray[np.float64]:
     """Interpolate pressure sensor depth to USBL ping timestamps.
 

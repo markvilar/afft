@@ -57,6 +57,16 @@ The main package is at `src/afft/` with these modules:
 
 `notebooks/` contains Jupyter notebooks demonstrating data workflows, organized into subdirectories by data type.
 
+## Behavioral Guidelines
+
+**Think before coding.** State assumptions explicitly. If uncertain, ask. If multiple interpretations exist, present them rather than picking silently. If something is unclear, name what's confusing and ask before proceeding.
+
+**Simplicity first.** Write the minimum code that solves the problem. No speculative features, abstractions for single-use code, or error handling for impossible scenarios. If you write 200 lines and it could be 50, rewrite it.
+
+**Surgical changes.** Touch only what you must. Don't improve adjacent code, comments, or formatting. Match existing style. If you notice unrelated dead code, mention it — don't delete it. Remove imports/variables/functions that your changes made unused, but leave pre-existing dead code alone unless asked.
+
+**Goal-driven execution.** Transform tasks into verifiable goals before starting. For multi-step tasks, state a brief plan with explicit success criteria for each step. Clarifying questions come before implementation, not after mistakes.
+
 ## Python Conventions
 
 ### Types
