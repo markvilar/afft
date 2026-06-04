@@ -93,7 +93,13 @@ def _build_figure(
     dataframe_without: pd.DataFrame,
     deployment: str,
 ) -> Figure:
-    figure, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
+    figure, axes = plt.subplots(
+        2,
+        2,
+        figsize=(18, 12),
+        gridspec_kw={"height_ratios": [4, 1]},
+        constrained_layout=True,
+    )
     figure.suptitle(
         f"TrackLink USBL — {deployment}\nWith vs. without extrinsics",
         fontsize=11,
@@ -255,6 +261,15 @@ def _plot_track(
         label="Target",
     )
     plt.colorbar(scatter, ax=axis, label="Elapsed (s)", fraction=0.03, pad=0.04)
+
+    target_x = target_utm.geometry.x - origin_x
+    target_y = target_utm.geometry.y - origin_y
+    padding = (
+        max(target_x.max() - target_x.min(), target_y.max() - target_y.min())
+        * 0.05
+    )
+    axis.set_xlim(target_x.min() - padding, target_x.max() + padding)
+    axis.set_ylim(target_y.min() - padding, target_y.max() + padding)
 
     axis.set_aspect("equal")
     axis.set_title(title, fontsize=8)
