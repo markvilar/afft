@@ -7,6 +7,7 @@ from datetime import datetime
 import click
 
 from .actions import (
+    dispatch_batch_process_renav,
     dispatch_clip_tables,
     dispatch_collect_renav_stereo_poses,
     dispatch_correct_pressure_tide,
@@ -50,9 +51,36 @@ def task_group(context: click.Context) -> None:
     required=True,
     help="path to write the processed output as CSV",
 )
-def process_renav(input_file: str, output_file: str) -> None:
+def process_renav_poses(input_file: str, output_file: str) -> None:
     """Process a Renav stereo pose estimate file and write to CSV."""
     dispatch_process_renav(input_file, output_file)
+
+
+@task_group.command()
+@click.option(
+    "--input",
+    "input_dir",
+    type=click.Path(exists=True, file_okay=False),
+    required=True,
+    help="directory containing Renav stereo pose estimate files",
+)
+@click.option(
+    "--output",
+    "output_dir",
+    type=click.Path(exists=True, file_okay=False),
+    required=True,
+    help="directory to write the processed CSV files into",
+)
+@click.option(
+    "--pattern",
+    type=str,
+    default="*.txt",
+    show_default=True,
+    help="glob pattern to select input files",
+)
+def batch_process_renav_poses(input_dir: str, output_dir: str, pattern: str) -> None:
+    """Batch process Renav stereo pose estimate files in a directory."""
+    dispatch_batch_process_renav(input_dir, output_dir, pattern)
 
 
 @task_group.command()
