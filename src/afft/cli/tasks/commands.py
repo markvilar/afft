@@ -104,7 +104,8 @@ def clip_tables(
     help="glob pattern to select input files in source_dir",
 )
 @click.option(
-    "--strategy",
+    "--group-by",
+    "grouping_strategy",
     type=click.Choice(["prefix", "suffix"], case_sensitive=False),
     default="prefix",
     show_default=True,
@@ -115,11 +116,11 @@ def process_telemetry(
     output_dir: str,
     config_file: str,
     pattern: str,
-    strategy: str,
+    grouping_strategy: str,
 ) -> None:
     """Run the telemetry processing pipeline on CSV tables in SOURCE_DIR."""
     dispatch_process_telemetry(
-        source_dir, output_dir, config_file, pattern, strategy
+        source_dir, output_dir, config_file, pattern, grouping_strategy
     )
 
 

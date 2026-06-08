@@ -14,19 +14,19 @@ echo "Source directory: ${SOURCE_DIR}"
 # --------------------------------------------------------------------------------------
 
 uv run afft tasks process-telemetry "${SOURCE_DIR}" "${OUTPUT_DIR}" \
-  --config "${CONFIG_DIR}/config-dev.toml" \
+  --config "${CONFIG_DIR}/telemetry_config_dev.toml" \
   --pattern "qdch0ftq_20100428_020202_*"
 
 uv run afft tasks process-telemetry "${SOURCE_DIR}" "${OUTPUT_DIR}" \
-  --config "${CONFIG_DIR}/config-dev.toml" \
+  --config "${CONFIG_DIR}/telemetry_config_dev.toml" \
   --pattern "qdch0ftq_20110415_020103_*"
 
 uv run afft tasks process-telemetry "${SOURCE_DIR}" "${OUTPUT_DIR}" \
-  --config "${CONFIG_DIR}/config-dev.toml" \
+  --config "${CONFIG_DIR}/telemetry_config_dev.toml" \
   --pattern "qdch0ftq_20120430_002423_*"
 
 uv run afft tasks process-telemetry "${SOURCE_DIR}" "${OUTPUT_DIR}" \
-  --config "${CONFIG_DIR}/config-dev.toml" \
+  --config "${CONFIG_DIR}/telemetry_config_dev.toml" \
   --pattern "qdch0ftq_20130406_023610_*"
 
 # --------------------------------------------------------------------------------------
