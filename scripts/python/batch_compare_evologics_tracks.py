@@ -1,8 +1,8 @@
 """
-Batch compare TrackLink USBL processed tracks: with vs. without extrinsics.
+Batch compare Evologics USBL processed tracks: with vs. without extrinsics.
 
 Scans an input directory for matched pairs of CSV files whose names end in
-_usbl_tracklink_with_extrinsics.csv and _usbl_tracklink_without_extrinsics.csv.
+_usbl_evologics_with_extrinsics.csv and _usbl_evologics_without_extrinsics.csv.
 For each pair a 2x2 figure is saved to the output directory:
 
     [0, 0]  Target track — with extrinsics
@@ -11,9 +11,9 @@ For each pair a 2x2 figure is saved to the output directory:
     [1, 1]  Target Z in vessel frame — without extrinsics
 
 Usage:
-    uv run python scripts/python/batch_compare_tracklink_tracks.py \\
-        --input-dir /data/exos_01/acfr_messages_v4_telemetry_processed \\
-        --output-dir /tmp/tracklink_comparison
+    uv run python scripts/python/batch_compare_evologics_tracks.py \\
+        --input-dir /data/exos_01/acfr_usbl_resolution/acfr_evologics_messages_v1_comparison \\
+        --output-dir /tmp/evologics_comparison
 """
 
 from pathlib import Path
@@ -29,8 +29,8 @@ from matplotlib.figure import Figure
 from pyproj import CRS
 
 
-_WITH_SUFFIX: str = "_usbl_tracklink_with_extrinsics.csv"
-_WITHOUT_SUFFIX: str = "_usbl_tracklink_without_extrinsics.csv"
+_WITH_SUFFIX: str = "_usbl_evologics_with_extrinsics.csv"
+_WITHOUT_SUFFIX: str = "_usbl_evologics_without_extrinsics.csv"
 
 _REQUIRED_COLS: list[str] = [
     "timestamp",
@@ -53,7 +53,7 @@ _REQUIRED_COLS: list[str] = [
     "--input-dir",
     type=click.Path(exists=True, file_okay=False, path_type=Path),
     required=True,
-    help="Directory containing processed TrackLink CSV files.",
+    help="Directory containing processed Evologics CSV files.",
 )
 @click.option(
     "--output-dir",
@@ -82,7 +82,7 @@ def main(input_dir: Path, output_dir: Path) -> None:
         figure: Figure = _build_figure(
             dataframe_with, dataframe_without, deployment
         )
-        output_path: Path = output_dir / f"{deployment}_tracklink_comparison.png"
+        output_path: Path = output_dir / f"{deployment}_evologics_comparison.png"
         figure.savefig(output_path, dpi=300, bbox_inches="tight")
         plt.close(figure)
         click.echo(f"  saved -> {output_path}")
@@ -101,7 +101,7 @@ def _build_figure(
         constrained_layout=True,
     )
     figure.suptitle(
-        f"TrackLink USBL — {deployment}\nWith vs. without extrinsics",
+        f"Evologics USBL — {deployment}\nWith vs. without extrinsics",
         fontsize=11,
     )
 

@@ -4,7 +4,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_DIR="${SCRIPT_DIR}/../../config"
 
 SOURCE_DIR="/data/exos_01/acfr_messages_v2_parsed"
-OUTPUT_DIR="/data/exos_01/acfr_messages_v4_telemetry_processed"
+OUTPUT_DIR="/data/exos_01/acfr_usbl_resolution/acfr_tracklink_messages_v1_comparison"
 
 # --------------------------------------------------------------------------------------
 # Site 1

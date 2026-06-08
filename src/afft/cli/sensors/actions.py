@@ -160,6 +160,7 @@ def dispatch_process_evologics_usbl(
     output_file: str | Path,
     deployment_configs: str | Path,
     deployment_label: str,
+    ignore_extrinsics: bool = False,
 ) -> None:
     """Convert Evologics USBL data to the unified USBL output schema."""
     deployment = load_deployment_config(
@@ -170,20 +171,24 @@ def dispatch_process_evologics_usbl(
         f"{deployment.date}, sensor_keys={list(deployment.sensor_keys)}"
     )
 
-    extrinsics = EvologicsTransceiverExtrinsics(
-        locx=deployment.usbl_modem.locx,
-        locy=deployment.usbl_modem.locy,
-        locz=deployment.usbl_modem.locz,
-        rotx=deployment.usbl_modem.rotx,
-        roty=deployment.usbl_modem.roty,
-        rotz=deployment.usbl_modem.rotz,
-    )
-    logger.info(
-        f"USBL transceiver extrinsics: "
-        f"translation=({extrinsics.locx:.3f}, {extrinsics.locy:.3f}, {extrinsics.locz:.3f}) m, "
-        f"rotation=(rotx={extrinsics.rotx:.4f}, roty={extrinsics.roty:.4f}, "
-        f"rotz={extrinsics.rotz:.4f}) rad"
-    )
+    if ignore_extrinsics:
+        extrinsics = EvologicsTransceiverExtrinsics()
+        logger.info("USBL transceiver extrinsics: ignored (zero extrinsics)")
+    else:
+        extrinsics = EvologicsTransceiverExtrinsics(
+            locx=deployment.usbl_modem.locx,
+            locy=deployment.usbl_modem.locy,
+            locz=deployment.usbl_modem.locz,
+            rotx=deployment.usbl_modem.rotx,
+            roty=deployment.usbl_modem.roty,
+            rotz=deployment.usbl_modem.rotz,
+        )
+        logger.info(
+            f"USBL transceiver extrinsics: "
+            f"translation=({extrinsics.locx:.3f}, {extrinsics.locy:.3f}, {extrinsics.locz:.3f}) m, "
+            f"rotation=(rotx={extrinsics.rotx:.4f}, roty={extrinsics.roty:.4f}, "
+            f"rotz={extrinsics.rotz:.4f}) rad"
+        )
 
     config = EvologicsProcessingConfig(
         extrinsics=extrinsics,
