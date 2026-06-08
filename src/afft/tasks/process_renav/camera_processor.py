@@ -48,6 +48,9 @@ def clean_camera_dataframe(cameras: pd.DataFrame) -> pd.DataFrame:
             "right_image_name": "stereo_right_image_name",
         }
     )
+    cameras["timestamp"] = pd.to_datetime(
+        cameras["timestamp"], unit="s", utc=True
+    ).map(pd.Timestamp.isoformat)
     cameras["height"] = -cameras["position_z"]
     cameras["depth"] = cameras["position_z"].copy()
     cameras = add_image_labels(cameras)
