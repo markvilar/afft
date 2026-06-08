@@ -8,6 +8,7 @@ import click
 
 from .actions import (
     dispatch_clip_tables,
+    dispatch_collect_renav_stereo_poses,
     dispatch_correct_pressure_tide,
     dispatch_process_telemetry,
 )
@@ -31,6 +32,61 @@ def _parse_timestamp(
 def task_group(context: click.Context) -> None:
     """CLI group for invoking data processing tasks."""
     context.ensure_object(dict)
+
+
+@task_group.command()
+@click.option(
+    "--input",
+    "root_dir",
+    type=click.Path(exists=True, file_okay=False),
+    required=True,
+    help="root directory containing deployment subdirectories",
+)
+@click.option(
+    "--output",
+    "output_dir",
+    type=click.Path(exists=True, file_okay=False),
+    required=True,
+    help="directory to write the relabelled files into",
+)
+@click.option(
+    "--deployment-suffix",
+    "deployment_suffix",
+    type=str,
+    default="_deployment_data",
+    show_default=True,
+    help="suffix stripped from deployment directory names to form the label",
+)
+@click.option(
+    "--appendix",
+    type=str,
+    default="_renav_stereo_poses.txt",
+    show_default=True,
+    help="suffix appended to the deployment label to form the output filename",
+)
+@click.option(
+    "--tiebreak-margin",
+    "tiebreak_margin",
+    type=float,
+    default=0.03,
+    show_default=True,
+    help="fractional row-count margin within which the most recent file wins",
+)
+def collect_renav_stereo_poses(
+    root_dir: str,
+    output_dir: str,
+    deployment_suffix: str,
+    appendix: str,
+    tiebreak_margin: float,
+) -> None:
+    """Collect and relabel Renav stereo pose estimate files by deployment."""
+    dispatch_collect_renav_stereo_poses(
+        root_dir,
+        output_dir,
+        deployment_suffix,
+        appendix,
+        tiebreak_margin,
+    )
 
 
 @task_group.command()

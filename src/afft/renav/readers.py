@@ -1,13 +1,14 @@
-"""Module for reading cameras from Renav files."""
+"""Readers for Renav navigation files."""
 
 from pathlib import Path
 from typing import Callable, Optional
 
 import polars as pl
 
+
 RENAV_SKIP_ROWS: int = 58
 RENAV_SEPARATOR: str = "\t"
-RENAV_DATAFRAME_COLUMNS: list[str] = [
+RENAV_COLUMNS: list[str] = [
     "identifier",
     "timestamp",
     "latitude",
@@ -26,9 +27,7 @@ RENAV_DATAFRAME_COLUMNS: list[str] = [
 ]
 
 
-def preprocess_and_cast_columns(cameras: pl.DataFrame) -> pl.DataFrame:
-    """Preprocesses column string values and casts them to the polars data types."""
-
+def _preprocess_and_cast_columns(cameras: pl.DataFrame) -> pl.DataFrame:
     cameras = cameras.with_columns(
         [
             pl.col("identifier").str.strip_chars().cast(pl.Int64),
@@ -55,21 +54,31 @@ def read_cameras(
     path: Path,
     preprocessor: Optional[Callable[[pl.DataFrame], pl.DataFrame]] = None,
 ) -> pl.DataFrame:
-    """Reads cameras from a Renav file."""
+    """
+    Read camera pose estimates from a Renav file.
 
+    Arguments
+    ---------
+    path: Path to the Renav `.data` file.
+    preprocessor: Optional transform applied after column casting.
+
+    Returns
+    -------
+    DataFrame with one row per camera pose estimate.
+    """
     if not path.exists():
         raise FileNotFoundError(f"file does not exist: {path}")
 
     cameras: pl.DataFrame = pl.read_csv(
         source=path,
-        new_columns=RENAV_DATAFRAME_COLUMNS,
+        new_columns=RENAV_COLUMNS,
         has_header=False,
         separator=RENAV_SEPARATOR,
         skip_rows=RENAV_SKIP_ROWS,
-        infer_schema_length=0,  # NOTE: Makes sure all columns are interpreted as strings
+        infer_schema_length=0,
     )
 
-    cameras = preprocess_and_cast_columns(cameras)
+    cameras = _preprocess_and_cast_columns(cameras)
 
     if preprocessor is not None:
         cameras = preprocessor(cameras)
