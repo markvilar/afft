@@ -2,6 +2,7 @@
 
 import re
 
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
@@ -116,14 +117,14 @@ LQ_MODEM_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
-    time:\s*(?P<time>[-+]?\d*[.]\d*)\s+
-    Lat:\s*(?P<latitude>[-+]?\d*[.]\d*)\s+
-    Lon:\s*(?P<longitude>[-+]?\d*[.]\d*)\s+
-    hdg:\s*(?P<heading>[-+]?\d*[.]\d*)\s+
-    roll:\s*(?P<roll>[-+]?\d*[.]\d*)\s+
-    pitch:\s*(?P<pitch>[-+]?\d*[.]\d*)\s+
-    bear:\s*(?P<bearing>[-+]?\d*[.]\d*)\s+
-    rng:\s*(?P<range>[-+]?\d*[.]\d*)\s*
+    time:\s*(?P<device_time>[-+]?\d*[.]\d*)\s+
+    Lat:\s*(?P<ship_latitude>[-+]?\d*[.]\d*)\s+
+    Lon:\s*(?P<ship_longitude>[-+]?\d*[.]\d*)\s+
+    hdg:\s*(?P<ship_heading>[-+]?\d*[.]\d*)\s+
+    roll:\s*(?P<ship_roll>[-+]?\d*[.]\d*)\s+
+    pitch:\s*(?P<ship_pitch>[-+]?\d*[.]\d*)\s+
+    bear:\s*(?P<target_bearing_angle>[-+]?\d*[.]\d*)\s+
+    rng:\s*(?P<target_slant_range>[-+]?\d*[.]\d*)\s*
     $
     """
 
@@ -214,6 +215,11 @@ BATTERY_REGEX = r"""
     """
 
 
+def _unix_epoch_to_datetime(ts: float) -> datetime:
+    """Convert a Unix float timestamp (seconds) to a UTC datetime object."""
+    return datetime.fromtimestamp(ts, tz=timezone.utc)
+
+
 def parse_message_header(line: str) -> MessageHeader:
     """Parses the header from a message line."""
 
@@ -225,7 +231,7 @@ def parse_message_header(line: str) -> MessageHeader:
 
     header = MessageHeader(
         topic=str(match["topic"]),
-        timestamp=float(match["timestamp"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     return header
@@ -242,12 +248,14 @@ def parse_image_message(line: str) -> ImageCaptureMessage:
 
     header = ImageCaptureMessage.header_type(
         topic=str(match["topic"]),
-        timestamp=float(match["timestamp"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     filename: str = str(match["filename"])
     label: str = Path(match["filename"]).stem
-    trigger_time: float = float(match["trigger_time"])
+    trigger_time: datetime = _unix_epoch_to_datetime(
+        float(match["trigger_time"])
+    )
     exposure_logged: bool = match["exposure"] is not None
 
     exposure: int = int(match["exposure"]) if exposure_logged else 0
@@ -273,7 +281,8 @@ def parse_seabird_ctd_message(line: str) -> SeabirdCTDMessage:
         raise ValueError(f"failed to parse Seabird CTD message: {line}")
 
     header = SeabirdCTDMessage.header_type(
-        topic=str(match["topic"]), timestamp=float(match["timestamp"])
+        topic=str(match["topic"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     body = SeabirdCTDMessage.body_type(
@@ -298,7 +307,7 @@ def parse_aanderaa_ctd_message(line: str) -> AanderaaCTDMessage:
 
     header = AanderaaCTDMessage.header_type(
         topic=str(match["topic"]),
-        timestamp=float(match["timestamp"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     body = AanderaaCTDMessage.body_type(
@@ -323,7 +332,7 @@ def parse_ecopuck_message(line: str) -> EcopuckMessage:
 
     header = EcopuckMessage.header_type(
         topic=str(match["topic"]),
-        timestamp=float(match["timestamp"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     body = EcopuckMessage.body_type(
@@ -346,7 +355,7 @@ def parse_parosci_pressure_message(line: str) -> ParosciPressureMessage:
 
     header = ParosciPressureMessage.header_type(
         topic=str(match["topic"]),
-        timestamp=float(match["timestamp"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     body = ParosciPressureMessage.body_type(
@@ -365,11 +374,12 @@ def parse_teledyne_dvl_message(line: str) -> TeledyneDVLMessage:
     if not match:
         raise ValueError(f"failed to parse message line: {line}")
 
-    header: TeledyneDVLMessage.header_type = TeledyneDVLMessage.header_type(
-        topic=str(match["topic"]), timestamp=float(match["timestamp"])
+    header: MessageHeader = TeledyneDVLMessage.header_type(
+        topic=str(match["topic"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
-    body: TeledyneDVLMessage.body_type = TeledyneDVLMessage.body_type(
+    body = TeledyneDVLMessage.body_type(
         altitude=float(match["altitude"]),
         range_01=float(match["range_01"]),
         range_02=float(match["range_02"]),
@@ -406,18 +416,18 @@ def parse_lq_modem_message(line: str) -> TrackLinkModemMessage:
 
     header: MessageHeader = TrackLinkModemMessage.header_type(
         topic=str(match["topic"]),
-        timestamp=float(match["timestamp"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     body = TrackLinkModemMessage.body_type(
-        latitude=float(match["latitude"]),
-        longitude=float(match["longitude"]),
-        roll=float(match["roll"]),
-        pitch=float(match["pitch"]),
-        heading=float(match["heading"]),
-        time=float(match["time"]),
-        bearing=float(match["bearing"]),
-        range=float(match["range"]),
+        ship_latitude=float(match["ship_latitude"]),
+        ship_longitude=float(match["ship_longitude"]),
+        ship_roll=float(match["ship_roll"]),
+        ship_pitch=float(match["ship_pitch"]),
+        ship_heading=float(match["ship_heading"]),
+        device_time=float(match["device_time"]),
+        target_bearing_angle=float(match["target_bearing_angle"]),
+        target_slant_range=float(match["target_slant_range"]),
     )
 
     return TrackLinkModemMessage(header, body)
@@ -434,7 +444,7 @@ def parse_evologics_modem_message(line: str) -> EvologicsModemMessage:
 
     header = EvologicsModemMessage.header_type(
         topic=str(match["topic"]),
-        timestamp=float(match["timestamp"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     body = EvologicsModemMessage.body_type(
@@ -466,7 +476,7 @@ def parse_micron_sonar_message(line: str) -> MicronSonarMessage:
 
     header = MicronSonarMessage.header_type(
         topic=str(match["topic"]),
-        timestamp=float(match["timestamp"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     body = MicronSonarMessage.body_type(
@@ -490,7 +500,7 @@ def parse_obstacle_avoidance_sonar_message(line: str) -> OASonarMessage:
 
     header = OASonarMessage.header_type(
         topic=str(match["topic"]),
-        timestamp=float(match["timestamp"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     body = OASonarMessage.body_type(
@@ -513,7 +523,7 @@ def parse_gps_gsv_message(line: str) -> GpsGsvMessage:
 
     header = GpsGsvMessage.header_type(
         topic=str(match["topic"]),
-        timestamp=float(match["timestamp"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     body = GpsGsvMessage.body_type(
@@ -534,7 +544,7 @@ def parse_gps_rmc_message(line: str) -> GpsRmcMessage:
 
     header = GpsRmcMessage.header_type(
         topic=str(match["topic"]),
-        timestamp=float(match["timestamp"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     body = GpsRmcMessage.body_type(
@@ -568,7 +578,8 @@ def parse_battery_message(line: str) -> BatteryMessage:
         raise ValueError(f"failed to parse message line: {line}")
 
     header = BatteryMessage.header_type(
-        topic=str(match["topic"]), timestamp=float(match["timestamp"])
+        topic=str(match["topic"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     body = BatteryMessage.body_type(
@@ -601,7 +612,8 @@ def parse_thruster_message(line: str) -> ThrusterMessage:
         raise ValueError(f"failed to parse message line: {line}")
 
     header = ThrusterMessage.header_type(
-        topic=str(match["topic"]), timestamp=float(match["timestamp"])
+        topic=str(match["topic"]),
+        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
     )
 
     body = ThrusterMessage.body_type(

@@ -19,14 +19,19 @@ uv run pytest
 uv run pytest tests/test_logger.py
 
 # Lint
-uv run ruff check
+uv run ruff check .
 
 # Format
-uv run ruff format
+uv run ruff format .
+
+# Type check
+uv run mypy .
 
 # Build
 uv build
 ```
+
+All code must pass linting, formatting, type checking, and tests with no errors.
 
 Line length is 80 characters (configured in `pyproject.toml` via ruff).
 
@@ -51,3 +56,128 @@ The main package is at `src/afft/` with these modules:
 ## Notebooks
 
 `notebooks/` contains Jupyter notebooks demonstrating data workflows, organized into subdirectories by data type.
+
+## Behavioral Guidelines
+
+**Think before coding.** State assumptions explicitly. If uncertain, ask. If multiple interpretations exist, present them rather than picking silently. If something is unclear, name what's confusing and ask before proceeding.
+
+**Simplicity first.** Write the minimum code that solves the problem. No speculative features, abstractions for single-use code, or error handling for impossible scenarios. If you write 200 lines and it could be 50, rewrite it.
+
+**Surgical changes.** Touch only what you must. Don't improve adjacent code, comments, or formatting. Match existing style. If you notice unrelated dead code, mention it — don't delete it. Remove imports/variables/functions that your changes made unused, but leave pre-existing dead code alone unless asked.
+
+**Goal-driven execution.** Transform tasks into verifiable goals before starting. For multi-step tasks, state a brief plan with explicit success criteria for each step. Clarifying questions come before implementation, not after mistakes.
+
+## Python Conventions
+
+### Types
+
+Always add type hints to return types, arguments, fields, and variables. Use the Python 3.12 `type` statement for type aliases:
+
+```python
+type WeightVector = np.ndarray
+type ComponentIndex = int
+```
+
+### Strings
+
+Use double quotes for all strings. Single quotes are acceptable inside f-strings to avoid escaping:
+
+```python
+label: str = "linear-regression"
+message: str = f"component {component['name']} converged"
+```
+
+### Variable names
+
+Prefer full words over abbreviations — use `message` not `msg`, `packet` not `pkt`, `result` not `res`, `error` not `err`, `config` not `cfg`. Three-character abbreviations are just as discouraged as one- or two-character ones. Exception: short or single-character names are acceptable for class member fields where the meaning is established by context (e.g. `x`, `y`, `z`, `w` on a quaternion dataclass).
+
+### Imports
+
+Group imports in the following order, separating `import ...` groups from `from ... import ...` groups with a blank line:
+
+```python
+import math
+import os
+
+import numpy as np
+import pandas as pd
+
+import mypackage
+
+from typing import Sequence
+
+from numpy.typing import NDArray
+
+from mypackage.models import LinearModel, LogisticModel
+from mypackage.utils import normalize
+```
+
+When importing multiple names from the same module, use parentheses with one name per line:
+
+```python
+from datetime import (
+    date,
+    datetime,
+    timedelta,
+)
+```
+
+Import classes and functions from the package, not from the module within it:
+
+```python
+# Preferred
+from mypackage.models import LinearModel
+
+# Avoid
+from mypackage.models.linear import LinearModel
+```
+
+### Docstrings
+
+Add a line of hyphens under `Arguments`, `Returns`, and `Attributes` section headers.
+
+Function example:
+
+```python
+def fit(
+    data: NDArray[np.float64],
+    max_iter: int = 100,
+    tol: float = 1e-6,
+) -> LinearModel:
+    """
+    Fit a linear model to data.
+
+    Arguments
+    ---------
+    data: Input array of shape (n, d).
+    max_iter: Maximum number of iterations.
+    tol: Convergence tolerance.
+
+    Returns
+    -------
+    Fitted LinearModel.
+    """
+```
+
+Class example:
+
+```python
+@dataclass
+class LinearModel:
+    """
+    A simple linear model.
+
+    Attributes
+    ----------
+    weights: Coefficient vector of shape (d,).
+    bias: Scalar intercept term.
+    """
+
+    weights: NDArray[np.float64]
+    bias: float
+```
+
+## Conventions
+
+- Never reference Claude in commits, pull requests, source code, or documentation. This includes `Co-Authored-By` trailers, body text, or any other attribution to Claude or Anthropic.
+- Use `` ` `` (backtick) for inline code and code blocks in GitHub issues and pull requests, not `` \` `` (escaped backtick).

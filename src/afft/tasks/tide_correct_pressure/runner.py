@@ -46,12 +46,18 @@ def _validate_tide_coverage(
 ) -> None:
     pressure_times = pd.to_datetime(
         readings[config.pressure_timestamp_col],
-        format=config.pressure_timestamp_format,
+        format=config.pressure_timestamp_format or "ISO8601",
+        utc=True,
+    ).dt.tz_convert(None)
+    tide_times = (
+        pd.to_datetime(
+            sealevels[config.tide_timestamp_col],
+            format=config.tide_timestamp_format or "ISO8601",
+            utc=True,
+        )
+        .dt.tz_convert(None)
+        .sort_values()
     )
-    tide_times = pd.to_datetime(
-        sealevels[config.tide_timestamp_col],
-        format=config.tide_timestamp_format,
-    ).sort_values()
 
     if verbose:
         logger.debug(
@@ -109,15 +115,25 @@ def _interpolate_sea_level(
     sealevels: pd.DataFrame,
     config: TideCorrectConfig,
 ) -> pd.Series:
-    pressure_times = pd.to_datetime(
-        readings[config.pressure_timestamp_col],
-        format=config.pressure_timestamp_format,
-    ).astype(np.int64)
+    pressure_times = (
+        pd.to_datetime(
+            readings[config.pressure_timestamp_col],
+            format=config.pressure_timestamp_format or "ISO8601",
+            utc=True,
+        )
+        .dt.tz_convert(None)
+        .astype(np.int64)
+    )
 
-    tide_times = pd.to_datetime(
-        sealevels[config.tide_timestamp_col],
-        format=config.tide_timestamp_format,
-    ).astype(np.int64)
+    tide_times = (
+        pd.to_datetime(
+            sealevels[config.tide_timestamp_col],
+            format=config.tide_timestamp_format or "ISO8601",
+            utc=True,
+        )
+        .dt.tz_convert(None)
+        .astype(np.int64)
+    )
 
     interpolated = np.interp(
         pressure_times.to_numpy(),

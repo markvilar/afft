@@ -2,8 +2,6 @@
 
 import sys
 
-from collections import OrderedDict
-
 import loguru
 import dotenv
 
@@ -22,12 +20,12 @@ LOG_FORMAT = (
 def init_logger() -> None:
     """Initializes the logger."""
 
-    env_values: OrderedDict = dotenv.dotenv_values(".env")
+    env_values: dict[str, str | None] = dotenv.dotenv_values(".env")
 
     if LOG_DIRECTORY_KEY in env_values:
-        directory: str = env_values[LOG_DIRECTORY_KEY]
+        directory: str = env_values[LOG_DIRECTORY_KEY] or "./log"
     else:
-        directory: str = "./log"
+        directory = "./log"
 
     datetime: str = get_time_string("YYYYMMDD_HHmmss")
     log_file: str = f"{directory}/{datetime}.log"

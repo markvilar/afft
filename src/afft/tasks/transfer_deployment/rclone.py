@@ -1,6 +1,7 @@
 """Module for rclone encapsulation."""
 
 from pathlib import Path
+from typing import Any, cast
 
 import rclone
 
@@ -13,11 +14,11 @@ CommandLineOutput = dict[str, str | int | float | bytes]
 
 def parse_command_line_result(result: CommandLineOutput) -> CommandResult:
     """Parse the result from command as a result data class."""
-    flag = result["code"]
-    error = result["error"].decode("utf-8")
+    flag = cast(int, result["code"])
+    error = cast(bytes, result["error"]).decode("utf-8")
     output = [
         string.strip()
-        for string in result["out"].decode("utf-8").split(" -1 ")
+        for string in cast(bytes, result["out"]).decode("utf-8").split(" -1 ")
         if not string.isspace()
     ]
     return CommandResult(flag, error, output)
@@ -37,7 +38,7 @@ def read_config(config_path: Path) -> str:
 
 
 class Context:
-    def __init__(self, config) -> object:
+    def __init__(self, config: str) -> None:
         """Constructor method."""
         self.config = config
         self.config += local_config()
@@ -69,15 +70,18 @@ def run_command(
     context: Context, command: str, args: list[str]
 ) -> CommandLineOutput:
     """Run a custom rclone command."""
-    return rclone.with_config(context.config).run_cmd(
-        command=command,
-        extra_args=args,
+    return cast(
+        CommandLineOutput,
+        rclone.with_config(context.config).run_cmd(
+            command=command,
+            extra_args=args,
+        ),
     )
 
 
 def list_remotes(context: Context) -> None:
     """list the remotes for a given rclone configuration."""
-    return rclone.with_config(context.config).listremotes()
+    rclone.with_config(context.config).listremotes()
 
 
 def list_directories(
@@ -95,7 +99,7 @@ def list_directories(
 
 def copy(
     context: Context, source: str, destination: str, flags: list[str]
-) -> dict:
+) -> CommandResult:
     """
     Copy a directory from the source to the destination.
 
@@ -113,26 +117,19 @@ def copy(
     return parse_command_line_result(result)
 
 
-def sync(local, remote) -> None:
+def sync(local: Any, remote: Any) -> None:
     """Sync a local and remote endpoint."""
     # NOTE: rclone.sync
     raise NotImplementedError
 
 
-# TODO: Rename
-# def list(reference, path: Path) -> None:
-#    """ lists objects in a path with size and path. """
-#    # NOTE: rclone.ls
-#    raise NotImplementedError
-
-
-def list_json(reference, path: Path) -> None:
+def list_json(reference: Any, path: Path) -> None:
     """lists objects in a path with size and path in JSON format."""
     # NOTE: rclone.lsjson
     raise NotImplementedError
 
 
-def delete(reference, path: Path) -> None:
+def delete(reference: Any, path: Path) -> None:
     """Remove the objects of a path."""
     # NOTE: rclone.delete
     raise NotImplementedError

@@ -2,11 +2,12 @@
 YAML, TOML and msgpack."""
 
 from pathlib import Path
+from typing import Any
 
 import msgspec
 
 
-def read_config(path: Path, mode: str = "r") -> dict:
+def read_config(path: Path, mode: str = "r") -> dict[str, Any]:
     """Reads data from a configuration file."""
 
     match path.suffix:
@@ -22,7 +23,7 @@ def read_config(path: Path, mode: str = "r") -> dict:
             raise NotImplementedError(f"invalid config file format: {path}")
 
 
-def write_config(data: dict, path: Path, mode: str = "w") -> Path:
+def write_config(data: dict[str, Any], path: Path, mode: str = "w") -> Path:
     """Writes data to a configuration file."""
 
     match path.suffix:
@@ -38,47 +39,47 @@ def write_config(data: dict, path: Path, mode: str = "w") -> Path:
             raise NotImplementedError(f"invalid config file format: {path}")
 
 
-def _read_json(path: Path, mode: str = "r") -> dict:
+def _read_json(path: Path, mode: str = "r") -> dict[str, Any]:
     """Reads data from a JSON file."""
     try:
         with open(path, mode=mode) as handle:
-            data: dict = msgspec.json.decode(handle.read())
+            data: dict[str, Any] = msgspec.json.decode(handle.read())
             return data
     except Exception as exception:
         raise exception
 
 
-def _read_yaml(path: Path, mode: str = "r") -> dict:
+def _read_yaml(path: Path, mode: str = "r") -> dict[str, Any]:
     """Reads data from a YAML file."""
     try:
         with open(path, mode=mode) as handle:
-            data: dict = msgspec.yaml.decode(handle.read())
+            data: dict[str, Any] = msgspec.yaml.decode(handle.read())
             return data
     except Exception as exception:
         raise exception
 
 
-def _read_toml(path: Path, mode: str = "r") -> dict:
+def _read_toml(path: Path, mode: str = "r") -> dict[str, Any]:
     """Reads data from a TOML file."""
     try:
         with open(path, mode=mode) as handle:
-            data: dict = msgspec.toml.decode(handle.read())
+            data: dict[str, Any] = msgspec.toml.decode(handle.read())
             return data
     except Exception as exception:
         raise exception
 
 
-def _read_msgpack(path: Path, mode: str = "r") -> dict:
+def _read_msgpack(path: Path, mode: str = "r") -> dict[str, Any]:
     """Reads data from a MSGPACK file."""
     try:
         with open(path, mode=mode) as handle:
-            data: dict = msgspec.msgpack.decode(handle.read())
+            data: dict[str, Any] = msgspec.msgpack.decode(handle.read())
             return data
     except Exception as exception:
         raise exception
 
 
-def _write_json(data: dict, path: Path, mode: str = "w") -> Path:
+def _write_json(data: dict[str, Any], path: Path, mode: str = "w") -> Path:
     """Writes an object to a JSON file."""
     try:
         with open(path, mode) as handle:
@@ -88,7 +89,7 @@ def _write_json(data: dict, path: Path, mode: str = "w") -> Path:
         raise exception
 
 
-def _write_yaml(data: dict, path: Path, mode: str = "w") -> Path:
+def _write_yaml(data: dict[str, Any], path: Path, mode: str = "w") -> Path:
     """Writes an object to a YAML file."""
     try:
         with open(path, mode) as handle:
@@ -98,7 +99,7 @@ def _write_yaml(data: dict, path: Path, mode: str = "w") -> Path:
         raise exception
 
 
-def _write_toml(data: dict, path: Path, mode: str = "w") -> Path:
+def _write_toml(data: dict[str, Any], path: Path, mode: str = "w") -> Path:
     """Writes an object to a TOML file."""
     try:
         with open(path, mode) as handle:
@@ -108,7 +109,7 @@ def _write_toml(data: dict, path: Path, mode: str = "w") -> Path:
         raise exception
 
 
-def _write_msgpack(data: dict, path: Path, mode: str = "w") -> Path:
+def _write_msgpack(data: dict[str, Any], path: Path, mode: str = "w") -> Path:
     """Writes an object to a MSGPACK file."""
     try:
         with open(path, mode) as handle:

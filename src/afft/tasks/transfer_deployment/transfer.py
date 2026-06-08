@@ -34,7 +34,7 @@ class FileQueryData:
     excludes: list[str] = field(default_factory=list)
 
 
-def write_include_file(filepath: Path, includes: list[str]):
+def write_include_file(filepath: Path, includes: list[str]) -> None:
     with open(filepath, "w") as f:
         for include in includes:
             f.write(f"{include}\n")
@@ -48,12 +48,12 @@ def get_path_end(path: Path, count: int) -> str:
 def query_files(
     context: TransferContext,
     data: FileQueryData,
-):
+) -> CommandResult:
     """Execute a file search query."""
 
     # Write include keywords to file
     time = get_time_string()
-    include_file_path = f"./.cache/{time}_includes.txt"
+    include_file_path: Path = Path(f"./.cache/{time}_includes.txt")
     write_include_file(include_file_path, data.includes)
 
     result = context.copy(

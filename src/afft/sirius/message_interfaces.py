@@ -4,8 +4,8 @@ from collections.abc import Callable
 from typing import Any, Generic, Protocol, Self, TypeVar
 
 
-Header: TypeVar = TypeVar("Header")
-Body: TypeVar = TypeVar("Body")
+Header = TypeVar("Header", covariant=True)
+Body = TypeVar("Body", covariant=True)
 
 
 class Message(Protocol, Generic[Header, Body]):
@@ -36,4 +36,4 @@ class Message(Protocol, Generic[Header, Body]):
         ...
 
 
-type MessageParser = Callable[[str], Message]
+type MessageParser = Callable[[str], Any]

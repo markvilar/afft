@@ -1,7 +1,8 @@
 """Module for message classes."""
 
 from dataclasses import dataclass
-from typing import Optional, Self
+from datetime import datetime
+from typing import Any, Optional, Self
 
 
 @dataclass
@@ -9,9 +10,9 @@ class MessageHeader:
     """Class representing an AUV message header."""
 
     topic: str
-    timestamp: float
+    timestamp: datetime
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return self.__dict__
 
@@ -22,11 +23,11 @@ class ImageCaptureData:
 
     label: str
     filename: str
-    trigger_time: float
+    trigger_time: datetime
     exposure_logged: bool
     exposure: int = 0
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return self.__dict__
 
@@ -41,7 +42,7 @@ class SeabirdCTDData:
     pressure: float
     sound_velocity: float
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return self.__dict__
 
@@ -56,7 +57,7 @@ class AanderaaCTDData:
     pressure: float
     sound_velocity: float
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return self.__dict__
 
@@ -70,7 +71,7 @@ class EcopuckData:
     cdom: float
     temperature: float
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return self.__dict__
 
@@ -96,7 +97,7 @@ class ParosciPressureData:
 
     depth: float
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return self.__dict__
 
@@ -134,7 +135,7 @@ class TeledyneDVLData:
 
     bottom_track_status: int
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return self.__dict__
 
@@ -143,18 +144,18 @@ class TeledyneDVLData:
 class TrackLinkModemData:
     """Class representing TrackLink modem data."""
 
-    latitude: float
-    longitude: float
+    ship_latitude: float
+    ship_longitude: float
 
-    roll: float
-    pitch: float
-    heading: float
+    ship_roll: float
+    ship_pitch: float
+    ship_heading: float
 
-    time: float
-    bearing: float
-    range: float
+    device_time: float
+    target_bearing_angle: float
+    target_slant_range: float
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return self.__dict__
 
@@ -179,7 +180,7 @@ class EvologicsModemData:
     ship_pitch: float
     ship_heading: float
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return {
             "target_latitude": self.target_latitude,
@@ -206,7 +207,7 @@ class MicronSonarData:
     pseudo_forward_distance: float
     angle: float
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return {
             "profile_range": self.profile_range,
@@ -224,7 +225,7 @@ class OASonarData:
     profile_altitude: float
     pseudo_forward_distance: float
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return {
             "profile_range": self.profile_range,
@@ -239,7 +240,7 @@ class GpsGsvData:
 
     satellites_in_view: int
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return self.__dict__
 
@@ -256,7 +257,7 @@ class GpsRmcData:
     course_over_ground: float
     magnetic_variation: float
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return self.__dict__
 
@@ -273,7 +274,7 @@ class BatteryData:
     charge_percent: int
     charging: bool
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return {
             "label": self.label,
@@ -296,7 +297,7 @@ class ThrusterData:
     voltage: float
     temperature: float
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         return {
             "label": self.label,
@@ -336,7 +337,7 @@ class ImageCaptureMessage:
     header: MessageHeader
     body: ImageCaptureData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -353,7 +354,7 @@ class SeabirdCTDMessage:
     header: MessageHeader
     body: SeabirdCTDData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -370,7 +371,7 @@ class AanderaaCTDMessage:
     header: MessageHeader
     body: AanderaaCTDData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -387,7 +388,7 @@ class EcopuckMessage:
     header: MessageHeader
     body: EcopuckData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -404,7 +405,7 @@ class ParosciPressureMessage:
     header: MessageHeader
     body: ParosciPressureData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -421,7 +422,7 @@ class TeledyneDVLMessage:
     header: MessageHeader
     body: TeledyneDVLData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -438,7 +439,7 @@ class TrackLinkModemMessage:
     header: MessageHeader
     body: TrackLinkModemData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -455,7 +456,7 @@ class EvologicsModemMessage:
     header: MessageHeader
     body: EvologicsModemData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -472,7 +473,7 @@ class MicronSonarMessage:
     header: MessageHeader
     body: MicronSonarData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -489,7 +490,7 @@ class OASonarMessage:
     header: MessageHeader
     body: OASonarData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -506,7 +507,7 @@ class GpsGsvMessage:
     header: MessageHeader
     body: GpsGsvData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -523,7 +524,7 @@ class GpsRmcMessage:
     header: MessageHeader
     body: GpsRmcData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -540,7 +541,7 @@ class BatteryMessage:
     header: MessageHeader
     body: BatteryData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())
@@ -557,7 +558,7 @@ class ThrusterMessage:
     header: MessageHeader
     body: ThrusterData
 
-    def to_dict(self: Self) -> dict:
+    def to_dict(self: Self) -> dict[str, Any]:
         """Returns a dict representation of the object."""
         data = self.header.to_dict()
         data.update(self.body.to_dict())

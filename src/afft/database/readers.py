@@ -1,11 +1,15 @@
 """Module for reading data from a database."""
 
+from typing import Any
+
 import polars as pl
 
 from .engine import Engine
 
 
-def read_database_table(engine: Engine, query: str, **kwargs) -> pl.DataFrame:
+def read_database_table(
+    engine: Engine, query: str, **kwargs: Any
+) -> pl.DataFrame:
     """Read data frame from a database."""
     try:
         with engine.connect() as connection:

@@ -1,5 +1,7 @@
 """Module for functionality for the WorldTides API."""
 
+from typing import Any
+
 import requests
 
 import arrow
@@ -37,7 +39,7 @@ def get_sea_level_worldtides(
     assert time_start < time_end, "start date must be before end date"
 
     url: str = "https://www.worldtides.info/api/v3"
-    params: dict = {
+    params: dict[str, Any] = {
         "heights": "",
         "date": time_start.format("YYYY-MM-DD"),
         "days": (time_end - time_start).days + 1,
@@ -53,13 +55,13 @@ def get_sea_level_worldtides(
     # 'responseLon', 'atlas', 'station', 'heights'
     response: requests.Response = requests.get(url, params=params)
     response.raise_for_status()
-    data: dict = response.json()
+    data: dict[str, Any] = response.json()
 
     # Parse data
     df: pd.DataFrame = pd.DataFrame(data["heights"])
     df["sea_level"] = df["height"]
     df["datetime"] = pd.to_datetime(df["date"])
-    df: pd.DataFrame = df.drop(columns=["date", "height"])
+    df = df.drop(columns=["date", "height"])
 
     # Add metadata
     df["station"] = data.get("station")

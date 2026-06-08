@@ -1,7 +1,7 @@
 """Module for processing database tables."""
 
 from dataclasses import dataclass
-from typing import Callable
+from typing import Any, Callable
 
 import polars as pl
 
@@ -16,15 +16,15 @@ class JoinTableConfig:
     label: str
     queries: dict[str, str]
     join: dict[str, str]
-    selections: dict[str, list]
+    selections: dict[str, list[Any]]
 
 
 def request_data_and_dispatch(
     engine: Engine,
     queries: dict[str, str],
-    data_callback: Callable[[dict], pl.DataFrame],
+    data_callback: Callable[[dict[str, pl.DataFrame]], pl.DataFrame],
     error_callback: Callable[[str], None],
-) -> None:
+) -> pl.DataFrame:
     """Request data from an engine."""
 
     dataframes: dict[str, pl.DataFrame] = {
@@ -36,7 +36,7 @@ def request_data_and_dispatch(
 
 def collect_camera_metadata(
     dataframes: dict[str, pl.DataFrame],
-    selections: dict[str, list],
+    selections: dict[str, list[Any]],
     base: str,
     join_on: str,
 ) -> pl.DataFrame:
@@ -52,13 +52,11 @@ def collect_camera_metadata(
 
     for key, columns in selections.items():
         assert key in dataframes, "missing data frame key: {key}"
-        dataframes[key] = dataframes.get(key).select(columns)
+        dataframes[key] = dataframes[key].select(columns)
 
     left: pl.DataFrame = dataframes.pop(base)
     for key, right in dataframes.items():
-        left: pl.DataFrame = left.join_asof(
-            right, on=join_on, strategy="nearest"
-        )
+        left = left.join_asof(right, on=join_on, strategy="nearest")
 
     joined: pl.DataFrame = left
     return joined
@@ -69,10 +67,10 @@ DataFrameProcessor = Callable[[DataFrameMap], pl.DataFrame]
 
 
 def create_data_frame_processor(
-    selections: dict[str, list],
+    selections: dict[str, list[Any]],
     base: str,
     join_on: str,
-) -> Callable:
+) -> DataFrameProcessor:
     """Creates a table processor."""
 
     def table_processor(dataframes: dict[str, pl.DataFrame]) -> pl.DataFrame:
@@ -86,7 +84,7 @@ def create_data_frame_processor(
 def join_database_tables(
     engine: Engine,
     queries: dict[str, str],
-    selections: dict[str, list],
+    selections: dict[str, list[Any]],
     base: str,
     join_on: str,
 ) -> pl.DataFrame:
