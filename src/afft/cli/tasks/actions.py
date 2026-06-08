@@ -41,7 +41,7 @@ def dispatch_process_telemetry(
     output_dir: str | Path,
     config_file: str | Path,
     pattern: str = "*.csv",
-    strategy: str = "prefix",
+    grouping_strategy: str = "prefix",
 ) -> None:
     """Dispatch the telemetry processing pipeline task."""
     command = ProcessTelemetryCommand(
@@ -49,7 +49,7 @@ def dispatch_process_telemetry(
         output_dir=Path(output_dir),
         config_file=Path(config_file),
         pattern=pattern,
-        strategy=GroupingStrategy(strategy),
+        strategy=GroupingStrategy(grouping_strategy),
     )
     run_process_telemetry(command)
 
