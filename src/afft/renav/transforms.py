@@ -4,10 +4,10 @@ import math
 
 from pathlib import Path
 
-import polars as pl
+import pandas as pd
 
 
-def convert_camera_attitude_to_degrees(cameras: pl.DataFrame) -> pl.DataFrame:
+def convert_camera_attitude_to_degrees(cameras: pd.DataFrame) -> pd.DataFrame:
     """
     Convert Euler angles in a camera pose DataFrame from radians to degrees.
 
@@ -20,17 +20,14 @@ def convert_camera_attitude_to_degrees(cameras: pl.DataFrame) -> pl.DataFrame:
     -------
     DataFrame with the same columns converted to degrees.
     """
-    cameras = cameras.with_columns(
-        [
-            cameras["euler_x"] * 180.0 / math.pi,
-            cameras["euler_y"] * 180.0 / math.pi,
-            cameras["euler_z"] * 180.0 / math.pi,
-        ]
-    )
+    cameras = cameras.copy()
+    cameras["euler_x"] = cameras["euler_x"] * 180.0 / math.pi
+    cameras["euler_y"] = cameras["euler_y"] * 180.0 / math.pi
+    cameras["euler_z"] = cameras["euler_z"] * 180.0 / math.pi
     return cameras
 
 
-def transform_camera_attitude_to_vehicle(cameras: pl.DataFrame) -> pl.DataFrame:
+def transform_camera_attitude_to_vehicle(cameras: pd.DataFrame) -> pd.DataFrame:
     """
     Derive vehicle roll, pitch, and heading from camera Euler angles.
 
@@ -47,21 +44,17 @@ def transform_camera_attitude_to_vehicle(cameras: pl.DataFrame) -> pl.DataFrame:
     -------
     DataFrame with added ``roll``, ``pitch``, and ``heading`` columns.
     """
-    cameras = cameras.with_columns(
-        [(pl.col("euler_z") - 90.0).alias("heading")]
+    cameras = cameras.copy()
+    cameras["heading"] = cameras["euler_z"] - 90.0
+    cameras["heading"] = cameras["heading"].where(
+        cameras["heading"] >= 0.0, cameras["heading"] + 360.0
     )
-    cameras = cameras.with_columns(
-        pl.when(pl.col("heading") < 0.0)
-        .then(pl.col("heading") + 360)
-        .otherwise(pl.col("heading"))
-        .alias("heading")
-    )
-    cameras = cameras.with_columns((pl.col("euler_x") * -1.0).alias("roll"))
-    cameras = cameras.with_columns((pl.col("euler_y")).alias("pitch"))
+    cameras["roll"] = cameras["euler_x"] * -1.0
+    cameras["pitch"] = cameras["euler_y"].copy()
     return cameras
 
 
-def add_image_labels(cameras: pl.DataFrame) -> pl.DataFrame:
+def add_image_labels(cameras: pd.DataFrame) -> pd.DataFrame:
     """
     Add image label columns derived from the stereo image filename stems.
 
@@ -75,16 +68,11 @@ def add_image_labels(cameras: pl.DataFrame) -> pl.DataFrame:
     DataFrame with added ``stereo_left_label`` and ``stereo_right_label``
     columns.
     """
-    left_labels: list[str] = [
-        Path(name).stem for name in cameras["stereo_left_image_name"].to_list()
-    ]
-    right_labels: list[str] = [
-        Path(name).stem for name in cameras["stereo_right_image_name"].to_list()
-    ]
-    cameras = cameras.with_columns(
-        [
-            pl.Series(name="stereo_left_label", values=left_labels),
-            pl.Series(name="stereo_right_label", values=right_labels),
-        ]
+    cameras = cameras.copy()
+    cameras["stereo_left_label"] = cameras["stereo_left_image_name"].map(
+        lambda name: Path(name).stem
+    )
+    cameras["stereo_right_label"] = cameras["stereo_right_image_name"].map(
+        lambda name: Path(name).stem
     )
     return cameras

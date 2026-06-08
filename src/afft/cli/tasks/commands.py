@@ -10,6 +10,7 @@ from .actions import (
     dispatch_clip_tables,
     dispatch_collect_renav_stereo_poses,
     dispatch_correct_pressure_tide,
+    dispatch_process_renav,
     dispatch_process_telemetry,
 )
 
@@ -32,6 +33,26 @@ def _parse_timestamp(
 def task_group(context: click.Context) -> None:
     """CLI group for invoking data processing tasks."""
     context.ensure_object(dict)
+
+
+@task_group.command()
+@click.option(
+    "--input",
+    "input_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="Renav stereo pose estimate file to process",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="path to write the processed output as CSV",
+)
+def process_renav(input_file: str, output_file: str) -> None:
+    """Process a Renav stereo pose estimate file and write to CSV."""
+    dispatch_process_renav(input_file, output_file)
 
 
 @task_group.command()
