@@ -182,11 +182,19 @@ def process_tracklink_usbl_from_logs(
     required=True,
     help="Deployment label to look up in the ship sensor configurations file.",
 )
+@click.option(
+    "--ignore-extrinsics",
+    "ignore_extrinsics",
+    is_flag=True,
+    default=False,
+    help="Use zero extrinsics instead of the calibrated values from the deployment config.",
+)
 def process_evologics_usbl(
     usbl_file: str,
     output_file: str,
     deployment_configs: str,
     deployment_label: str,
+    ignore_extrinsics: bool,
 ) -> None:
     """Convert Evologics USBL data to the unified USBL output schema."""
     dispatch_process_evologics_usbl(
@@ -194,4 +202,5 @@ def process_evologics_usbl(
         output_file,
         deployment_configs,
         deployment_label,
+        ignore_extrinsics=ignore_extrinsics,
     )
