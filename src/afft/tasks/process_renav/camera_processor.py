@@ -1,6 +1,6 @@
 """Task-level cleaning of Renav camera pose DataFrames."""
 
-import polars as pl
+import pandas as pd
 
 from afft.renav.transforms import (
     add_image_labels,
@@ -8,8 +8,25 @@ from afft.renav.transforms import (
     transform_camera_attitude_to_vehicle,
 )
 
+_OUTPUT_COLUMNS: list[str] = [
+    "stereo_left_label",
+    "stereo_right_label",
+    "timestamp",
+    "latitude",
+    "longitude",
+    "height",
+    "depth",
+    "roll",
+    "pitch",
+    "heading",
+    "altitude",
+    "bounding_radius",
+    "stereo_left_image_name",
+    "stereo_right_image_name",
+]
 
-def clean_camera_dataframe(cameras: pl.DataFrame) -> pl.DataFrame:
+
+def clean_camera_dataframe(cameras: pd.DataFrame) -> pd.DataFrame:
     """
     Clean a raw Renav camera pose DataFrame for downstream use.
 
@@ -26,22 +43,18 @@ def clean_camera_dataframe(cameras: pl.DataFrame) -> pl.DataFrame:
     Cleaned DataFrame with a fixed column schema.
     """
     cameras = cameras.rename(
-        {
+        columns={
             "left_image_name": "stereo_left_image_name",
             "right_image_name": "stereo_right_image_name",
         }
     )
-    cameras = cameras.with_columns(
-        [
-            -pl.col("position_z").alias("height"),
-            pl.col("position_z").alias("depth"),
-        ]
-    )
+    cameras["height"] = -cameras["position_z"]
+    cameras["depth"] = cameras["position_z"].copy()
     cameras = add_image_labels(cameras)
     cameras = convert_camera_attitude_to_degrees(cameras)
     cameras = transform_camera_attitude_to_vehicle(cameras)
     cameras = cameras.drop(
-        [
+        columns=[
             "identifier",
             "likely_crossover",
             "position_x",
@@ -52,22 +65,4 @@ def clean_camera_dataframe(cameras: pl.DataFrame) -> pl.DataFrame:
             "euler_z",
         ]
     )
-    cameras = cameras.select(
-        [
-            pl.col("stereo_left_label"),
-            pl.col("stereo_right_label"),
-            pl.col("timestamp"),
-            pl.col("latitude"),
-            pl.col("longitude"),
-            pl.col("height"),
-            pl.col("depth"),
-            pl.col("roll"),
-            pl.col("pitch"),
-            pl.col("heading"),
-            pl.col("altitude"),
-            pl.col("bounding_radius"),
-            pl.col("stereo_left_image_name"),
-            pl.col("stereo_right_image_name"),
-        ]
-    )
-    return cameras
+    return cameras[_OUTPUT_COLUMNS].reset_index(drop=True)

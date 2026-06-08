@@ -8,6 +8,7 @@ from afft.tasks.collect_renav_stereo_poses import (
     CollectRenavStereoPosesCommand,
     run_collect_renav_stereo_poses,
 )
+from afft.tasks.process_renav import ProcessRenavCommand, run_process_renav
 from afft.tasks.process_telemetry import (
     GroupingStrategy,
     ProcessTelemetryCommand,
@@ -74,6 +75,18 @@ def dispatch_collect_renav_stereo_poses(
         tiebreak_margin=tiebreak_margin,
     )
     run_collect_renav_stereo_poses(command)
+
+
+def dispatch_process_renav(
+    input_file: str | Path,
+    output_file: str | Path,
+) -> None:
+    """Process a Renav stereo pose estimate file and write to CSV."""
+    command = ProcessRenavCommand(
+        input_file=Path(input_file),
+        output_file=Path(output_file),
+    )
+    run_process_renav(command)
 
 
 def dispatch_correct_pressure_tide(

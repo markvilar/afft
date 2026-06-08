@@ -3,7 +3,7 @@
 from pathlib import Path
 from typing import Callable, Optional
 
-import polars as pl
+import pandas as pd
 
 
 RENAV_SKIP_ROWS: int = 58
@@ -26,34 +26,39 @@ RENAV_COLUMNS: list[str] = [
     "likely_crossover",
 ]
 
+_COLUMN_DTYPES: dict[str, str] = {
+    "identifier": "int64",
+    "timestamp": "float64",
+    "latitude": "float64",
+    "longitude": "float64",
+    "position_x": "float32",
+    "position_y": "float32",
+    "position_z": "float32",
+    "euler_x": "float32",
+    "euler_y": "float32",
+    "euler_z": "float32",
+    "altitude": "float32",
+    "bounding_radius": "float32",
+}
 
-def _preprocess_and_cast_columns(cameras: pl.DataFrame) -> pl.DataFrame:
-    cameras = cameras.with_columns(
-        [
-            pl.col("identifier").str.strip_chars().cast(pl.Int64),
-            pl.col("timestamp").str.strip_chars().cast(pl.Float64),
-            pl.col("latitude").str.strip_chars().cast(pl.Float64),
-            pl.col("longitude").str.strip_chars().cast(pl.Float64),
-            pl.col("position_x").str.strip_chars().cast(pl.Float32),
-            pl.col("position_y").str.strip_chars().cast(pl.Float32),
-            pl.col("position_z").str.strip_chars().cast(pl.Float32),
-            pl.col("euler_x").str.strip_chars().cast(pl.Float32),
-            pl.col("euler_y").str.strip_chars().cast(pl.Float32),
-            pl.col("euler_z").str.strip_chars().cast(pl.Float32),
-            pl.col("left_image_name").str.strip_chars(),
-            pl.col("right_image_name").str.strip_chars(),
-            pl.col("altitude").str.strip_chars().cast(pl.Float32),
-            pl.col("bounding_radius").str.strip_chars().cast(pl.Float32),
-            pl.col("likely_crossover") == "1",
-        ]
-    )
+
+def _preprocess_and_cast_columns(cameras: pd.DataFrame) -> pd.DataFrame:
+    string_columns: list[str] = ["left_image_name", "right_image_name"]
+    for column in string_columns:
+        cameras[column] = cameras[column].str.strip()
+
+    cameras["likely_crossover"] = cameras["likely_crossover"].str.strip() == "1"
+
+    for column, dtype in _COLUMN_DTYPES.items():
+        cameras[column] = cameras[column].str.strip().astype(dtype)
+
     return cameras
 
 
 def read_cameras(
     path: Path,
-    preprocessor: Optional[Callable[[pl.DataFrame], pl.DataFrame]] = None,
-) -> pl.DataFrame:
+    preprocessor: Optional[Callable[[pd.DataFrame], pd.DataFrame]] = None,
+) -> pd.DataFrame:
     """
     Read camera pose estimates from a Renav file.
 
@@ -69,13 +74,13 @@ def read_cameras(
     if not path.exists():
         raise FileNotFoundError(f"file does not exist: {path}")
 
-    cameras: pl.DataFrame = pl.read_csv(
-        source=path,
-        new_columns=RENAV_COLUMNS,
-        has_header=False,
-        separator=RENAV_SEPARATOR,
-        skip_rows=RENAV_SKIP_ROWS,
-        infer_schema_length=0,
+    cameras: pd.DataFrame = pd.read_csv(
+        path,
+        names=RENAV_COLUMNS,
+        header=None,
+        sep=RENAV_SEPARATOR,
+        skiprows=RENAV_SKIP_ROWS,
+        dtype=str,
     )
 
     cameras = _preprocess_and_cast_columns(cameras)
