@@ -7,6 +7,26 @@ from pathlib import Path
 import pandas as pd
 
 
+def swap_coordinates(cameras: pd.DataFrame) -> pd.DataFrame:
+    """
+    Swap the ``latitude`` and ``longitude`` columns.
+
+    Arguments
+    ---------
+    cameras: DataFrame containing ``latitude`` and ``longitude`` columns.
+
+    Returns
+    -------
+    Copy of the DataFrame with the two columns exchanged.
+    """
+    cameras = cameras.copy()
+    cameras["latitude"], cameras["longitude"] = (
+        cameras["longitude"].copy(),
+        cameras["latitude"].copy(),
+    )
+    return cameras
+
+
 def convert_camera_attitude_to_degrees(cameras: pd.DataFrame) -> pd.DataFrame:
     """
     Convert Euler angles in a camera pose DataFrame from radians to degrees.
