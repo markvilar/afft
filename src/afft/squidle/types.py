@@ -42,6 +42,35 @@ class Platform:
 
 
 @dataclass(slots=True, frozen=True)
+class MediaRecord:
+    """
+    A single media item from a Squidle+ deployment export.
+
+    Attributes
+    ----------
+    key: Unique image label (e.g. ``PR_20090612_225909_880_LC16``).
+    path_best: URL to the full-resolution image.
+    timestamp: Acquisition timestamp (ISO 8601).
+    pose_lat: Latitude in decimal degrees.
+    pose_lon: Longitude in decimal degrees.
+    pose_alt: Altitude above seafloor in metres.
+    pose_dep: Depth below surface in metres.
+    deployment_id: ID of the parent deployment.
+    deployment_key: Key of the parent deployment.
+    """
+
+    key: str
+    path_best: str
+    timestamp: str
+    pose_lat: float
+    pose_lon: float
+    pose_alt: float
+    pose_dep: float
+    deployment_id: int
+    deployment_key: str
+
+
+@dataclass(slots=True, frozen=True)
 class Deployment:
     """
     Squidle+ deployment.
