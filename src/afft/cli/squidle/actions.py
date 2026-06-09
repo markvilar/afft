@@ -82,7 +82,9 @@ def dispatch_list_deployments(
         filters.append({"name": "name", "op": "ilike", "val": f"%{name}%"})
 
     with create_client() as client:
-        deployments: list[Deployment] = fetch_deployments(client, filters or None)
+        deployments: list[Deployment] = fetch_deployments(
+            client, filters or None
+        )
 
     if not deployments:
         logger.info("No deployments found.")
