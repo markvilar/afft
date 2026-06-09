@@ -1,7 +1,9 @@
 """Actions for Renav CLI commands."""
 
 from pathlib import Path
+from typing import Any
 
+from afft.io.config_io import read_config
 from afft.tasks.collect_renav_stereo_poses import (
     CollectRenavStereoPosesCommand,
     run_collect_renav_stereo_poses,
@@ -17,6 +19,13 @@ from afft.tasks.process_renav import (
     ProcessRenavPosesCommand,
     run_process_renav_poses,
     run_process_renav_poses_batch,
+)
+from afft.tasks.transform_camera_poses import (
+    CameraVehicleExtrinsics,
+    TransformCameraPosesBatchCommand,
+    TransformCameraPosesCommand,
+    run_transform_camera_poses,
+    run_transform_camera_poses_batch,
 )
 
 
@@ -94,3 +103,54 @@ def dispatch_batch_correct_renav_poses(
         source_suffix=source_suffix,
     )
     run_correct_renav_camera_poses_batch(command)
+
+
+def dispatch_transform_camera_poses(
+    input_file: str | Path,
+    output_file: str | Path,
+    vehicle_config_file: str | Path,
+) -> None:
+    """Transform camera poses to vehicle reference-point poses."""
+    extrinsics: CameraVehicleExtrinsics = _load_stereo_extrinsics(
+        Path(vehicle_config_file)
+    )
+    command = TransformCameraPosesCommand(
+        input_file=Path(input_file),
+        output_file=Path(output_file),
+    )
+    run_transform_camera_poses(command, extrinsics)
+
+
+def dispatch_transform_camera_poses_batch(
+    input_dir: str | Path,
+    output_dir: str | Path,
+    vehicle_config_file: str | Path,
+    input_suffix: str = "_renav_stereo_poses.csv",
+    output_suffix: str = "_vehicle_poses.csv",
+) -> None:
+    """Batch-transform camera poses to vehicle reference-point poses."""
+    extrinsics: CameraVehicleExtrinsics = _load_stereo_extrinsics(
+        Path(vehicle_config_file)
+    )
+    command = TransformCameraPosesBatchCommand(
+        input_dir=Path(input_dir),
+        output_dir=Path(output_dir),
+        input_suffix=input_suffix,
+        output_suffix=output_suffix,
+    )
+    run_transform_camera_poses_batch(command, extrinsics)
+
+
+def _load_stereo_extrinsics(
+    vehicle_config_file: Path,
+) -> CameraVehicleExtrinsics:
+    data: dict[str, Any] = read_config(vehicle_config_file)
+    stereo: dict[str, Any] = data["sensors"]["stereo"]
+    return CameraVehicleExtrinsics(
+        posx=stereo["posx"],
+        posy=stereo["posy"],
+        posz=stereo["posz"],
+        rotx=stereo["rotx"],
+        roty=stereo["roty"],
+        rotz=stereo["rotz"],
+    )

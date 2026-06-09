@@ -82,7 +82,9 @@ def main(input_dir: Path, output_dir: Path) -> None:
         figure: Figure = _build_figure(
             dataframe_with, dataframe_without, deployment
         )
-        output_path: Path = output_dir / f"{deployment}_tracklink_comparison.png"
+        output_path: Path = (
+            output_dir / f"{deployment}_tracklink_comparison.png"
+        )
         figure.savefig(output_path, dpi=300, bbox_inches="tight")
         plt.close(figure)
         click.echo(f"  saved -> {output_path}")

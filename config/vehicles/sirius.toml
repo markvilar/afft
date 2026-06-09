@@ -1,0 +1,55 @@
+# Sirius AUV sensor extrinsics in the vehicle body frame.
+#
+# Coordinate convention (from ACFR localiser config):
+#   posx: forward (bow), metres
+#   posy: starboard, metres
+#   posz: downward, metres (SNAME)
+#   rotx: roll  (phi),   degrees, right-hand positive
+#   roty: pitch (theta), degrees, right-hand positive
+#   rotz: yaw   (psi),  degrees, right-hand positive
+#
+# Source: acfr_localiser_config
+
+[sensors.stereo]
+label       = "stereo_camera"
+sensor_type = "stereo_camera"
+source      = "acfr_localiser_config"
+posx =  0.820
+posy =  -0.035    # half baseline of ~0.07 meters
+posz =  0.000
+rotx =  -2.137   # calibrated 2009-08-02
+roty =  -0.375
+rotz =  88.742   # cameras point downward
+
+[sensors.dvl]
+label       = "teledyne_rdi_workhorse"
+sensor_type = "dvl"
+source      = "acfr_localiser_config"
+posx =  0.000
+posy =  0.000
+posz =  0.000
+rotx =   0.0
+roty = 180.0     # DVL points downward; corrects DVL frame flip
+rotz = -90.0     # aligns DVL Y-forward to vehicle X-forward
+
+[sensors.depth]
+label       = "parosci_pressure_sensor"
+sensor_type = "pressure"
+source      = "acfr_localiser_config"
+posx =  0.400   # FIXME: flagged as unmeasured in source
+posy =  0.000
+posz = -0.230
+rotx =  0.0
+roty =  0.0
+rotz =  0.0
+
+[sensors.usbl]
+label       = "usbl"
+sensor_type = "usbl"
+source      = "acfr_localiser_config"
+posx =  0.000   # NOTE: was originally -1.270 in source
+posy =  0.000
+posz = -0.900
+rotx =  0.0
+roty =  0.0
+rotz =  0.0
