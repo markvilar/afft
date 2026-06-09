@@ -8,6 +8,8 @@ from .actions import (
     dispatch_collect_renav_stereo_poses,
     dispatch_correct_renav_poses,
     dispatch_process_renav,
+    dispatch_transform_camera_poses,
+    dispatch_transform_camera_poses_batch,
 )
 
 
@@ -149,6 +151,90 @@ def correct_poses(
 ) -> None:
     """Correct Renav camera poses with source camera pose latitude/longitude."""
     dispatch_correct_renav_poses(target_file, source_file, output_file)
+
+
+@renav_group.command()
+@click.option(
+    "--input",
+    "input_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="camera pose CSV to transform to vehicle reference-point poses",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="path to write the vehicle poses as CSV",
+)
+@click.option(
+    "--vehicle-config",
+    "vehicle_config_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="vehicle TOML config containing stereo camera extrinsics",
+)
+def transform_poses(
+    input_file: str,
+    output_file: str,
+    vehicle_config_file: str,
+) -> None:
+    """Transform camera poses to vehicle reference-point poses using stereo extrinsics."""
+    dispatch_transform_camera_poses(
+        input_file, output_file, vehicle_config_file
+    )
+
+
+@renav_group.command()
+@click.option(
+    "--input-dir",
+    "input_dir",
+    type=click.Path(exists=True, file_okay=False),
+    required=True,
+    help="directory containing camera pose CSV files",
+)
+@click.option(
+    "--output-dir",
+    "output_dir",
+    type=click.Path(exists=True, file_okay=False),
+    required=True,
+    help="directory to write vehicle pose CSV files into",
+)
+@click.option(
+    "--vehicle-config",
+    "vehicle_config_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="vehicle TOML config containing stereo camera extrinsics",
+)
+@click.option(
+    "--input-suffix",
+    "input_suffix",
+    type=str,
+    default="_renav_stereo_poses.csv",
+    show_default=True,
+    help="suffix stripped from input filenames to derive the deployment label",
+)
+@click.option(
+    "--output-suffix",
+    "output_suffix",
+    type=str,
+    default="_vehicle_poses.csv",
+    show_default=True,
+    help="suffix appended to the deployment label to form the output filename",
+)
+def batch_transform_poses(
+    input_dir: str,
+    output_dir: str,
+    vehicle_config_file: str,
+    input_suffix: str,
+    output_suffix: str,
+) -> None:
+    """Batch-transform camera poses to vehicle reference-point poses."""
+    dispatch_transform_camera_poses_batch(
+        input_dir, output_dir, vehicle_config_file, input_suffix, output_suffix
+    )
 
 
 @renav_group.command()
