@@ -78,7 +78,9 @@ def process_renav_poses(input_file: str, output_file: str) -> None:
     show_default=True,
     help="glob pattern to select input files",
 )
-def batch_process_renav_poses(input_dir: str, output_dir: str, pattern: str) -> None:
+def batch_process_renav_poses(
+    input_dir: str, output_dir: str, pattern: str
+) -> None:
     """Batch process Renav stereo pose estimate files in a directory."""
     dispatch_batch_process_renav(input_dir, output_dir, pattern)
 

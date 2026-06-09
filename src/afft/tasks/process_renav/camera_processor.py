@@ -5,7 +5,11 @@ import pandas as pd
 from afft.renav.transforms import (
     add_image_labels,
     convert_camera_attitude_to_degrees,
+    swap_coordinates,
     transform_camera_attitude_to_vehicle,
+)
+from afft.renav.validators import (
+    check_valid_positions_geodetic,
 )
 
 _OUTPUT_COLUMNS: list[str] = [
@@ -48,6 +52,13 @@ def clean_camera_dataframe(cameras: pd.DataFrame) -> pd.DataFrame:
             "right_image_name": "stereo_right_image_name",
         }
     )
+    if not check_valid_positions_geodetic(cameras):
+        cameras = swap_coordinates(cameras)
+        if not check_valid_positions_geodetic(cameras):
+            raise ValueError(
+                f"invalid geodetic positions in {cameras.shape[0]} pose(s) "
+                f"that cannot be corrected by swapping latitude and longitude"
+            )
     cameras["timestamp"] = pd.to_datetime(
         cameras["timestamp"], unit="s", utc=True
     ).map(pd.Timestamp.isoformat)
