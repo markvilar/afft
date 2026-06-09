@@ -11,6 +11,7 @@ dependencies = [
     "arrow>=1.3.0",
     "click>=8.4.0",
     "geopandas>=1.1.1",
+    "httpx>=0.28.1",
     "loguru>=0.7.3",
     "lonboard>=0.16.0",
     "matplotlib>=3.10.6",
