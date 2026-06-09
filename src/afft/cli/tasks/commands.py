@@ -9,6 +9,7 @@ import click
 from .actions import (
     dispatch_batch_process_renav,
     dispatch_clip_tables,
+    dispatch_collect_deployment_info,
     dispatch_collect_renav_stereo_poses,
     dispatch_correct_pressure_tide,
     dispatch_process_renav,
@@ -83,6 +84,47 @@ def batch_process_renav_poses(
 ) -> None:
     """Batch process Renav stereo pose estimate files in a directory."""
     dispatch_batch_process_renav(input_dir, output_dir, pattern)
+
+
+@task_group.command()
+@click.option(
+    "--input",
+    "root_dir",
+    type=click.Path(exists=True, file_okay=False),
+    required=True,
+    help="root directory containing ACFR deployment subdirectories",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="path to write the collected deployment info as TOML",
+)
+@click.option(
+    "--deployment-suffix",
+    "deployment_suffix",
+    type=str,
+    default="_deployment_data",
+    show_default=True,
+    help="suffix stripped from deployment directory names to form the label",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="log diagnostics warnings after the run completes",
+)
+def collect_deployment_info(
+    root_dir: str,
+    output_file: str,
+    deployment_suffix: str,
+    verbose: bool,
+) -> None:
+    """Collect deployment metadata from an ACFR deployment directory tree."""
+    dispatch_collect_deployment_info(
+        root_dir, output_file, deployment_suffix, verbose
+    )
 
 
 @task_group.command()
