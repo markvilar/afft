@@ -1,5 +1,6 @@
 """Authenticated HTTP client for the Squidle+ API."""
 
+import time
 from types import TracebackType
 from typing import Any
 
@@ -7,8 +8,12 @@ import dotenv
 import httpx
 
 
+type MediaObject = dict[str, Any]
+
 _BASE_URL: str = "https://squidle.org"
 _TOKEN_KEY: str = "SQUIDLE_API_TOKEN"
+_POLL_INTERVAL: float = 2.0
+_POLL_TIMEOUT: float = 300.0
 
 
 class SquidleClient:
@@ -82,6 +87,53 @@ class SquidleClient:
             page += 1
 
         return objects
+
+    def export_deployment(self, deployment_id: int) -> list[MediaObject]:
+        """
+        Trigger and await the async media export for a deployment.
+
+        Starts the background export task, polls until complete, and returns
+        the full list of media objects.
+
+        Arguments
+        ---------
+        deployment_id: Numeric deployment identifier.
+
+        Returns
+        -------
+        List of raw media objects.
+
+        Raises
+        ------
+        RuntimeError: If the export task fails or times out.
+        """
+        response: httpx.Response = self._http.get(
+            f"/api/deployment/{deployment_id}/export"
+        )
+        response.raise_for_status()
+        task: dict[str, Any] = response.json()
+        status_url: str = task["status_url"]
+        result_url: str = task["result_url"]
+
+        elapsed: float = 0.0
+        while elapsed < _POLL_TIMEOUT:
+            time.sleep(_POLL_INTERVAL)
+            elapsed += _POLL_INTERVAL
+            status: MediaObject = self.get(status_url)
+            if status.get("result_available"):
+                result: MediaObject = self.get(result_url)
+                objects: list[MediaObject] = result.get("objects") or []
+                return objects
+            if status.get("status") == "error":
+                raise RuntimeError(
+                    f"export task failed for deployment {deployment_id}: "
+                    f"{status.get('message', '')}"
+                )
+
+        raise RuntimeError(
+            f"export task timed out after {_POLL_TIMEOUT}s "
+            f"for deployment {deployment_id}"
+        )
 
     def close(self) -> None:
         """Close the underlying HTTP connection."""
