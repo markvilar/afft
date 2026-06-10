@@ -15,7 +15,7 @@ from .types import (
     CollectSquidleMediaContext as CollectSquidleMediaContext,
     CollectSquidleMediaResult as CollectSquidleMediaResult,
     DeploymentMatchPolicy as DeploymentMatchPolicy,
-    DeploymentMediaContext as DeploymentMediaContext,
+    DeploymentMediaEntry as DeploymentMediaEntry,
 )
 
 __all__ = []

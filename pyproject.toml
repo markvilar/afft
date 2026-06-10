@@ -28,6 +28,7 @@ dependencies = [
     "scipy>=1.17.1",
     "sqlalchemy>=2.0.41",
     "tomli-w>=1.2.0",
+    "tenacity>=9.0.0",
     "tqdm>=4.67.1",
 ]
 

@@ -103,6 +103,8 @@ def dispatch_collect_squidle_media(
     deployments_file: str | Path,
     output_dir: str | Path,
     match_policy: DeploymentMatchPolicy = DeploymentMatchPolicy.BY_NAME,
+    max_workers: int = 4,
+    dry_run: bool = False,
     verbose: bool = False,
 ) -> None:
     """Dispatch the collect Squidle+ media task."""
@@ -110,6 +112,8 @@ def dispatch_collect_squidle_media(
         deployments_file=Path(deployments_file),
         output_dir=Path(output_dir),
         match_policy=match_policy,
+        max_workers=max_workers,
+        dry_run=dry_run,
         verbose=verbose,
     )
     config = CollectSquidleMediaConfig()

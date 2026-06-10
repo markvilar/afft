@@ -30,6 +30,7 @@ dependencies = [
     { name = "python-rclone" },
     { name = "scipy" },
     { name = "sqlalchemy" },
+    { name = "tenacity" },
     { name = "tomli-w" },
     { name = "tqdm" },
 ]
@@ -68,6 +69,7 @@ requires-dist = [
     { name = "python-rclone", specifier = ">=0.0.2" },
     { name = "scipy", specifier = ">=1.17.1" },
     { name = "sqlalchemy", specifier = ">=2.0.41" },
+    { name = "tenacity", specifier = ">=9.0.0" },
     { name = "tomli-w", specifier = ">=1.2.0" },
     { name = "tqdm", specifier = ">=4.67.1" },
 ]

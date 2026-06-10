@@ -1,9 +1,11 @@
 """Runner for the collect Squidle+ media task."""
 
+from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+from tqdm.auto import tqdm
 
 from afft.io.config_io import read_config
 from afft.squidle import (
@@ -29,7 +31,7 @@ from .types import (
     DeploymentLookupBuilder,
     DeploymentMatchPolicy,
     DeploymentMatcher,
-    DeploymentMediaContext,
+    DeploymentMediaEntry,
 )
 
 
@@ -119,7 +121,7 @@ def create_deployment_matcher(
         ) -> dict[str, Deployment]:
             return {deployment.name: deployment for deployment in deployments}
 
-        def resolve_key(context: DeploymentMediaContext) -> str:
+        def resolve_key(context: DeploymentMediaEntry) -> str:
             return context.acfr_deployment.metadata.acfr_deployment_label
 
     else:
@@ -132,7 +134,7 @@ def create_deployment_matcher(
                 for deployment in deployments
             }
 
-        def resolve_key(context: DeploymentMediaContext) -> str:
+        def resolve_key(context: DeploymentMediaEntry) -> str:
             return _acfr_datetime_key(context.acfr_deployment.deployment_label)
 
     return build_lookup, resolve_key
@@ -141,10 +143,10 @@ def create_deployment_matcher(
 def match_deployment(
     command: CollectSquidleMediaCommand,
     config: CollectSquidleMediaConfig,
-    context: DeploymentMediaContext,
+    context: DeploymentMediaEntry,
     squidle_lookup: dict[str, Deployment],
     resolve_key: DeploymentKeyResolver,
-) -> DeploymentMediaContext:
+) -> DeploymentMediaEntry:
     """
     Match the ACFR deployment to a Squidle+ deployment.
 
@@ -180,9 +182,9 @@ def match_deployment(
 def fetch_media_items(
     command: CollectSquidleMediaCommand,
     config: CollectSquidleMediaConfig,
-    context: DeploymentMediaContext,
+    context: DeploymentMediaEntry,
     client: SquidleClient,
-) -> DeploymentMediaContext:
+) -> DeploymentMediaEntry:
     """
     Fetch media items from Squidle+ for the matched deployment.
 
@@ -208,8 +210,8 @@ def fetch_media_items(
 def format_result(
     command: CollectSquidleMediaCommand,
     config: CollectSquidleMediaConfig,
-    context: DeploymentMediaContext,
-) -> DeploymentMediaContext:
+    context: DeploymentMediaEntry,
+) -> DeploymentMediaEntry:
     """
     Annotate the media DataFrame with ACFR and Squidle+ identity columns.
 
@@ -249,8 +251,8 @@ def format_result(
 def export_result(
     command: CollectSquidleMediaCommand,
     config: CollectSquidleMediaConfig,
-    context: DeploymentMediaContext,
-) -> DeploymentMediaContext:
+    context: DeploymentMediaEntry,
+) -> DeploymentMediaEntry:
     """
     Write the annotated media DataFrame to a CSV file.
 
@@ -278,6 +280,18 @@ def export_result(
     logger.info(
         f"{acfr_label}: {len(context.result)} record(s) → {output_file.name}"
     )
+    return context
+
+
+def _process_deployment(
+    command: CollectSquidleMediaCommand,
+    config: CollectSquidleMediaConfig,
+    context: DeploymentMediaEntry,
+    client: SquidleClient,
+) -> DeploymentMediaEntry:
+    context = fetch_media_items(command, config, context, client)
+    context = format_result(command, config, context)
+    context = export_result(command, config, context)
     return context
 
 
@@ -326,7 +340,7 @@ def run_collect_squidle_media(
 
     task_context: CollectSquidleMediaContext = CollectSquidleMediaContext(
         deployments=[
-            DeploymentMediaContext(acfr_deployment=deployment)
+            DeploymentMediaEntry(acfr_deployment=deployment)
             for deployment in acfr_deployments
         ]
     )
@@ -365,13 +379,53 @@ def run_collect_squidle_media(
             )
 
         for i, context in enumerate(task_context.deployments):
-            context = match_deployment(
+            task_context.deployments[i] = match_deployment(
                 command, config, context, squidle_lookup, resolve_key
             )
-            context = fetch_media_items(command, config, context, client)
-            context = format_result(command, config, context)
-            context = export_result(command, config, context)
-            task_context.deployments[i] = context
+
+        matched: list[tuple[int, DeploymentMediaEntry]] = [
+            (i, context)
+            for i, context in enumerate(task_context.deployments)
+            if context.squidle_deployment is not None
+        ]
+        logger.info(
+            f"matched {len(task_context.matched)} of "
+            f"{len(task_context.deployments)} deployment(s)"
+        )
+        for context in task_context.unmatched:
+            logger.warning(
+                f"  no match: {context.acfr_deployment.metadata.acfr_deployment_label!r}"
+            )
+
+        if command.dry_run:
+            logger.info("dry run — stopping before media fetch")
+            return CollectSquidleMediaResult(
+                exported=[],
+                skipped=[
+                    ctx.acfr_deployment.metadata.acfr_deployment_label
+                    for ctx in task_context.unmatched
+                ],
+            )
+
+        with ThreadPoolExecutor(max_workers=command.max_workers) as executor:
+            future_to_index: dict[Future[DeploymentMediaEntry], int] = {
+                executor.submit(
+                    _process_deployment,
+                    command,
+                    config,
+                    context,
+                    client,
+                ): i
+                for i, context in matched
+            }
+            progress: tqdm[Future[DeploymentMediaEntry]] = tqdm(
+                as_completed(future_to_index),
+                total=len(future_to_index),
+                desc="Fetching deployment media...",
+            )
+            for future in progress:
+                index: int = future_to_index[future]
+                task_context.deployments[index] = future.result()
 
     exported: list[Path] = [
         command.output_dir
@@ -381,8 +435,7 @@ def run_collect_squidle_media(
     ]
     skipped: list[str] = [
         ctx.acfr_deployment.metadata.acfr_deployment_label
-        for ctx in task_context.deployments
-        if ctx.squidle_deployment is None
+        for ctx in task_context.unmatched
     ]
 
     if command.verbose:

@@ -217,6 +217,21 @@ def correct_pressure_tide(
     help="strategy for matching ACFR deployments to Squidle+ deployments",
 )
 @click.option(
+    "--max-workers",
+    "max_workers",
+    type=int,
+    default=4,
+    show_default=True,
+    help="maximum number of concurrent deployment fetch threads",
+)
+@click.option(
+    "--dry-run",
+    "dry_run",
+    is_flag=True,
+    default=False,
+    help="stop after deployment matching without fetching media",
+)
+@click.option(
     "--verbose",
     is_flag=True,
     default=False,
@@ -226,6 +241,8 @@ def collect_squidle_media(
     deployments_file: str,
     output_dir: str,
     match_policy: str,
+    max_workers: int,
+    dry_run: bool,
     verbose: bool,
 ) -> None:
     """Fetch Squidle+ media for all deployments in the ACFR deployments file."""
@@ -233,5 +250,7 @@ def collect_squidle_media(
         deployments_file,
         output_dir,
         DeploymentMatchPolicy(match_policy),
+        max_workers,
+        dry_run,
         verbose,
     )
