@@ -19,6 +19,7 @@ _MEDIA_COLUMNS: list[str] = [
     "pose_lon",
     "pose_alt",
     "pose_dep",
+    "pose_timestamp",
     "deployment_id",
     "deployment_key",
 ]
@@ -109,6 +110,7 @@ def _parse_media_record(data: dict[str, Any]) -> MediaRecord:
         pose_lon=pose.get("lon") or 0.0,
         pose_alt=pose.get("alt") or 0.0,
         pose_dep=pose.get("dep") or 0.0,
+        pose_timestamp=pose.get("timestamp") or "",
         deployment_id=deployment.get("id") or 0,
         deployment_key=deployment.get("key") or "",
     )
@@ -125,6 +127,7 @@ def _to_dataframe(records: list[MediaRecord]) -> pd.DataFrame:
                 "pose_lon": record.pose_lon,
                 "pose_alt": record.pose_alt,
                 "pose_dep": record.pose_dep,
+                "pose_timestamp": record.pose_timestamp,
                 "deployment_id": record.deployment_id,
                 "deployment_key": record.deployment_key,
             }

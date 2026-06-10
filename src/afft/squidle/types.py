@@ -55,6 +55,7 @@ class MediaRecord:
     pose_lon: Longitude in decimal degrees.
     pose_alt: Altitude above seafloor in metres.
     pose_dep: Depth below surface in metres.
+    pose_timestamp: Pose acquisition timestamp (ISO 8601).
     deployment_id: ID of the parent deployment.
     deployment_key: Key of the parent deployment.
     """
@@ -66,6 +67,7 @@ class MediaRecord:
     pose_lon: float
     pose_alt: float
     pose_dep: float
+    pose_timestamp: str
     deployment_id: int
     deployment_key: str
 
