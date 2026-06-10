@@ -2,7 +2,7 @@
 CLI commands for invoking data processing tasks.
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import click
 
@@ -20,7 +20,9 @@ def _parse_timestamp(
     _ctx: click.Context, _param: click.Parameter, value: str
 ) -> datetime:
     try:
-        return datetime.strptime(value, _TIMESTAMP_FORMAT)
+        return datetime.strptime(value, _TIMESTAMP_FORMAT).replace(
+            tzinfo=timezone.utc
+        )
     except ValueError:
         raise click.BadParameter(
             f"expected format YYYYMMDD_HHmmSS, got {value!r}"
@@ -109,6 +111,14 @@ def collect_deployment_info(
     show_default=True,
     help="column to filter on",
 )
+@click.option(
+    "--timestamp-format",
+    "timestamp_format",
+    type=str,
+    default="ISO8601",
+    show_default=True,
+    help="format string passed to pd.to_datetime (e.g. ISO8601 or %Y-%m-%dT%H:%M:%S)",
+)
 def clip_tables(
     source_dir: str,
     output_dir: str,
@@ -116,6 +126,7 @@ def clip_tables(
     end: datetime,
     pattern: str,
     timestamp_column: str,
+    timestamp_format: str,
 ) -> None:
     """Clip CSV files in SOURCE_DIR to [START, END] and write to OUTPUT_DIR."""
     dispatch_clip_tables(
@@ -125,6 +136,7 @@ def clip_tables(
         end,
         pattern,
         timestamp_column,
+        timestamp_format,
     )
 
 
@@ -153,16 +165,40 @@ def clip_tables(
     show_default=True,
     help="how to derive context keys from filenames",
 )
+@click.option(
+    "--timestamp-column",
+    "timestamp_column",
+    type=str,
+    default="timestamp",
+    show_default=True,
+    help="timestamp column to parse and normalize",
+)
+@click.option(
+    "--timestamp-format",
+    "timestamp_format",
+    type=str,
+    default="ISO8601",
+    show_default=True,
+    help="format string passed to pd.to_datetime (e.g. ISO8601 or %Y-%m-%dT%H:%M:%S)",
+)
 def process_telemetry(
     source_dir: str,
     output_dir: str,
     config_file: str,
     pattern: str,
     grouping_strategy: str,
+    timestamp_column: str,
+    timestamp_format: str,
 ) -> None:
     """Run the telemetry processing pipeline on CSV tables in SOURCE_DIR."""
     dispatch_process_telemetry(
-        source_dir, output_dir, config_file, pattern, grouping_strategy
+        source_dir,
+        output_dir,
+        config_file,
+        pattern,
+        grouping_strategy,
+        timestamp_column,
+        timestamp_format,
     )
 
 

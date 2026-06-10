@@ -13,6 +13,7 @@ class ClipTablesCommand:
     end: datetime
     pattern: str = "*.csv"
     timestamp_column: str = "timestamp"
+    timestamp_format: str = "ISO8601"
 
 
 @dataclass(slots=True, frozen=True)
