@@ -36,6 +36,7 @@ class SquidleClient:
         self,
         path: str,
         params: dict[str, Any] | None = None,
+        timeout: float = 30.0,
     ) -> Any:
         """
         Send a GET request and return the parsed JSON response.
@@ -44,12 +45,15 @@ class SquidleClient:
         ---------
         path: API path relative to the base URL.
         params: Optional query parameters.
+        timeout: Read timeout in seconds.
 
         Returns
         -------
         Parsed JSON response.
         """
-        response: httpx.Response = self._http.get(path, params=params)
+        response: httpx.Response = self._http.get(
+            path, params=params, timeout=timeout
+        )
         response.raise_for_status()
         return response.json()
 
@@ -58,6 +62,7 @@ class SquidleClient:
         path: str,
         params: dict[str, Any] | None = None,
         results_per_page: int = 100,
+        timeout: float = 30.0,
     ) -> list[dict[str, Any]]:
         """
         Fetch all pages from a paginated list endpoint.
@@ -67,6 +72,7 @@ class SquidleClient:
         path: API path relative to the base URL.
         params: Optional base query parameters.
         results_per_page: Number of objects to request per page.
+        timeout: Read timeout in seconds per page request.
 
         Returns
         -------
@@ -80,7 +86,9 @@ class SquidleClient:
 
         while True:
             request_params["page"] = page
-            data: dict[str, Any] = self.get(path, params=request_params)
+            data: dict[str, Any] = self.get(
+                path, params=request_params, timeout=timeout
+            )
             objects.extend(data.get("objects", []))
             if page >= data.get("total_pages", 1):
                 break
@@ -88,7 +96,12 @@ class SquidleClient:
 
         return objects
 
-    def export_deployment(self, deployment_id: int) -> list[MediaObject]:
+    def export_deployment(
+        self,
+        deployment_id: int,
+        timeout: float = 30.0,
+        poll_timeout: float = _POLL_TIMEOUT,
+    ) -> list[MediaObject]:
         """
         Trigger and await the async media export for a deployment.
 
@@ -98,6 +111,8 @@ class SquidleClient:
         Arguments
         ---------
         deployment_id: Numeric deployment identifier.
+        timeout: Read timeout in seconds for each HTTP request.
+        poll_timeout: Maximum total time in seconds to wait for the export task.
 
         Returns
         -------
@@ -108,7 +123,7 @@ class SquidleClient:
         RuntimeError: If the export task fails or times out.
         """
         response: httpx.Response = self._http.get(
-            f"/api/deployment/{deployment_id}/export"
+            f"/api/deployment/{deployment_id}/export", timeout=timeout
         )
         response.raise_for_status()
         task: dict[str, Any] = response.json()
@@ -116,12 +131,12 @@ class SquidleClient:
         result_url: str = task["result_url"]
 
         elapsed: float = 0.0
-        while elapsed < _POLL_TIMEOUT:
+        while elapsed < poll_timeout:
             time.sleep(_POLL_INTERVAL)
             elapsed += _POLL_INTERVAL
-            status: MediaObject = self.get(status_url)
+            status: MediaObject = self.get(status_url, timeout=timeout)
             if status.get("result_available"):
-                result: MediaObject = self.get(result_url)
+                result: MediaObject = self.get(result_url, timeout=timeout)
                 objects: list[MediaObject] = result.get("objects") or []
                 return objects
             if status.get("status") == "error":
@@ -131,7 +146,7 @@ class SquidleClient:
                 )
 
         raise RuntimeError(
-            f"export task timed out after {_POLL_TIMEOUT}s "
+            f"export task timed out after {poll_timeout}s "
             f"for deployment {deployment_id}"
         )
 

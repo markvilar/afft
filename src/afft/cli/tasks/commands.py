@@ -6,9 +6,12 @@ from datetime import datetime
 
 import click
 
+from afft.tasks.collect_squidle_media import DeploymentMatchPolicy
+
 from .actions import (
     dispatch_clip_tables,
     dispatch_collect_deployment_info,
+    dispatch_collect_squidle_media,
     dispatch_correct_pressure_tide,
     dispatch_process_telemetry,
 )
@@ -184,5 +187,51 @@ def correct_pressure_tide(
         reading_file,
         sealevel_file,
         output_file,
+        verbose,
+    )
+
+
+@task_group.command()
+@click.option(
+    "--deployments-file",
+    "deployments_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the ACFR deployments TOML file",
+)
+@click.option(
+    "--output-dir",
+    "output_dir",
+    type=click.Path(exists=True, file_okay=False),
+    required=True,
+    help="directory to write one CSV per deployment",
+)
+@click.option(
+    "--match-policy",
+    "match_policy",
+    type=click.Choice(
+        [p.value for p in DeploymentMatchPolicy], case_sensitive=False
+    ),
+    default=DeploymentMatchPolicy.BY_NAME.value,
+    show_default=True,
+    help="strategy for matching ACFR deployments to Squidle+ deployments",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="log skipped deployments after the run completes",
+)
+def collect_squidle_media(
+    deployments_file: str,
+    output_dir: str,
+    match_policy: str,
+    verbose: bool,
+) -> None:
+    """Fetch Squidle+ media for all deployments in the ACFR deployments file."""
+    dispatch_collect_squidle_media(
+        deployments_file,
+        output_dir,
+        DeploymentMatchPolicy(match_policy),
         verbose,
     )

@@ -1,10 +1,12 @@
 [[deployments]]
 deployment_label = "qd61g27j_20100421_022145"
 deployment_datetime = 2010-04-21 02:21:45+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "rottnest_03_25m_s_out"
 acfr_campaign_label = "WA201004"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -32.03434
 origin_longitude = 115.4598
 magnetic_variation = -1.8
@@ -34,10 +36,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qd61g27j_20110410_011202"
 deployment_datetime = 2011-04-10 01:12:02+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "rottnest_07_25m_s_out"
 acfr_campaign_label = "WA201104"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -32.03434
 origin_longitude = 115.4598
 magnetic_variation = -1.76
@@ -65,10 +69,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qd61g27j_20120422_043114"
 deployment_datetime = 2012-04-22 04:31:14+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "rottnest_07_25m_s_out_grid23"
 acfr_campaign_label = "WA201204"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -32.03434
 origin_longitude = 115.4598
 magnetic_variation = -1.71
@@ -99,10 +105,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qd61g27j_20130414_013620"
 deployment_datetime = 2013-04-14 01:36:20+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "rottnest_22_25m_s_out"
 acfr_campaign_label = "WA201304"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -32.03434
 origin_longitude = 115.4598
 magnetic_variation = -1.67
@@ -132,10 +140,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qd61g27j_20170523_040815"
 deployment_datetime = 2017-05-23 04:08:15+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "SS05_rottnest_25m_s_out"
 acfr_campaign_label = "WA201705"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -32.03434
 origin_longitude = 115.4598
 magnetic_variation = -1.49
@@ -167,10 +177,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdc5ghs3_20100430_024508"
 deployment_datetime = 2010-04-30 02:45:08+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "coralpatches_23_40m"
 acfr_campaign_label = "WA201004"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.84619
 origin_longitude = 114.04531
 magnetic_variation = -1.13
@@ -199,10 +211,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdc5ghs3_20120501_033336"
 deployment_datetime = 2012-05-01 03:33:36+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "coralpatches_39_40m_out"
 acfr_campaign_label = "WA201204"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.84619
 origin_longitude = 114.04531
 magnetic_variation = -1.04
@@ -233,10 +247,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdc5ghs3_20130405_103429"
 deployment_datetime = 2013-04-05 10:34:29+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "coralpatches_02_40m_out"
 acfr_campaign_label = "WA201304"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.84619
 origin_longitude = 114.04531
 magnetic_variation = -1.0
@@ -266,10 +282,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdc5ghs3_20210315_230947"
 deployment_datetime = 2021-03-15 23:09:47+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "SS13_coralpatches_40m_out"
 acfr_campaign_label = "WA202103"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.84619
 origin_longitude = 114.04531
 magnetic_variation = -0.66
@@ -301,10 +319,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdch0ftq_20100428_020202"
 deployment_datetime = 2010-04-28 02:02:02+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "geebank_16_15m_out"
 acfr_campaign_label = "WA201004"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.81372
 origin_longitude = 113.94725
 magnetic_variation = -1.16
@@ -334,10 +354,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdch0ftq_20110415_020103"
 deployment_datetime = 2011-04-15 02:01:03+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "geebank_24_15m_out"
 acfr_campaign_label = "WA201104"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.81372
 origin_longitude = 113.94725
 magnetic_variation = -1.12
@@ -366,10 +388,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdch0ftq_20120430_002423"
 deployment_datetime = 2012-04-30 00:24:23+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "geebank_34_15m_out"
 acfr_campaign_label = "WA201204"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.81372
 origin_longitude = 113.94725
 magnetic_variation = -1.07
@@ -400,10 +424,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdch0ftq_20130406_023610"
 deployment_datetime = 2013-04-06 02:36:10+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "geebank_03_15m_out"
 acfr_campaign_label = "WA201304"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.81372
 origin_longitude = 113.94725
 magnetic_variation = -1.03
@@ -433,10 +459,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdch0ftq_20140327_071251"
 deployment_datetime = 2014-03-27 07:12:51+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "geebank_02_15m_out"
 acfr_campaign_label = "WA201403"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.81372
 origin_longitude = 113.94725
 magnetic_variation = -0.99
@@ -470,10 +498,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdch0ftq_20170526_025746"
 deployment_datetime = 2017-05-26 02:57:46+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "SS12_geebank_15m_out"
 acfr_campaign_label = "WA201705"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.81372
 origin_longitude = 113.94725
 magnetic_variation = -0.85
@@ -505,10 +535,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdch0ftq_20210315_034028"
 deployment_datetime = 2021-03-15 03:40:28+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "SS10_geebank_15m_out"
 acfr_campaign_label = "WA202103"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.81372
 origin_longitude = 113.94725
 magnetic_variation = -0.68
@@ -540,10 +572,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdchdmy1_20110416_005411"
 deployment_datetime = 2011-04-16 00:54:11+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "snapperbank_27"
 acfr_campaign_label = "WA201104"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.7066
 origin_longitude = 114.0115
 magnetic_variation = -1.05
@@ -571,10 +605,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdchdmy1_20120501_071203"
 deployment_datetime = 2012-05-01 07:12:03+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "snapperbank_37"
 acfr_campaign_label = "WA201204"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.7066
 origin_longitude = 114.0115
 magnetic_variation = -1.01
@@ -605,10 +641,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdchdmy1_20130406_081713"
 deployment_datetime = 2013-04-06 08:17:13+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "snapperbank_05"
 acfr_campaign_label = "WA201304"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.7066
 origin_longitude = 114.0115
 magnetic_variation = -0.97
@@ -638,10 +676,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdchdmy1_20140328_063358"
 deployment_datetime = 2014-03-28 06:33:58+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "snapperbank_05"
 acfr_campaign_label = "WA201403"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.7066
 origin_longitude = 114.0115
 magnetic_variation = -0.92
@@ -674,10 +714,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdchdmy1_20170525_234624"
 deployment_datetime = 2017-05-25 23:46:24+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "SS11_snapperbank"
 acfr_campaign_label = "WA201705"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.7066
 origin_longitude = 114.0115
 magnetic_variation = -0.79
@@ -708,10 +750,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qdchdmy1_20210315_081519"
 deployment_datetime = 2021-03-15 08:15:19+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "SS12_snapperbank"
 acfr_campaign_label = "WA202103"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.7066
 origin_longitude = 114.0115
 magnetic_variation = -0.62
@@ -746,10 +790,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qtqxshxs_20110815_102540"
 deployment_datetime = 2011-08-15 10:25:40+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "19_scott_grids_deep_auv4"
 acfr_campaign_label = "ScottReef201108"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -14.082605
 origin_longitude = 121.78713
 magnetic_variation = 2.34
@@ -780,10 +826,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qtqxshxs_20150327_015552"
 deployment_datetime = 2015-03-27 01:55:52+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "02_scott_grids_deep_auv4"
 acfr_campaign_label = "ScottReef201503"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -14.082605
 origin_longitude = 121.78713
 magnetic_variation = 2.32
@@ -818,10 +866,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qtqxshxs_20150328_000850"
 deployment_datetime = 2015-03-28 00:08:50+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "03_scott_grids_deep_auv4_shifted"
 acfr_campaign_label = "ScottReef201503"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -14.082605
 origin_longitude = 121.78713
 magnetic_variation = 2.32
@@ -854,10 +904,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "qtqxshxs_20150328_042551"
 deployment_datetime = 2015-03-28 04:25:51+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "04_scott_dense_grid_deep_auv4"
 acfr_campaign_label = "ScottReef201503"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -14.082605
 origin_longitude = 121.78713
 magnetic_variation = 2.32
@@ -890,10 +942,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r234xgje_20100604_230524"
 deployment_datetime = 2010-06-04 23:05:24+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "lanterns_14_shallow"
 acfr_campaign_label = "Tasmania201006"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -43.1475
 origin_longitude = 148.0046
 magnetic_variation = 15.34
@@ -923,10 +977,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r234xgje_20120530_064545"
 deployment_datetime = 2012-05-30 06:45:45+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "lanterns_08_shallow"
 acfr_campaign_label = "Tasmania201205"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -43.1475
 origin_longitude = 148.0046
 magnetic_variation = 15.38
@@ -957,10 +1013,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r234xgje_20140616_205232"
 deployment_datetime = 2014-06-16 20:52:32+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "tas_12_lanterns_shallow"
 acfr_campaign_label = "Tasmania201406"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -43.1475
 origin_longitude = 148.0046
 magnetic_variation = 15.42
@@ -991,10 +1049,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r23685bc_20100605_021022"
 deployment_datetime = 2010-06-05 02:10:22+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "lanterns_15_deep"
 acfr_campaign_label = "Tasmania201006"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -43.1475
 origin_longitude = 148.0046
 magnetic_variation = 15.34
@@ -1023,10 +1083,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r23685bc_20120530_233021"
 deployment_datetime = 2012-05-30 23:30:21+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "lanterns_10_deep"
 acfr_campaign_label = "Tasmania201205"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -43.1475
 origin_longitude = 148.0046
 magnetic_variation = 15.38
@@ -1057,10 +1119,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r23685bc_20140616_225022"
 deployment_datetime = 2014-06-16 22:50:22+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "tas_13_lanterns_deep"
 acfr_campaign_label = "Tasmania201406"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -43.1475
 origin_longitude = 148.0046
 magnetic_variation = 15.42
@@ -1091,10 +1155,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r23m7ms0_20100606_001908"
 deployment_datetime = 2010-06-06 00:19:08+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "mistakencape_19_shallow_shift"
 acfr_campaign_label = "Tasmania201006"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -42.639
 origin_longitude = 148.1522
 magnetic_variation = 15.16
@@ -1123,10 +1189,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r23m7ms0_20120601_070118"
 deployment_datetime = 2012-06-01 07:01:18+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "mistakencape_14_shallow_shift_grid2"
 acfr_campaign_label = "Tasmania201205"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -42.639
 origin_longitude = 148.1522
 magnetic_variation = 15.19
@@ -1156,10 +1224,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r23m7ms0_20140616_044549"
 deployment_datetime = 2014-06-16 04:45:49+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "tas_11_mistakencape_shallow_shift"
 acfr_campaign_label = "Tasmania201406"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -42.639
 origin_longitude = 148.1522
 magnetic_variation = 15.23
@@ -1190,10 +1260,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r29mrd12_20090613_010853"
 deployment_datetime = 2009-06-13 01:08:53+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "st_helens_09_elephant_rock_shallow"
 acfr_campaign_label = "Tasmania200906"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = 0.0
 origin_longitude = 0.0
 magnetic_variation = 0.0
@@ -1222,10 +1294,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r29mrd12_20090613_104954"
 deployment_datetime = 2009-06-13 10:49:54+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "st_helens_12_elephant_rock_shallow_night"
 acfr_campaign_label = "Tasmania200906"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = 0.0
 origin_longitude = 0.0
 magnetic_variation = 0.0
@@ -1254,10 +1328,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r29mrd12_20110612_045149"
 deployment_datetime = 2011-06-12 04:51:49+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "st_helens_03_elephant_rock_shallow_repeat"
 acfr_campaign_label = "Tasmania201106"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -41.253708
 origin_longitude = 148.338934
 magnetic_variation = 14.59
@@ -1285,10 +1361,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r29mrd12_20130611_015335"
 deployment_datetime = 2013-06-11 01:53:35+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "st_helens_15_elephant_rock_shallow_repeat"
 acfr_campaign_label = "Tasmania201306"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -41.253708
 origin_longitude = 148.338934
 magnetic_variation = 14.62
@@ -1319,10 +1397,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r29mrd5h_20090612_225306"
 deployment_datetime = 2009-06-12 22:53:06+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "st_helens_07_elephant_rock_deep"
 acfr_campaign_label = "Tasmania200906"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = 0.0
 origin_longitude = 0.0
 magnetic_variation = 0.0
@@ -1352,10 +1432,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r29mrd5h_20090613_100254"
 deployment_datetime = 2009-06-13 10:02:54+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "st_helens_11_elephant_rock_deep_night"
 acfr_campaign_label = "Tasmania200906"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -41.252879
 origin_longitude = 148.341567
 magnetic_variation = 15.16
@@ -1384,10 +1466,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r29mrd5h_20110612_033752"
 deployment_datetime = 2011-06-12 03:37:52+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "st_helens_01_elephant_rock_deep_repeat"
 acfr_campaign_label = "Tasmania201106"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -41.252879
 origin_longitude = 148.341567
 magnetic_variation = 14.59
@@ -1415,10 +1499,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r29mrd5h_20130611_002419"
 deployment_datetime = 2013-06-11 00:24:19+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "st_helens_13_elephant_rock_deep_repeat"
 acfr_campaign_label = "Tasmania201306"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -41.252879
 origin_longitude = 148.341567
 magnetic_variation = 14.62
@@ -1449,10 +1535,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r7jjskxq_20101023_210332"
 deployment_datetime = 2010-10-23 21:03:32+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "hendersonSth_10_shallow_grids"
 acfr_campaign_label = "SEQueensland201010"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -27.130126
 origin_longitude = 153.475063
 magnetic_variation = 11.15
@@ -1481,10 +1569,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r7jjskxq_20121013_060425"
 deployment_datetime = 2012-10-13 06:04:25+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "hendersonSth_07_shallow_grids"
 acfr_campaign_label = "SEQueensland201210"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -27.130126
 origin_longitude = 153.475063
 magnetic_variation = 11.16
@@ -1515,10 +1605,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r7jjskxq_20131022_004934"
 deployment_datetime = 2013-10-22 00:49:34+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "hendersonSth_03_shallow_grids"
 acfr_campaign_label = "SEQueensland201310"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -27.130126
 origin_longitude = 153.475063
 magnetic_variation = 11.16
@@ -1545,10 +1637,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r7jjss8n_20101023_210332"
 deployment_datetime = 2010-10-23 21:03:32+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "hendersonSth_10_shallow_grids"
 acfr_campaign_label = "SEQueensland201010"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -27.130126
 origin_longitude = 153.475063
 magnetic_variation = 11.15
@@ -1577,10 +1671,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r7jjss8n_20121013_060425"
 deployment_datetime = 2012-10-13 06:04:25+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "hendersonSth_07_shallow_grids"
 acfr_campaign_label = "SEQueensland201210"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -27.130126
 origin_longitude = 153.475063
 magnetic_variation = 11.16
@@ -1611,10 +1707,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r7jjss8n_20131022_004934"
 deployment_datetime = 2013-10-22 00:49:34+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "hendersonSth_03_shallow_grids"
 acfr_campaign_label = "SEQueensland201310"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -27.130126
 origin_longitude = 153.475063
 magnetic_variation = 11.16
@@ -1641,10 +1739,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r7jjssbh_20101023_210332"
 deployment_datetime = 2010-10-23 21:03:32+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "hendersonSth_10_shallow_grids"
 acfr_campaign_label = "SEQueensland201010"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -27.130126
 origin_longitude = 153.475063
 magnetic_variation = 11.15
@@ -1673,10 +1773,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r7jjssbh_20121013_060425"
 deployment_datetime = 2012-10-13 06:04:25+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "hendersonSth_07_shallow_grids"
 acfr_campaign_label = "SEQueensland201210"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -27.130126
 origin_longitude = 153.475063
 magnetic_variation = 11.16
@@ -1707,10 +1809,12 @@ camera_calibration_files = [
 [[deployments]]
 deployment_label = "r7jjssbh_20131022_004934"
 deployment_datetime = 2013-10-22 00:49:34+00:00
+deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
 acfr_deployment_label = "hendersonSth_03_shallow_grids"
 acfr_campaign_label = "SEQueensland201310"
+acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -27.130126
 origin_longitude = 153.475063
 magnetic_variation = 11.16

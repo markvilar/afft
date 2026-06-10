@@ -4,6 +4,12 @@ from datetime import datetime
 from pathlib import Path
 
 from afft.tasks.clip_tables import ClipTablesCommand, run_clip_tables
+from afft.tasks.collect_squidle_media import (
+    CollectSquidleMediaCommand,
+    CollectSquidleMediaConfig,
+    DeploymentMatchPolicy,
+    run_collect_squidle_media,
+)
 from afft.tasks.collect_deployment_info import (
     CollectDeploymentInfoCommand,
     CollectDeploymentInfoConfig,
@@ -91,3 +97,20 @@ def dispatch_correct_pressure_tide(
     )
     config = TideCorrectConfig()
     run_tide_correction(command, config)
+
+
+def dispatch_collect_squidle_media(
+    deployments_file: str | Path,
+    output_dir: str | Path,
+    match_policy: DeploymentMatchPolicy = DeploymentMatchPolicy.BY_NAME,
+    verbose: bool = False,
+) -> None:
+    """Dispatch the collect Squidle+ media task."""
+    command = CollectSquidleMediaCommand(
+        deployments_file=Path(deployments_file),
+        output_dir=Path(output_dir),
+        match_policy=match_policy,
+        verbose=verbose,
+    )
+    config = CollectSquidleMediaConfig()
+    run_collect_squidle_media(command, config)
