@@ -2,6 +2,8 @@
 
 import numpy as np
 import pandas as pd
+import pymap3d
+from scipy.spatial.transform import Rotation
 
 from numpy.typing import NDArray
 
@@ -37,11 +39,17 @@ def process_evologics_usbl(
 
     Adds: target_x_sensor, target_y_sensor, target_z_sensor (USBL-Frame),
           target_x_vessel, target_y_vessel, target_z_vessel (Vessel-Frame),
+          target_depth, target_latitude, target_longitude, target_height,
           target_horizontal_range, target_inclination_angle,
           horizontal_position_std, depth_position_std, evologics_accuracy,
           usbl_extrinsics_locx, usbl_extrinsics_locy, usbl_extrinsics_locz,
           usbl_extrinsics_rotx, usbl_extrinsics_roty, usbl_extrinsics_rotz.
     Removes: accuracy (renamed to evologics_accuracy).
+
+    target_depth, target_latitude, and target_longitude are the modem-reported
+    values, assigned explicitly. target_height is the WGS84 ellipsoidal height
+    derived from the ship position, ship attitude, and transceiver extrinsics
+    via the NED → geodetic chain (pymap3d.ned2geodetic).
 
     Arguments
     ---------
@@ -84,6 +92,46 @@ def process_evologics_usbl(
         target_flipped
     )
 
+    # Resolve the target's WGS84 ellipsoidal height via the NED → geodetic chain.
+    ship_attitudes_ypr: NDArray[np.float64] = np.column_stack(
+        [
+            usbl["ship_heading"].to_numpy(),
+            usbl["ship_pitch"].to_numpy(),
+            usbl["ship_roll"].to_numpy(),
+        ]
+    )
+    R_ship: Rotation = Rotation.from_euler(
+        "zyx", ship_attitudes_ypr, degrees=True
+    )
+    # Transceiver NED offset from the ship reference point, and target NED offset
+    # from the transceiver (extrinsics rotation only, then ship attitude).
+    transceiver_ned: NDArray[np.float64] = R_ship.apply(
+        np.tile(extrinsics.translation, (len(usbl), 1))
+    )
+    target_ned: NDArray[np.float64] = R_ship.apply(
+        extrinsics.rotation.apply(target_flipped)
+    )
+    transceiver_lat: NDArray[np.float64]
+    transceiver_lon: NDArray[np.float64]
+    transceiver_alt: NDArray[np.float64]
+    transceiver_lat, transceiver_lon, transceiver_alt = pymap3d.ned2geodetic(
+        transceiver_ned[:, 0],
+        transceiver_ned[:, 1],
+        transceiver_ned[:, 2],
+        usbl["ship_latitude"].to_numpy(),
+        usbl["ship_longitude"].to_numpy(),
+        np.zeros(len(usbl)),
+    )
+    target_height: NDArray[np.float64]
+    _, _, target_height = pymap3d.ned2geodetic(
+        target_ned[:, 0],
+        target_ned[:, 1],
+        target_ned[:, 2],
+        transceiver_lat,
+        transceiver_lon,
+        transceiver_alt,
+    )
+
     target_horizontal_range: NDArray[np.float64] = np.sqrt(
         target_xyz_vessel[:, 0] ** 2 + target_xyz_vessel[:, 1] ** 2
     )
@@ -94,6 +142,11 @@ def process_evologics_usbl(
     result["target_x_vessel"] = target_xyz_vessel[:, 0]
     result["target_y_vessel"] = target_xyz_vessel[:, 1]
     result["target_z_vessel"] = target_xyz_vessel[:, 2]
+
+    result["target_depth"] = usbl["target_depth"]
+    result["target_latitude"] = usbl["target_latitude"]
+    result["target_longitude"] = usbl["target_longitude"]
+    result["target_height"] = target_height
 
     result["target_horizontal_range"] = target_horizontal_range
     result["target_inclination_angle"] = target_inclination_angle
