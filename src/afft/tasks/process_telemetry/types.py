@@ -13,3 +13,5 @@ class ProcessTelemetryCommand:
     config_file: Path
     pattern: str = "*.csv"
     strategy: GroupingStrategy = GroupingStrategy.PREFIX
+    timestamp_column: str = "timestamp"
+    timestamp_format: str = "ISO8601"

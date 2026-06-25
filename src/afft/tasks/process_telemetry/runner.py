@@ -34,8 +34,18 @@ def run_process_telemetry(command: ProcessTelemetryCommand) -> None:
         f"processing {grouping.label!r}: {len(grouping.files)} table(s)"
     )
 
+    def _read(path: Path) -> pd.DataFrame:
+        df = pd.read_csv(path)
+        if command.timestamp_column in df.columns:
+            df[command.timestamp_column] = pd.to_datetime(
+                df[command.timestamp_column],
+                format=command.timestamp_format,
+                utc=True,
+            )
+        return df
+
     context = TelemetryPipelineContext(
-        {key: pd.read_csv(path) for key, path in grouping.files.items()}
+        {key: _read(path) for key, path in grouping.files.items()}
     )
     context = run_pipeline(context, pipeline_config)
 

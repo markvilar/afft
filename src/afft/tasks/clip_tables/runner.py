@@ -34,8 +34,11 @@ def run_clip_tables(command: ClipTablesCommand) -> None:
     progress: tqdm = tqdm(files, unit="table")
     for file in progress:
         progress.set_description(file.stem)
-        df: pd.DataFrame = pd.read_csv(
-            file, parse_dates=[command.timestamp_column]
+        df: pd.DataFrame = pd.read_csv(file)
+        df[command.timestamp_column] = pd.to_datetime(
+            df[command.timestamp_column],
+            format=command.timestamp_format,
+            utc=True,
         )
         rows_in = len(df)
         mask = (df[command.timestamp_column] >= command.start) & (

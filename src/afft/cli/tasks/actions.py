@@ -51,6 +51,7 @@ def dispatch_clip_tables(
     end: datetime,
     pattern: str = "*.csv",
     timestamp_column: str = "timestamp",
+    timestamp_format: str = "ISO8601",
 ) -> None:
     """Clip rows in CSV files to the [start, end] time interval."""
     command = ClipTablesCommand(
@@ -60,6 +61,7 @@ def dispatch_clip_tables(
         end=end,
         pattern=pattern,
         timestamp_column=timestamp_column,
+        timestamp_format=timestamp_format,
     )
     run_clip_tables(command)
 
@@ -70,6 +72,8 @@ def dispatch_process_telemetry(
     config_file: str | Path,
     pattern: str = "*.csv",
     grouping_strategy: str = "prefix",
+    timestamp_column: str = "timestamp",
+    timestamp_format: str = "ISO8601",
 ) -> None:
     """Dispatch the telemetry processing pipeline task."""
     command = ProcessTelemetryCommand(
@@ -78,6 +82,8 @@ def dispatch_process_telemetry(
         config_file=Path(config_file),
         pattern=pattern,
         strategy=GroupingStrategy(grouping_strategy),
+        timestamp_column=timestamp_column,
+        timestamp_format=timestamp_format,
     )
     run_process_telemetry(command)
 
