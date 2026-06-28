@@ -2,12 +2,14 @@
 
 import sys
 
+from pathlib import Path
+
 import loguru
-import dotenv
+
+from afft.environment import EnvironmentDirectories
 
 from .time import get_time_string
 
-LOG_DIRECTORY_KEY: str = "LOG_DIRECTORY"
 LOG_LEVEL: str = "DEBUG"
 
 LOG_FORMAT = (
@@ -20,12 +22,7 @@ LOG_FORMAT = (
 def init_logger() -> None:
     """Initializes the logger."""
 
-    env_values: dict[str, str | None] = dotenv.dotenv_values(".env")
-
-    if LOG_DIRECTORY_KEY in env_values:
-        directory: str = env_values[LOG_DIRECTORY_KEY] or "./log"
-    else:
-        directory = "./log"
+    directory: Path = EnvironmentDirectories().logs or Path("./log")
 
     datetime: str = get_time_string("YYYYMMDD_HHmmss")
     log_file: str = f"{directory}/{datetime}.log"

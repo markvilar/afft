@@ -4,16 +4,37 @@ import time
 from types import TracebackType
 from typing import Any
 
-import dotenv
 import httpx
+import tenacity
+
+from afft.utils.log import logger
 
 
 type MediaObject = dict[str, Any]
 
 _BASE_URL: str = "https://squidle.org"
-_TOKEN_KEY: str = "SQUIDLE_API_TOKEN"
 _POLL_INTERVAL: float = 2.0
 _POLL_TIMEOUT: float = 300.0
+_DEFAULT_RETRIES: int = 3
+_DEFAULT_BACKOFF_FACTOR: float = 1.0
+
+
+def _is_retryable(exception: BaseException) -> bool:
+    if isinstance(exception, httpx.HTTPStatusError):
+        return exception.response.status_code >= 500
+    return isinstance(exception, httpx.TransportError)
+
+
+def _make_retrying(retries: int, backoff_factor: float) -> tenacity.Retrying:
+    return tenacity.Retrying(
+        stop=tenacity.stop_after_attempt(retries + 1),
+        wait=tenacity.wait_exponential(
+            multiplier=backoff_factor, min=backoff_factor, max=60.0
+        ),
+        retry=tenacity.retry_if_exception(_is_retryable),
+        before_sleep=tenacity.before_sleep_log(logger, "WARNING"),  # type: ignore[arg-type]
+        reraise=True,
+    )
 
 
 class SquidleClient:
@@ -22,7 +43,7 @@ class SquidleClient:
 
     Use as a context manager to ensure the underlying connection is closed:
 
-        with create_client() as client:
+        with create_client(token) as client:
             campaigns = fetch_campaigns(client)
     """
 
@@ -36,6 +57,9 @@ class SquidleClient:
         self,
         path: str,
         params: dict[str, Any] | None = None,
+        timeout: float = 30.0,
+        retries: int = _DEFAULT_RETRIES,
+        backoff_factor: float = _DEFAULT_BACKOFF_FACTOR,
     ) -> Any:
         """
         Send a GET request and return the parsed JSON response.
@@ -44,13 +68,22 @@ class SquidleClient:
         ---------
         path: API path relative to the base URL.
         params: Optional query parameters.
+        timeout: Read timeout in seconds.
+        retries: Number of retry attempts on transient errors. Pass 0 to
+            disable retries.
+        backoff_factor: Base multiplier in seconds for exponential backoff
+            between retries.
 
         Returns
         -------
         Parsed JSON response.
         """
-        response: httpx.Response = self._http.get(path, params=params)
-        response.raise_for_status()
+        for attempt in _make_retrying(retries, backoff_factor):
+            with attempt:
+                response: httpx.Response = self._http.get(
+                    path, params=params, timeout=timeout
+                )
+                response.raise_for_status()
         return response.json()
 
     def get_pages(
@@ -58,6 +91,9 @@ class SquidleClient:
         path: str,
         params: dict[str, Any] | None = None,
         results_per_page: int = 100,
+        timeout: float = 30.0,
+        retries: int = _DEFAULT_RETRIES,
+        backoff_factor: float = _DEFAULT_BACKOFF_FACTOR,
     ) -> list[dict[str, Any]]:
         """
         Fetch all pages from a paginated list endpoint.
@@ -67,6 +103,9 @@ class SquidleClient:
         path: API path relative to the base URL.
         params: Optional base query parameters.
         results_per_page: Number of objects to request per page.
+        timeout: Read timeout in seconds per page request.
+        retries: Number of retry attempts per page on transient errors.
+        backoff_factor: Base multiplier in seconds for exponential backoff.
 
         Returns
         -------
@@ -80,7 +119,13 @@ class SquidleClient:
 
         while True:
             request_params["page"] = page
-            data: dict[str, Any] = self.get(path, params=request_params)
+            data: dict[str, Any] = self.get(
+                path,
+                params=request_params,
+                timeout=timeout,
+                retries=retries,
+                backoff_factor=backoff_factor,
+            )
             objects.extend(data.get("objects", []))
             if page >= data.get("total_pages", 1):
                 break
@@ -88,7 +133,14 @@ class SquidleClient:
 
         return objects
 
-    def export_deployment(self, deployment_id: int) -> list[MediaObject]:
+    def export_deployment(
+        self,
+        deployment_id: int,
+        timeout: float = 30.0,
+        poll_timeout: float = _POLL_TIMEOUT,
+        retries: int = _DEFAULT_RETRIES,
+        backoff_factor: float = _DEFAULT_BACKOFF_FACTOR,
+    ) -> list[MediaObject]:
         """
         Trigger and await the async media export for a deployment.
 
@@ -98,6 +150,10 @@ class SquidleClient:
         Arguments
         ---------
         deployment_id: Numeric deployment identifier.
+        timeout: Read timeout in seconds for each HTTP request.
+        poll_timeout: Maximum total time in seconds to wait for the export task.
+        retries: Number of retry attempts on transient errors per request.
+        backoff_factor: Base multiplier in seconds for exponential backoff.
 
         Returns
         -------
@@ -107,21 +163,33 @@ class SquidleClient:
         ------
         RuntimeError: If the export task fails or times out.
         """
-        response: httpx.Response = self._http.get(
-            f"/api/deployment/{deployment_id}/export"
-        )
-        response.raise_for_status()
+        for attempt in _make_retrying(retries, backoff_factor):
+            with attempt:
+                response: httpx.Response = self._http.get(
+                    f"/api/deployment/{deployment_id}/export", timeout=timeout
+                )
+                response.raise_for_status()
         task: dict[str, Any] = response.json()
         status_url: str = task["status_url"]
         result_url: str = task["result_url"]
 
         elapsed: float = 0.0
-        while elapsed < _POLL_TIMEOUT:
+        while elapsed < poll_timeout:
             time.sleep(_POLL_INTERVAL)
             elapsed += _POLL_INTERVAL
-            status: MediaObject = self.get(status_url)
+            status: MediaObject = self.get(
+                status_url,
+                timeout=timeout,
+                retries=retries,
+                backoff_factor=backoff_factor,
+            )
             if status.get("result_available"):
-                result: MediaObject = self.get(result_url)
+                result: MediaObject = self.get(
+                    result_url,
+                    timeout=timeout,
+                    retries=retries,
+                    backoff_factor=backoff_factor,
+                )
                 objects: list[MediaObject] = result.get("objects") or []
                 return objects
             if status.get("status") == "error":
@@ -131,7 +199,7 @@ class SquidleClient:
                 )
 
         raise RuntimeError(
-            f"export task timed out after {_POLL_TIMEOUT}s "
+            f"export task timed out after {poll_timeout}s "
             f"for deployment {deployment_id}"
         )
 
@@ -151,19 +219,16 @@ class SquidleClient:
         self._http.close()
 
 
-def create_client() -> SquidleClient:
+def create_client(token: str) -> SquidleClient:
     """
-    Create a SquidleClient using the API token from .env.
+    Create a SquidleClient from an API token.
+
+    Arguments
+    ---------
+    token: Squidle+ API token used to authenticate requests.
 
     Returns
     -------
     Authenticated SquidleClient instance.
-
-    Raises
-    ------
-    ValueError: If SQUIDLE_API_TOKEN is not set in .env.
     """
-    token: str | None = dotenv.dotenv_values().get(_TOKEN_KEY)
-    if not token:
-        raise ValueError(f"missing .env value: '{_TOKEN_KEY}'")
     return SquidleClient(token=token)

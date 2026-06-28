@@ -5,12 +5,15 @@ from typing import Any
 import requests
 
 import arrow
-import dotenv
 import pandas as pd
 
 
 def get_sea_level_stormglass(
-    longitude: float, latitude: float, start_date: str, end_date: str
+    longitude: float,
+    latitude: float,
+    start_date: str,
+    end_date: str,
+    token: str,
 ) -> pd.DataFrame:
     """
     Get sea level from the Stormglass API.
@@ -20,6 +23,7 @@ def get_sea_level_stormglass(
         latitude: Latitude in decimal degrees
         start_date: Start date in format YYYYMMDD
         end_date: End date in format YYYYMMDD
+        token: Stormglass API token
     Returns:
         DataFrame with results
     """
@@ -28,9 +32,6 @@ def get_sea_level_stormglass(
     )
     assert latitude > -90 and latitude < 90, (
         f"latitude must be between -90 and 90, got: {latitude}"
-    )
-    assert "STORMGLASS_API_KEY" in dotenv.dotenv_values(), (
-        "missing .env value: 'STORMGLASS_API_KEY'"
     )
 
     start_time: arrow.Arrow = arrow.get(start_date, "YYYYMMDD")
@@ -44,9 +45,7 @@ def get_sea_level_stormglass(
             "start": start_time.to("UTC").timestamp(),
             "end": end_time.to("UTC").timestamp(),
         },
-        headers={
-            "Authorization": dotenv.dotenv_values().get("STORMGLASS_API_KEY")
-        },
+        headers={"Authorization": token},
     )
 
     response.raise_for_status()

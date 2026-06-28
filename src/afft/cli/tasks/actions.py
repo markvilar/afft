@@ -3,7 +3,14 @@
 from datetime import datetime
 from pathlib import Path
 
+from afft.environment import load_environment
 from afft.tasks.clip_tables import ClipTablesCommand, run_clip_tables
+from afft.tasks.collect_squidle_media import (
+    CollectSquidleMediaCommand,
+    CollectSquidleMediaConfig,
+    DeploymentMatchPolicy,
+    run_collect_squidle_media,
+)
 from afft.tasks.collect_deployment_info import (
     CollectDeploymentInfoCommand,
     CollectDeploymentInfoConfig,
@@ -97,3 +104,29 @@ def dispatch_correct_pressure_tide(
     )
     config = TideCorrectConfig()
     run_tide_correction(command, config)
+
+
+def dispatch_collect_squidle_media(
+    deployments_file: str | Path,
+    output_dir: str | Path,
+    match_policy: DeploymentMatchPolicy = DeploymentMatchPolicy.BY_NAME,
+    max_workers: int = 4,
+    dry_run: bool = False,
+    verbose: bool = False,
+) -> None:
+    """Dispatch the collect Squidle+ media task."""
+    command = CollectSquidleMediaCommand(
+        deployments_file=Path(deployments_file),
+        output_dir=Path(output_dir),
+        match_policy=match_policy,
+        max_workers=max_workers,
+        dry_run=dry_run,
+        verbose=verbose,
+    )
+    config = CollectSquidleMediaConfig()
+    token = load_environment().tokens.squidle
+    if token is None:
+        raise ValueError(
+            "missing Squidle API token: set SQUIDLE_API_TOKEN in .env"
+        )
+    run_collect_squidle_media(command, config, token.get_secret_value())

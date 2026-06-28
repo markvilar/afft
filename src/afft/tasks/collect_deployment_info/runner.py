@@ -177,6 +177,7 @@ def run_collect_deployment_info(
             DeploymentInfo(
                 deployment_label=label,
                 deployment_datetime=deployment_datetime,
+                deployment_platform="",
                 metadata=DeploymentMetadata(
                     acfr_deployment_label=collect_acfr_deployment_label(
                         deployment_dir, config, diagnostics
@@ -184,6 +185,7 @@ def run_collect_deployment_info(
                     acfr_campaign_label=collect_acfr_campaign_label(
                         deployment_dir, config, diagnostics
                     ),
+                    acfr_platform_label="",
                     origin_latitude=collect_origin_latitude(
                         deployment_dir, config, diagnostics
                     ),

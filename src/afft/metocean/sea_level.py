@@ -28,13 +28,13 @@ class SeaLevelRequest:
     api: SeaLevelAPI = dataclasses.field(default=SeaLevelAPI.STORMGLASS)
 
 
-def request_sea_level(request: SeaLevelRequest) -> pd.DataFrame:
+def request_sea_level(request: SeaLevelRequest, token: str) -> pd.DataFrame:
     """Requests sea level from one of the APIs."""
     match request.api:
         case SeaLevelAPI.STORMGLASS:
-            return request_sea_level_stormglass(request)
+            return request_sea_level_stormglass(request, token)
         case SeaLevelAPI.WORLDTIDES:
-            return request_sea_level_worldtides(request)
+            return request_sea_level_worldtides(request, token)
         case _:
             raise NotImplementedError(f"invalid sea level api: {request.api}")
 
@@ -44,37 +44,44 @@ def get_sea_level(
     latitude: float,
     start_date: str,
     end_date: str,
+    token: str,
     api: SeaLevelAPI = SeaLevelAPI.STORMGLASS,
 ) -> pd.DataFrame:
     """Gets sea level from one the APIs."""
     match api:
         case SeaLevelAPI.STORMGLASS:
             return get_sea_level_stormglass(
-                longitude, latitude, start_date, end_date
+                longitude, latitude, start_date, end_date, token
             )
         case SeaLevelAPI.WORLDTIDES:
             return get_sea_level_worldtides(
-                longitude, latitude, start_date, end_date
+                longitude, latitude, start_date, end_date, token
             )
         case _:
             raise NotImplementedError(f"invalid sea level api: {api}")
 
 
-def request_sea_level_stormglass(request: SeaLevelRequest) -> pd.DataFrame:
+def request_sea_level_stormglass(
+    request: SeaLevelRequest, token: str
+) -> pd.DataFrame:
     """Requests hourly sea level data from the Stormglass API."""
     return get_sea_level_stormglass(
         request.longitude,
         request.latitude,
         request.start_date,
         request.end_date,
+        token,
     )
 
 
-def request_sea_level_worldtides(request: SeaLevelRequest) -> pd.DataFrame:
+def request_sea_level_worldtides(
+    request: SeaLevelRequest, token: str
+) -> pd.DataFrame:
     """Requests hourly sea level data from the WorldTides API."""
     return get_sea_level_worldtides(
         request.longitude,
         request.latitude,
         request.start_date,
         request.end_date,
+        token,
     )

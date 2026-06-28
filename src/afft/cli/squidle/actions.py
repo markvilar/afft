@@ -5,12 +5,14 @@ from typing import Any
 
 import pandas as pd
 
+from afft.environment import load_environment
 from afft.utils.log import logger
 
 from afft.squidle import (
     Campaign,
     Deployment,
     Platform,
+    SquidleClient,
     create_client,
     fetch_campaign_media,
     fetch_campaigns,
@@ -21,13 +23,23 @@ from afft.squidle import (
 )
 
 
+def _create_client() -> SquidleClient:
+    """Create a Squidle client using the API token from the environment."""
+    token = load_environment().tokens.squidle
+    if token is None:
+        raise ValueError(
+            "missing Squidle API token: set SQUIDLE_API_TOKEN in .env"
+        )
+    return create_client(token.get_secret_value())
+
+
 def dispatch_list_platforms(name: str | None = None) -> None:
     """Fetch and print platforms, optionally filtered by name."""
     filters: list[dict[str, Any]] = []
     if name:
         filters.append({"name": "name", "op": "ilike", "val": f"%{name}%"})
 
-    with create_client() as client:
+    with _create_client() as client:
         platforms: list[Platform] = fetch_platforms(client, filters or None)
 
     if not platforms:
@@ -52,7 +64,7 @@ def dispatch_collect_deployment(
     output_file: Path,
 ) -> None:
     """Fetch media for a single deployment and write to CSV."""
-    with create_client() as client:
+    with _create_client() as client:
         dataframe: pd.DataFrame = fetch_media(client, deployment_id)
     dataframe.to_csv(output_file, index=False)
     logger.info(
@@ -65,7 +77,7 @@ def dispatch_collect_deployments(
     output_dir: Path,
 ) -> None:
     """Fetch media for multiple deployments and write one CSV per deployment."""
-    with create_client() as client:
+    with _create_client() as client:
         results: dict[int, pd.DataFrame] = fetch_media_batch(
             client, deployment_ids
         )
@@ -83,7 +95,7 @@ def dispatch_collect_campaign(
     output_dir: Path,
 ) -> None:
     """Fetch media for all deployments in a campaign, one CSV per deployment."""
-    with create_client() as client:
+    with _create_client() as client:
         results: dict[int, pd.DataFrame] = fetch_campaign_media(
             client, campaign_id
         )
@@ -109,7 +121,7 @@ def dispatch_list_campaigns(name: str | None = None) -> None:
     if name:
         filters.append({"name": "name", "op": "ilike", "val": f"%{name}%"})
 
-    with create_client() as client:
+    with _create_client() as client:
         campaigns: list[Campaign] = fetch_campaigns(client, filters or None)
 
     if not campaigns:
@@ -142,7 +154,7 @@ def dispatch_list_deployments(
     if name:
         filters.append({"name": "name", "op": "ilike", "val": f"%{name}%"})
 
-    with create_client() as client:
+    with _create_client() as client:
         deployments: list[Deployment] = fetch_deployments(
             client, filters or None
         )
