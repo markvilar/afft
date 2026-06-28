@@ -5,12 +5,15 @@ from typing import Any
 import requests
 
 import arrow
-import dotenv
 import pandas as pd
 
 
 def get_sea_level_worldtides(
-    longitude: float, latitude: float, start_date: str, end_date: str
+    longitude: float,
+    latitude: float,
+    start_date: str,
+    end_date: str,
+    token: str,
 ) -> pd.DataFrame:
     """
     Get sea level data from the WorldTides API.
@@ -20,6 +23,7 @@ def get_sea_level_worldtides(
         latitude: Latitude in decimal degrees
         start_date: Start date in format YYYYMMDD
         end_date: End date in format YYYYMMDD
+        token: WorldTides API token
     Returns:
         DataFrame with results
     """
@@ -28,9 +32,6 @@ def get_sea_level_worldtides(
     )
     assert latitude > -90 and latitude < 90, (
         f"latitude must be between -90 and 90, got: {latitude}"
-    )
-    assert "WORLDTIDES_API_KEY" in dotenv.dotenv_values(), (
-        "missing .env value: 'WORLDTIDES_API_KEY'"
     )
 
     time_start: arrow.Arrow = arrow.get(start_date, "YYYYMMDD")
@@ -46,7 +47,7 @@ def get_sea_level_worldtides(
         "step": 3600,  # seconds (1 hour)
         "lat": latitude,
         "lon": longitude,
-        "key": dotenv.dotenv_values().get("WORLDTIDES_API_KEY"),
+        "key": token,
     }
 
     # NOTE: Data fields from World Tides API

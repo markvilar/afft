@@ -9,8 +9,8 @@ import pandas as pd
 import afft.database as db
 import afft.io as io
 import afft.sirius as sirius
-from afft.env import requireenv
 
+from afft.environment import EnvironmentDatabase
 from afft.utils.log import logger
 
 from .types import ParseMessageCommand, ParseMessageConfig
@@ -21,7 +21,10 @@ type Messages = Iterable[sirius.Message[Any, Any]]
 type MessageGroups = Mapping[Topic, Messages]
 
 
-def run_parse_messages(command: ParseMessageCommand) -> None:
+def run_parse_messages(
+    command: ParseMessageCommand,
+    credentials: EnvironmentDatabase | None = None,
+) -> None:
     """Parse messages from source file and optionally ingest into a database
     and/or export to CSV files."""
     raw_config: dict[str, Any] = io.read_config(command.config_file)
@@ -31,7 +34,10 @@ def run_parse_messages(command: ParseMessageCommand) -> None:
     dataframes = _build_dataframes(messages, config, command.prefix)
 
     if command.database:
-        _insert_dataframes(command, dataframes)
+        assert credentials is not None, (
+            "database credentials are required for ingestion"
+        )
+        _insert_dataframes(command, dataframes, credentials)
 
     if command.output_dir:
         _export_dataframes(command.output_dir, dataframes)
@@ -90,6 +96,7 @@ def _build_dataframes(
 def _insert_dataframes(
     command: ParseMessageCommand,
     dataframes: dict[str, pd.DataFrame],
+    credentials: EnvironmentDatabase,
 ) -> None:
     assert command.database is not None, "database is required for ingestion"
     assert command.host is not None, "host is required for ingestion"
@@ -98,8 +105,8 @@ def _insert_dataframes(
         database=command.database,
         host=command.host,
         port=command.port,
-        username=requireenv("PG_USERNAME"),
-        password=requireenv("PG_PASSWORD"),
+        username=credentials.username.get_secret_value(),
+        password=credentials.password.get_secret_value(),
     )
 
     assert isinstance(engine, db.Engine), (

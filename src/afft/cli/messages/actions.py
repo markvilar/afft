@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from afft.environment import EnvironmentDatabase, load_environment
 from afft.tasks.parse_messages import ParseMessageCommand, run_parse_messages
 
 
@@ -23,4 +24,7 @@ def dispatch_parse_messages(
         prefix=prefix,
         output_dir=Path(output_dir) if output_dir else None,
     )
-    run_parse_messages(command)
+    credentials: EnvironmentDatabase | None = (
+        load_environment().database if database else None
+    )
+    run_parse_messages(command, credentials)

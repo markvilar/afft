@@ -298,6 +298,7 @@ def _process_deployment(
 def run_collect_squidle_media(
     command: CollectSquidleMediaCommand,
     config: CollectSquidleMediaConfig,
+    token: str,
 ) -> CollectSquidleMediaResult:
     """
     Collect Squidle+ media for all deployments in the ACFR deployments file.
@@ -306,6 +307,7 @@ def run_collect_squidle_media(
     ---------
     command: Task command.
     config: Task configuration.
+    token: Squidle+ API token used to authenticate requests.
 
     Returns
     -------
@@ -345,7 +347,7 @@ def run_collect_squidle_media(
         ]
     )
 
-    with create_client() as client:
+    with create_client(token) as client:
         squidle_lookup: dict[str, Deployment] = {}
         platform_names: set[str] = {
             context.acfr_deployment.deployment_platform

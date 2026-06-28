@@ -2,26 +2,27 @@
 
 from pathlib import Path
 
-from afft.env import requireenv
-
 import pandas as pd
 from tqdm import tqdm
 
 import afft.database as db
 
+from afft.environment import EnvironmentDatabase
 from afft.utils.log import logger
 
 from .types import IngestTableResult, IngestTablesCommand
 
 
-def run_ingest_tables(command: IngestTablesCommand) -> None:
+def run_ingest_tables(
+    command: IngestTablesCommand, credentials: EnvironmentDatabase
+) -> None:
     """Read CSV files from a directory and ingest each as a database table."""
     engine: db.Engine | str = db.create_engine(
         database=command.database,
         host=command.host,
         port=command.port,
-        username=requireenv("PG_USERNAME"),
-        password=requireenv("PG_PASSWORD"),
+        username=credentials.username.get_secret_value(),
+        password=credentials.password.get_secret_value(),
     )
 
     assert isinstance(engine, db.Engine), (

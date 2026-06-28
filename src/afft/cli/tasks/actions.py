@@ -3,6 +3,7 @@
 from datetime import datetime
 from pathlib import Path
 
+from afft.environment import load_environment
 from afft.tasks.clip_tables import ClipTablesCommand, run_clip_tables
 from afft.tasks.collect_squidle_media import (
     CollectSquidleMediaCommand,
@@ -123,4 +124,9 @@ def dispatch_collect_squidle_media(
         verbose=verbose,
     )
     config = CollectSquidleMediaConfig()
-    run_collect_squidle_media(command, config)
+    token = load_environment().tokens.squidle
+    if token is None:
+        raise ValueError(
+            "missing Squidle API token: set SQUIDLE_API_TOKEN in .env"
+        )
+    run_collect_squidle_media(command, config, token.get_secret_value())

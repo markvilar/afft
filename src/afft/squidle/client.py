@@ -4,7 +4,6 @@ import time
 from types import TracebackType
 from typing import Any
 
-import dotenv
 import httpx
 import tenacity
 
@@ -14,7 +13,6 @@ from afft.utils.log import logger
 type MediaObject = dict[str, Any]
 
 _BASE_URL: str = "https://squidle.org"
-_TOKEN_KEY: str = "SQUIDLE_API_TOKEN"
 _POLL_INTERVAL: float = 2.0
 _POLL_TIMEOUT: float = 300.0
 _DEFAULT_RETRIES: int = 3
@@ -45,7 +43,7 @@ class SquidleClient:
 
     Use as a context manager to ensure the underlying connection is closed:
 
-        with create_client() as client:
+        with create_client(token) as client:
             campaigns = fetch_campaigns(client)
     """
 
@@ -221,19 +219,16 @@ class SquidleClient:
         self._http.close()
 
 
-def create_client() -> SquidleClient:
+def create_client(token: str) -> SquidleClient:
     """
-    Create a SquidleClient using the API token from .env.
+    Create a SquidleClient from an API token.
+
+    Arguments
+    ---------
+    token: Squidle+ API token used to authenticate requests.
 
     Returns
     -------
     Authenticated SquidleClient instance.
-
-    Raises
-    ------
-    ValueError: If SQUIDLE_API_TOKEN is not set in .env.
     """
-    token: str | None = dotenv.dotenv_values().get(_TOKEN_KEY)
-    if not token:
-        raise ValueError(f"missing .env value: '{_TOKEN_KEY}'")
     return SquidleClient(token=token)

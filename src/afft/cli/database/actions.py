@@ -11,8 +11,8 @@ from tqdm import tqdm
 import afft.database as db
 import afft.io as io
 import afft.tasks.database_tasks as dbtasks
-from afft.env import requireenv
 
+from afft.environment import EnvironmentDatabase, load_environment
 from afft.tasks.ingest_tables import IngestTablesCommand, run_ingest_tables
 from afft.utils.log import logger
 
@@ -32,12 +32,13 @@ def dispatch_table_join(
         dbtasks.JoinTableConfig(**task) for task in tasks
     ]
 
+    credentials: EnvironmentDatabase = load_environment().database
     engine: db.Engine | str = db.create_engine(
         database=database,
         host=host,
         port=port,
-        username=requireenv("PG_USERNAME"),
-        password=requireenv("PG_PASSWORD"),
+        username=credentials.username.get_secret_value(),
+        password=credentials.password.get_secret_value(),
     )
 
     assert isinstance(engine, db.Engine), (
@@ -70,12 +71,13 @@ def dispatch_table_export(
 
     Exports all tables when tables is empty, otherwise only the named ones.
     """
+    credentials: EnvironmentDatabase = load_environment().database
     engine: db.Engine | str = db.create_engine(
         database=database,
         host=host,
         port=port,
-        username=requireenv("PG_USERNAME"),
-        password=requireenv("PG_PASSWORD"),
+        username=credentials.username.get_secret_value(),
+        password=credentials.password.get_secret_value(),
     )
 
     assert isinstance(engine, db.Engine), (
@@ -125,7 +127,8 @@ def dispatch_table_ingest(
         verbose=verbose,
         timestamp_columns=timestamp_columns,
     )
-    run_ingest_tables(command)
+    credentials: EnvironmentDatabase = load_environment().database
+    run_ingest_tables(command, credentials)
 
 
 def dispatch_table_write(
@@ -146,12 +149,13 @@ def dispatch_table_write(
 
     data_frame: pl.DataFrame = pl.read_csv(source)
 
+    credentials: EnvironmentDatabase = load_environment().database
     engine: db.Engine | str = db.create_engine(
         database=database,
         host=host,
         port=port,
-        username=requireenv("PG_USERNAME"),
-        password=requireenv("PG_PASSWORD"),
+        username=credentials.username.get_secret_value(),
+        password=credentials.password.get_secret_value(),
     )
     assert isinstance(engine, db.Engine), (
         f"error when creating database engine: {engine}"
