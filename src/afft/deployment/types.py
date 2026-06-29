@@ -1,6 +1,7 @@
-"""Data types for AUV deployment configuration."""
+"""Data types for AUV deployment configuration and metadata."""
 
 from dataclasses import dataclass
+from datetime import datetime
 
 
 @dataclass(slots=True, frozen=True)
@@ -78,3 +79,51 @@ class DeploymentConfig:
     usbl_modem: TopsideUsblModemConfig
     usbl_uncertainty: UsblUncertaintyProfile
     sensor_keys: tuple[str, ...] = ()
+
+
+@dataclass(slots=True, frozen=True)
+class DeploymentMetadata:
+    """
+    Collected metadata for a single AUV deployment.
+
+    Attributes
+    ----------
+    acfr_deployment_label: ACFR mission file stem.
+    acfr_campaign_label: ACFR campaign directory name.
+    acfr_platform_label: ACFR platform name.
+    origin_latitude: Deployment origin latitude in decimal degrees.
+    origin_longitude: Deployment origin longitude in decimal degrees.
+    magnetic_variation: Magnetic variation at the origin in degrees.
+    message_topics: Sorted unique message topic names from the RAW AUV logs.
+    renav_labels: Sorted renav run labels from the camera poses directory.
+    camera_calibration_files: Sorted unique camera calibration filenames.
+    """
+
+    acfr_deployment_label: str
+    acfr_campaign_label: str
+    acfr_platform_label: str
+    origin_latitude: float
+    origin_longitude: float
+    magnetic_variation: float
+    message_topics: list[str]
+    renav_labels: list[str]
+    camera_calibration_files: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class DeploymentInfo:
+    """
+    Core identity fields for a single AUV deployment.
+
+    Attributes
+    ----------
+    deployment_label: Deployment identifier in ``<GEOHASH>_<DATETIME>`` format.
+    deployment_datetime: Deployment datetime.
+    deployment_platform: Squidle+ platform name for this deployment.
+    metadata: Collected deployment metadata.
+    """
+
+    deployment_label: str
+    deployment_datetime: datetime
+    deployment_platform: str
+    metadata: DeploymentMetadata

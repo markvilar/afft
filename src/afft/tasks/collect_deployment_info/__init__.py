@@ -17,6 +17,11 @@ from .runner import (
     create_deployment_labeller as create_deployment_labeller,
     run_collect_deployment_info as run_collect_deployment_info,
 )
+from afft.deployment import (
+    DeploymentInfo as DeploymentInfo,
+    DeploymentMetadata as DeploymentMetadata,
+)
+
 from .types import (
     CollectDeploymentInfoCommand as CollectDeploymentInfoCommand,
     CollectDeploymentInfoConfig as CollectDeploymentInfoConfig,
@@ -24,9 +29,7 @@ from .types import (
     CollectDeploymentInfoResult as CollectDeploymentInfoResult,
     DeploymentDatetimeFinder as DeploymentDatetimeFinder,
     DeploymentFinder as DeploymentFinder,
-    DeploymentInfo as DeploymentInfo,
     DeploymentLabeller as DeploymentLabeller,
-    DeploymentMetadata as DeploymentMetadata,
 )
 
 __all__ = []

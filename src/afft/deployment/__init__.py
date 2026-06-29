@@ -2,5 +2,7 @@
 
 from .loader import load_deployment_config as load_deployment_config
 from .types import DeploymentConfig as DeploymentConfig
+from .types import DeploymentInfo as DeploymentInfo
+from .types import DeploymentMetadata as DeploymentMetadata
 from .types import TopsideUsblModemConfig as TopsideUsblModemConfig
 from .types import UsblUncertaintyProfile as UsblUncertaintyProfile

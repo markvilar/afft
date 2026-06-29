@@ -9,6 +9,7 @@ import msgspec
 
 from tqdm.auto import tqdm
 
+from afft.deployment import DeploymentInfo, DeploymentMetadata
 from afft.utils.log import logger
 
 from .collectors import (
@@ -28,9 +29,7 @@ from .types import (
     CollectDeploymentInfoResult,
     DeploymentDatetimeFinder,
     DeploymentFinder,
-    DeploymentInfo,
     DeploymentLabeller,
-    DeploymentMetadata,
 )
 
 
