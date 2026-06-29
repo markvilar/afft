@@ -5,7 +5,6 @@ from .runner import (
     export_result as export_result,
     fetch_media_items as fetch_media_items,
     format_result as format_result,
-    load_acfr_deployments as load_acfr_deployments,
     match_deployment as match_deployment,
     run_collect_squidle_media as run_collect_squidle_media,
 )
