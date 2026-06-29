@@ -6,7 +6,7 @@ from typing import Any
 import pandas as pd
 import polars as pl
 import sqlalchemy as sqla
-from tqdm import tqdm
+from rich.progress import Progress
 
 import afft.database as db
 import afft.io as io
@@ -98,12 +98,16 @@ def dispatch_table_export(
         raise ValueError(f"tables not found in database: {unknown}")
 
     width = max(len(t) for t in targets)
-    progress = tqdm(targets, unit="table")
-    for table in progress:
-        progress.set_description(table.ljust(width))
+    progress = Progress()
+    task = progress.add_task("", total=len(targets))
+    progress.start()
+    for table in targets:
+        progress.update(task, description=table.ljust(width))
         df: pd.DataFrame = pd.read_sql_table(table, con=engine)
         dest = output_dir / f"{table}.csv"
         df.to_csv(dest, index=False)
+        progress.advance(task)
+    progress.stop()
 
 
 def dispatch_table_ingest(

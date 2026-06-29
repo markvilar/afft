@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
-from tqdm import tqdm
+from rich.progress import Progress
 
 from afft.utils.log import logger
 
@@ -31,9 +31,11 @@ def run_clip_tables(command: ClipTablesCommand) -> None:
 
     results: list[ClipTableResult] = []
 
-    progress: tqdm = tqdm(files, unit="table")
-    for file in progress:
-        progress.set_description(file.stem)
+    progress = Progress()
+    task = progress.add_task("Clipping tables", total=len(files))
+    progress.start()
+    for file in files:
+        progress.update(task, description=file.stem)
         df: pd.DataFrame = pd.read_csv(file)
         df[command.timestamp_column] = pd.to_datetime(
             df[command.timestamp_column],
@@ -55,6 +57,8 @@ def run_clip_tables(command: ClipTablesCommand) -> None:
                 rows_out=len(clipped),
             )
         )
+        progress.advance(task)
+    progress.stop()
 
     if all(r.rows_out == 0 for r in results):
         logger.warning(

@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
-from tqdm import tqdm
+from rich.progress import Progress
 
 import afft.database as db
 
@@ -40,9 +40,11 @@ def run_ingest_tables(
 
     results: list[IngestTableResult] = []
 
-    progress: tqdm = tqdm(files, unit="table")
-    for file in progress:
-        progress.set_description(file.stem)
+    progress = Progress()
+    task = progress.add_task("Ingesting tables", total=len(files))
+    progress.start()
+    for file in files:
+        progress.update(task, description=file.stem)
         df: pd.DataFrame = pd.read_csv(
             file, parse_dates=list(command.timestamp_columns)
         )
@@ -50,6 +52,8 @@ def run_ingest_tables(
         results.append(
             IngestTableResult(file=file, table=file.stem, rows=len(df))
         )
+        progress.advance(task)
+    progress.stop()
 
     if command.verbose:
         logger.info("Ingestion summary:")

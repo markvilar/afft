@@ -3,7 +3,7 @@
 from pathlib import Path
 
 import pandas as pd
-from tqdm.auto import tqdm
+from rich.progress import track
 
 from afft.utils.log import logger
 
@@ -176,7 +176,7 @@ def run_correct_renav_camera_poses_batch(
     results: dict[str, CorrectRenavCameraPosesResult] = {}
     skipped: list[str] = []
 
-    for target_file in tqdm(target_files, desc="Correcting poses", unit="file"):
+    for target_file in track(target_files, description="Correcting poses"):
         label: str = target_file.name.removesuffix(command.target_suffix)
         source_file: Path = (
             command.source_dir / f"{label}{command.source_suffix}"

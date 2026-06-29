@@ -1,6 +1,6 @@
 """Task for collecting Squidle+ media for ACFR deployments."""
 
-from .pipeline import (
+from .runner import (
     create_deployment_matcher as create_deployment_matcher,
     export_result as export_result,
     fetch_media_items as fetch_media_items,

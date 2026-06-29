@@ -7,7 +7,7 @@ from pathlib import Path
 
 import msgspec
 
-from tqdm.auto import tqdm
+from rich.progress import Progress
 
 from afft.deployment import DeploymentInfo, DeploymentMetadata
 from afft.utils.log import logger
@@ -167,11 +167,17 @@ def run_collect_deployment_info(
         CollectDeploymentInfoDiagnostics()
     )
     deployments: list[DeploymentInfo] = []
-    progress: tqdm = tqdm(deployment_dirs, desc="Collecting deployment info")
-    for deployment_dir in progress:
+    progress = Progress()
+    task = progress.add_task(
+        "Collecting deployment info", total=len(deployment_dirs)
+    )
+    progress.start()
+    for deployment_dir in deployment_dirs:
         label: str = label_deployment(deployment_dir)
         deployment_datetime: datetime = find_start_datetime(deployment_dir)
-        progress.set_description(f"Collecting deployment info - {label}")
+        progress.update(
+            task, description=f"Collecting deployment info - {label}"
+        )
         deployments.append(
             DeploymentInfo(
                 deployment_label=label,
@@ -206,6 +212,8 @@ def run_collect_deployment_info(
                 ),
             )
         )
+        progress.advance(task)
+    progress.stop()
 
     result: CollectDeploymentInfoResult = CollectDeploymentInfoResult(
         deployments=deployments
