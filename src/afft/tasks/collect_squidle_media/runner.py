@@ -7,8 +7,7 @@ from typing import Any
 import pandas as pd
 from rich.progress import track
 
-from afft.deployment import DeploymentInfo, DeploymentMetadata
-from afft.io.config_io import read_config
+from afft.deployment import DeploymentInfo, read_deployment_info
 from afft.squidle import (
     SquidleClient,
     create_client,
@@ -30,47 +29,6 @@ from .types import (
     DeploymentMatcher,
     DeploymentMediaEntry,
 )
-
-
-def load_acfr_deployments(
-    command: CollectSquidleMediaCommand,
-) -> list[DeploymentInfo]:
-    """
-    Load ACFR deployment entries from the deployments TOML file.
-
-    Arguments
-    ---------
-    command: Task command.
-
-    Returns
-    -------
-    List of deployment info objects.
-    """
-    raw: dict[str, Any] = read_config(command.deployments_file)
-    deployments: list[DeploymentInfo] = []
-    for entry in raw.get("deployments", []):
-        metadata: dict[str, Any] = entry.get("metadata", {})
-        deployments.append(
-            DeploymentInfo(
-                deployment_label=entry["deployment_label"],
-                deployment_datetime=entry["deployment_datetime"],
-                deployment_platform=entry.get("deployment_platform", ""),
-                metadata=DeploymentMetadata(
-                    acfr_deployment_label=metadata["acfr_deployment_label"],
-                    acfr_campaign_label=metadata["acfr_campaign_label"],
-                    acfr_platform_label=metadata.get("acfr_platform_label", ""),
-                    origin_latitude=metadata.get("origin_latitude", 0.0),
-                    origin_longitude=metadata.get("origin_longitude", 0.0),
-                    magnetic_variation=metadata.get("magnetic_variation", 0.0),
-                    message_topics=metadata.get("message_topics", []),
-                    renav_labels=metadata.get("renav_labels", []),
-                    camera_calibration_files=metadata.get(
-                        "camera_calibration_files", []
-                    ),
-                ),
-            )
-        )
-    return deployments
 
 
 def _squidle_datetime_key(key: str) -> str:
@@ -331,7 +289,9 @@ def run_collect_squidle_media(
     logger.info(f"  output dir:       {command.output_dir}")
     logger.info("-------------------------------------")
 
-    acfr_deployments: list[DeploymentInfo] = load_acfr_deployments(command)
+    acfr_deployments: list[DeploymentInfo] = read_deployment_info(
+        command.deployments_file
+    )
     logger.info(f"loaded {len(acfr_deployments)} ACFR deployment(s)")
 
     build_lookup: DeploymentLookupBuilder

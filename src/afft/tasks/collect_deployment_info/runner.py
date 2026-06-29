@@ -1,15 +1,15 @@
 """Runner for the collect deployment info task."""
 
-import dataclasses
-
 from datetime import datetime, timezone
 from pathlib import Path
 
-import msgspec
-
 from rich.progress import Progress
 
-from afft.deployment import DeploymentInfo, DeploymentMetadata
+from afft.deployment import (
+    DeploymentInfo,
+    DeploymentMetadata,
+    write_deployment_info,
+)
 from afft.utils.log import logger
 
 from .collectors import (
@@ -218,11 +218,7 @@ def run_collect_deployment_info(
     result: CollectDeploymentInfoResult = CollectDeploymentInfoResult(
         deployments=deployments
     )
-    command.output_file.write_bytes(
-        msgspec.toml.encode(
-            {"deployments": [dataclasses.asdict(d) for d in result.deployments]}
-        )
-    )
+    write_deployment_info(command.output_file, result.deployments)
     logger.info(
         f"wrote {len(result.deployments)} deployment(s) to {command.output_file}"
     )
