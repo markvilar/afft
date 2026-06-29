@@ -137,8 +137,8 @@ dmypy.json
 .cache/*
 !.cache/.git-keep
 
-# Log directory
-log/
+.logs/*
+!.logs/.git-keep
 
 # Environment
 .env
