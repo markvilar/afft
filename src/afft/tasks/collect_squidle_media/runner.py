@@ -5,8 +5,9 @@ from pathlib import Path
 from typing import Any
 
 import pandas as pd
-from tqdm.auto import tqdm
+from rich.progress import track
 
+from afft.deployment import DeploymentInfo, DeploymentMetadata
 from afft.io.config_io import read_config
 from afft.squidle import (
     SquidleClient,
@@ -16,10 +17,6 @@ from afft.squidle import (
     fetch_platforms,
 )
 from afft.squidle.types import Deployment
-from afft.tasks.collect_deployment_info import (
-    DeploymentInfo,
-    DeploymentMetadata,
-)
 from afft.utils.log import logger
 
 from .types import (
@@ -422,12 +419,11 @@ def run_collect_squidle_media(
                 ): i
                 for i, context in matched
             }
-            progress: tqdm[Future[DeploymentMediaEntry]] = tqdm(
+            for future in track(
                 as_completed(future_to_index),
                 total=len(future_to_index),
-                desc="Fetching deployment media...",
-            )
-            for future in progress:
+                description="Fetching deployment media...",
+            ):
                 index: int = future_to_index[future]
                 task_context.deployments[index] = future.result()
 

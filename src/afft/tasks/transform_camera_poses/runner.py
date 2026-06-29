@@ -7,7 +7,7 @@ import pandas as pd
 import pymap3d
 from numpy.typing import NDArray
 from scipy.spatial.transform import Rotation
-from tqdm.auto import tqdm
+from rich.progress import track
 
 from afft.utils.log import logger
 
@@ -119,8 +119,8 @@ def run_transform_camera_poses_batch(
 
     results: dict[str, TransformCameraPosesResult] = {}
 
-    for input_file in tqdm(
-        input_files, desc="Transforming camera poses", unit="file"
+    for input_file in track(
+        input_files, description="Transforming camera poses"
     ):
         label: str = input_file.name.removesuffix(command.input_suffix)
         output_file: Path = (

@@ -8,7 +8,7 @@ from pathlib import Path
 import pandas as pd
 
 from afft.squidle.types import Deployment, MediaRecord
-from afft.tasks.collect_deployment_info import DeploymentInfo
+from afft.deployment import DeploymentInfo
 
 
 type DeploymentKeyResolver = Callable[["DeploymentMediaEntry"], str]
