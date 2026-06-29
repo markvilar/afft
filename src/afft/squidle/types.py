@@ -1,6 +1,7 @@
 """Data types for Squidle+ API resources."""
 
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from typing import Any
 
 
 @dataclass(slots=True, frozen=True)
@@ -23,6 +24,10 @@ class Campaign:
     deployment_count: int
     media_count: int
 
+    def to_dict(self) -> dict[str, Any]:
+        """Return the campaign as a plain dictionary."""
+        return asdict(self)
+
 
 @dataclass(slots=True, frozen=True)
 class Platform:
@@ -39,6 +44,10 @@ class Platform:
     id: int
     key: str
     name: str
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return the platform as a plain dictionary."""
+        return asdict(self)
 
 
 @dataclass(slots=True, frozen=True)
@@ -70,6 +79,10 @@ class MediaRecord:
     pose_timestamp: str
     deployment_id: int
     deployment_key: str
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return the media record as a plain dictionary."""
+        return asdict(self)
 
 
 @dataclass(slots=True, frozen=True)
@@ -105,3 +118,7 @@ class Deployment:
     media_count: int
     pose_count: int
     is_valid: bool
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return the deployment as a plain dictionary."""
+        return asdict(self)

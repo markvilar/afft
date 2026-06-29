@@ -1,4 +1,4 @@
-"""Runner for the collect Squidle+ media task."""
+"""Pipeline for the collect Squidle+ media task."""
 
 from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from pathlib import Path
@@ -230,7 +230,9 @@ def format_result(
     if context.squidle_deployment is None or context.media is None:
         return context
     deployment: Deployment = context.squidle_deployment
-    result: pd.DataFrame = context.media.copy()
+    result: pd.DataFrame = pd.DataFrame(
+        [record.to_dict() for record in context.media]
+    )
     result["acfr_deployment_label"] = (
         context.acfr_deployment.metadata.acfr_deployment_label
     )

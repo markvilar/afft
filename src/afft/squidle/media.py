@@ -2,8 +2,6 @@
 
 from typing import Any
 
-import pandas as pd
-
 from afft.utils.log import logger
 
 from .client import SquidleClient
@@ -11,24 +9,10 @@ from .deployments import fetch_deployments
 from .types import MediaRecord
 
 
-_MEDIA_COLUMNS: list[str] = [
-    "key",
-    "path_best",
-    "timestamp",
-    "pose_lat",
-    "pose_lon",
-    "pose_alt",
-    "pose_dep",
-    "pose_timestamp",
-    "deployment_id",
-    "deployment_key",
-]
-
-
 def fetch_media(
     client: SquidleClient,
     deployment_id: int,
-) -> pd.DataFrame:
+) -> list[MediaRecord]:
     """
     Fetch all media and pose data for a single deployment.
 
@@ -39,21 +23,20 @@ def fetch_media(
 
     Returns
     -------
-    DataFrame with one row per media item and columns matching
-    ``MediaRecord`` fields.
+    List of media records, one per media item.
     """
     objects: list[dict[str, Any]] = client.export_deployment(deployment_id)
     records: list[MediaRecord] = [_parse_media_record(obj) for obj in objects]
     logger.info(
         f"deployment {deployment_id}: fetched {len(records)} media record(s)"
     )
-    return _to_dataframe(records)
+    return records
 
 
 def fetch_media_batch(
     client: SquidleClient,
     deployment_ids: list[int],
-) -> dict[int, pd.DataFrame]:
+) -> dict[int, list[MediaRecord]]:
     """
     Fetch media and pose data for multiple deployments.
 
@@ -64,9 +47,9 @@ def fetch_media_batch(
 
     Returns
     -------
-    Mapping from deployment ID to DataFrame of media records.
+    Mapping from deployment ID to list of media records.
     """
-    results: dict[int, pd.DataFrame] = {}
+    results: dict[int, list[MediaRecord]] = {}
     for deployment_id in deployment_ids:
         results[deployment_id] = fetch_media(client, deployment_id)
     return results
@@ -75,7 +58,7 @@ def fetch_media_batch(
 def fetch_campaign_media(
     client: SquidleClient,
     campaign_id: int,
-) -> dict[int, pd.DataFrame]:
+) -> dict[int, list[MediaRecord]]:
     """
     Fetch media and pose data for all deployments in a campaign.
 
@@ -86,7 +69,7 @@ def fetch_campaign_media(
 
     Returns
     -------
-    Mapping from deployment ID to DataFrame of media records.
+    Mapping from deployment ID to list of media records.
     """
     filters: list[dict[str, Any]] = [
         {"name": "campaign_id", "op": "eq", "val": campaign_id}
@@ -113,25 +96,4 @@ def _parse_media_record(data: dict[str, Any]) -> MediaRecord:
         pose_timestamp=pose.get("timestamp") or "",
         deployment_id=deployment.get("id") or 0,
         deployment_key=deployment.get("key") or "",
-    )
-
-
-def _to_dataframe(records: list[MediaRecord]) -> pd.DataFrame:
-    return pd.DataFrame(
-        [
-            {
-                "key": record.key,
-                "path_best": record.path_best,
-                "timestamp": record.timestamp,
-                "pose_lat": record.pose_lat,
-                "pose_lon": record.pose_lon,
-                "pose_alt": record.pose_alt,
-                "pose_dep": record.pose_dep,
-                "pose_timestamp": record.pose_timestamp,
-                "deployment_id": record.deployment_id,
-                "deployment_key": record.deployment_key,
-            }
-            for record in records
-        ],
-        columns=_MEDIA_COLUMNS,
     )

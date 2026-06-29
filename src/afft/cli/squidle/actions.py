@@ -11,6 +11,7 @@ from afft.utils.log import logger
 from afft.squidle import (
     Campaign,
     Deployment,
+    MediaRecord,
     Platform,
     SquidleClient,
     create_client,
@@ -65,7 +66,10 @@ def dispatch_collect_deployment(
 ) -> None:
     """Fetch media for a single deployment and write to CSV."""
     with _create_client() as client:
-        dataframe: pd.DataFrame = fetch_media(client, deployment_id)
+        records: list[MediaRecord] = fetch_media(client, deployment_id)
+    dataframe: pd.DataFrame = pd.DataFrame(
+        [record.to_dict() for record in records]
+    )
     dataframe.to_csv(output_file, index=False)
     logger.info(
         f"deployment {deployment_id}: {len(dataframe)} record(s) → {output_file}"
@@ -78,10 +82,13 @@ def dispatch_collect_deployments(
 ) -> None:
     """Fetch media for multiple deployments and write one CSV per deployment."""
     with _create_client() as client:
-        results: dict[int, pd.DataFrame] = fetch_media_batch(
+        results: dict[int, list[MediaRecord]] = fetch_media_batch(
             client, deployment_ids
         )
-    for deployment_id, dataframe in results.items():
+    for deployment_id, records in results.items():
+        dataframe: pd.DataFrame = pd.DataFrame(
+            [record.to_dict() for record in records]
+        )
         output_file: Path = output_dir / f"{deployment_id}_squidle_media.csv"
         dataframe.to_csv(output_file, index=False)
         logger.info(
@@ -96,16 +103,15 @@ def dispatch_collect_campaign(
 ) -> None:
     """Fetch media for all deployments in a campaign, one CSV per deployment."""
     with _create_client() as client:
-        results: dict[int, pd.DataFrame] = fetch_campaign_media(
+        results: dict[int, list[MediaRecord]] = fetch_campaign_media(
             client, campaign_id
         )
-    for deployment_id, dataframe in results.items():
-        if dataframe.empty:
+    for deployment_id, records in results.items():
+        if not records:
             continue
-        deployment_key: str = (
-            dataframe["deployment_key"].iloc[0]
-            if "deployment_key" in dataframe.columns
-            else str(deployment_id)
+        deployment_key: str = records[0].deployment_key or str(deployment_id)
+        dataframe: pd.DataFrame = pd.DataFrame(
+            [record.to_dict() for record in records]
         )
         output_file: Path = output_dir / f"{deployment_key}_squidle_media.csv"
         dataframe.to_csv(output_file, index=False)
