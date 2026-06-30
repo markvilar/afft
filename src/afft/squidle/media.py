@@ -4,13 +4,13 @@ from typing import Any
 
 from afft.utils.log import logger
 
-from .client import Operation, SquidleClient
+from .transport import Operation, SquidleTransport
 from .deployments import fetch_deployment, fetch_deployments
 from .types import Deployment, DeploymentMedia, MediaRecord
 
 
 def submit_deployment_export(
-    client: SquidleClient,
+    transport: SquidleTransport,
     deployment_id: int,
 ) -> Operation:
     """
@@ -22,18 +22,18 @@ def submit_deployment_export(
 
     Arguments
     ---------
-    client: Authenticated Squidle+ client.
+    transport: Authenticated Squidle+ transport.
     deployment_id: Numeric deployment identifier.
 
     Returns
     -------
     Operation handle for the deployment's media export.
     """
-    return client.submit_operation(f"/api/deployment/{deployment_id}/export")
+    return transport.submit_operation(f"/api/deployment/{deployment_id}/export")
 
 
 def fetch_media(
-    client: SquidleClient,
+    transport: SquidleTransport,
     deployment_id: int,
 ) -> list[MediaRecord]:
     """
@@ -41,14 +41,14 @@ def fetch_media(
 
     Arguments
     ---------
-    client: Authenticated Squidle+ client.
+    transport: Authenticated Squidle+ transport.
     deployment_id: Numeric deployment identifier.
 
     Returns
     -------
     List of media records, one per media item.
     """
-    operation: Operation = submit_deployment_export(client, deployment_id)
+    operation: Operation = submit_deployment_export(transport, deployment_id)
     objects: list[dict[str, Any]] = operation.result()
     records: list[MediaRecord] = [_parse_media_record(obj) for obj in objects]
     logger.info(
@@ -58,7 +58,7 @@ def fetch_media(
 
 
 def fetch_deployment_media(
-    client: SquidleClient,
+    transport: SquidleTransport,
     deployment_id: int,
 ) -> DeploymentMedia:
     """
@@ -66,20 +66,20 @@ def fetch_deployment_media(
 
     Arguments
     ---------
-    client: Authenticated Squidle+ client.
+    transport: Authenticated Squidle+ transport.
     deployment_id: Numeric deployment identifier.
 
     Returns
     -------
     The deployment and its associated media records.
     """
-    deployment: Deployment = fetch_deployment(client, deployment_id)
-    media: list[MediaRecord] = fetch_media(client, deployment_id)
+    deployment: Deployment = fetch_deployment(transport, deployment_id)
+    media: list[MediaRecord] = fetch_media(transport, deployment_id)
     return DeploymentMedia(deployment=deployment, media=media)
 
 
 def fetch_media_batch(
-    client: SquidleClient,
+    transport: SquidleTransport,
     deployment_ids: list[int],
 ) -> dict[int, list[MediaRecord]]:
     """
@@ -87,7 +87,7 @@ def fetch_media_batch(
 
     Arguments
     ---------
-    client: Authenticated Squidle+ client.
+    transport: Authenticated Squidle+ transport.
     deployment_ids: List of numeric deployment identifiers.
 
     Returns
@@ -96,12 +96,12 @@ def fetch_media_batch(
     """
     results: dict[int, list[MediaRecord]] = {}
     for deployment_id in deployment_ids:
-        results[deployment_id] = fetch_media(client, deployment_id)
+        results[deployment_id] = fetch_media(transport, deployment_id)
     return results
 
 
 def fetch_campaign_media(
-    client: SquidleClient,
+    transport: SquidleTransport,
     campaign_id: int,
 ) -> dict[int, list[MediaRecord]]:
     """
@@ -109,7 +109,7 @@ def fetch_campaign_media(
 
     Arguments
     ---------
-    client: Authenticated Squidle+ client.
+    transport: Authenticated Squidle+ transport.
     campaign_id: Numeric campaign identifier.
 
     Returns
@@ -119,12 +119,12 @@ def fetch_campaign_media(
     filters: list[dict[str, Any]] = [
         {"name": "campaign_id", "op": "eq", "val": campaign_id}
     ]
-    deployments = fetch_deployments(client, filters)
+    deployments = fetch_deployments(transport, filters)
     logger.info(
         f"campaign {campaign_id}: found {len(deployments)} deployment(s)"
     )
     deployment_ids: list[int] = [deployment.id for deployment in deployments]
-    return fetch_media_batch(client, deployment_ids)
+    return fetch_media_batch(transport, deployment_ids)
 
 
 def _parse_media_record(data: dict[str, Any]) -> MediaRecord:

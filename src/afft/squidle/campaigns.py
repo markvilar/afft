@@ -3,29 +3,29 @@
 import json
 from typing import Any
 
-from .client import SquidleClient
+from .transport import SquidleTransport
 from .types import Campaign
 
 
-def fetch_campaign(client: SquidleClient, campaign_id: int) -> Campaign:
+def fetch_campaign(transport: SquidleTransport, campaign_id: int) -> Campaign:
     """
     Fetch a single campaign by ID.
 
     Arguments
     ---------
-    client: Authenticated Squidle+ client.
+    transport: Authenticated Squidle+ transport.
     campaign_id: Numeric campaign identifier.
 
     Returns
     -------
     Campaign object.
     """
-    data: dict[str, Any] = client.get(f"/api/campaign/{campaign_id}")
+    data: dict[str, Any] = transport.get(f"/api/campaign/{campaign_id}")
     return _parse_campaign(data)
 
 
 def fetch_campaigns(
-    client: SquidleClient,
+    transport: SquidleTransport,
     filters: list[dict[str, Any]] | None = None,
 ) -> list[Campaign]:
     """
@@ -33,7 +33,7 @@ def fetch_campaigns(
 
     Arguments
     ---------
-    client: Authenticated Squidle+ client.
+    transport: Authenticated Squidle+ transport.
     filters: Optional list of restless-style filter dicts, e.g.
         ``[{"name": "name", "op": "ilike", "val": "%Tasmania%"}]``.
 
@@ -44,7 +44,7 @@ def fetch_campaigns(
     params: dict[str, Any] = {}
     if filters:
         params["q"] = json.dumps({"filters": filters})
-    objects: list[dict[str, Any]] = client.get_pages(
+    objects: list[dict[str, Any]] = transport.get_pages(
         "/api/campaign", params=params
     )
     return [_parse_campaign(obj) for obj in objects]

@@ -11,9 +11,6 @@ from afft.deployment import DeploymentInfo, read_deployment_info
 from afft.squidle import (
     SquidleClient,
     create_client,
-    fetch_deployments,
-    fetch_media,
-    fetch_platforms,
 )
 from afft.squidle.types import Deployment
 from afft.utils.log import logger
@@ -158,7 +155,7 @@ def fetch_media_items(
     """
     if context.squidle_deployment is None:
         return context
-    context.media = fetch_media(client, context.squidle_deployment.id)
+    context.media = client.fetch_media(context.squidle_deployment.id)
     return context
 
 
@@ -317,7 +314,7 @@ def run_collect_squidle_media(
             platform_filters: list[dict[str, Any]] = [
                 {"name": "name", "op": "eq", "val": platform_name}
             ]
-            platforms = fetch_platforms(client, platform_filters)
+            platforms = client.fetch_platforms(platform_filters)
             if not platforms:
                 logger.warning(
                     f"no Squidle+ platform found with name: {platform_name!r}"
@@ -330,8 +327,8 @@ def run_collect_squidle_media(
             deployment_filters: list[dict[str, Any]] = [
                 {"name": "platform_id", "op": "eq", "val": platform_id}
             ]
-            platform_deployments: list[Deployment] = fetch_deployments(
-                client, deployment_filters
+            platform_deployments: list[Deployment] = client.fetch_deployments(
+                deployment_filters
             )
             squidle_lookup.update(build_lookup(platform_deployments))
             logger.info(
