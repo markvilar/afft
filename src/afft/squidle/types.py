@@ -122,3 +122,22 @@ class Deployment:
     def to_dict(self) -> dict[str, Any]:
         """Return the deployment as a plain dictionary."""
         return asdict(self)
+
+
+@dataclass(slots=True, frozen=True)
+class DeploymentMedia:
+    """
+    A Squidle+ deployment together with its media records.
+
+    Attributes
+    ----------
+    deployment: The Squidle+ deployment.
+    media: Media records belonging to the deployment.
+    """
+
+    deployment: Deployment
+    media: list[MediaRecord]
+
+    def to_dict(self) -> dict[str, Any]:
+        """Return the deployment media as a plain dictionary."""
+        return asdict(self)
