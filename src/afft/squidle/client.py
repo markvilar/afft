@@ -1,6 +1,7 @@
 """Authenticated HTTP client for the Squidle+ API."""
 
 import time
+from collections.abc import Callable
 from dataclasses import dataclass, replace
 from types import TracebackType
 from typing import Any
@@ -12,6 +13,7 @@ from afft.utils.log import logger
 
 
 type MediaObject = dict[str, Any]
+type Getter = Callable[[str], Any]
 
 _BASE_URL: str = "https://squidle.org"
 
@@ -31,8 +33,6 @@ class SquidleClientConfig:
     backoff_factor: Base multiplier in seconds for exponential backoff.
     backoff_max: Maximum backoff wait in seconds between retries.
     results_per_page: Number of objects to request per page on list endpoints.
-    poll_interval: Seconds between export task status polls.
-    poll_timeout: Maximum total time in seconds to await an export task.
     """
 
     timeout: float = 30.0
@@ -40,8 +40,6 @@ class SquidleClientConfig:
     backoff_factor: float = 1.0
     backoff_max: float = 60.0
     results_per_page: int = 100
-    poll_interval: float = 2.0
-    poll_timeout: float = 300.0
 
 
 def _is_retryable(exception: BaseException) -> bool:
@@ -64,6 +62,77 @@ def _make_retrying(config: SquidleClientConfig) -> tenacity.Retrying:
     )
 
 
+@dataclass(slots=True, frozen=True)
+class Operation:
+    """
+    Handle to a server-side Squidle+ asynchronous operation.
+
+    A future-like view over a long-running operation: call ``done()`` to check
+    completion without blocking, or ``result()`` to block (polling) until the
+    result is available. The handle depends only on a ``Getter`` (an
+    authenticated GET), not the full client, so the client never waits.
+
+    Attributes
+    ----------
+    path: The submitted endpoint, used to identify the operation in messages.
+    status_url: URL polled to check completion.
+    result_url: URL fetched to retrieve the result once available.
+    """
+
+    _get: Getter
+    path: str
+    status_url: str
+    result_url: str
+
+    def done(self) -> bool:
+        """
+        Return whether the operation has finished. Non-blocking.
+
+        Raises
+        ------
+        RuntimeError: If the operation reports an error status.
+        """
+        status: MediaObject = self._get(self.status_url)
+        if status.get("status") == "error":
+            raise RuntimeError(
+                f"operation {self.path!r} failed: {status.get('message', '')}"
+            )
+        return bool(status.get("result_available"))
+
+    def result(
+        self,
+        timeout: float = 300.0,
+        interval: float = 2.0,
+    ) -> list[MediaObject]:
+        """
+        Block until the operation finishes and return its result objects.
+
+        Arguments
+        ---------
+        timeout: Maximum total time in seconds to await completion.
+        interval: Seconds between status polls.
+
+        Returns
+        -------
+        List of raw result objects.
+
+        Raises
+        ------
+        RuntimeError: If the operation reports an error status.
+        TimeoutError: If the operation does not finish within ``timeout``.
+        """
+        elapsed: float = 0.0
+        while not self.done():
+            if elapsed >= timeout:
+                raise TimeoutError(
+                    f"operation {self.path!r} timed out after {timeout}s"
+                )
+            time.sleep(interval)
+            elapsed += interval
+        result: MediaObject = self._get(self.result_url)
+        return result.get("objects") or []
+
+
 class SquidleClient:
     """
     Authenticated HTTP client for the Squidle+ REST API.
@@ -75,7 +144,7 @@ class SquidleClient:
 
     Request behaviour is governed by a SquidleClientConfig set at construction.
     Individual methods accept optional overrides for endpoints that need
-    different tuning (e.g. a longer poll timeout for large exports).
+    different tuning.
     """
 
     def __init__(
@@ -188,74 +257,26 @@ class SquidleClient:
 
         return objects
 
-    def export_deployment(
-        self,
-        deployment_id: int,
-        timeout: float | None = None,
-        poll_interval: float | None = None,
-        poll_timeout: float | None = None,
-        retries: int | None = None,
-        backoff_factor: float | None = None,
-    ) -> list[MediaObject]:
+    def submit_operation(self, path: str) -> Operation:
         """
-        Trigger and await the async media export for a deployment.
+        Trigger a server-side async operation and return a handle to it.
 
-        Starts the background export task, polls until complete, and returns
-        the full list of media objects.
+        Sends a single request to start the operation; does not block or poll.
 
         Arguments
         ---------
-        deployment_id: Numeric deployment identifier.
-        timeout: Override for the configured read timeout per HTTP request.
-        poll_interval: Override for the configured seconds between status polls.
-        poll_timeout: Override for the configured maximum export wait.
-        retries: Override for the configured retry attempts per request.
-        backoff_factor: Override for the configured backoff multiplier.
+        path: API path that triggers the operation.
 
         Returns
         -------
-        List of raw media objects.
-
-        Raises
-        ------
-        RuntimeError: If the export task fails or times out.
+        Operation handle for checking completion and retrieving the result.
         """
-        config: SquidleClientConfig = self._resolve(
-            timeout=timeout,
-            poll_interval=poll_interval,
-            poll_timeout=poll_timeout,
-            retries=retries,
-            backoff_factor=backoff_factor,
-        )
-        for attempt in _make_retrying(config):
-            with attempt:
-                response: httpx.Response = self._http.get(
-                    f"/api/deployment/{deployment_id}/export",
-                    timeout=config.timeout,
-                )
-                response.raise_for_status()
-        task: dict[str, Any] = response.json()
-        status_url: str = task["status_url"]
-        result_url: str = task["result_url"]
-
-        elapsed: float = 0.0
-        while elapsed < config.poll_timeout:
-            time.sleep(config.poll_interval)
-            elapsed += config.poll_interval
-            status: MediaObject = self._request(status_url, None, config)
-            if status.get("result_available"):
-                result: MediaObject = self._request(result_url, None, config)
-                objects: list[MediaObject] = result.get("objects") or []
-                return objects
-            if status.get("status") == "error":
-                raise RuntimeError(
-                    f"export task failed for deployment {deployment_id}: "
-                    f"{status.get('message', '')}"
-                )
-
-        raise RuntimeError(
-            f"export task timed out after {config.poll_timeout}s "
-            f"for deployment {deployment_id}"
+        task: dict[str, Any] = self.get(path)
+        return Operation(
+            _get=self.get,
+            path=path,
+            status_url=task["status_url"],
+            result_url=task["result_url"],
         )
 
     def close(self) -> None:

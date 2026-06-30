@@ -4,9 +4,32 @@ from typing import Any
 
 from afft.utils.log import logger
 
-from .client import SquidleClient
+from .client import Operation, SquidleClient
 from .deployments import fetch_deployment, fetch_deployments
 from .types import Deployment, DeploymentMedia, MediaRecord
+
+
+def submit_deployment_export(
+    client: SquidleClient,
+    deployment_id: int,
+) -> Operation:
+    """
+    Submit the media export operation for a deployment.
+
+    Triggers the server-side export and returns a handle immediately, without
+    blocking. Call ``result()`` on the handle to await and retrieve the raw
+    media objects.
+
+    Arguments
+    ---------
+    client: Authenticated Squidle+ client.
+    deployment_id: Numeric deployment identifier.
+
+    Returns
+    -------
+    Operation handle for the deployment's media export.
+    """
+    return client.submit_operation(f"/api/deployment/{deployment_id}/export")
 
 
 def fetch_media(
@@ -25,7 +48,8 @@ def fetch_media(
     -------
     List of media records, one per media item.
     """
-    objects: list[dict[str, Any]] = client.export_deployment(deployment_id)
+    operation: Operation = submit_deployment_export(client, deployment_id)
+    objects: list[dict[str, Any]] = operation.result()
     records: list[MediaRecord] = [_parse_media_record(obj) for obj in objects]
     logger.info(
         f"deployment {deployment_id}: fetched {len(records)} media record(s)"

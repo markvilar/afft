@@ -3,6 +3,7 @@
 from .campaigns import fetch_campaign as fetch_campaign
 from .campaigns import fetch_campaigns as fetch_campaigns
 
+from .client import Operation as Operation
 from .client import SquidleClient as SquidleClient
 from .client import SquidleClientConfig as SquidleClientConfig
 from .client import create_client as create_client
@@ -14,6 +15,7 @@ from .media import fetch_campaign_media as fetch_campaign_media
 from .media import fetch_deployment_media as fetch_deployment_media
 from .media import fetch_media as fetch_media
 from .media import fetch_media_batch as fetch_media_batch
+from .media import submit_deployment_export as submit_deployment_export
 
 from .platforms import fetch_platform as fetch_platform
 from .platforms import fetch_platforms as fetch_platforms
