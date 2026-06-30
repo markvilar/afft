@@ -3,29 +3,29 @@
 import json
 from typing import Any
 
-from .client import SquidleClient
+from .transport import SquidleTransport
 from .types import Platform
 
 
-def fetch_platform(client: SquidleClient, platform_id: int) -> Platform:
+def fetch_platform(transport: SquidleTransport, platform_id: int) -> Platform:
     """
     Fetch a single platform by ID.
 
     Arguments
     ---------
-    client: Authenticated Squidle+ client.
+    transport: Authenticated Squidle+ transport.
     platform_id: Numeric platform identifier.
 
     Returns
     -------
     Platform object.
     """
-    data: dict[str, Any] = client.get(f"/api/platform/{platform_id}")
+    data: dict[str, Any] = transport.get(f"/api/platform/{platform_id}")
     return _parse_platform(data)
 
 
 def fetch_platforms(
-    client: SquidleClient,
+    transport: SquidleTransport,
     filters: list[dict[str, Any]] | None = None,
 ) -> list[Platform]:
     """
@@ -33,7 +33,7 @@ def fetch_platforms(
 
     Arguments
     ---------
-    client: Authenticated Squidle+ client.
+    transport: Authenticated Squidle+ transport.
     filters: Optional list of restless-style filter dicts, e.g.
         ``[{"name": "name", "op": "ilike", "val": "%sirius%"}]``.
 
@@ -44,7 +44,7 @@ def fetch_platforms(
     params: dict[str, Any] = {}
     if filters:
         params["q"] = json.dumps({"filters": filters})
-    objects: list[dict[str, Any]] = client.get_pages(
+    objects: list[dict[str, Any]] = transport.get_pages(
         "/api/platform", params=params
     )
     return [_parse_platform(obj) for obj in objects]

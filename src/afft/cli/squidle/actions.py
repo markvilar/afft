@@ -15,12 +15,6 @@ from afft.squidle import (
     Platform,
     SquidleClient,
     create_client,
-    fetch_campaign_media,
-    fetch_campaigns,
-    fetch_deployments,
-    fetch_media,
-    fetch_media_batch,
-    fetch_platforms,
 )
 
 
@@ -41,7 +35,7 @@ def dispatch_list_platforms(name: str | None = None) -> None:
         filters.append({"name": "name", "op": "ilike", "val": f"%{name}%"})
 
     with _create_client() as client:
-        platforms: list[Platform] = fetch_platforms(client, filters or None)
+        platforms: list[Platform] = client.fetch_platforms(filters or None)
 
     if not platforms:
         logger.info("No platforms found.")
@@ -66,7 +60,7 @@ def dispatch_collect_deployment(
 ) -> None:
     """Fetch media for a single deployment and write to CSV."""
     with _create_client() as client:
-        records: list[MediaRecord] = fetch_media(client, deployment_id)
+        records: list[MediaRecord] = client.fetch_media(deployment_id)
     dataframe: pd.DataFrame = pd.DataFrame(
         [record.to_dict() for record in records]
     )
@@ -82,8 +76,8 @@ def dispatch_collect_deployments(
 ) -> None:
     """Fetch media for multiple deployments and write one CSV per deployment."""
     with _create_client() as client:
-        results: dict[int, list[MediaRecord]] = fetch_media_batch(
-            client, deployment_ids
+        results: dict[int, list[MediaRecord]] = client.fetch_media_batch(
+            deployment_ids
         )
     for deployment_id, records in results.items():
         dataframe: pd.DataFrame = pd.DataFrame(
@@ -103,8 +97,8 @@ def dispatch_collect_campaign(
 ) -> None:
     """Fetch media for all deployments in a campaign, one CSV per deployment."""
     with _create_client() as client:
-        results: dict[int, list[MediaRecord]] = fetch_campaign_media(
-            client, campaign_id
+        results: dict[int, list[MediaRecord]] = client.fetch_campaign_media(
+            campaign_id
         )
     for deployment_id, records in results.items():
         if not records:
@@ -128,7 +122,7 @@ def dispatch_list_campaigns(name: str | None = None) -> None:
         filters.append({"name": "name", "op": "ilike", "val": f"%{name}%"})
 
     with _create_client() as client:
-        campaigns: list[Campaign] = fetch_campaigns(client, filters or None)
+        campaigns: list[Campaign] = client.fetch_campaigns(filters or None)
 
     if not campaigns:
         logger.info("No campaigns found.")
@@ -161,8 +155,8 @@ def dispatch_list_deployments(
         filters.append({"name": "name", "op": "ilike", "val": f"%{name}%"})
 
     with _create_client() as client:
-        deployments: list[Deployment] = fetch_deployments(
-            client, filters or None
+        deployments: list[Deployment] = client.fetch_deployments(
+            filters or None
         )
 
     if not deployments:

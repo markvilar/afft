@@ -3,29 +3,31 @@
 import json
 from typing import Any
 
-from .client import SquidleClient
+from .transport import SquidleTransport
 from .types import Deployment
 
 
-def fetch_deployment(client: SquidleClient, deployment_id: int) -> Deployment:
+def fetch_deployment(
+    transport: SquidleTransport, deployment_id: int
+) -> Deployment:
     """
     Fetch a single deployment by ID.
 
     Arguments
     ---------
-    client: Authenticated Squidle+ client.
+    transport: Authenticated Squidle+ transport.
     deployment_id: Numeric deployment identifier.
 
     Returns
     -------
     Deployment object.
     """
-    data: dict[str, Any] = client.get(f"/api/deployment/{deployment_id}")
+    data: dict[str, Any] = transport.get(f"/api/deployment/{deployment_id}")
     return _parse_deployment(data)
 
 
 def fetch_deployments(
-    client: SquidleClient,
+    transport: SquidleTransport,
     filters: list[dict[str, Any]] | None = None,
 ) -> list[Deployment]:
     """
@@ -33,7 +35,7 @@ def fetch_deployments(
 
     Arguments
     ---------
-    client: Authenticated Squidle+ client.
+    transport: Authenticated Squidle+ transport.
     filters: Optional list of restless-style filter dicts, e.g.
         ``[{"name": "campaign_id", "op": "eq", "val": 42}]``.
 
@@ -44,7 +46,7 @@ def fetch_deployments(
     params: dict[str, Any] = {}
     if filters:
         params["q"] = json.dumps({"filters": filters})
-    objects: list[dict[str, Any]] = client.get_pages(
+    objects: list[dict[str, Any]] = transport.get_pages(
         "/api/deployment", params=params
     )
     return [_parse_deployment(obj) for obj in objects]
