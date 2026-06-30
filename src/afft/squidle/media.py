@@ -5,8 +5,8 @@ from typing import Any
 from afft.utils.log import logger
 
 from .client import SquidleClient
-from .deployments import fetch_deployments
-from .types import MediaRecord
+from .deployments import fetch_deployment, fetch_deployments
+from .types import Deployment, DeploymentMedia, MediaRecord
 
 
 def fetch_media(
@@ -31,6 +31,27 @@ def fetch_media(
         f"deployment {deployment_id}: fetched {len(records)} media record(s)"
     )
     return records
+
+
+def fetch_deployment_media(
+    client: SquidleClient,
+    deployment_id: int,
+) -> DeploymentMedia:
+    """
+    Fetch a deployment together with its media records.
+
+    Arguments
+    ---------
+    client: Authenticated Squidle+ client.
+    deployment_id: Numeric deployment identifier.
+
+    Returns
+    -------
+    The deployment and its associated media records.
+    """
+    deployment: Deployment = fetch_deployment(client, deployment_id)
+    media: list[MediaRecord] = fetch_media(client, deployment_id)
+    return DeploymentMedia(deployment=deployment, media=media)
 
 
 def fetch_media_batch(
