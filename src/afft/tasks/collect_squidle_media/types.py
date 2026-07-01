@@ -7,11 +7,13 @@ from pathlib import Path
 
 import pandas as pd
 
-from afft.squidle.types import Deployment, MediaRecord
+from pydantic import SecretStr
+
 from afft.deployment import DeploymentInfo
+from afft.squidle import Deployment, MediaRecord
 
 
-type DeploymentKeyResolver = Callable[["DeploymentMediaEntry"], str]
+type DeploymentKeyResolver = Callable[["DeploymentState"], str]
 type DeploymentLookupBuilder = Callable[
     [list[Deployment]], dict[str, Deployment]
 ]
@@ -24,9 +26,9 @@ class DeploymentMatchPolicy(Enum):
 
     Attributes
     ----------
-    NAME: Match ``acfr_deployment_label`` against the Squidle+ deployment name.
-    KEY: Match the datetime embedded in ``deployment_label`` against the
-        ``{YYYYMMDD}_{HHMMSS}`` prefix of the Squidle+ deployment key.
+    BY_NAME: Match ``acfr_deployment_label`` against the Squidle+ name.
+    BY_KEY: Match the ``{YYYYMMDD}_{HHMMSS}`` datetime embedded in the ACFR
+        deployment label against the same prefix of the Squidle+ key.
     """
 
     BY_NAME = "by_name"
@@ -41,10 +43,12 @@ class CollectSquidleMediaCommand:
     Attributes
     ----------
     deployments_file: Path to the ACFR deployments TOML file.
-    output_dir: Directory to write one CSV per deployment.
+    output_dir: Directory to write per-deployment CSVs and image subdirs.
     match_policy: Strategy for matching ACFR to Squidle+ deployments.
-    max_workers: Maximum number of concurrent deployment fetch threads.
+    max_workers: Concurrency bound (deployments in phase 2; images per
+        deployment in phase 3).
     dry_run: Stop after deployment matching without fetching media.
+    download_images: Download image files after retrieving media records.
     verbose: Log skipped deployments after the run completes.
     """
 
@@ -53,6 +57,7 @@ class CollectSquidleMediaCommand:
     match_policy: DeploymentMatchPolicy = DeploymentMatchPolicy.BY_NAME
     max_workers: int = 4
     dry_run: bool = False
+    download_images: bool = False
     verbose: bool = False
 
 
@@ -63,26 +68,103 @@ class CollectSquidleMediaConfig:
 
     Attributes
     ----------
+    squidle_token: Squidle+ API token, resolved from the environment by the
+        CLI and injected here. Kept as SecretStr to avoid accidental leakage.
     """
+
+    squidle_token: SecretStr
+
+
+class ImageDownloadStatus(Enum):
+    """Status of a single image download."""
+
+    PENDING = "pending"
+    DOWNLOADED = "downloaded"
+    SKIPPED = "skipped"
+    FAILED = "failed"
 
 
 @dataclass(slots=True)
-class DeploymentMediaEntry:
+class ImageDownload:
     """
-    Per-deployment state accumulated across the processing chain.
+    Per-image download state.
 
     Attributes
     ----------
-    acfr_deployment: ACFR deployment entry loaded from TOML. Always present.
-    squidle_deployment: Matched Squidle+ deployment. Set by the match step.
-    media: Raw media records from Squidle+. Set by the fetch step.
-    result: Annotated media DataFrame. Set by the format step.
+    source: Image URL (``MediaRecord.path_best``).
+    destination: Path the image is written to on disk.
+    status: Current download status.
+    error: Error message if the download failed.
     """
 
-    acfr_deployment: DeploymentInfo
+    source: str
+    destination: Path
+    status: ImageDownloadStatus = ImageDownloadStatus.PENDING
+    error: str | None = None
+
+
+@dataclass(slots=True)
+class DeploymentImagesDownload:
+    """
+    All image downloads for a single deployment.
+
+    Self-contained (carries the deployment label), built upfront with every
+    image PENDING and mutated in place as the download runs.
+
+    Attributes
+    ----------
+    deployment_label: ACFR deployment label; names the output subdirectory.
+    images: Per-image download states.
+    """
+
+    deployment_label: str
+    images: list[ImageDownload]
+
+    def _by_status(self, status: ImageDownloadStatus) -> list[ImageDownload]:
+        return [image for image in self.images if image.status is status]
+
+    @property
+    def pending(self) -> list[ImageDownload]:
+        """Images not yet attempted."""
+        return self._by_status(ImageDownloadStatus.PENDING)
+
+    @property
+    def downloaded(self) -> list[ImageDownload]:
+        """Images written successfully."""
+        return self._by_status(ImageDownloadStatus.DOWNLOADED)
+
+    @property
+    def skipped(self) -> list[ImageDownload]:
+        """Images already present on disk."""
+        return self._by_status(ImageDownloadStatus.SKIPPED)
+
+    @property
+    def failed(self) -> list[ImageDownload]:
+        """Images whose download failed."""
+        return self._by_status(ImageDownloadStatus.FAILED)
+
+
+@dataclass(slots=True)
+class DeploymentState:
+    """
+    Per-deployment state accumulated across the task phases.
+
+    Attributes
+    ----------
+    deployment_info: ACFR deployment entry loaded from TOML. Always present.
+    squidle_deployment: Matched Squidle+ deployment. Set by phase 1.
+    media: Media records from Squidle+. Set by phase 2.
+    result: Annotated media DataFrame. Set by phase 2.
+    error: Retrieval error message if the export failed. Set by phase 2.
+    downloads: Per-deployment image downloads. Set by phase 3.
+    """
+
+    deployment_info: DeploymentInfo
     squidle_deployment: Deployment | None = None
     media: list[MediaRecord] | None = None
     result: pd.DataFrame | None = None
+    error: str | None = None
+    downloads: DeploymentImagesDownload | None = None
 
     @property
     def matched(self) -> bool:
@@ -94,40 +176,58 @@ class DeploymentMediaEntry:
         """True if no Squidle+ deployment has been matched."""
         return self.squidle_deployment is None
 
+    @property
+    def failed(self) -> bool:
+        """True if matched but media retrieval errored."""
+        return self.squidle_deployment is not None and self.error is not None
+
 
 @dataclass(slots=True)
-class CollectSquidleMediaContext:
+class TaskState:
     """
-    High-level context holding per-deployment state for the full task run.
+    Mutable per-run state holding one entry per ACFR deployment.
 
     Attributes
     ----------
-    deployments: One context object per ACFR deployment entry.
+    deployments: One state object per ACFR deployment entry.
     """
 
-    deployments: list[DeploymentMediaEntry]
+    deployments: list[DeploymentState]
 
     @property
-    def matched(self) -> list[DeploymentMediaEntry]:
-        """Deployment entries with a resolved Squidle+ match."""
-        return [d for d in self.deployments if d.matched]
+    def matched(self) -> list[DeploymentState]:
+        """Entries with a resolved Squidle+ match."""
+        return [entry for entry in self.deployments if entry.matched]
 
     @property
-    def unmatched(self) -> list[DeploymentMediaEntry]:
-        """Deployment entries with no Squidle+ match."""
-        return [d for d in self.deployments if d.unmatched]
+    def unmatched(self) -> list[DeploymentState]:
+        """Entries with no Squidle+ match."""
+        return [entry for entry in self.deployments if entry.unmatched]
 
 
 @dataclass(slots=True, frozen=True)
-class CollectSquidleMediaResult:
-    """
-    Result of the collect Squidle+ media task.
+class MatchSummary:
+    """Summary of phase 1 (loading and matching)."""
 
-    Attributes
-    ----------
-    exported: Paths of CSV files written.
-    skipped: ACFR deployment labels for which no Squidle+ match was found.
-    """
+    loaded: int
+    matched: int
+    unmatched: list[str]
 
+
+@dataclass(slots=True, frozen=True)
+class RetrievalSummary:
+    """Summary of phase 2 (media retrieval)."""
+
+    attempted: int
     exported: list[Path]
-    skipped: list[str]
+    failed: list[str]
+
+
+@dataclass(slots=True, frozen=True)
+class DownloadSummary:
+    """Summary of phase 3 (image downloading)."""
+
+    deployments: int
+    downloaded: int
+    skipped: int
+    failed: int

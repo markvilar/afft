@@ -1,276 +1,29 @@
-"""Pipeline for the collect Squidle+ media task."""
+"""Orchestrator for the collect Squidle+ media task."""
 
-from concurrent.futures import Future, ThreadPoolExecutor, as_completed
 from pathlib import Path
-from typing import Any
-
-import pandas as pd
-from rich.progress import track
 
 from afft.deployment import DeploymentInfo, read_deployment_info
-from afft.squidle import (
-    SquidleClient,
-    create_client,
-)
-from afft.squidle.types import Deployment
+from afft.squidle import create_client
 from afft.utils.log import logger
 
+from .deployment_matcher import match_deployments
+from .image_downloader import download_deployment_images
+from .media_retriever import retrieve_deployment_media
 from .types import (
     CollectSquidleMediaCommand,
     CollectSquidleMediaConfig,
-    CollectSquidleMediaContext,
-    CollectSquidleMediaResult,
-    DeploymentKeyResolver,
-    DeploymentLookupBuilder,
-    DeploymentMatchPolicy,
-    DeploymentMatcher,
-    DeploymentMediaEntry,
+    DownloadSummary,
+    MatchSummary,
+    RetrievalSummary,
+    TaskState,
 )
 
 
-def _squidle_datetime_key(key: str) -> str:
-    """
-    Extract ``{YYYYMMDD}_{HHMMSS}`` from a Squidle+ deployment key.
-
-    Squidle+ keys follow the format ``r{YYYYMMDD}_{HHMMSS}_{name}``.
-    """
-    parts: list[str] = key.split("_", 2)
-    return f"{parts[0][1:]}_{parts[1]}"
+type Summary = MatchSummary | RetrievalSummary | DownloadSummary
 
 
-def _acfr_datetime_key(deployment_label: str) -> str:
-    """
-    Extract ``{YYYYMMDD}_{HHMMSS}`` from an ACFR deployment label.
-
-    ACFR deployment labels follow the format ``{geohash}_{YYYYMMDD}_{HHMMSS}``.
-    """
-    parts: list[str] = deployment_label.rsplit("_", 2)
-    return f"{parts[-2]}_{parts[-1]}"
-
-
-def create_deployment_matcher(
-    policy: DeploymentMatchPolicy,
-) -> DeploymentMatcher:
-    """
-    Create a deployment matcher for the given match policy.
-
-    Returns a callable that takes a list of Squidle+ deployments and builds
-    a lookup, and a second callable that resolves the lookup key for an
-    ACFR deployment context.
-
-    Arguments
-    ---------
-    policy: Strategy for matching ACFR deployments to Squidle+ deployments.
-
-    Returns
-    -------
-    Tuple of ``(build_lookup, resolve_key)`` callables.
-    """
-    if policy == DeploymentMatchPolicy.BY_NAME:
-
-        def build_lookup(
-            deployments: list[Deployment],
-        ) -> dict[str, Deployment]:
-            return {deployment.name: deployment for deployment in deployments}
-
-        def resolve_key(context: DeploymentMediaEntry) -> str:
-            return context.acfr_deployment.metadata.acfr_deployment_label
-
-    else:
-
-        def build_lookup(
-            deployments: list[Deployment],
-        ) -> dict[str, Deployment]:
-            return {
-                _squidle_datetime_key(deployment.key): deployment
-                for deployment in deployments
-            }
-
-        def resolve_key(context: DeploymentMediaEntry) -> str:
-            return _acfr_datetime_key(context.acfr_deployment.deployment_label)
-
-    return build_lookup, resolve_key
-
-
-def match_deployment(
-    command: CollectSquidleMediaCommand,
-    config: CollectSquidleMediaConfig,
-    context: DeploymentMediaEntry,
-    squidle_lookup: dict[str, Deployment],
-    resolve_key: DeploymentKeyResolver,
-) -> DeploymentMediaEntry:
-    """
-    Match the ACFR deployment to a Squidle+ deployment.
-
-    Uses ``resolve_key`` to derive the lookup key from the context, then
-    looks it up in ``squidle_lookup``. Logs a warning and leaves
-    ``squidle_deployment`` as ``None`` if no match is found.
-
-    Arguments
-    ---------
-    command: Task command.
-    config: Task configuration.
-    context: Per-deployment context.
-    squidle_lookup: Mapping from match key to Squidle+ deployment.
-    resolve_key: Callable that extracts the match key from a context.
-
-    Returns
-    -------
-    Updated context with ``squidle_deployment`` set if a match was found.
-    """
-    acfr_label: str = context.acfr_deployment.metadata.acfr_deployment_label
-    lookup_key: str = resolve_key(context)
-    match: Deployment | None = squidle_lookup.get(lookup_key)
-    if match is None:
-        logger.warning(
-            f"no Squidle+ deployment match for: {acfr_label!r} "
-            f"(policy={command.match_policy.value}, key={lookup_key!r})"
-        )
-        return context
-    context.squidle_deployment = match
-    return context
-
-
-def fetch_media_items(
-    command: CollectSquidleMediaCommand,
-    config: CollectSquidleMediaConfig,
-    context: DeploymentMediaEntry,
-    client: SquidleClient,
-) -> DeploymentMediaEntry:
-    """
-    Fetch media items from Squidle+ for the matched deployment.
-
-    Skipped if ``squidle_deployment`` is not set.
-
-    Arguments
-    ---------
-    command: Task command.
-    config: Task configuration.
-    context: Per-deployment context.
-    client: Authenticated Squidle+ client.
-
-    Returns
-    -------
-    Updated context with ``media`` set.
-    """
-    if context.squidle_deployment is None:
-        return context
-    context.media = client.fetch_media(context.squidle_deployment.id)
-    return context
-
-
-def format_result(
-    command: CollectSquidleMediaCommand,
-    config: CollectSquidleMediaConfig,
-    context: DeploymentMediaEntry,
-) -> DeploymentMediaEntry:
-    """
-    Annotate the media DataFrame with ACFR and Squidle+ identity columns.
-
-    Skipped if ``squidle_deployment`` or ``media`` is not set.
-
-    Arguments
-    ---------
-    command: Task command.
-    config: Task configuration.
-    context: Per-deployment context.
-
-    Returns
-    -------
-    Updated context with ``result`` set.
-    """
-    if context.squidle_deployment is None or context.media is None:
-        return context
-    deployment: Deployment = context.squidle_deployment
-    result: pd.DataFrame = pd.DataFrame(
-        [record.to_dict() for record in context.media]
-    )
-    result["acfr_deployment_label"] = (
-        context.acfr_deployment.metadata.acfr_deployment_label
-    )
-    result["acfr_campaign_label"] = (
-        context.acfr_deployment.metadata.acfr_campaign_label
-    )
-    result["squidle_deployment_id"] = deployment.id
-    result["squidle_deployment_key"] = deployment.key
-    result["squidle_deployment_name"] = deployment.name
-    result["squidle_campaign_id"] = deployment.campaign_id
-    result["squidle_campaign_name"] = deployment.campaign_name
-    result["squidle_platform_id"] = deployment.platform_id
-    result["squidle_platform_name"] = deployment.platform_name
-    context.result = result
-    return context
-
-
-def export_result(
-    command: CollectSquidleMediaCommand,
-    config: CollectSquidleMediaConfig,
-    context: DeploymentMediaEntry,
-) -> DeploymentMediaEntry:
-    """
-    Write the annotated media DataFrame to a CSV file.
-
-    Skipped if ``result`` is not set. The output filename is derived from
-    ``acfr_deployment_label``.
-
-    Arguments
-    ---------
-    command: Task command.
-    config: Task configuration.
-    context: Per-deployment context.
-
-    Returns
-    -------
-    Unchanged context.
-    """
-    if context.result is None:
-        return context
-    deployment_label: str = context.acfr_deployment.deployment_label
-    acfr_label: str = context.acfr_deployment.metadata.acfr_deployment_label
-    output_file: Path = (
-        command.output_dir / f"{deployment_label}_squidle_media.csv"
-    )
-    context.result.to_csv(output_file, index=False)
-    logger.info(
-        f"{acfr_label}: {len(context.result)} record(s) → {output_file.name}"
-    )
-    return context
-
-
-def _process_deployment(
-    command: CollectSquidleMediaCommand,
-    config: CollectSquidleMediaConfig,
-    context: DeploymentMediaEntry,
-    client: SquidleClient,
-) -> DeploymentMediaEntry:
-    context = fetch_media_items(command, config, context, client)
-    context = format_result(command, config, context)
-    context = export_result(command, config, context)
-    return context
-
-
-def run_collect_squidle_media(
-    command: CollectSquidleMediaCommand,
-    config: CollectSquidleMediaConfig,
-    token: str,
-) -> CollectSquidleMediaResult:
-    """
-    Collect Squidle+ media for all deployments in the ACFR deployments file.
-
-    Arguments
-    ---------
-    command: Task command.
-    config: Task configuration.
-    token: Squidle+ API token used to authenticate requests.
-
-    Returns
-    -------
-    Result with paths of exported CSVs and labels of skipped deployments.
-
-    Raises
-    ------
-    FileNotFoundError: If the deployments file or output directory does not exist.
-    """
+def _validate_inputs(command: CollectSquidleMediaCommand) -> None:
+    """Raise if the deployments file or output directory is missing."""
     if not command.deployments_file.exists():
         raise FileNotFoundError(
             f"deployments file not found: {command.deployments_file}"
@@ -280,126 +33,134 @@ def run_collect_squidle_media(
             f"output directory not found: {command.output_dir}"
         )
 
+
+def _log_run_header(command: CollectSquidleMediaCommand) -> None:
+    """Log a banner describing the run."""
     logger.info("-------------------------------------")
     logger.info("Collect Squidle+ Media")
     logger.info(f"  deployments file: {command.deployments_file}")
     logger.info(f"  output dir:       {command.output_dir}")
+    logger.info(f"  match policy:     {command.match_policy.value}")
+    logger.info(f"  download images:  {command.download_images}")
     logger.info("-------------------------------------")
 
-    acfr_deployments: list[DeploymentInfo] = read_deployment_info(
-        command.deployments_file
-    )
-    logger.info(f"loaded {len(acfr_deployments)} ACFR deployment(s)")
 
-    build_lookup: DeploymentLookupBuilder
-    resolve_key: DeploymentKeyResolver
-    build_lookup, resolve_key = create_deployment_matcher(command.match_policy)
-    logger.info(f"match policy: {command.match_policy.value}")
-
-    task_context: CollectSquidleMediaContext = CollectSquidleMediaContext(
-        deployments=[
-            DeploymentMediaEntry(acfr_deployment=deployment)
-            for deployment in acfr_deployments
-        ]
+def summarize_matching(state: TaskState) -> MatchSummary:
+    """Derive the phase 1 (matching) summary from the task state."""
+    return MatchSummary(
+        loaded=len(state.deployments),
+        matched=len(state.matched),
+        unmatched=[
+            entry.deployment_info.metadata.acfr_deployment_label
+            for entry in state.unmatched
+        ],
     )
 
-    with create_client(token) as client:
-        squidle_lookup: dict[str, Deployment] = {}
-        platform_names: set[str] = {
-            context.acfr_deployment.deployment_platform
-            for context in task_context.deployments
-            if context.acfr_deployment.deployment_platform
-        }
-        for platform_name in platform_names:
-            platform_filters: list[dict[str, Any]] = [
-                {"name": "name", "op": "eq", "val": platform_name}
-            ]
-            platforms = client.fetch_platforms(platform_filters)
-            if not platforms:
-                logger.warning(
-                    f"no Squidle+ platform found with name: {platform_name!r}"
-                )
-                continue
-            platform_id: int = platforms[0].id
-            logger.info(
-                f"resolved platform {platform_name!r} → id={platform_id}"
-            )
-            deployment_filters: list[dict[str, Any]] = [
-                {"name": "platform_id", "op": "eq", "val": platform_id}
-            ]
-            platform_deployments: list[Deployment] = client.fetch_deployments(
-                deployment_filters
-            )
-            squidle_lookup.update(build_lookup(platform_deployments))
-            logger.info(
-                f"fetched {len(platform_deployments)} deployment(s) "
-                f"for platform {platform_name!r}"
-            )
 
-        for i, context in enumerate(task_context.deployments):
-            task_context.deployments[i] = match_deployment(
-                command, config, context, squidle_lookup, resolve_key
-            )
-
-        matched: list[tuple[int, DeploymentMediaEntry]] = [
-            (i, context)
-            for i, context in enumerate(task_context.deployments)
-            if context.squidle_deployment is not None
-        ]
-        logger.info(
-            f"matched {len(task_context.matched)} of "
-            f"{len(task_context.deployments)} deployment(s)"
-        )
-        for context in task_context.unmatched:
-            logger.warning(
-                f"  no match: {context.acfr_deployment.metadata.acfr_deployment_label!r}"
-            )
-
-        if command.dry_run:
-            logger.info("dry run — stopping before media fetch")
-            return CollectSquidleMediaResult(
-                exported=[],
-                skipped=[
-                    ctx.acfr_deployment.metadata.acfr_deployment_label
-                    for ctx in task_context.unmatched
-                ],
-            )
-
-        with ThreadPoolExecutor(max_workers=command.max_workers) as executor:
-            future_to_index: dict[Future[DeploymentMediaEntry], int] = {
-                executor.submit(
-                    _process_deployment,
-                    command,
-                    config,
-                    context,
-                    client,
-                ): i
-                for i, context in matched
-            }
-            for future in track(
-                as_completed(future_to_index),
-                total=len(future_to_index),
-                description="Fetching deployment media...",
-            ):
-                index: int = future_to_index[future]
-                task_context.deployments[index] = future.result()
-
+def summarize_retrieval(
+    command: CollectSquidleMediaCommand,
+    state: TaskState,
+) -> RetrievalSummary:
+    """Derive the phase 2 (retrieval) summary from the task state."""
+    matched = state.matched
     exported: list[Path] = [
         command.output_dir
-        / f"{ctx.acfr_deployment.deployment_label}_squidle_media.csv"
-        for ctx in task_context.deployments
-        if ctx.result is not None
+        / f"{entry.deployment_info.deployment_label}_media_records.csv"
+        for entry in matched
+        if entry.result is not None
     ]
-    skipped: list[str] = [
-        ctx.acfr_deployment.metadata.acfr_deployment_label
-        for ctx in task_context.unmatched
+    failed: list[str] = [
+        entry.deployment_info.metadata.acfr_deployment_label
+        for entry in matched
+        if entry.failed
     ]
-
-    if command.verbose:
-        for label in skipped:
-            logger.warning(f"skipped (no Squidle+ match): {label!r}")
-
-    logger.info(
-        f"exported {len(exported)} deployment(s), skipped {len(skipped)}"
+    return RetrievalSummary(
+        attempted=len(matched), exported=exported, failed=failed
     )
-    return CollectSquidleMediaResult(exported=exported, skipped=skipped)
+
+
+def summarize_download(state: TaskState) -> DownloadSummary:
+    """Derive the phase 3 (download) summary from the task state."""
+    downloads = [
+        entry.downloads
+        for entry in state.matched
+        if entry.downloads is not None
+    ]
+    return DownloadSummary(
+        deployments=len(downloads),
+        downloaded=sum(len(d.downloaded) for d in downloads),
+        skipped=sum(len(d.skipped) for d in downloads),
+        failed=sum(len(d.failed) for d in downloads),
+    )
+
+
+def log_summary(summary: Summary) -> None:
+    """Log a phase summary."""
+    match summary:
+        case MatchSummary():
+            logger.info(
+                f"matched {summary.matched}/{summary.loaded} deployment(s), "
+                f"{len(summary.unmatched)} unmatched"
+            )
+            for label in summary.unmatched:
+                logger.warning(f"  no Squidle+ match: {label!r}")
+        case RetrievalSummary():
+            logger.info(
+                f"retrieved media for {len(summary.exported)}/"
+                f"{summary.attempted} matched deployment(s), "
+                f"{len(summary.failed)} failed"
+            )
+            for label in summary.failed:
+                logger.warning(f"  retrieval failed: {label!r}")
+        case DownloadSummary():
+            logger.info(
+                f"downloaded {summary.downloaded} image(s) across "
+                f"{summary.deployments} deployment(s) "
+                f"({summary.skipped} skipped, {summary.failed} failed)"
+            )
+
+
+def run_collect_squidle_media(
+    command: CollectSquidleMediaCommand,
+    config: CollectSquidleMediaConfig,
+) -> None:
+    """
+    Orchestrate the collect Squidle+ media task.
+
+    Phases
+    ------
+    1. Load ACFR deployments and match them to Squidle+ deployments.
+    2. Retrieve media records for each matched deployment.
+    3. Optionally download the image files for the retrieved media.
+
+    Arguments
+    ---------
+    command: Task command.
+    config: Task configuration (carries the Squidle+ API token).
+
+    Raises
+    ------
+    FileNotFoundError: If the deployments file or output directory is missing.
+    """
+    _validate_inputs(command)
+    _log_run_header(command)
+
+    with create_client(config.squidle_token.get_secret_value()) as client:
+        # Phase 1 — load and match
+        deployment_infos: list[DeploymentInfo] = read_deployment_info(
+            command.deployments_file
+        )
+        state: TaskState = match_deployments(command, client, deployment_infos)
+        log_summary(summarize_matching(state))
+
+        if command.dry_run:
+            return
+
+        # Phase 2 — retrieve media records
+        retrieve_deployment_media(command, client, state)
+        log_summary(summarize_retrieval(command, state))
+
+        # Phase 3 — download image files (optional)
+        if command.download_images:
+            download_deployment_images(command, state)
+            log_summary(summarize_download(state))
