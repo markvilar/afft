@@ -268,6 +268,13 @@ def correct_pressure_tide(
     help="stop after deployment matching without fetching media",
 )
 @click.option(
+    "--download-images",
+    "download_images",
+    is_flag=True,
+    default=False,
+    help="download image files after retrieving media records",
+)
+@click.option(
     "--verbose",
     is_flag=True,
     default=False,
@@ -279,6 +286,7 @@ def collect_squidle_media(
     match_policy: str,
     max_workers: int,
     dry_run: bool,
+    download_images: bool,
     verbose: bool,
 ) -> None:
     """Fetch Squidle+ media for all deployments in the ACFR deployments file."""
@@ -288,5 +296,6 @@ def collect_squidle_media(
         DeploymentMatchPolicy(match_policy),
         max_workers,
         dry_run,
+        download_images,
         verbose,
     )
