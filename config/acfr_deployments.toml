@@ -285,7 +285,7 @@ deployment_datetime = 2021-03-15 23:09:47+00:00
 deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
-acfr_deployment_label = "SS13_coralpatches_40m_out"
+acfr_deployment_label = "r20210315_230947_SS13_coralpatches_40m_out"
 acfr_campaign_label = "WA202103"
 acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.84619
@@ -538,7 +538,7 @@ deployment_datetime = 2021-03-15 03:40:28+00:00
 deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
-acfr_deployment_label = "SS10_geebank_15m_out"
+acfr_deployment_label = "r20210315_034028_SS10_geebank_15m_out"
 acfr_campaign_label = "WA202103"
 acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.81372
@@ -753,7 +753,7 @@ deployment_datetime = 2021-03-15 08:15:19+00:00
 deployment_platform = "IMOS AUV Sirius"
 
 [deployments.metadata]
-acfr_deployment_label = "SS12_snapperbank"
+acfr_deployment_label = "r20210315_081519_SS12_snapperbank"
 acfr_campaign_label = "WA202103"
 acfr_platform_label = "IMOS AUV Sirius"
 origin_latitude = -28.7066

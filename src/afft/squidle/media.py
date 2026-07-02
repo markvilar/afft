@@ -2,8 +2,6 @@
 
 from typing import Any
 
-from afft.utils.log import logger
-
 from .transport import Operation, SquidleTransport
 from .deployments import fetch_deployment, fetch_deployments
 from .types import Deployment, DeploymentMedia, MediaRecord
@@ -51,9 +49,6 @@ def fetch_media(
     operation: Operation = submit_deployment_export(transport, deployment_id)
     objects: list[dict[str, Any]] = operation.result()
     records: list[MediaRecord] = [_parse_media_record(obj) for obj in objects]
-    logger.info(
-        f"deployment {deployment_id}: fetched {len(records)} media record(s)"
-    )
     return records
 
 
@@ -120,9 +115,6 @@ def fetch_campaign_media(
         {"name": "campaign_id", "op": "eq", "val": campaign_id}
     ]
     deployments = fetch_deployments(transport, filters)
-    logger.info(
-        f"campaign {campaign_id}: found {len(deployments)} deployment(s)"
-    )
     deployment_ids: list[int] = [deployment.id for deployment in deployments]
     return fetch_media_batch(transport, deployment_ids)
 
