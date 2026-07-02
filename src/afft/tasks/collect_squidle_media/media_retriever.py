@@ -182,6 +182,13 @@ def retrieve_deployment_media(
                 executor.submit(process_deployment, entry, steps): entry
                 for entry in state.matched
             }
-            for future in as_completed(futures):
-                future.result()  # entry already mutated in place
-                progress.advance(task)
+            try:
+                for future in as_completed(futures):
+                    future.result()  # entry already mutated in place
+                    progress.advance(task)
+            except KeyboardInterrupt:
+                # Cancel not-yet-started work so Ctrl+C does not block on the
+                # whole queue; only in-flight retrievals still drain.
+                logger.warning("media retrieval interrupted; cancelling")
+                executor.shutdown(wait=False, cancel_futures=True)
+                raise
