@@ -7,14 +7,17 @@ from afft.squidle import create_client
 from afft.utils.log import logger
 
 from .deployment_matcher import match_deployments
-from .image_downloader import download_deployment_images
+from .image_downloader import build_download_plan, download_deployment_images
 from .media_retriever import retrieve_deployment_media
+from .report import build_run_report, write_run_report
 from .types import (
     CollectSquidleMediaCommand,
     CollectSquidleMediaConfig,
+    DeploymentImagesDownload,
     DownloadSummary,
     MatchSummary,
     RetrievalSummary,
+    RunReport,
     TaskState,
 )
 
@@ -160,7 +163,16 @@ def run_collect_squidle_media(
         retrieve_deployment_media(command, client, state)
         log_summary(summarize_retrieval(command, state))
 
+        # Build image download plan (attaches to state; used by the report)
+        downloads: list[DeploymentImagesDownload] = build_download_plan(
+            command, state
+        )
+
         # Phase 3 — download image files (optional)
         if command.download_images:
-            download_deployment_images(command, state)
+            download_deployment_images(downloads, command.max_workers)
             log_summary(summarize_download(state))
+
+        # Build and write the run report
+        report: RunReport = build_run_report(command, state)
+        write_run_report(report, command.output_dir / "run_report.json")
