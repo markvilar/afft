@@ -106,12 +106,8 @@ def export_media(
     if entry.result is None:
         return entry
     label: str = entry.deployment_info.deployment_label
-    acfr_label: str = entry.deployment_info.metadata.acfr_deployment_label
     output_file: Path = command.output_dir / f"{label}_media_records.csv"
     entry.result.to_csv(output_file, index=False)
-    logger.info(
-        f"{acfr_label}: {len(entry.result)} record(s) → {output_file.name}"
-    )
     return entry
 
 
