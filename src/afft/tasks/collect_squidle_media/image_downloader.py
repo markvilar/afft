@@ -108,7 +108,7 @@ def download_deployment(
                 on_image()
 
 
-def run_downloads(
+def download_deployment_images(
     downloads: list[DeploymentImagesDownload],
     max_workers: int,
 ) -> None:
@@ -151,20 +151,25 @@ def run_downloads(
                 progress.advance(overall)
 
 
-def download_deployment_images(
+def build_download_plan(
     command: CollectSquidleMediaCommand,
     state: TaskState,
-) -> None:
+) -> list[DeploymentImagesDownload]:
     """
-    Download images for all matched deployments with media (phase 3).
+    Build per-deployment image download states without downloading.
 
-    Builds the download states upfront (attaching each to ``entry.downloads``
-    so the run is monitorable via the task state), then executes them.
+    Attaches each download state to ``entry.downloads`` so the run is
+    inspectable and reportable via the task state, whether or not the images
+    are subsequently downloaded.
 
     Arguments
     ---------
     command: Task command.
-    state: Task state; matched entries with media are downloaded.
+    state: Task state; matched entries with media get a download plan.
+
+    Returns
+    -------
+    The per-deployment download states (all PENDING).
     """
     downloads: list[DeploymentImagesDownload] = []
     for entry in state.matched:
@@ -172,4 +177,4 @@ def download_deployment_images(
             continue
         entry.downloads = plan_download(entry, command.output_dir)
         downloads.append(entry.downloads)
-    run_downloads(downloads, command.max_workers)
+    return downloads

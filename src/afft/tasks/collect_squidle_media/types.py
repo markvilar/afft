@@ -231,3 +231,95 @@ class DownloadSummary:
     downloaded: int
     skipped: int
     failed: int
+
+
+@dataclass(slots=True, frozen=True)
+class DownloadReport:
+    """
+    Image download outcomes for one deployment.
+
+    Attributes
+    ----------
+    images: The per-image download states.
+    """
+
+    images: list[ImageDownload]
+
+    def _count(self, status: ImageDownloadStatus) -> int:
+        return sum(1 for image in self.images if image.status is status)
+
+    @property
+    def downloaded(self) -> int:
+        """Number of images written successfully."""
+        return self._count(ImageDownloadStatus.DOWNLOADED)
+
+    @property
+    def skipped(self) -> int:
+        """Number of images already present on disk."""
+        return self._count(ImageDownloadStatus.SKIPPED)
+
+    @property
+    def failed(self) -> int:
+        """Number of images whose download failed."""
+        return self._count(ImageDownloadStatus.FAILED)
+
+    @property
+    def failures(self) -> list[ImageDownload]:
+        """The failed image downloads."""
+        return [
+            image
+            for image in self.images
+            if image.status is ImageDownloadStatus.FAILED
+        ]
+
+
+@dataclass(slots=True, frozen=True)
+class DeploymentReport:
+    """
+    Record of what one ACFR deployment produced during a run.
+
+    Attributes
+    ----------
+    acfr_deployment_label: ACFR deployment label.
+    acfr_campaign_label: ACFR campaign label.
+    matched: Whether a Squidle+ deployment was matched.
+    squidle_deployment_id: Matched Squidle+ deployment id, if any.
+    squidle_deployment_key: Matched Squidle+ deployment key, if any.
+    squidle_deployment_name: Matched Squidle+ deployment name, if any.
+    squidle_campaign_name: Matched Squidle+ campaign name, if any.
+    squidle_platform_name: Matched Squidle+ platform name, if any.
+    media_records_file: Exported CSV path, if written.
+    media_record_count: Number of media records retrieved.
+    retrieval_error: Media retrieval error message, if any.
+    download: Image download outcomes, if a download plan was built.
+    """
+
+    acfr_deployment_label: str
+    acfr_campaign_label: str
+    matched: bool
+    squidle_deployment_id: int | None
+    squidle_deployment_key: str | None
+    squidle_deployment_name: str | None
+    squidle_campaign_name: str | None
+    squidle_platform_name: str | None
+    media_records_file: str | None
+    media_record_count: int
+    retrieval_error: str | None
+    download: DownloadReport | None
+
+
+@dataclass(slots=True, frozen=True)
+class RunReport:
+    """
+    Durable, JSON-serializable summary of one collector run.
+
+    Attributes
+    ----------
+    deployments_file: Path to the ACFR deployments TOML used for the run.
+    output_dir: Root output directory.
+    deployments: One report per ACFR deployment.
+    """
+
+    deployments_file: str
+    output_dir: str
+    deployments: list[DeploymentReport]
