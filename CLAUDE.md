@@ -40,7 +40,7 @@ Line length is 80 characters (configured in `pyproject.toml` via ruff).
 The main package is at `src/afft/` with these modules:
 
 - **`cli/`** — Click-based CLI. `entrypoint.py` composes two groups: `database_cli.py` (table operations) and `message_cli.py` (message parsing/ingestion).
-- **`sirius/`** — Protocol parsing for Sirius AUV messages. `message_protocol.py` drives parsing; `message_parsers.py` contains concrete parser implementations; `message_interfaces.py` defines the abstract contracts.
+- **`seabed/`** — Protocol parsing for SEABED-class AUV messages (e.g. Sirius). `message_protocol.py` drives parsing; `message_parsers.py` contains concrete parser implementations; `message_interfaces.py` defines the abstract contracts.
 - **`database/`** — PostgreSQL via SQLAlchemy. `engine.py` manages connections; `readers.py` and `writers.py` handle table I/O.
 - **`metocean/`** — External API clients for sea level (WorldTides), solar irradiance, and solar zenith data (Stormglass).
 - **`filesystem/`** — Directory search and file query utilities.
