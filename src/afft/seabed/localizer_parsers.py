@@ -46,11 +46,11 @@ def parse_localizer_config(path: Path) -> SeabedLocalizerConfig:
     -------
     The parsed SeabedLocalizerConfig.
     """
-    lines = read_lines(path)
+    lines: list[str] = read_lines(path)
 
-    auv_index = _find_banner(lines, AUV_BANNER)
-    ship_index = _find_banner(lines, SHIP_BANNER)
-    active_keys = {key for key, _ in _iter_entries(lines)}
+    auv_index: int | None = _find_banner(lines, AUV_BANNER)
+    ship_index: int | None = _find_banner(lines, SHIP_BANNER)
+    active_keys: set[str] = {key for key, _ in _iter_entries(lines)}
 
     missing: list[str] = []
     if auv_index is None:
@@ -97,7 +97,7 @@ def _iter_entries(lines: list[str]) -> list[Entry]:
     """
     entries: list[Entry] = []
     for line in lines:
-        fields = _strip_comment(line).split()
+        fields: list[str] = _strip_comment(line).split()
         if len(fields) < 2:
             continue
         entries.append((fields[0], fields[1]))
@@ -119,7 +119,7 @@ def _match_pose(key: str) -> tuple[str, str] | None:
     A pose key matches ``<NAME>_POSE_<SUFFIX>`` where ``<SUFFIX>`` is one of
     the six pose components; ``field`` is the SensorPoseEntry attribute name.
     """
-    parts = key.split("_POSE_")
+    parts: list[str] = key.split("_POSE_")
     if len(parts) != 2 or parts[1] not in POSE_COMPONENTS:
         return None
     return parts[0], POSE_COMPONENTS[parts[1]]
@@ -150,7 +150,7 @@ def _parse_poses(lines: list[str]) -> list[SensorPoseEntry]:
     components: dict[str, dict[str, float]] = {}
     order: list[str] = []
     for key, value in _iter_entries(lines):
-        match = _match_pose(key)
+        match: tuple[str, str] | None = _match_pose(key)
         if match is None:
             continue
         name, field = match
