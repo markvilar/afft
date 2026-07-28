@@ -2,7 +2,6 @@
 
 import msgspec
 
-from dataclasses import asdict
 from pathlib import Path
 from typing import Any
 
@@ -11,7 +10,6 @@ from afft.io.config_io import read_config
 from .types import (
     DeploymentConfig,
     DeploymentInfo,
-    DeploymentMetadata,
     TopsideUsblModemConfig,
     UsblUncertaintyProfile,
 )
@@ -67,27 +65,8 @@ def load_deployment_config(
     extrinsics_entry: dict[str, Any] = topside_extrinsics[extrinsics_label]
     uncertainty_entry: dict[str, Any] = uncertainty_profiles[uncertainty_label]
 
-    usbl_modem = TopsideUsblModemConfig(
-        locx=extrinsics_entry["locx"],
-        locy=extrinsics_entry["locy"],
-        locz=extrinsics_entry["locz"],
-        rotx=extrinsics_entry["rotx"],
-        roty=extrinsics_entry["roty"],
-        rotz=extrinsics_entry["rotz"],
-        comment=extrinsics_entry.get("comment", ""),
-    )
-
-    usbl_uncertainty = UsblUncertaintyProfile(
-        horizontal_position_std=uncertainty_entry["horizontal_position_std"],
-        slant_range_std=uncertainty_entry["slant_range_std"],
-        bearing_std=uncertainty_entry["bearing_std"],
-        ship_x_std=uncertainty_entry["ship_x_std"],
-        ship_y_std=uncertainty_entry["ship_y_std"],
-        ship_z_std=uncertainty_entry["ship_z_std"],
-        ship_heading_std=uncertainty_entry["ship_heading_std"],
-        ship_roll_std=uncertainty_entry["ship_roll_std"],
-        ship_pitch_std=uncertainty_entry["ship_pitch_std"],
-    )
+    usbl_modem = TopsideUsblModemConfig.model_validate(extrinsics_entry)
+    usbl_uncertainty = UsblUncertaintyProfile.model_validate(uncertainty_entry)
 
     return DeploymentConfig(
         label=deployment_label,
@@ -115,24 +94,36 @@ def read_deployment_info(path: Path) -> list[DeploymentInfo]:
     deployments: list[DeploymentInfo] = []
     for entry in raw.get("deployments", []):
         metadata: dict[str, Any] = entry.get("metadata", {})
+        # Fill defaults for missing / legacy fields so older deployment TOML
+        # files that predate some fields still load, then validate.
         deployments.append(
-            DeploymentInfo(
-                deployment_label=entry["deployment_label"],
-                deployment_datetime=entry["deployment_datetime"],
-                deployment_platform=entry.get("deployment_platform", ""),
-                metadata=DeploymentMetadata(
-                    acfr_deployment_label=metadata["acfr_deployment_label"],
-                    acfr_campaign_label=metadata["acfr_campaign_label"],
-                    acfr_platform_label=metadata.get("acfr_platform_label", ""),
-                    origin_latitude=metadata.get("origin_latitude", 0.0),
-                    origin_longitude=metadata.get("origin_longitude", 0.0),
-                    magnetic_variation=metadata.get("magnetic_variation", 0.0),
-                    message_topics=metadata.get("message_topics", []),
-                    renav_labels=metadata.get("renav_labels", []),
-                    camera_calibration_files=metadata.get(
-                        "camera_calibration_files", []
-                    ),
-                ),
+            DeploymentInfo.model_validate(
+                {
+                    "deployment_label": entry["deployment_label"],
+                    "deployment_datetime": entry["deployment_datetime"],
+                    "deployment_platform": entry.get("deployment_platform", ""),
+                    "metadata": {
+                        "acfr_deployment_label": metadata[
+                            "acfr_deployment_label"
+                        ],
+                        "acfr_campaign_label": metadata["acfr_campaign_label"],
+                        "acfr_platform_label": metadata.get(
+                            "acfr_platform_label", ""
+                        ),
+                        "origin_latitude": metadata.get("origin_latitude", 0.0),
+                        "origin_longitude": metadata.get(
+                            "origin_longitude", 0.0
+                        ),
+                        "magnetic_variation": metadata.get(
+                            "magnetic_variation", 0.0
+                        ),
+                        "message_topics": metadata.get("message_topics", []),
+                        "renav_labels": metadata.get("renav_labels", []),
+                        "camera_calibration_files": metadata.get(
+                            "camera_calibration_files", []
+                        ),
+                    },
+                }
             )
         )
     return deployments
@@ -151,5 +142,12 @@ def write_deployment_info(
     deployments: Deployment info objects to serialize.
     """
     path.write_bytes(
-        msgspec.toml.encode({"deployments": [asdict(d) for d in deployments]})
+        msgspec.toml.encode(
+            {
+                "deployments": [
+                    deployment.model_dump(mode="python")
+                    for deployment in deployments
+                ]
+            }
+        )
     )

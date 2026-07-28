@@ -1,11 +1,11 @@
 """Data types for AUV deployment configuration and metadata."""
 
-from dataclasses import dataclass
 from datetime import datetime
 
+from pydantic import BaseModel, ConfigDict
 
-@dataclass(slots=True, frozen=True)
-class UsblUncertaintyProfile:
+
+class UsblUncertaintyProfile(BaseModel):
     """
     Deployment-calibrated USBL uncertainty profile (1σ standard deviations).
 
@@ -22,6 +22,8 @@ class UsblUncertaintyProfile:
     ship_pitch_std: Ship pitch uncertainty in radians.
     """
 
+    model_config = ConfigDict(frozen=True)
+
     horizontal_position_std: float
     slant_range_std: float
     bearing_std: float
@@ -33,8 +35,7 @@ class UsblUncertaintyProfile:
     ship_pitch_std: float
 
 
-@dataclass(slots=True, frozen=True)
-class TopsideUsblModemConfig:
+class TopsideUsblModemConfig(BaseModel):
     """
     Position and orientation of the USBL transceiver in the ship reference frame.
 
@@ -49,6 +50,8 @@ class TopsideUsblModemConfig:
     comment: Optional note about the calibration.
     """
 
+    model_config = ConfigDict(frozen=True)
+
     locx: float
     locy: float
     locz: float
@@ -58,8 +61,7 @@ class TopsideUsblModemConfig:
     comment: str = ""
 
 
-@dataclass(slots=True, frozen=True)
-class DeploymentConfig:
+class DeploymentConfig(BaseModel):
     """
     Configuration for a single AUV deployment.
 
@@ -73,6 +75,8 @@ class DeploymentConfig:
     sensor_keys: Identifiers for sensors active during this deployment.
     """
 
+    model_config = ConfigDict(frozen=True)
+
     label: str
     ship_name: str
     date: str
@@ -81,8 +85,7 @@ class DeploymentConfig:
     sensor_keys: tuple[str, ...] = ()
 
 
-@dataclass(slots=True, frozen=True)
-class DeploymentMetadata:
+class DeploymentMetadata(BaseModel):
     """
     Collected metadata for a single AUV deployment.
 
@@ -99,6 +102,8 @@ class DeploymentMetadata:
     camera_calibration_files: Sorted unique camera calibration filenames.
     """
 
+    model_config = ConfigDict(frozen=True)
+
     acfr_deployment_label: str
     acfr_campaign_label: str
     acfr_platform_label: str
@@ -110,8 +115,7 @@ class DeploymentMetadata:
     camera_calibration_files: list[str]
 
 
-@dataclass(slots=True, frozen=True)
-class DeploymentInfo:
+class DeploymentInfo(BaseModel):
     """
     Core identity fields for a single AUV deployment.
 
@@ -122,6 +126,8 @@ class DeploymentInfo:
     deployment_platform: Squidle+ platform name for this deployment.
     metadata: Collected deployment metadata.
     """
+
+    model_config = ConfigDict(frozen=True)
 
     deployment_label: str
     deployment_datetime: datetime
