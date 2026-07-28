@@ -22,12 +22,13 @@ dependencies = [
     "polars[numpy,pandas,pyarrow]>=1.30.0",
     "psycopg2-binary>=2.9.10",
     "pyarrow>=20.0.0",
+    "pydantic>=2.11.10",
     "pydantic-settings>=2.0.0",
     "pymap3d>=3.2.0",
     "python-rclone>=0.0.2",
     "scipy>=1.17.1",
     "sqlalchemy>=2.0.41",
-    "tomli-w>=1.2.0",
+    "tomli-w>=1.2.0",  # required by msgspec for TOML encoding
     "tenacity>=9.0.0",
     "rich>=15.0.0",
 ]
