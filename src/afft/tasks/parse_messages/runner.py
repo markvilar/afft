@@ -8,7 +8,7 @@ import pandas as pd
 
 import afft.database as db
 import afft.io as io
-import afft.sirius as sirius
+import afft.seabed as seabed
 
 from afft.environment import EnvironmentDatabase
 from afft.utils.log import logger
@@ -17,7 +17,7 @@ from .types import ParseMessageCommand, ParseMessageConfig
 
 
 type Topic = str
-type Messages = Iterable[sirius.Message[Any, Any]]
+type Messages = Iterable[seabed.Message[Any, Any]]
 type MessageGroups = Mapping[Topic, Messages]
 
 
@@ -61,7 +61,7 @@ def _parse_messages(
     source_file: Path, config: ParseMessageConfig
 ) -> MessageGroups:
     lines: list[str] = io.read_lines(source_file)
-    return sirius.parse_message_lines(lines, config.message_maps)
+    return seabed.parse_message_lines(lines, config.message_maps)
 
 
 def _build_dataframes(
@@ -80,7 +80,7 @@ def _build_dataframes(
         if group not in table_names:
             raise ValueError(f"missing table name for message group: {group}")
 
-    table_messages: dict[str, list[sirius.Message[Any, Any]]] = {}
+    table_messages: dict[str, list[seabed.Message[Any, Any]]] = {}
     for group, messages in message_groups.items():
         table_name = table_names[group]
         if table_name not in table_messages:

@@ -1,4 +1,4 @@
-"""Package for message processing functionality for AUV Sirius."""
+"""Package for message processing functionality for SEABED-class AUVs."""
 
 from .concrete_messages import get_message_type as get_message_type
 from .message_interfaces import Message as Message
