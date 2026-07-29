@@ -1,0 +1,53 @@
+"""CLI commands for working with ACFR deployments."""
+
+import click
+
+from .actions import dispatch_describe_deployment
+
+
+@click.group()
+@click.pass_context
+def deployment_group(context: click.Context) -> None:
+    """CLI group for deployment commands."""
+    context.ensure_object(dict)
+
+
+@deployment_group.command()
+@click.option(
+    "--input",
+    "root_dir",
+    type=click.Path(exists=True, file_okay=False),
+    required=True,
+    help="root directory containing ACFR deployment subdirectories",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="path to write the deployment descriptors as TOML",
+)
+@click.option(
+    "--deployment-suffix",
+    "deployment_suffix",
+    type=str,
+    default="_deployment_data",
+    show_default=True,
+    help="suffix stripped from deployment directory names to form the label",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="log diagnostics warnings after the run completes",
+)
+def describe(
+    root_dir: str,
+    output_file: str,
+    deployment_suffix: str,
+    verbose: bool,
+) -> None:
+    """Describe the deployments in an ACFR deployment data directory tree."""
+    dispatch_describe_deployment(
+        root_dir, output_file, deployment_suffix, verbose
+    )

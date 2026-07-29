@@ -20,7 +20,6 @@ from .loader import (
     read_deployment_descriptors as read_deployment_descriptors,
     read_deployment_info as read_deployment_info,
     write_deployment_descriptors as write_deployment_descriptors,
-    write_deployment_info as write_deployment_info,
 )
 from .types import (
     DeploymentConfig as DeploymentConfig,

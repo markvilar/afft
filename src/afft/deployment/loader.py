@@ -125,30 +125,6 @@ def read_deployment_info(path: Path) -> list[DeploymentInfo]:
     return deployments
 
 
-def write_deployment_info(
-    path: Path,
-    deployments: list[DeploymentInfo],
-) -> None:
-    """
-    Write deployment info entries to a deployments TOML file.
-
-    Arguments
-    ---------
-    path: Path to write the deployments TOML file.
-    deployments: Deployment info objects to serialize.
-    """
-    path.write_bytes(
-        msgspec.toml.encode(
-            {
-                "deployments": [
-                    deployment.model_dump(mode="python")
-                    for deployment in deployments
-                ]
-            }
-        )
-    )
-
-
 def read_deployment_descriptors(path: Path) -> list[DeploymentDescriptor]:
     """
     Read deployment descriptors from a deployments TOML file.

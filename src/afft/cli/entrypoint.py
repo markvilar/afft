@@ -5,6 +5,7 @@ import click
 from afft.utils.log import init_logger
 
 from .database.commands import database_group as database_commands
+from .deployment.commands import deployment_group as deployment_commands
 from .messages.commands import message_group as message_commands
 from .renav.commands import renav_group as renav_commands
 from .sensors.commands import sensors_group as sensor_commands
@@ -19,6 +20,7 @@ def cli() -> None:
 
 
 cli.add_command(database_commands, name="database")
+cli.add_command(deployment_commands, name="deployment")
 cli.add_command(message_commands, name="messages")
 cli.add_command(renav_commands, name="renav")
 cli.add_command(sensor_commands, name="sensors")

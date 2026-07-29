@@ -10,7 +10,6 @@ from afft.tasks.collect_squidle_media import DeploymentMatchPolicy
 
 from .actions import (
     dispatch_clip_tables,
-    dispatch_collect_deployment_info,
     dispatch_collect_squidle_media,
     dispatch_correct_pressure_tide,
     dispatch_process_telemetry,
@@ -37,47 +36,6 @@ def _parse_timestamp(
 def task_group(context: click.Context) -> None:
     """CLI group for invoking data processing tasks."""
     context.ensure_object(dict)
-
-
-@task_group.command()
-@click.option(
-    "--input",
-    "root_dir",
-    type=click.Path(exists=True, file_okay=False),
-    required=True,
-    help="root directory containing ACFR deployment subdirectories",
-)
-@click.option(
-    "--output",
-    "output_file",
-    type=click.Path(dir_okay=False),
-    required=True,
-    help="path to write the collected deployment info as TOML",
-)
-@click.option(
-    "--deployment-suffix",
-    "deployment_suffix",
-    type=str,
-    default="_deployment_data",
-    show_default=True,
-    help="suffix stripped from deployment directory names to form the label",
-)
-@click.option(
-    "--verbose",
-    is_flag=True,
-    default=False,
-    help="log diagnostics warnings after the run completes",
-)
-def collect_deployment_info(
-    root_dir: str,
-    output_file: str,
-    deployment_suffix: str,
-    verbose: bool,
-) -> None:
-    """Collect deployment metadata from an ACFR deployment directory tree."""
-    dispatch_collect_deployment_info(
-        root_dir, output_file, deployment_suffix, verbose
-    )
 
 
 @task_group.command()
