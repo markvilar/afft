@@ -15,12 +15,9 @@ from afft.utils.log import logger
 from .collectors import (
     collect_acfr_campaign_label,
     collect_acfr_deployment_label,
-    collect_camera_calibration_files,
     collect_magnetic_variation,
-    collect_message_topics,
     collect_origin_latitude,
     collect_origin_longitude,
-    collect_renav_labels,
 )
 from .types import (
     CollectDeploymentInfoCommand,
@@ -198,15 +195,6 @@ def run_collect_deployment_info(
                         deployment_dir, config, diagnostics
                     ),
                     magnetic_variation=collect_magnetic_variation(
-                        deployment_dir, config, diagnostics
-                    ),
-                    message_topics=collect_message_topics(
-                        deployment_dir, config, diagnostics
-                    ),
-                    renav_labels=collect_renav_labels(
-                        deployment_dir, config, diagnostics
-                    ),
-                    camera_calibration_files=collect_camera_calibration_files(
                         deployment_dir, config, diagnostics
                     ),
                 ),
