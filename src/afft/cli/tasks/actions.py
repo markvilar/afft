@@ -11,11 +11,6 @@ from afft.tasks.collect_squidle_media import (
     DeploymentMatchPolicy,
     run_collect_squidle_media,
 )
-from afft.tasks.collect_deployment_info import (
-    CollectDeploymentInfoCommand,
-    CollectDeploymentInfoConfig,
-    run_collect_deployment_info,
-)
 from afft.tasks.process_telemetry import (
     GroupingStrategy,
     ProcessTelemetryCommand,
@@ -26,23 +21,6 @@ from afft.tasks.tide_correct_pressure import (
     TideCorrectConfig,
     run_tide_correction,
 )
-
-
-def dispatch_collect_deployment_info(
-    root_dir: str | Path,
-    output_file: str | Path,
-    deployment_suffix: str = "_deployment_data",
-    verbose: bool = False,
-) -> None:
-    """Collect deployment metadata from an ACFR deployment directory tree."""
-    command = CollectDeploymentInfoCommand(
-        root_dir=Path(root_dir),
-        output_file=Path(output_file),
-        deployment_suffix=deployment_suffix,
-        verbose=verbose,
-    )
-    config = CollectDeploymentInfoConfig()
-    run_collect_deployment_info(command, config)
 
 
 def dispatch_clip_tables(
