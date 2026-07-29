@@ -97,9 +97,6 @@ class DeploymentMetadata(BaseModel):
     origin_latitude: Deployment origin latitude in decimal degrees.
     origin_longitude: Deployment origin longitude in decimal degrees.
     magnetic_variation: Magnetic variation at the origin in degrees.
-    message_topics: Sorted unique message topic names from the RAW AUV logs.
-    renav_labels: Sorted renav run labels from the camera poses directory.
-    camera_calibration_files: Sorted unique camera calibration filenames.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -110,9 +107,6 @@ class DeploymentMetadata(BaseModel):
     origin_latitude: float
     origin_longitude: float
     magnetic_variation: float
-    message_topics: list[str]
-    renav_labels: list[str]
-    camera_calibration_files: list[str]
 
 
 class DeploymentInfo(BaseModel):
