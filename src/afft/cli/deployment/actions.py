@@ -2,6 +2,10 @@
 
 from pathlib import Path
 
+from afft.tasks.deployment_catalog import (
+    ScaffoldCatalogCommand,
+    run_scaffold_catalog,
+)
 from afft.tasks.deployment_descriptor import (
     DescribeDeploymentCommand,
     DescribeDeploymentResult,
@@ -30,3 +34,19 @@ def dispatch_describe_deployment(
     result: DescribeDeploymentResult = run_describe_deployment(command)
     if result.diagnostics.failures:
         raise SystemExit(1)
+
+
+def dispatch_scaffold_catalog(
+    input_file: str | Path,
+    output_file: str | Path,
+    verbose: bool = False,
+) -> None:
+    """
+    Scaffold a deployment catalog skeleton from a deployment descriptors file.
+    """
+    command = ScaffoldCatalogCommand(
+        input_file=Path(input_file),
+        output_file=Path(output_file),
+        verbose=verbose,
+    )
+    run_scaffold_catalog(command)
