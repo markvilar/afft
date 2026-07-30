@@ -2,7 +2,7 @@
 
 import click
 
-from .actions import dispatch_describe_deployment
+from .actions import dispatch_describe_deployment, dispatch_scaffold_catalog
 
 
 @click.group()
@@ -51,3 +51,38 @@ def describe(
     dispatch_describe_deployment(
         root_dir, output_file, deployment_suffix, verbose
     )
+
+
+@deployment_group.command()
+@click.option(
+    "--input",
+    "input_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the deployment descriptors TOML file",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="path to write the deployment catalog skeleton as TOML",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="log diagnostics warnings after the run completes",
+)
+def scaffold_catalog(
+    input_file: str,
+    output_file: str,
+    verbose: bool,
+) -> None:
+    """Scaffold a curated deployment catalog from deployment descriptors.
+
+    The skeleton accounts for every deployment, but the curated fields —
+    vessel names, sensor vendors and products, and every mounting pose — are
+    left empty to be filled in by hand.
+    """
+    dispatch_scaffold_catalog(input_file, output_file, verbose)
