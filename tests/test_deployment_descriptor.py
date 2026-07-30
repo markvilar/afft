@@ -9,12 +9,15 @@ from afft.deployment import (
     DeploymentDescriptor,
     DeploymentFileSection,
     DeploymentMetadata,
-    DeploymentSensor,
-    DeploymentSensorSection,
+    DeploymentPlatformSection,
     DeploymentSystemSection,
     DeploymentTelemetrySection,
+    DeploymentVesselSection,
     PlatformIdentity,
+    PlatformSensor,
     SensorExtrinsics,
+    VesselIdentity,
+    VesselSensor,
     collect_deployment_files,
     read_deployment_descriptors,
     write_deployment_descriptors,
@@ -56,7 +59,6 @@ def _build_descriptor() -> DeploymentDescriptor:
         deployment_datetime=datetime(
             2017, 5, 25, 23, 46, 0, tzinfo=timezone.utc
         ),
-        deployment_platform="",
         metadata=DeploymentMetadata(
             acfr_deployment_label="SS11_snapperbank",
             acfr_campaign_label="WA201705",
@@ -70,8 +72,8 @@ def _build_descriptor() -> DeploymentDescriptor:
             system_config=["messages/20170525_2346.SEABED.syscfg"],
         ),
         telemetry=DeploymentTelemetrySection(topics=["RDI", "VIS"]),
-        sensors=DeploymentSensorSection(
-            sensors=[DeploymentSensor(key="RDI"), DeploymentSensor(key="VIS")]
+        platform=DeploymentPlatformSection(
+            sensors=[PlatformSensor(key="RDI"), PlatformSensor(key="VIS")]
         ),
         system=DeploymentSystemSection(
             vehicle_name="SEABED",
@@ -109,27 +111,29 @@ def test_unfilled_curated_slots_are_omitted(tmp_path: Path) -> None:
     write_deployment_descriptors(path, [_build_descriptor()])
 
     entry = read_config(path)["deployments"][0]
-    assert "platform" not in entry
-    assert "identity" not in entry["sensors"]["sensors"][0]
-    assert "extrinsics" not in entry["sensors"]["sensors"][0]
+    assert "vessel" not in entry
+    assert "identity" not in entry["platform"]
+    assert "identity" not in entry["platform"]["sensors"][0]
+    assert "extrinsics" not in entry["platform"]["sensors"][0]
 
     descriptors = read_deployment_descriptors(path)
-    assert descriptors[0].platform is None
-    assert descriptors[0].sensors.sensors[0].identity is None
-    assert descriptors[0].sensors.sensors[0].extrinsics is None
+    assert descriptors[0].vessel is None
+    assert descriptors[0].platform.identity is None
+    assert descriptors[0].platform.sensors[0].identity is None
+    assert descriptors[0].platform.sensors[0].extrinsics is None
 
 
 def test_filled_curated_slots_round_trip(tmp_path: Path) -> None:
     descriptor = _build_descriptor().model_copy(
         update={
-            "platform": PlatformIdentity(
-                platform_label="AUV Sirius",
-                platform_class="SEABED",
-                platform_operator="ACFR",
-            ),
-            "sensors": DeploymentSensorSection(
+            "platform": DeploymentPlatformSection(
+                identity=PlatformIdentity(
+                    platform_label="AUV Sirius",
+                    platform_class="SEABED",
+                    platform_operator="ACFR",
+                ),
                 sensors=[
-                    DeploymentSensor(
+                    PlatformSensor(
                         key="RDI",
                         extrinsics=SensorExtrinsics(
                             locx=0.1,
@@ -140,7 +144,35 @@ def test_filled_curated_slots_round_trip(tmp_path: Path) -> None:
                             rotz=3.14,
                         ),
                     )
-                ]
+                ],
+            ),
+        }
+    )
+    path = tmp_path / "deployments.toml"
+
+    write_deployment_descriptors(path, [descriptor])
+
+    assert read_deployment_descriptors(path) == [descriptor]
+
+
+def test_filled_vessel_section_round_trip(tmp_path: Path) -> None:
+    descriptor = _build_descriptor().model_copy(
+        update={
+            "vessel": DeploymentVesselSection(
+                identity=VesselIdentity(vessel_name="RV Linnaeus"),
+                sensors=[
+                    VesselSensor(
+                        key="USBL",
+                        extrinsics=SensorExtrinsics(
+                            locx=1.0,
+                            locy=-0.5,
+                            locz=2.5,
+                            rotx=0.0,
+                            roty=0.0,
+                            rotz=1.57,
+                        ),
+                    )
+                ],
             ),
         }
     )

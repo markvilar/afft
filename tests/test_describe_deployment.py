@@ -17,7 +17,7 @@ from afft.tasks.deployment_descriptor import (
     DescribeDeploymentDiagnostics,
     build_deployment_file_section,
     build_deployment_metadata,
-    build_sensor_section,
+    build_platform_section,
     build_system_section,
     build_telemetry_section,
     run_describe_deployment,
@@ -147,21 +147,22 @@ def test_build_file_section_empties_absent_optional_roles(
     assert section.magvar_config == []
 
 
-def test_build_system_and_sensor_sections(tmp_path: Path) -> None:
+def test_build_system_and_platform_sections(tmp_path: Path) -> None:
     directory = _build_deployment(tmp_path, DEPLOYMENT_CONTENTS)
     files = collect_deployment_files(directory)
     system_config = parse_system_config(files.system_config)
 
     system = build_system_section(system_config)
-    sensors = build_sensor_section(system_config)
+    platform = build_platform_section(system_config)
 
     assert system.vehicle_name == "SEABED"
     assert system.vehicle_config == "NORM_CFG"
     assert system.log_directory == "/files1/Log"
     assert system.logged_streams == ["SYSLOG", "RAW", "CTL"]
-    assert [sensor.key for sensor in sensors.sensors] == ["RDI", "VIS"]
-    assert all(sensor.identity is None for sensor in sensors.sensors)
-    assert all(sensor.extrinsics is None for sensor in sensors.sensors)
+    assert platform.identity is None
+    assert [sensor.key for sensor in platform.sensors] == ["RDI", "VIS"]
+    assert all(sensor.identity is None for sensor in platform.sensors)
+    assert all(sensor.extrinsics is None for sensor in platform.sensors)
 
 
 def test_build_telemetry_section_collects_topics(
@@ -294,7 +295,7 @@ def test_run_writes_descriptor_toml(tmp_path: Path) -> None:
         "2017-05-25T23:46:00+00:00"
     )
     assert descriptor.telemetry.topics == ["GPS_RMC", "RDI", "VIS"]
-    assert [sensor.key for sensor in descriptor.sensors.sensors] == [
+    assert [sensor.key for sensor in descriptor.platform.sensors] == [
         "RDI",
         "VIS",
     ]
@@ -315,7 +316,8 @@ def test_run_leaves_curated_slots_absent(tmp_path: Path) -> None:
     )
 
     contents = output_file.read_text()
-    assert "[deployments.platform]" not in contents
+    assert "[deployments.platform]" in contents
+    assert "[deployments.vessel]" not in contents
     assert "identity" not in contents
     assert "extrinsics" not in contents
 

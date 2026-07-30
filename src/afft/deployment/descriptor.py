@@ -21,7 +21,8 @@ class SensorIdentity(BaseModel):
 
 class SensorExtrinsics(BaseModel):
     """
-    A sensor's mounting pose in the vehicle (SNAME) body frame.
+    A sensor's mounting pose, in the reference frame of the body it is mounted
+    on — stated by the descriptor section the sensor lives in.
 
     Populated by a later enrichment process that reconciles the localizer
     config's pose families with the system-config-derived sensor roster via a
@@ -47,17 +48,17 @@ class SensorExtrinsics(BaseModel):
     rotz: float
 
 
-class DeploymentSensor(BaseModel):
+class PlatformSensor(BaseModel):
     """
-    A sensor in a deployment's configured roster.
+    A sensor mounted on the deployment's platform.
 
     Attributes
     ----------
     key: Terse sensor identifier and RAW AUV message topic prefix (e.g.
         ``"RDI"``); also the enrichment catalog lookup key.
     identity: Curated sensor metadata; ``None`` until enrichment fills it.
-    extrinsics: Sensor mounting pose; ``None`` until enrichment fills it from
-        the localizer config.
+    extrinsics: Sensor mounting pose in the vehicle (SNAME) body frame;
+        ``None`` until enrichment fills it from the localizer config.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -67,18 +68,27 @@ class DeploymentSensor(BaseModel):
     extrinsics: SensorExtrinsics | None = None
 
 
-class DeploymentSensorSection(BaseModel):
+class VesselSensor(BaseModel):
     """
-    The deployment's configured sensor roster, from the SEABED system config.
+    A sensor mounted on the deployment's support vessel.
+
+    Distinct from ``PlatformSensor`` because its ``extrinsics`` are expressed
+    in the ship reference frame rather than the vehicle (SNAME) body frame.
 
     Attributes
     ----------
-    sensors: One entry per configured sensor.
+    key: Terse sensor identifier (e.g. ``"USBL"``); also the enrichment catalog
+        lookup key.
+    identity: Curated sensor metadata; ``None`` until enrichment fills it.
+    extrinsics: Sensor mounting pose in the ship reference frame; ``None``
+        until enrichment fills it from the curated USBL extrinsics catalog.
     """
 
     model_config = ConfigDict(frozen=True)
 
-    sensors: list[DeploymentSensor]
+    key: str
+    identity: SensorIdentity | None = None
+    extrinsics: SensorExtrinsics | None = None
 
 
 class PlatformIdentity(BaseModel):
@@ -103,6 +113,64 @@ class PlatformIdentity(BaseModel):
     platform_label: str
     platform_class: str
     platform_operator: str
+
+
+class VesselIdentity(BaseModel):
+    """
+    Curated identity of the deployment's support vessel.
+
+    Attributes
+    ----------
+    vessel_name: Support vessel name (e.g. ``"RV Linnaeus"``).
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    vessel_name: str
+
+
+class DeploymentPlatformSection(BaseModel):
+    """
+    The deployment platform's curated identity and its sensor roster.
+
+    The roster is derived from the SEABED system config at describe time;
+    ``identity`` and the sensors' curated slots are filled by enrichment.
+
+    Sensor extrinsics in this section are expressed in the vehicle (SNAME)
+    body frame, unlike ``DeploymentVesselSection``, whose poses are in the
+    ship reference frame.
+
+    Attributes
+    ----------
+    identity: Curated platform identity; ``None`` until enrichment fills it.
+    sensors: One entry per configured platform sensor.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    identity: PlatformIdentity | None = None
+    sensors: list[PlatformSensor] = Field(default_factory=list)
+
+
+class DeploymentVesselSection(BaseModel):
+    """
+    The support vessel's curated identity and its sensor roster.
+
+    Populated by a later enrichment process from the curated USBL extrinsics
+    catalog. Not derivable from the deployment data files: the support vessel
+    is topside, and nothing in the system config names it.
+
+    Attributes
+    ----------
+    identity: Curated vessel identity; ``None`` until enrichment fills it.
+    sensors: One entry per curated vessel sensor (USBL transceiver, ship GPS,
+        ship attitude sensor); empty until enrichment fills it.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    identity: VesselIdentity | None = None
+    sensors: list[VesselSensor] = Field(default_factory=list)
 
 
 class DeploymentSystemSection(BaseModel):
@@ -182,25 +250,24 @@ class DeploymentDescriptor(BaseModel):
     ----------
     deployment_label: Deployment identifier in ``<GEOHASH>_<DATETIME>`` format.
     deployment_datetime: Deployment datetime.
-    deployment_platform: Squidle+ platform name for this deployment.
     metadata: Collected deployment metadata.
     files: Inventory of the deployment's files, keyed by role.
     telemetry: Message topics observed in the RAW AUV logs.
-    sensors: The deployment's configured sensor roster.
+    platform: The platform's curated identity and its sensor roster.
     system: The vehicle's identity and logging setup.
-    platform: Curated platform identity; ``None`` until enrichment fills it.
+    vessel: The support vessel's curated identity and its sensor roster;
+        ``None`` until enrichment fills it.
     """
 
     model_config = ConfigDict(frozen=True)
 
     deployment_label: str
     deployment_datetime: datetime
-    deployment_platform: str
 
     metadata: DeploymentMetadata
     files: DeploymentFileSection
     telemetry: DeploymentTelemetrySection
-    sensors: DeploymentSensorSection
+    platform: DeploymentPlatformSection
     system: DeploymentSystemSection
 
-    platform: PlatformIdentity | None = None
+    vessel: DeploymentVesselSection | None = None

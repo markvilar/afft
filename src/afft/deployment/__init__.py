@@ -3,13 +3,16 @@
 from .descriptor import (
     DeploymentDescriptor as DeploymentDescriptor,
     DeploymentFileSection as DeploymentFileSection,
-    DeploymentSensor as DeploymentSensor,
-    DeploymentSensorSection as DeploymentSensorSection,
+    DeploymentPlatformSection as DeploymentPlatformSection,
     DeploymentSystemSection as DeploymentSystemSection,
     DeploymentTelemetrySection as DeploymentTelemetrySection,
+    DeploymentVesselSection as DeploymentVesselSection,
     PlatformIdentity as PlatformIdentity,
+    PlatformSensor as PlatformSensor,
     SensorExtrinsics as SensorExtrinsics,
     SensorIdentity as SensorIdentity,
+    VesselIdentity as VesselIdentity,
+    VesselSensor as VesselSensor,
 )
 from .files import (
     DeploymentFiles as DeploymentFiles,
