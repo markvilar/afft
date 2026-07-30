@@ -11,12 +11,26 @@ class SensorIdentity(BaseModel):
     """
     Curated identity of a sensor — vendor, product, and label.
 
-    Populated by a later enrichment process; the fields are finalized there.
-    Expected to hold a human-friendly label (e.g. ``"Teledyne RDI Workhorse
-    Navigator 1200"``) plus vendor and product metadata.
+    Populated by a later enrichment process from the curated deployment
+    catalog. Vendor and product stay separate from the free-text label so they
+    remain queryable; either is empty where the hardware has no published
+    record.
+
+    Attributes
+    ----------
+    label: Human-readable sensor name (e.g. ``"Teledyne RDI Work Horse
+        Navigator DVL"``).
+    vendor: Manufacturer (e.g. ``"Teledyne RDI"``).
+    product: Product name (e.g. ``"Work Horse Navigator"``).
+    type: Sensor type (e.g. ``"dvl"``).
     """
 
     model_config = ConfigDict(frozen=True)
+
+    label: str
+    vendor: str
+    product: str
+    type: str
 
 
 class SensorExtrinsics(BaseModel):
