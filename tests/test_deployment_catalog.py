@@ -131,11 +131,29 @@ def test_rotations_carry_degree_comments(tmp_path: Path) -> None:
     assert "# rotation in degrees: 0.000, 180.000, -90.000" in path.read_text()
 
 
+def test_record_tables_carry_section_banners(tmp_path: Path) -> None:
+    path = tmp_path / "catalog.toml"
+
+    write_deployment_catalog(path, _build_catalog())
+
+    content = path.read_text()
+    for title in (
+        "Sensors",
+        "Platform profiles",
+        "Vessel profiles",
+        "Deployment platforms",
+        "Deployment vessels",
+    ):
+        assert f"# {title}\n" in content
+
+
 def test_empty_catalog_round_trips(tmp_path: Path) -> None:
     path = tmp_path / "catalog.toml"
 
     write_deployment_catalog(path, DeploymentCatalog())
 
+    # An empty table gets no banner, so an empty catalog writes an empty file.
+    assert path.read_text() == ""
     assert read_deployment_catalog(path) == DeploymentCatalog()
 
 

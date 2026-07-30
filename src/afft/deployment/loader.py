@@ -203,7 +203,9 @@ def write_deployment_catalog(path: Path, catalog: DeploymentCatalog) -> None:
 
     Emitted by hand rather than by a TOML encoder so that rotation values,
     which are stated in radians, carry their degree equivalents as trailing
-    comments — the one place TOML permits a comment on a sensor entry.
+    comments — the one place TOML permits a comment on a sensor entry. Each
+    record table is introduced by a banner, so that a file long enough to
+    scroll stays navigable.
 
     Arguments
     ---------
@@ -212,6 +214,8 @@ def write_deployment_catalog(path: Path, catalog: DeploymentCatalog) -> None:
     """
     blocks: list[str] = []
 
+    if catalog.sensors:
+        blocks.append(_section_banner("Sensors"))
     for sensor in catalog.sensors:
         blocks.append(
             "[[sensors]]\n"
@@ -222,6 +226,8 @@ def write_deployment_catalog(path: Path, catalog: DeploymentCatalog) -> None:
             f"type = {_toml_string(sensor.type)}\n"
         )
 
+    if catalog.platform_profiles:
+        blocks.append(_section_banner("Platform profiles"))
     for platform_profile in catalog.platform_profiles:
         blocks.append(
             "[[platform_profiles]]\n"
@@ -233,6 +239,8 @@ def write_deployment_catalog(path: Path, catalog: DeploymentCatalog) -> None:
             f"{_format_profile_sensors(platform_profile.sensors)}"
         )
 
+    if catalog.vessel_profiles:
+        blocks.append(_section_banner("Vessel profiles"))
     for vessel_profile in catalog.vessel_profiles:
         blocks.append(
             "[[vessel_profiles]]\n"
@@ -241,6 +249,8 @@ def write_deployment_catalog(path: Path, catalog: DeploymentCatalog) -> None:
             f"{_format_profile_sensors(vessel_profile.sensors)}"
         )
 
+    if catalog.deployment_platforms:
+        blocks.append(_section_banner("Deployment platforms"))
     for platform_entry in catalog.deployment_platforms:
         blocks.append(
             "[[deployment_platforms]]\n"
@@ -248,6 +258,8 @@ def write_deployment_catalog(path: Path, catalog: DeploymentCatalog) -> None:
             f"platform_profile = {_toml_string(platform_entry.platform_profile)}\n"
         )
 
+    if catalog.deployment_vessels:
+        blocks.append(_section_banner("Deployment vessels"))
     for vessel_entry in catalog.deployment_vessels:
         blocks.append(
             "[[deployment_vessels]]\n"
@@ -256,6 +268,12 @@ def write_deployment_catalog(path: Path, catalog: DeploymentCatalog) -> None:
         )
 
     path.write_text("\n".join(blocks))
+
+
+def _section_banner(title: str) -> str:
+    """Format a record table's banner comment."""
+    rule: str = "# " + "-" * 86
+    return f"{rule}\n# {title}\n{rule}\n"
 
 
 def _toml_string(value: str) -> str:

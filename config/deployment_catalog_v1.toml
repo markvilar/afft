@@ -21,6 +21,10 @@
 # uncurated: nothing downstream consumes them, and MP_INPUT is not a sensor.
 # Roster keys with no entry here are simply left unenriched.
 
+# --------------------------------------------------------------------------------------
+# Sensors
+# --------------------------------------------------------------------------------------
+
 [[sensors]]
 key = "camera_prosilica"
 label = "AVT Prosilica GC1380 stereo camera"
@@ -111,6 +115,10 @@ label = "Vehicle battery pack"
 vendor = ""
 product = ""
 type = "battery"
+
+# --------------------------------------------------------------------------------------
+# Platform profiles
+# --------------------------------------------------------------------------------------
 
 [[platform_profiles]]
 key = "2009_auv_sirius"
@@ -261,6 +269,10 @@ sensors = [
     { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.037314835001888, roty = -0.0065389806502882, rotz = 1.5487628789420478 } },  # rotation in degrees: -2.138, -0.375, 88.738
 ]
 
+# --------------------------------------------------------------------------------------
+# Vessel profiles
+# --------------------------------------------------------------------------------------
+
 [[vessel_profiles]]
 key = "200906_rv_challenger"
 vessel_name = "RV Challenger"
@@ -394,6 +406,10 @@ sensors = [
     { key = "USBL", identity = "usbl_unrecorded", extrinsics = { locx = -9.4, locy = -3.72, locz = 7.49, rotx = 0.0, roty = 0.23, rotz = -0.21 } },  # rotation in degrees: 0.000, 13.178, -12.032
 ]
 
+# --------------------------------------------------------------------------------------
+# Deployment platforms
+# --------------------------------------------------------------------------------------
+
 [[deployment_platforms]]
 deployment_label = "r29mrd5h_20090612_225306"
 platform_profile = "2009_auv_sirius"
@@ -461,6 +477,10 @@ platform_profile = "2014_auv_sirius"
 [[deployment_platforms]]
 deployment_label = "qdchdmy1_20170525_234624"
 platform_profile = "2017_auv_sirius"
+
+# --------------------------------------------------------------------------------------
+# Deployment vessels
+# --------------------------------------------------------------------------------------
 
 [[deployment_vessels]]
 deployment_label = "qd61g27j_20100421_022145"
