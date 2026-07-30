@@ -22,7 +22,7 @@ from afft.utils.log import logger
 from .builders import (
     build_deployment_file_section,
     build_deployment_metadata,
-    build_sensor_section,
+    build_platform_section,
     build_system_section,
     build_telemetry_section,
 )
@@ -158,8 +158,8 @@ def describe_deployment(
     system_config: SeabedSystemConfig = parse_system_config(files.system_config)
     parse_localizer_config(files.localizer_config)
 
-    sensors = build_sensor_section(system_config)
-    if not sensors.sensors:
+    platform = build_platform_section(system_config)
+    if not platform.sensors:
         diagnostics.warning(
             deployment_label, "empty sensor roster in the system config"
         )
@@ -167,13 +167,12 @@ def describe_deployment(
     return DeploymentDescriptor(
         deployment_label=deployment_label,
         deployment_datetime=deployment_datetime,
-        deployment_platform="",
         metadata=build_deployment_metadata(
             files, deployment_label, diagnostics
         ),
         files=build_deployment_file_section(files),
         telemetry=build_telemetry_section(files, deployment_label, diagnostics),
-        sensors=sensors,
+        platform=platform,
         system=build_system_section(system_config),
     )
 

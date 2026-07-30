@@ -3,7 +3,7 @@
 from .builders import (
     build_deployment_file_section as build_deployment_file_section,
     build_deployment_metadata as build_deployment_metadata,
-    build_sensor_section as build_sensor_section,
+    build_platform_section as build_platform_section,
     build_system_section as build_system_section,
     build_telemetry_section as build_telemetry_section,
 )
