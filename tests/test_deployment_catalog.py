@@ -131,20 +131,41 @@ def test_rotations_carry_degree_comments(tmp_path: Path) -> None:
     assert "# rotation in degrees: 0.000, 180.000, -90.000" in path.read_text()
 
 
-def test_record_tables_carry_section_banners(tmp_path: Path) -> None:
+def test_mapping_tables_are_written_sorted_by_deployment_label(
+    tmp_path: Path,
+) -> None:
+    catalog = _build_catalog()
+    unsorted = DeploymentCatalog(
+        sensors=catalog.sensors,
+        platform_profiles=catalog.platform_profiles,
+        vessel_profiles=catalog.vessel_profiles,
+        deployment_platforms=[
+            CatalogDeploymentPlatform(
+                deployment_label="r7jjskxq_20101023_210332",
+                platform_profile="2010_auv_sirius",
+            ),
+            *catalog.deployment_platforms,
+        ],
+        deployment_vessels=[
+            CatalogDeploymentVessel(
+                deployment_label="r7jjskxq_20101023_210332",
+                vessel_profile="201004_rv_linnaeus",
+            ),
+            *catalog.deployment_vessels,
+        ],
+    )
     path = tmp_path / "catalog.toml"
 
-    write_deployment_catalog(path, _build_catalog())
+    write_deployment_catalog(path, unsorted)
 
-    content = path.read_text()
-    for title in (
-        "Sensors",
-        "Platform profiles",
-        "Vessel profiles",
-        "Deployment platforms",
-        "Deployment vessels",
-    ):
-        assert f"# {title}\n" in content
+    written = read_deployment_catalog(path)
+    assert [
+        entry.deployment_label for entry in written.deployment_platforms
+    ] == ["qdch0ftq_20100428_020202", "r7jjskxq_20101023_210332"]
+    assert [entry.deployment_label for entry in written.deployment_vessels] == [
+        "qdch0ftq_20100428_020202",
+        "r7jjskxq_20101023_210332",
+    ]
 
 
 def test_empty_catalog_round_trips(tmp_path: Path) -> None:
@@ -152,7 +173,6 @@ def test_empty_catalog_round_trips(tmp_path: Path) -> None:
 
     write_deployment_catalog(path, DeploymentCatalog())
 
-    # An empty table gets no banner, so an empty catalog writes an empty file.
     assert path.read_text() == ""
     assert read_deployment_catalog(path) == DeploymentCatalog()
 

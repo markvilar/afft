@@ -1,6 +1,6 @@
 """Package for AUV deployment configuration."""
 
-from .catalog import (
+from .catalog_types import (
     CatalogDeploymentPlatform as CatalogDeploymentPlatform,
     CatalogDeploymentVessel as CatalogDeploymentVessel,
     CatalogPlatformProfile as CatalogPlatformProfile,
@@ -10,7 +10,11 @@ from .catalog import (
     CatalogVesselProfile as CatalogVesselProfile,
     DeploymentCatalog as DeploymentCatalog,
 )
-from .descriptor import (
+from .catalog_io import (
+    read_deployment_catalog as read_deployment_catalog,
+    write_deployment_catalog as write_deployment_catalog,
+)
+from .descriptor_types import (
     DeploymentDescriptor as DeploymentDescriptor,
     DeploymentFileSection as DeploymentFileSection,
     DeploymentPlatformSection as DeploymentPlatformSection,
@@ -24,17 +28,17 @@ from .descriptor import (
     VesselIdentity as VesselIdentity,
     VesselSensor as VesselSensor,
 )
+from .descriptor_io import (
+    read_deployment_descriptors as read_deployment_descriptors,
+    write_deployment_descriptors as write_deployment_descriptors,
+)
 from .files import (
     DeploymentFiles as DeploymentFiles,
     collect_deployment_files as collect_deployment_files,
 )
 from .loader import (
     load_deployment_config as load_deployment_config,
-    read_deployment_catalog as read_deployment_catalog,
-    read_deployment_descriptors as read_deployment_descriptors,
     read_deployment_info as read_deployment_info,
-    write_deployment_catalog as write_deployment_catalog,
-    write_deployment_descriptors as write_deployment_descriptors,
 )
 from .types import (
     DeploymentConfig as DeploymentConfig,

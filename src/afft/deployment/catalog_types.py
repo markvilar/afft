@@ -148,10 +148,8 @@ class CatalogDeploymentVessel(BaseModel):
 
 class DeploymentCatalog(BaseModel):
     """
-    Curated records that enrichment resolves deployment descriptors against.
-
-    A catalog of the platforms, vessels, and sensors deployments are enriched
-    from — not a catalog of the deployments themselves.
+    The platforms, vessels, and sensors that enrichment resolves deployment
+    descriptors against — not a catalog of the deployments themselves.
 
     Attributes
     ----------
@@ -179,12 +177,9 @@ class DeploymentCatalog(BaseModel):
     @model_validator(mode="after")
     def validate_catalog(self) -> Self:
         """
-        Check the whole-file rules a single record cannot enforce.
-
-        Keys must be unique within each record table, each deployment may be
-        assigned at most one profile of each kind, and every cross-reference
-        must resolve. A dangling reference is a curation error rather than a
-        missing record, so it fails at load.
+        Check the whole-file rules a single record cannot enforce: unique keys
+        per record table, one assignment per deployment, and every
+        cross-reference resolving.
 
         Returns
         -------
