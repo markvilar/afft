@@ -7,7 +7,7 @@ from typing import Any
 
 from afft.io.config_io import read_config
 
-from .descriptor import DeploymentDescriptor
+from .descriptor_types import DeploymentDescriptor
 
 
 def read_deployment_descriptors(path: Path) -> list[DeploymentDescriptor]:

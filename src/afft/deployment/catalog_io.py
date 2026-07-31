@@ -8,7 +8,7 @@ from typing import Any
 
 from afft.io.config_io import read_config
 
-from .catalog import CatalogProfileSensor, DeploymentCatalog
+from .catalog_types import CatalogProfileSensor, DeploymentCatalog
 
 
 def read_deployment_catalog(path: Path) -> DeploymentCatalog:

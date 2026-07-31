@@ -1,6 +1,6 @@
 """Package for AUV deployment configuration."""
 
-from .catalog import (
+from .catalog_types import (
     CatalogDeploymentPlatform as CatalogDeploymentPlatform,
     CatalogDeploymentVessel as CatalogDeploymentVessel,
     CatalogPlatformProfile as CatalogPlatformProfile,
@@ -14,7 +14,7 @@ from .catalog_io import (
     read_deployment_catalog as read_deployment_catalog,
     write_deployment_catalog as write_deployment_catalog,
 )
-from .descriptor import (
+from .descriptor_types import (
     DeploymentDescriptor as DeploymentDescriptor,
     DeploymentFileSection as DeploymentFileSection,
     DeploymentPlatformSection as DeploymentPlatformSection,

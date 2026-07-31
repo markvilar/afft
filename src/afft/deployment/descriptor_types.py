@@ -9,17 +9,13 @@ from .types import DeploymentMetadata
 
 class SensorIdentity(BaseModel):
     """
-    Curated identity of a sensor — vendor, product, and label.
-
-    Populated by a later enrichment process from the curated deployment
-    catalog. Vendor and product stay separate from the free-text label so they
-    remain queryable; either is empty where the hardware has no published
+    Curated identity of a sensor, filled by enrichment from the deployment
+    catalog. Vendor and product are empty where the hardware has no published
     record.
 
     Attributes
     ----------
-    label: Human-readable sensor name (e.g. ``"Teledyne RDI Work Horse
-        Navigator DVL"``).
+    label: Human-readable sensor name.
     vendor: Manufacturer (e.g. ``"Teledyne RDI"``).
     product: Product name (e.g. ``"Work Horse Navigator"``).
     type: Sensor type (e.g. ``"dvl"``).
@@ -36,11 +32,8 @@ class SensorIdentity(BaseModel):
 class SensorExtrinsics(BaseModel):
     """
     A sensor's mounting pose, in the reference frame of the body it is mounted
-    on — stated by the descriptor section the sensor lives in.
-
-    Populated by a later enrichment process that reconciles the localizer
-    config's pose families with the system-config-derived sensor roster via a
-    curated alias table (e.g. localizer ``DVL`` -> syscfg ``RDI``).
+    on — stated by the descriptor section the sensor lives in. Filled by
+    enrichment.
 
     Attributes
     ----------
@@ -68,11 +61,10 @@ class PlatformSensor(BaseModel):
 
     Attributes
     ----------
-    key: Terse sensor identifier and RAW AUV message topic prefix (e.g.
-        ``"RDI"``); also the enrichment catalog lookup key.
+    key: Terse sensor identifier (e.g. ``"RDI"``); the catalog lookup key.
     identity: Curated sensor metadata; ``None`` until enrichment fills it.
-    extrinsics: Sensor mounting pose in the vehicle (SNAME) body frame;
-        ``None`` until enrichment fills it from the localizer config.
+    extrinsics: Mounting pose in the vehicle (SNAME) body frame; ``None``
+        until enrichment fills it.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -84,18 +76,15 @@ class PlatformSensor(BaseModel):
 
 class VesselSensor(BaseModel):
     """
-    A sensor mounted on the deployment's support vessel.
-
-    Distinct from ``PlatformSensor`` because its ``extrinsics`` are expressed
-    in the ship reference frame rather than the vehicle (SNAME) body frame.
+    A sensor mounted on the deployment's support vessel, its pose in the ship
+    reference frame rather than the vehicle (SNAME) body frame.
 
     Attributes
     ----------
-    key: Terse sensor identifier (e.g. ``"USBL"``); also the enrichment catalog
-        lookup key.
+    key: Terse sensor identifier (e.g. ``"USBL"``); the catalog lookup key.
     identity: Curated sensor metadata; ``None`` until enrichment fills it.
-    extrinsics: Sensor mounting pose in the ship reference frame; ``None``
-        until enrichment fills it from the curated USBL extrinsics catalog.
+    extrinsics: Mounting pose in the ship reference frame; ``None`` until
+        enrichment fills it.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -107,12 +96,9 @@ class VesselSensor(BaseModel):
 
 class PlatformIdentity(BaseModel):
     """
-    Curated identity of the deployment's platform.
-
-    Populated by a later enrichment process from a curated platform catalog.
-    Not derivable from the deployment data files — only ``platform_class`` has
-    a counterpart there (``system.vehicle_name``), which is the catalog's
-    natural lookup key.
+    Curated identity of the deployment's platform, filled by enrichment. Only
+    ``platform_class`` has a counterpart in the deployment data files, as
+    ``system.vehicle_name``.
 
     Attributes
     ----------
@@ -147,12 +133,9 @@ class DeploymentPlatformSection(BaseModel):
     """
     The deployment platform's curated identity and its sensor roster.
 
-    The roster is derived from the SEABED system config at describe time;
-    ``identity`` and the sensors' curated slots are filled by enrichment.
-
-    Sensor extrinsics in this section are expressed in the vehicle (SNAME)
-    body frame, unlike ``DeploymentVesselSection``, whose poses are in the
-    ship reference frame.
+    The roster comes from the SEABED system config at describe time; the
+    curated slots are filled by enrichment. Poses are in the vehicle (SNAME)
+    body frame.
 
     Attributes
     ----------
@@ -170,15 +153,14 @@ class DeploymentVesselSection(BaseModel):
     """
     The support vessel's curated identity and its sensor roster.
 
-    Populated by a later enrichment process from the curated USBL extrinsics
-    catalog. Not derivable from the deployment data files: the support vessel
-    is topside, and nothing in the system config names it.
+    Filled entirely by enrichment: the vessel is topside, so nothing in the
+    deployment data names it. Poses are in the ship reference frame.
 
     Attributes
     ----------
     identity: Curated vessel identity; ``None`` until enrichment fills it.
-    sensors: One entry per curated vessel sensor (USBL transceiver, ship GPS,
-        ship attitude sensor); empty until enrichment fills it.
+    sensors: One entry per curated vessel sensor; empty until enrichment fills
+        it.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -213,9 +195,9 @@ class DeploymentFileSection(BaseModel):
     """
     Flat inventory of a deployment's files, keyed by role.
 
-    Each field is a role; its value is the matching file paths relative to the
-    deployment root, sorted. A role with no matching files is an empty list, so
-    every deployment carries the full role vocabulary.
+    Each field is a role holding the matching paths relative to the deployment
+    root, sorted. A role with no files is an empty list, so every deployment
+    carries the full role vocabulary.
 
     Attributes
     ----------
