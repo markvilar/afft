@@ -411,19 +411,7 @@ sensors = [
 # --------------------------------------------------------------------------------------
 
 [[deployment_platforms]]
-deployment_label = "r29mrd5h_20090612_225306"
-platform_profile = "2009_auv_sirius"
-
-[[deployment_platforms]]
 deployment_label = "qdch0ftq_20100428_020202"
-platform_profile = "2010_auv_sirius"
-
-[[deployment_platforms]]
-deployment_label = "r23685bc_20100605_021022"
-platform_profile = "2010_auv_sirius"
-
-[[deployment_platforms]]
-deployment_label = "r7jjskxq_20101023_210332"
 platform_profile = "2010_auv_sirius"
 
 [[deployment_platforms]]
@@ -431,27 +419,7 @@ deployment_label = "qdch0ftq_20110415_020103"
 platform_profile = "2011_auv_sirius"
 
 [[deployment_platforms]]
-deployment_label = "qdchdmy1_20110416_005411"
-platform_profile = "2011_auv_sirius"
-
-[[deployment_platforms]]
-deployment_label = "r29mrd5h_20110612_033752"
-platform_profile = "2011_auv_sirius"
-
-[[deployment_platforms]]
 deployment_label = "qdch0ftq_20120430_002423"
-platform_profile = "2012_auv_sirius"
-
-[[deployment_platforms]]
-deployment_label = "qdchdmy1_20120501_071203"
-platform_profile = "2012_auv_sirius"
-
-[[deployment_platforms]]
-deployment_label = "r23685bc_20120530_233021"
-platform_profile = "2012_auv_sirius"
-
-[[deployment_platforms]]
-deployment_label = "r7jjskxq_20121013_060425"
 platform_profile = "2012_auv_sirius"
 
 [[deployment_platforms]]
@@ -459,24 +427,56 @@ deployment_label = "qdch0ftq_20130406_023610"
 platform_profile = "2013_auv_sirius"
 
 [[deployment_platforms]]
+deployment_label = "qdchdmy1_20110416_005411"
+platform_profile = "2011_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdchdmy1_20120501_071203"
+platform_profile = "2012_auv_sirius"
+
+[[deployment_platforms]]
 deployment_label = "qdchdmy1_20130406_081713"
 platform_profile = "2013_auv_sirius"
 
 [[deployment_platforms]]
-deployment_label = "r29mrd5h_20130611_002419"
-platform_profile = "2013_auv_sirius"
+deployment_label = "qdchdmy1_20170525_234624"
+platform_profile = "2017_auv_sirius"
 
 [[deployment_platforms]]
-deployment_label = "r7jjskxq_20131022_004934"
-platform_profile = "2013_auv_sirius"
+deployment_label = "r23685bc_20100605_021022"
+platform_profile = "2010_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r23685bc_20120530_233021"
+platform_profile = "2012_auv_sirius"
 
 [[deployment_platforms]]
 deployment_label = "r23685bc_20140616_225022"
 platform_profile = "2014_auv_sirius"
 
 [[deployment_platforms]]
-deployment_label = "qdchdmy1_20170525_234624"
-platform_profile = "2017_auv_sirius"
+deployment_label = "r29mrd5h_20090612_225306"
+platform_profile = "2009_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd5h_20110612_033752"
+platform_profile = "2011_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd5h_20130611_002419"
+platform_profile = "2013_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r7jjskxq_20101023_210332"
+platform_profile = "2010_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r7jjskxq_20121013_060425"
+platform_profile = "2012_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r7jjskxq_20131022_004934"
+platform_profile = "2013_auv_sirius"
 
 # --------------------------------------------------------------------------------------
 # Deployment vessels

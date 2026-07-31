@@ -230,14 +230,17 @@ def build_deployment_platforms(
 
     Returns
     -------
-    One assignment per deployment, in descriptor order.
+    One assignment per deployment, sorted by deployment label to match the
+    order the catalog is written in.
     """
     return [
         CatalogDeploymentPlatform(
             deployment_label=descriptor.deployment_label,
             platform_profile=profile_keys[descriptor.deployment_label],
         )
-        for descriptor in descriptors
+        for descriptor in sorted(
+            descriptors, key=lambda item: item.deployment_label
+        )
     ]
 
 
@@ -255,14 +258,17 @@ def build_deployment_vessels(
 
     Returns
     -------
-    One assignment per deployment that carries USBL logs, in descriptor order.
+    One assignment per deployment that carries USBL logs, sorted by deployment
+    label to match the order the catalog is written in.
     """
     return [
         CatalogDeploymentVessel(
             deployment_label=descriptor.deployment_label,
             vessel_profile=profile_keys[descriptor.deployment_label],
         )
-        for descriptor in descriptors
+        for descriptor in sorted(
+            descriptors, key=lambda item: item.deployment_label
+        )
         if descriptor.deployment_label in profile_keys
     ]
 

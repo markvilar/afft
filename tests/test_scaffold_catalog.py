@@ -149,16 +149,17 @@ def test_deployments_without_usbl_logs_get_no_vessel(
 
     catalog = scaffold_catalog(descriptors, diagnostics)
 
+    # Both tables are sorted by deployment label, not left in descriptor order.
     assert [
         entry.deployment_label for entry in catalog.deployment_platforms
     ] == [
-        "qdch0ftq_20100428_020202",
         "qd61g27j_20100421_022145",
+        "qdch0ftq_20100428_020202",
         "qdch0ftq_20110415_020103",
     ]
     assert [entry.deployment_label for entry in catalog.deployment_vessels] == [
-        "qdch0ftq_20100428_020202",
         "qd61g27j_20100421_022145",
+        "qdch0ftq_20100428_020202",
     ]
     assert [warning.deployment_label for warning in diagnostics.warnings] == [
         "qdch0ftq_20110415_020103"
