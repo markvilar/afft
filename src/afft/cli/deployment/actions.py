@@ -2,6 +2,7 @@
 
 from pathlib import Path
 
+from afft.deployment import EnrichmentSection
 from afft.tasks.deployment_catalog import (
     ScaffoldCatalogCommand,
     run_scaffold_catalog,
@@ -10,6 +11,10 @@ from afft.tasks.deployment_descriptor import (
     DescribeDeploymentCommand,
     DescribeDeploymentResult,
     run_describe_deployment,
+)
+from afft.tasks.deployment_enrichment import (
+    EnrichDescriptorCommand,
+    run_enrich_descriptor,
 )
 
 
@@ -50,3 +55,26 @@ def dispatch_scaffold_catalog(
         verbose=verbose,
     )
     run_scaffold_catalog(command)
+
+
+def dispatch_enrich_descriptor(
+    input_file: str | Path,
+    catalog_file: str | Path,
+    output_file: str | Path,
+    section: str = EnrichmentSection.ALL,
+    verbose: bool = False,
+) -> None:
+    """
+    Enrich deployment descriptors from a curated deployment catalog.
+
+    Exits zero whatever the diagnostics hold: a deployment the catalog assigns
+    no profile keeps its unfilled slots rather than failing the run.
+    """
+    command = EnrichDescriptorCommand(
+        input_file=Path(input_file),
+        catalog_file=Path(catalog_file),
+        output_file=Path(output_file),
+        section=EnrichmentSection(section),
+        verbose=verbose,
+    )
+    run_enrich_descriptor(command)

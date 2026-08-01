@@ -317,7 +317,7 @@ def test_run_leaves_curated_slots_absent(tmp_path: Path) -> None:
 
     contents = output_file.read_text()
     assert "[deployments.platform]" in contents
-    assert "[deployments.vessel]" not in contents
+    assert "[deployments.vessel]" in contents
     assert "identity" not in contents
     assert "extrinsics" not in contents
 

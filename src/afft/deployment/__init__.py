@@ -32,6 +32,14 @@ from .descriptor_io import (
     read_deployment_descriptors as read_deployment_descriptors,
     write_deployment_descriptors as write_deployment_descriptors,
 )
+from .enrichment import (
+    DeploymentCatalogIndex as DeploymentCatalogIndex,
+    DeploymentEnrichment as DeploymentEnrichment,
+    EnrichmentSection as EnrichmentSection,
+    enrich_descriptor as enrich_descriptor,
+    enrich_platform_section as enrich_platform_section,
+    enrich_vessel_section as enrich_vessel_section,
+)
 from .files import (
     DeploymentFiles as DeploymentFiles,
     collect_deployment_files as collect_deployment_files,
