@@ -1,0 +1,1575 @@
+[[deployments]]
+deployment_label = "qdch0ftq_20100428_020202"
+deployment_datetime = 2010-04-28 02:02:02+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "geebank_16_15m_out"
+acfr_campaign_label = "WA201004"
+acfr_platform_label = ""
+origin_latitude = -28.81372
+origin_longitude = 113.94725
+magnetic_variation = -1.16
+
+[deployments.files]
+raw_messages = [
+    "messages/20100428_0202.RAW.auv",
+    "messages/20100428_0300.RAW.auv",
+    "messages/20100428_0400.RAW.auv",
+]
+system_config = [
+    "messages/20100428_0202.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20100428_0202.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20100428_0202.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20100428_0208.geebank_16_15m_out.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20100428/scott20090730_merge2.calib",
+    "camera_calibration/renav20120603/bundlestereo.calib",
+]
+camera_poses = [
+    "camera_poses/renav20100428/stereo_pose_est.data",
+    "camera_poses/renav20100428_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20100428-011723.txt",
+    "usbl/log-20100428-012839.txt",
+    "usbl/log-20100428-035621.txt",
+    "usbl/log-20100428-040229.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "BATT",
+    "ECOPUCK",
+    "GPS_GSV",
+    "GPS_RMC",
+    "LQMODEM",
+    "OAS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "OAS" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/files1/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+]
+
+[[deployments]]
+deployment_label = "qdch0ftq_20110415_020103"
+deployment_datetime = 2011-04-15 02:01:03+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "geebank_24_15m_out"
+acfr_campaign_label = "WA201104"
+acfr_platform_label = ""
+origin_latitude = -28.81372
+origin_longitude = 113.94725
+magnetic_variation = -1.12
+
+[deployments.files]
+raw_messages = [
+    "messages/20110415_0201.RAW.auv",
+    "messages/20110415_0300.RAW.auv",
+    "messages/20110415_0400.RAW.auv",
+]
+system_config = [
+    "messages/20110415_0201.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20110415_0201.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20110415_0201.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20110415_0201.geebank_24_15m_out.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20110415/usyd20110401opencv100big.calib",
+    "camera_calibration/renav20110612/usyd20110401opencv100big.calib",
+    "camera_calibration/renav20111223/usyd20110401opencv100big.calib",
+]
+camera_poses = [
+    "camera_poses/renav20110415/stereo_pose_est.data",
+    "camera_poses/renav20110415_stereo_pose_est.data",
+    "camera_poses/renav20111223/stereo_pose_est.data",
+    "camera_poses/renav20111223_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20110414-080014.txt",
+    "usbl/log-20110414-080157.txt",
+    "usbl/log-20110415-014036.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "ECOPUCK",
+    "GPS_GSV",
+    "GPS_RMC",
+    "LQMODEM",
+    "OAS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "OAS" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/files1/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+]
+
+[[deployments]]
+deployment_label = "qdch0ftq_20120430_002423"
+deployment_datetime = 2012-04-30 00:24:23+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "geebank_34_15m_out"
+acfr_campaign_label = "WA201204"
+acfr_platform_label = ""
+origin_latitude = -28.81372
+origin_longitude = 113.94725
+magnetic_variation = -1.07
+
+[deployments.files]
+raw_messages = [
+    "messages/20120430_0024.RAW.auv",
+    "messages/20120430_0100.RAW.auv",
+    "messages/20120430_0200.RAW.auv",
+    "messages/20120430_0300.RAW.auv",
+]
+system_config = [
+    "messages/20120430_0024.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20120430_0024.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20120430_0024.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20120430_0026.geebank_34_15m_out.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20121023/camera_20120207_field12.calib",
+]
+camera_poses = [
+    "camera_poses/renav20121023/stereo_pose_est.data",
+    "camera_poses/renav20121023_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20120429-233948.txt",
+    "usbl/log-20120429-234022.txt",
+    "usbl/log-20120430-002623.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS_GSV",
+    "GPS_RMC",
+    "LQMODEM",
+    "OAS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT0" },
+    { key = "BATT1" },
+    { key = "BATT2" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "OAS" },
+    { key = "IMU" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/media/data/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+    "IMU",
+]
+
+[[deployments]]
+deployment_label = "qdch0ftq_20130406_023610"
+deployment_datetime = 2013-04-06 02:36:10+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "geebank_03_15m_out"
+acfr_campaign_label = "WA201304"
+acfr_platform_label = ""
+origin_latitude = -28.81372
+origin_longitude = 113.94725
+magnetic_variation = -1.03
+
+[deployments.files]
+raw_messages = [
+    "messages/20130406_0236.RAW.auv",
+    "messages/20130406_0300.RAW.auv",
+    "messages/20130406_0400.RAW.auv",
+    "messages/20130406_0500.RAW.auv",
+]
+system_config = [
+    "messages/20130406_0236.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20130406_0236.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20130406_0236.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20130406_0236.geebank_03_15m_out.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20130422/UsydPool10022013.calib",
+]
+camera_poses = [
+    "camera_poses/renav20130422/stereo_pose_est.data",
+    "camera_poses/renav20130422_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20130406-010454.txt",
+    "usbl/log-20130406-011204.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS_RMC",
+    "LQMODEM",
+    "MICRON",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT0" },
+    { key = "BATT1" },
+    { key = "BATT2" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "MICRON" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/media/data/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+    "IMU",
+]
+
+[[deployments]]
+deployment_label = "qdchdmy1_20110416_005411"
+deployment_datetime = 2011-04-16 00:54:11+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "snapperbank_27"
+acfr_campaign_label = "WA201104"
+acfr_platform_label = ""
+origin_latitude = -28.7066
+origin_longitude = 114.0115
+magnetic_variation = -1.05
+
+[deployments.files]
+raw_messages = [
+    "messages/20110416_0054.RAW.auv",
+    "messages/20110416_0100.RAW.auv",
+    "messages/20110416_0200.RAW.auv",
+    "messages/20110416_0300.RAW.auv",
+]
+system_config = [
+    "messages/20110416_0054.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20110416_0054.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20110416_0054.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20110416_0054.snapperbank_27.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20110416/usyd20110401opencv100big.calib",
+]
+camera_poses = [
+    "camera_poses/renav20110416/stereo_pose_est.data",
+    "camera_poses/renav20110416_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20110416-002340.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "ECOPUCK",
+    "GPS_GSV",
+    "GPS_RMC",
+    "LQMODEM",
+    "OAS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "OAS" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/files1/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+]
+
+[[deployments]]
+deployment_label = "qdchdmy1_20120501_071203"
+deployment_datetime = 2012-05-01 07:12:03+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "snapperbank_37"
+acfr_campaign_label = "WA201204"
+acfr_platform_label = ""
+origin_latitude = -28.7066
+origin_longitude = 114.0115
+magnetic_variation = -1.01
+
+[deployments.files]
+raw_messages = [
+    "messages/20120501_0712.RAW.auv",
+    "messages/20120501_0800.RAW.auv",
+    "messages/20120501_0900.RAW.auv",
+]
+system_config = [
+    "messages/20120501_0712.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20120501_0712.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20120501_0712.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20120501_0713.snapperbank_37.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20121023/camera_20120207_field12.calib",
+]
+camera_poses = [
+    "camera_poses/renav20121023/stereo_pose_est.data",
+    "camera_poses/renav20121023_stereo_pose_est.data",
+]
+usbl_logs = []
+
+[deployments.telemetry]
+topics = [
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS_GSV",
+    "GPS_RMC",
+    "LQMODEM",
+    "OAS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT0" },
+    { key = "BATT1" },
+    { key = "BATT2" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "OAS" },
+    { key = "IMU" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/media/data/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+    "IMU",
+]
+
+[[deployments]]
+deployment_label = "qdchdmy1_20130406_081713"
+deployment_datetime = 2013-04-06 08:17:13+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "snapperbank_05"
+acfr_campaign_label = "WA201304"
+acfr_platform_label = ""
+origin_latitude = -28.7066
+origin_longitude = 114.0115
+magnetic_variation = -0.97
+
+[deployments.files]
+raw_messages = [
+    "messages/20130406_0817.RAW.auv",
+    "messages/20130406_0900.RAW.auv",
+    "messages/20130406_1000.RAW.auv",
+]
+system_config = [
+    "messages/20130406_0817.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20130406_0817.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20130406_0817.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20130406_0817.snapperbank_05.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20130422/UsydPool10022013.calib",
+]
+camera_poses = [
+    "camera_poses/renav20130422/stereo_pose_est.data",
+    "camera_poses/renav20130422_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20130406-073750.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS_RMC",
+    "LQMODEM",
+    "MICRON",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT0" },
+    { key = "BATT1" },
+    { key = "BATT2" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "MICRON" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/media/data/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+    "IMU",
+]
+
+[[deployments]]
+deployment_label = "qdchdmy1_20170525_234624"
+deployment_datetime = 2017-05-25 23:46:24+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "SS11_snapperbank"
+acfr_campaign_label = "WA201705"
+acfr_platform_label = ""
+origin_latitude = -28.7066
+origin_longitude = 114.0115
+magnetic_variation = -0.79
+
+[deployments.files]
+raw_messages = [
+    "messages/20170525_2346.RAW.auv",
+    "messages/20170526_0000.RAW.auv",
+    "messages/20170526_0100.RAW.auv",
+    "messages/20170526_0200.RAW.auv",
+]
+system_config = [
+    "messages/20170525_2346.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20170525_2346.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20170525_2346.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20170525_2347.SS11_snapperbank.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20170526/usyd_pool_20170118.calib",
+]
+camera_poses = [
+    "camera_poses/renav20170526/stereo_pose_est.data",
+    "camera_poses/renav20170526_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20170525-234333.txt",
+    "usbl/log-20170525-234701.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "EVOLOGICS_FIX",
+    "GPS_GSV",
+    "GPS_RMC",
+    "MICRON_RETURNS",
+    "MICRON_TRACE",
+    "PAROSCI",
+    "RDI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_STBD" },
+    { key = "THR_VERT" },
+    { key = "BATT0" },
+    { key = "BATT1" },
+    { key = "BATT2" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "SEABIRD" },
+    { key = "MICRON" },
+    { key = "EVOLOGICS" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/media/data/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+    "IMU",
+    "MICRON",
+]
+
+[[deployments]]
+deployment_label = "r23685bc_20100605_021022"
+deployment_datetime = 2010-06-05 02:10:22+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "lanterns_15_deep"
+acfr_campaign_label = "Tasmania201006"
+acfr_platform_label = ""
+origin_latitude = -43.1475
+origin_longitude = 148.0046
+magnetic_variation = 15.34
+
+[deployments.files]
+raw_messages = [
+    "messages/20100605_0210.RAW.auv",
+    "messages/20100605_0300.RAW.auv",
+    "messages/20100605_0400.RAW.auv",
+    "messages/20100605_0500.RAW.auv",
+]
+system_config = [
+    "messages/20100605_0210.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20100605_0210.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20100605_0210.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20100605_0211.lanterns_15_deep.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20100605/ng2_scaled_baseline.calib",
+]
+camera_poses = [
+    "camera_poses/renav20100605/stereo_pose_est.data",
+    "camera_poses/renav20100605_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20100605-005939.txt",
+    "usbl/log-20100605-014520.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "BATT",
+    "ECOPUCK",
+    "GPS_GSV",
+    "GPS_RMC",
+    "LQMODEM",
+    "OAS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "OAS" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/files1/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+]
+
+[[deployments]]
+deployment_label = "r23685bc_20120530_233021"
+deployment_datetime = 2012-05-30 23:30:21+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "lanterns_10_deep"
+acfr_campaign_label = "Tasmania201205"
+acfr_platform_label = ""
+origin_latitude = -43.1475
+origin_longitude = 148.0046
+magnetic_variation = 15.38
+
+[deployments.files]
+raw_messages = [
+    "messages/20120530_2330.RAW.auv",
+    "messages/20120531_0000.RAW.auv",
+    "messages/20120531_0100.RAW.auv",
+    "messages/20120531_0200.RAW.auv",
+]
+system_config = [
+    "messages/20120530_2330.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20120530_2330.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20120530_2330.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20120530_2332.lanterns_10_deep.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20121023/camera_20120207_field12.calib",
+]
+camera_poses = [
+    "camera_poses/renav20121023/stereo_pose_est.data",
+    "camera_poses/renav20121023_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20120530-231147.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS_GSV",
+    "GPS_RMC",
+    "LQMODEM",
+    "OAS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT0" },
+    { key = "BATT1" },
+    { key = "BATT2" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "OAS" },
+    { key = "IMU" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/media/data/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+    "IMU",
+]
+
+[[deployments]]
+deployment_label = "r23685bc_20140616_225022"
+deployment_datetime = 2014-06-16 22:50:22+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "tas_13_lanterns_deep"
+acfr_campaign_label = "Tasmania201406"
+acfr_platform_label = ""
+origin_latitude = -43.1475
+origin_longitude = 148.0046
+magnetic_variation = 15.42
+
+[deployments.files]
+raw_messages = [
+    "messages/20140616_2250.RAW.auv",
+    "messages/20140616_2300.RAW.auv",
+    "messages/20140617_0000.RAW.auv",
+    "messages/20140617_0100.RAW.auv",
+]
+system_config = [
+    "messages/20140616_2250.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20140616_2250.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20140616_2250.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20140616_2250.tas_13_lanterns_deep.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20140618/USyd20140508.calib",
+]
+camera_poses = [
+    "camera_poses/renav20140618/stereo_pose_est.data",
+    "camera_poses/renav20140618_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20140616-225027.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS_RMC",
+    "LQMODEM",
+    "MICRON",
+    "MICRON_RETURNS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_STBD" },
+    { key = "THR_VERT" },
+    { key = "BATT0" },
+    { key = "BATT1" },
+    { key = "BATT2" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "SEABIRD" },
+    { key = "MICRON" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/media/data/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+    "IMU",
+]
+
+[[deployments]]
+deployment_label = "r29mrd5h_20090612_225306"
+deployment_datetime = 2009-06-12 22:53:06+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "st_helens_07_elephant_rock_deep"
+acfr_campaign_label = "Tasmania200906"
+acfr_platform_label = ""
+origin_latitude = 0.0
+origin_longitude = 0.0
+magnetic_variation = 0.0
+
+[deployments.files]
+raw_messages = [
+    "messages/20090612_2253.RAW.auv",
+    "messages/20090612_2300.RAW.auv",
+    "messages/20090613_0000.RAW.auv",
+]
+system_config = [
+    "messages/20090612_2253.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20090612_2253.SEABED.localiser.cfg",
+]
+magvar_config = []
+mission_log = [
+    "messages/20090612_2254.st_helens_07_elephant_rock_deep.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20090810/ng2_20070606.calib",
+    "camera_calibration/renav20120228/bundlestereo.calib",
+]
+camera_poses = [
+    "camera_poses/renav20090810/stereo_pose_est.data",
+    "camera_poses/renav20090810_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20090612-224117.txt",
+    "usbl/log-20090612-224817.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "BATT",
+    "ECOPUCK",
+    "GPS_GSV",
+    "GPS_RMC",
+    "LQMODEM",
+    "OAS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_STBD" },
+    { key = "THR_VERT" },
+    { key = "BATT" },
+    { key = "LQMODEM" },
+    { key = "RDI" },
+    { key = "GPS" },
+    { key = "ECOPUCK" },
+    { key = "SEABIRD" },
+    { key = "OAS" },
+    { key = "DELTA_T" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/files1/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+]
+
+[[deployments]]
+deployment_label = "r29mrd5h_20110612_033752"
+deployment_datetime = 2011-06-12 03:37:52+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "st_helens_01_elephant_rock_deep_repeat"
+acfr_campaign_label = "Tasmania201106"
+acfr_platform_label = ""
+origin_latitude = -41.252879
+origin_longitude = 148.341567
+magnetic_variation = 14.59
+
+[deployments.files]
+raw_messages = [
+    "messages/20110612_0337.RAW.auv",
+    "messages/20110612_0400.RAW.auv",
+]
+system_config = [
+    "messages/20110612_0337.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20110612_0337.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20110612_0337.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20110612_0338.st_helens_01_elephant_rock_deep_repeat.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20110612/usyd_pool20110607and3.calib",
+]
+camera_poses = [
+    "camera_poses/renav20110612/stereo_pose_est.data",
+    "camera_poses/renav20110612_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20110612-032957.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "ECOPUCK",
+    "GPS_GSV",
+    "GPS_RMC",
+    "LQMODEM",
+    "OAS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "OAS" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/files1/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+]
+
+[[deployments]]
+deployment_label = "r29mrd5h_20130611_002419"
+deployment_datetime = 2013-06-11 00:24:19+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "st_helens_13_elephant_rock_deep_repeat"
+acfr_campaign_label = "Tasmania201306"
+acfr_platform_label = ""
+origin_latitude = -41.252879
+origin_longitude = 148.341567
+magnetic_variation = 14.62
+
+[deployments.files]
+raw_messages = [
+    "messages/20130611_0024.RAW.auv",
+    "messages/20130611_0100.RAW.auv",
+]
+system_config = [
+    "messages/20130611_0024.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20130611_0024.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20130611_0024.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20130611_0026.st_helens_13_elephant_rock_deep_repeat.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20130612/UsydPool10022013.calib",
+]
+camera_poses = [
+    "camera_poses/renav20130612/stereo_pose_est.data",
+    "camera_poses/renav20130612_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20130610-233945.txt",
+    "usbl/log-20130610-234950.txt",
+    "usbl/log-20130610-235109.txt",
+    "usbl/log-20130611-000201.txt",
+    "usbl/log-20130611-001308.txt",
+    "usbl/log-20130611-002331.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS_RMC",
+    "LQMODEM",
+    "MICRON",
+    "MICRON_RETURNS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT0" },
+    { key = "BATT1" },
+    { key = "BATT2" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "MICRON" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/media/data/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+    "IMU",
+]
+
+[[deployments]]
+deployment_label = "r7jjskxq_20101023_210332"
+deployment_datetime = 2010-10-23 21:03:32+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "hendersonSth_10_shallow_grids"
+acfr_campaign_label = "SEQueensland201010"
+acfr_platform_label = ""
+origin_latitude = -27.130126
+origin_longitude = 153.475063
+magnetic_variation = 11.15
+
+[deployments.files]
+raw_messages = [
+    "messages/20101023_2103.RAW.auv",
+    "messages/20101023_2200.RAW.auv",
+    "messages/20101023_2300.RAW.auv",
+]
+system_config = [
+    "messages/20101023_2103.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20101023_2103.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20101023_2103.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20101023_2104.hendersonSth_10_shallow_grids.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20101024/ng2_scaled_baseline.calib",
+]
+camera_poses = [
+    "camera_poses/renav20101024/stereo_pose_est.data",
+    "camera_poses/renav20101024_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20101023-204151.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "BATT",
+    "ECOPUCK",
+    "GPS_GSV",
+    "GPS_RMC",
+    "LQMODEM",
+    "OAS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "OAS" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/files1/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+]
+
+[[deployments]]
+deployment_label = "r7jjskxq_20121013_060425"
+deployment_datetime = 2012-10-13 06:04:25+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "hendersonSth_07_shallow_grids"
+acfr_campaign_label = "SEQueensland201210"
+acfr_platform_label = ""
+origin_latitude = -27.130126
+origin_longitude = 153.475063
+magnetic_variation = 11.16
+
+[deployments.files]
+raw_messages = [
+    "messages/20121013_0604.RAW.auv",
+    "messages/20121013_0700.RAW.auv",
+    "messages/20121013_0800.RAW.auv",
+]
+system_config = [
+    "messages/20121013_0604.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20121013_0604.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20121013_0604.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20121013_0604.hendersonSth_07_shallow_grids.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20121014/SolitaryIs201208.calib",
+]
+camera_poses = [
+    "camera_poses/renav20121014/stereo_pose_est.data",
+    "camera_poses/renav20121014_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20121013-060330.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS_GSV",
+    "GPS_RMC",
+    "LQMODEM",
+    "OAS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT0" },
+    { key = "BATT1" },
+    { key = "BATT2" },
+    { key = "LQMODEM" },
+    { key = "ECOPUCK" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "OAS" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/media/data/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+    "IMU",
+]
+
+[[deployments]]
+deployment_label = "r7jjskxq_20131022_004934"
+deployment_datetime = 2013-10-22 00:49:34+00:00
+
+[deployments.metadata]
+acfr_deployment_label = "hendersonSth_03_shallow_grids"
+acfr_campaign_label = "SEQueensland201310"
+acfr_platform_label = ""
+origin_latitude = -27.130126
+origin_longitude = 153.475063
+magnetic_variation = 11.16
+
+[deployments.files]
+raw_messages = [
+    "messages/20131022_0049.RAW.auv",
+    "messages/20131022_0100.RAW.auv",
+    "messages/20131022_0200.RAW.auv",
+]
+system_config = [
+    "messages/20131022_0049.SEABED.syscfg",
+]
+localizer_config = [
+    "messages/20131022_0049.SEABED.localiser.cfg",
+]
+magvar_config = [
+    "messages/20131022_0049.magnetic_variation.cfg",
+]
+mission_log = [
+    "messages/20131022_0050.hendersonSth_03_shallow_grids.dat.log",
+]
+camera_calibrations = [
+    "camera_calibration/renav20140520/SEQueenslan201310poolcalibration.calib",
+]
+camera_poses = [
+    "camera_poses/renav20140520/stereo_pose_est.data",
+    "camera_poses/renav20140520_stereo_pose_est.data",
+]
+usbl_logs = [
+    "usbl/log-20131022-004921.txt",
+]
+
+[deployments.telemetry]
+topics = [
+    "GPS_RMC",
+    "LQMODEM",
+    "MICRON",
+    "MICRON_RETURNS",
+    "PAROSCI",
+    "RDI",
+    "SEABIRD",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "VIS",
+]
+
+[deployments.platform]
+sensors = [
+    { key = "DELTA_T" },
+    { key = "MP_INPUT" },
+    { key = "VIS" },
+    { key = "RDI" },
+    { key = "PAROSCI" },
+    { key = "THR_PORT" },
+    { key = "THR_VERT" },
+    { key = "BATT0" },
+    { key = "BATT1" },
+    { key = "BATT2" },
+    { key = "LQMODEM" },
+    { key = "GPS" },
+    { key = "THR_STBD" },
+    { key = "SEABIRD" },
+    { key = "MICRON" },
+]
+
+[deployments.system]
+vehicle_name = "SEABED"
+vehicle_config = "NORM_CFG"
+log_directory = "/media/data/Log"
+logged_streams = [
+    "SYSLOG",
+    "RAW",
+    "CTL",
+    "AUV",
+    "MSG",
+    "RDI",
+    "IMU",
+]

@@ -6,7 +6,7 @@ from typing import Self
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
-class CatalogSensor(BaseModel):
+class CatalogSensorIdentity(BaseModel):
     """
     A curated sensor identity record.
 
@@ -60,7 +60,7 @@ class CatalogProfileSensor(BaseModel):
     ----------
     key: Sensor identifier, matched against ``PlatformSensor.key`` /
         ``VesselSensor.key`` during enrichment.
-    identity: Key of the ``CatalogSensor`` describing this hardware.
+    identity: Key of the ``CatalogSensorIdentity`` describing this hardware.
     extrinsics: Curated mounting pose; ``None`` where the sensor has no
         surveyed pose.
     """
@@ -153,7 +153,7 @@ class DeploymentCatalog(BaseModel):
 
     Attributes
     ----------
-    sensors: Sensor identity records.
+    sensor_identities: Sensor identity records.
     platform_profiles: Platform configurations.
     vessel_profiles: Vessel configurations.
     deployment_platforms: Per-deployment platform profile assignments.
@@ -162,7 +162,7 @@ class DeploymentCatalog(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    sensors: list[CatalogSensor] = Field(default_factory=list)
+    sensor_identities: list[CatalogSensorIdentity] = Field(default_factory=list)
     platform_profiles: list[CatalogPlatformProfile] = Field(
         default_factory=list
     )
@@ -191,7 +191,8 @@ class DeploymentCatalog(BaseModel):
             a reference names no record.
         """
         sensor_keys: set[str] = _unique_keys(
-            (sensor.key for sensor in self.sensors), "sensors"
+            (sensor.key for sensor in self.sensor_identities),
+            "sensor_identities",
         )
         platform_profile_keys: set[str] = _unique_keys(
             (profile.key for profile in self.platform_profiles),

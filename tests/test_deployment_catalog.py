@@ -11,7 +11,7 @@ from afft.deployment import (
     CatalogDeploymentVessel,
     CatalogPlatformProfile,
     CatalogProfileSensor,
-    CatalogSensor,
+    CatalogSensorIdentity,
     CatalogSensorExtrinsics,
     CatalogVesselProfile,
     DeploymentCatalog,
@@ -20,14 +20,14 @@ from afft.deployment import (
 )
 from afft.io import read_config
 
-DVL_SENSOR: CatalogSensor = CatalogSensor(
+DVL_SENSOR: CatalogSensorIdentity = CatalogSensorIdentity(
     key="dvl_teledyne",
     label="Teledyne RDI Work Horse Navigator DVL",
     vendor="Teledyne RDI",
     product="Work Horse Navigator",
     type="dvl",
 )
-USBL_SENSOR: CatalogSensor = CatalogSensor(
+USBL_SENSOR: CatalogSensorIdentity = CatalogSensorIdentity(
     key="usbl_linkquest",
     label="LinkQuest TrackLink 1500HA USBL",
     vendor="LinkQuest",
@@ -39,7 +39,7 @@ USBL_SENSOR: CatalogSensor = CatalogSensor(
 def _build_catalog() -> DeploymentCatalog:
     """Builds a catalog covering one platform and one vessel profile."""
     return DeploymentCatalog(
-        sensors=[DVL_SENSOR, USBL_SENSOR],
+        sensor_identities=[DVL_SENSOR, USBL_SENSOR],
         platform_profiles=[
             CatalogPlatformProfile(
                 key="2010_auv_sirius",
@@ -136,7 +136,7 @@ def test_mapping_tables_are_written_sorted_by_deployment_label(
 ) -> None:
     catalog = _build_catalog()
     unsorted = DeploymentCatalog(
-        sensors=catalog.sensors,
+        sensor_identities=catalog.sensor_identities,
         platform_profiles=catalog.platform_profiles,
         vessel_profiles=catalog.vessel_profiles,
         deployment_platforms=[
@@ -178,8 +178,10 @@ def test_empty_catalog_round_trips(tmp_path: Path) -> None:
 
 
 def test_duplicate_sensor_key_is_rejected() -> None:
-    with pytest.raises(ValidationError, match="duplicate key in sensors"):
-        DeploymentCatalog(sensors=[DVL_SENSOR, DVL_SENSOR])
+    with pytest.raises(
+        ValidationError, match="duplicate key in sensor_identities"
+    ):
+        DeploymentCatalog(sensor_identities=[DVL_SENSOR, DVL_SENSOR])
 
 
 def test_duplicate_platform_profile_key_is_rejected() -> None:
@@ -211,7 +213,7 @@ def test_two_platform_assignments_for_one_deployment_are_rejected() -> None:
         ValidationError, match="duplicate key in deployment_platforms"
     ):
         DeploymentCatalog(
-            sensors=catalog.sensors,
+            sensor_identities=catalog.sensor_identities,
             platform_profiles=catalog.platform_profiles,
             deployment_platforms=[
                 *catalog.deployment_platforms,
@@ -226,7 +228,7 @@ def test_two_vessel_assignments_for_one_deployment_are_rejected() -> None:
         ValidationError, match="duplicate key in deployment_vessels"
     ):
         DeploymentCatalog(
-            sensors=catalog.sensors,
+            sensor_identities=catalog.sensor_identities,
             vessel_profiles=catalog.vessel_profiles,
             deployment_vessels=[
                 *catalog.deployment_vessels,

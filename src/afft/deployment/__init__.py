@@ -5,8 +5,8 @@ from .catalog_types import (
     CatalogDeploymentVessel as CatalogDeploymentVessel,
     CatalogPlatformProfile as CatalogPlatformProfile,
     CatalogProfileSensor as CatalogProfileSensor,
-    CatalogSensor as CatalogSensor,
     CatalogSensorExtrinsics as CatalogSensorExtrinsics,
+    CatalogSensorIdentity as CatalogSensorIdentity,
     CatalogVesselProfile as CatalogVesselProfile,
     DeploymentCatalog as DeploymentCatalog,
 )
