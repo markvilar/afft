@@ -251,8 +251,8 @@ class DeploymentDescriptor(BaseModel):
     telemetry: Message topics observed in the RAW AUV logs.
     platform: The platform's curated identity and its sensor roster.
     system: The vehicle's identity and logging setup.
-    vessel: The support vessel's curated identity and its sensor roster;
-        ``None`` until enrichment fills it.
+    vessel: The support vessel's curated identity and its sensor roster; empty
+        until enrichment fills it.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -266,4 +266,6 @@ class DeploymentDescriptor(BaseModel):
     platform: DeploymentPlatformSection
     system: DeploymentSystemSection
 
-    vessel: DeploymentVesselSection | None = None
+    vessel: DeploymentVesselSection = Field(
+        default_factory=DeploymentVesselSection
+    )

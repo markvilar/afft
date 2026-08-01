@@ -2,7 +2,13 @@
 
 import click
 
-from .actions import dispatch_describe_deployment, dispatch_scaffold_catalog
+from afft.deployment import EnrichmentSection
+
+from .actions import (
+    dispatch_describe_deployment,
+    dispatch_enrich_descriptor,
+    dispatch_scaffold_catalog,
+)
 
 
 @click.group()
@@ -86,3 +92,56 @@ def scaffold_catalog(
     left empty to be filled in by hand.
     """
     dispatch_scaffold_catalog(input_file, output_file, verbose)
+
+
+@deployment_group.command()
+@click.option(
+    "--input",
+    "input_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the deployment descriptors TOML file",
+)
+@click.option(
+    "--catalog",
+    "catalog_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the curated deployment catalog TOML file",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="path to write the enriched descriptors as TOML",
+)
+@click.option(
+    "--section",
+    type=click.Choice([section.value for section in EnrichmentSection]),
+    default=EnrichmentSection.ALL.value,
+    show_default=True,
+    help="descriptor sections to fill from the catalog",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="log diagnostics warnings after the run completes",
+)
+def enrich(
+    input_file: str,
+    catalog_file: str,
+    output_file: str,
+    section: str,
+    verbose: bool,
+) -> None:
+    """Enrich deployment descriptors from a curated deployment catalog.
+
+    Fills the curated slots the deployment data files cannot supply — platform
+    and vessel identities, sensor identities, and mounting poses. Passing the
+    input path as the output enriches the descriptors in place.
+    """
+    dispatch_enrich_descriptor(
+        input_file, catalog_file, output_file, section, verbose
+    )

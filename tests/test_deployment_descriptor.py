@@ -111,13 +111,13 @@ def test_unfilled_curated_slots_are_omitted(tmp_path: Path) -> None:
     write_deployment_descriptors(path, [_build_descriptor()])
 
     entry = read_config(path)["deployments"][0]
-    assert "vessel" not in entry
+    assert entry["vessel"] == {"sensors": []}
     assert "identity" not in entry["platform"]
     assert "identity" not in entry["platform"]["sensors"][0]
     assert "extrinsics" not in entry["platform"]["sensors"][0]
 
     descriptors = read_deployment_descriptors(path)
-    assert descriptors[0].vessel is None
+    assert descriptors[0].vessel == DeploymentVesselSection()
     assert descriptors[0].platform.identity is None
     assert descriptors[0].platform.sensors[0].identity is None
     assert descriptors[0].platform.sensors[0].extrinsics is None
