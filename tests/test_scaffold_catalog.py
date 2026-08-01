@@ -122,12 +122,12 @@ def test_sensor_stubs_cover_every_observed_key(
 ) -> None:
     catalog = scaffold_catalog(descriptors, ScaffoldCatalogDiagnostics())
 
-    assert [sensor.key for sensor in catalog.sensors] == [
+    assert [sensor.key for sensor in catalog.sensor_identities] == [
         "parosci",
         "rdi",
         "vis",
     ]
-    assert all(sensor.vendor == "" for sensor in catalog.sensors)
+    assert all(sensor.vendor == "" for sensor in catalog.sensor_identities)
 
 
 def test_vessel_profiles_are_grouped_per_campaign(

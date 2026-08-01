@@ -7,7 +7,7 @@ from afft.deployment import (
     CatalogDeploymentVessel,
     CatalogPlatformProfile,
     CatalogProfileSensor,
-    CatalogSensor,
+    CatalogSensorIdentity,
     CatalogVesselProfile,
     DeploymentDescriptor,
 )
@@ -116,7 +116,7 @@ def map_vessel_profile_keys(
 
 def build_sensor_stubs(
     descriptors: list[DeploymentDescriptor],
-) -> list[CatalogSensor]:
+) -> list[CatalogSensorIdentity]:
     """
     Build one sensor identity stub per observed roster sensor key.
 
@@ -134,7 +134,7 @@ def build_sensor_stubs(
         for sensor in descriptor.platform.sensors
     }
     return [
-        CatalogSensor(key=key, label="", vendor="", product="", type="")
+        CatalogSensorIdentity(key=key, label="", vendor="", product="", type="")
         for key in sorted(identity_keys)
     ]
 

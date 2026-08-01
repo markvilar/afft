@@ -48,9 +48,9 @@ def write_deployment_catalog(path: Path, catalog: DeploymentCatalog) -> None:
     """
     blocks: list[str] = []
 
-    for sensor in catalog.sensors:
+    for sensor in catalog.sensor_identities:
         blocks.append(
-            "[[sensors]]\n"
+            "[[sensor_identities]]\n"
             f"key = {_toml_string(sensor.key)}\n"
             f"label = {_toml_string(sensor.label)}\n"
             f"vendor = {_toml_string(sensor.vendor)}\n"

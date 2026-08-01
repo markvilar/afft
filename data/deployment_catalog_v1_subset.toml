@@ -1,0 +1,631 @@
+# Curated records that deployment descriptor enrichment resolves against.
+#
+# Translations are in metres and rotations in radians, matching the localizer
+# config and the SensorExtrinsics model. Rotation entries carry their degree
+# equivalents as a trailing comment.
+#
+# Platform profiles are curated at one per calendar year, from the AUV pose
+# families of the 17 deployments whose localizer configs are on disk; no year
+# spans two pose configurations. The family-to-key mapping is dvl -> RDI,
+# stereo -> VIS, deltat -> DELTA_T, depth_sensor -> PAROSCI, and position2d ->
+# LQMODEM through 2014 and EVOLOGICS from 2017. The localizer's sonar family is
+# excluded as an unmeasured placeholder for a device nothing consumes, and
+# nav_frame is not a sensor. PAROSCI carries its pose as written, including the
+# locx the localizer config flags for measurement.
+#
+# Vessel profiles are reshaped from usbl_extrinsics_profiles in
+# config/deployment_configs_all.toml and cover all 52 deployments; the platform
+# side covers the 17 on disk, and the rest follow when the archive does.
+#
+# The OAS / MICRON obstacle avoidance sonar and MP_INPUT are deliberately
+# uncurated: nothing downstream consumes them, and MP_INPUT is not a sensor.
+# Roster keys with no entry here are simply left unenriched.
+
+# --------------------------------------------------------------------------------------
+# Sensor identities
+# --------------------------------------------------------------------------------------
+
+[[sensor_identities]]
+key = "camera_prosilica"
+label = "AVT Prosilica GC1380 stereo camera"
+vendor = "AVT"
+product = "Prosilica GC1380"
+type = "stereo_camera"
+
+[[sensor_identities]]
+key = "dvl_teledyne"
+label = "Teledyne RDI Work Horse Navigator DVL"
+vendor = "Teledyne RDI"
+product = "Work Horse Navigator"
+type = "dvl"
+
+[[sensor_identities]]
+key = "pressure_parosci"
+label = "Paroscientific Digiquartz pressure sensor"
+vendor = "Paroscientific"
+product = "Digiquartz"
+type = "pressure"
+
+[[sensor_identities]]
+key = "ctd_seabird"
+label = "Seabird SBE 37-SIP CTD"
+vendor = "Seabird"
+product = "SBE 37-SIP"
+type = "ctd"
+
+[[sensor_identities]]
+key = "ecopuck_wetlabs"
+label = "WET Labs ECO Puck Triplet sensor"
+vendor = "WET Labs"
+product = "ECO Puck Triplet"
+type = "optical"
+
+[[sensor_identities]]
+key = "gnss_ublox"
+label = "u-blox GNSS receiver"
+vendor = "u-blox"
+product = ""
+type = "gnss"
+
+[[sensor_identities]]
+key = "usbl_linkquest"
+label = "LinkQuest TrackLink 1500HA USBL"
+vendor = "LinkQuest"
+product = "TrackLink 1500HA"
+type = "usbl"
+
+[[sensor_identities]]
+key = "usbl_evologics"
+label = "EvoLogics S2C R 18/34 USBL"
+vendor = "EvoLogics"
+product = "S2C R 18/34"
+type = "usbl"
+
+[[sensor_identities]]
+key = "usbl_unrecorded"
+label = "USBL transceiver of unrecorded make"
+vendor = ""
+product = ""
+type = "usbl"
+
+[[sensor_identities]]
+key = "multibeam_deltat"
+label = "Delta T multibeam profiling sonar"
+vendor = ""
+product = ""
+type = "multibeam_sonar"
+
+[[sensor_identities]]
+key = "imu"
+label = "Inertial measurement unit"
+vendor = ""
+product = ""
+type = "imu"
+
+[[sensor_identities]]
+key = "thruster"
+label = "Vehicle thruster"
+vendor = ""
+product = ""
+type = "thruster"
+
+[[sensor_identities]]
+key = "battery_pack"
+label = "Vehicle battery pack"
+vendor = ""
+product = ""
+type = "battery"
+
+# --------------------------------------------------------------------------------------
+# Platform profiles
+# --------------------------------------------------------------------------------------
+
+[[platform_profiles]]
+key = "2009_auv_sirius"
+platform_label = "AUV Sirius"
+platform_class = "SEABED"
+platform_operator = "ACFR"
+sensors = [
+    { key = "BATT", identity = "battery_pack" },
+    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.55, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
+    { key = "GPS", identity = "gnss_ublox" },
+    { key = "LQMODEM", identity = "usbl_linkquest" },
+    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "SEABIRD", identity = "ctd_seabird" },
+    { key = "THR_PORT", identity = "thruster" },
+    { key = "THR_STBD", identity = "thruster" },
+    { key = "THR_VERT", identity = "thruster" },
+    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740
+]
+
+[[platform_profiles]]
+key = "2010_auv_sirius"
+platform_label = "AUV Sirius"
+platform_class = "SEABED"
+platform_operator = "ACFR"
+sensors = [
+    { key = "BATT", identity = "battery_pack" },
+    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = 0.0076, roty = 0.084, rotz = -3.125 } },  # rotation in degrees: 0.435, 4.813, -179.049
+    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
+    { key = "GPS", identity = "gnss_ublox" },
+    { key = "LQMODEM", identity = "usbl_linkquest" },
+    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "SEABIRD", identity = "ctd_seabird" },
+    { key = "THR_PORT", identity = "thruster" },
+    { key = "THR_STBD", identity = "thruster" },
+    { key = "THR_VERT", identity = "thruster" },
+    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740
+]
+
+[[platform_profiles]]
+key = "2011_auv_sirius"
+platform_label = "AUV Sirius"
+platform_class = "SEABED"
+platform_operator = "ACFR"
+sensors = [
+    { key = "BATT", identity = "battery_pack" },
+    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = 0.0076, roty = 0.084, rotz = -3.125 } },  # rotation in degrees: 0.435, 4.813, -179.049
+    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
+    { key = "GPS", identity = "gnss_ublox" },
+    { key = "LQMODEM", identity = "usbl_linkquest" },
+    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "SEABIRD", identity = "ctd_seabird" },
+    { key = "THR_PORT", identity = "thruster" },
+    { key = "THR_STBD", identity = "thruster" },
+    { key = "THR_VERT", identity = "thruster" },
+    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740
+]
+
+[[platform_profiles]]
+key = "2012_auv_sirius"
+platform_label = "AUV Sirius"
+platform_class = "SEABED"
+platform_operator = "ACFR"
+sensors = [
+    { key = "BATT0", identity = "battery_pack" },
+    { key = "BATT1", identity = "battery_pack" },
+    { key = "BATT2", identity = "battery_pack" },
+    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
+    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
+    { key = "GPS", identity = "gnss_ublox" },
+    { key = "IMU", identity = "imu" },
+    { key = "LQMODEM", identity = "usbl_linkquest", extrinsics = { locx = -1.27, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "SEABIRD", identity = "ctd_seabird" },
+    { key = "THR_PORT", identity = "thruster" },
+    { key = "THR_STBD", identity = "thruster" },
+    { key = "THR_VERT", identity = "thruster" },
+    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740
+]
+
+[[platform_profiles]]
+key = "2013_auv_sirius"
+platform_label = "AUV Sirius"
+platform_class = "SEABED"
+platform_operator = "ACFR"
+
+[[platform_profiles.sensors]]
+key = "BATT0"
+identity = "battery_pack"
+
+[[platform_profiles.sensors]]
+key = "BATT1"
+identity = "battery_pack"
+
+[[platform_profiles.sensors]]
+key = "BATT2"
+identity = "battery_pack"
+
+[[platform_profiles.sensors]]
+key = "DELTA_T"
+identity = "multibeam_deltat"
+
+[platform_profiles.sensors.extrinsics]
+locx = 0.588
+locy = 0.25
+locz = 0.048
+rotx = -0.0076  # -0.435 deg
+roty = 0.084  # 4.813 deg
+rotz = 0.0
+
+[[platform_profiles.sensors]]
+key = "ECOPUCK"
+identity = "ecopuck_wetlabs"
+
+[[platform_profiles.sensors]]
+key = "GPS"
+identity = "gnss_ublox"
+
+[[platform_profiles.sensors]]
+key = "LQMODEM"
+identity = "usbl_linkquest"
+
+[platform_profiles.sensors.extrinsics]
+locx = -1.27
+locy = 0.0
+locz = -0.9
+rotx = 0.0
+roty = 0.0
+rotz = 0.0
+
+[[platform_profiles.sensors]]
+key = "PAROSCI"
+identity = "pressure_parosci"
+
+[platform_profiles.sensors.extrinsics]
+locx = 0.4
+locy = 0.0
+locz = -0.23
+rotx = 0.0
+roty = 0.0
+rotz = 0.0
+
+[[platform_profiles.sensors]]
+key = "RDI"
+identity = "dvl_teledyne"
+
+[platform_profiles.sensors.extrinsics]
+locx = 0.0
+locy = 0.0
+locz = 0.0
+rotx = 0.0
+roty = 3.1416  # 180.000 deg
+rotz = -1.5708  # -90.000 deg
+
+[[platform_profiles.sensors]]
+key = "SEABIRD"
+identity = "ctd_seabird"
+
+[[platform_profiles.sensors]]
+key = "THR_PORT"
+identity = "thruster"
+
+[[platform_profiles.sensors]]
+key = "THR_STBD"
+identity = "thruster"
+
+[[platform_profiles.sensors]]
+key = "THR_VERT"
+identity = "thruster"
+
+[[platform_profiles.sensors]]
+key = "VIS"
+identity = "camera_prosilica"
+
+[platform_profiles.sensors.extrinsics]
+locx = 0.82
+locy = 0.0
+locz = 0.0
+rotx = -0.0373  # -2.137 deg
+roty = -0.0065  # -0.372 deg
+rotz = 1.5488  # 88.740 deg
+
+[[platform_profiles]]
+key = "2014_auv_sirius"
+platform_label = "AUV Sirius"
+platform_class = "SEABED"
+platform_operator = "ACFR"
+sensors = [
+    { key = "BATT0", identity = "battery_pack" },
+    { key = "BATT1", identity = "battery_pack" },
+    { key = "BATT2", identity = "battery_pack" },
+    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
+    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
+    { key = "GPS", identity = "gnss_ublox" },
+    { key = "LQMODEM", identity = "usbl_linkquest", extrinsics = { locx = -1.27, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "SEABIRD", identity = "ctd_seabird" },
+    { key = "THR_PORT", identity = "thruster" },
+    { key = "THR_STBD", identity = "thruster" },
+    { key = "THR_VERT", identity = "thruster" },
+    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740
+]
+
+[[platform_profiles]]
+key = "2017_auv_sirius"
+platform_label = "AUV Sirius"
+platform_class = "SEABED"
+platform_operator = "ACFR"
+sensors = [
+    { key = "BATT0", identity = "battery_pack" },
+    { key = "BATT1", identity = "battery_pack" },
+    { key = "BATT2", identity = "battery_pack" },
+    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
+    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
+    { key = "EVOLOGICS", identity = "usbl_evologics", extrinsics = { locx = 0.0, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "GPS", identity = "gnss_ublox" },
+    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "SEABIRD", identity = "ctd_seabird" },
+    { key = "THR_PORT", identity = "thruster" },
+    { key = "THR_STBD", identity = "thruster" },
+    { key = "THR_VERT", identity = "thruster" },
+    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740
+]
+
+# --------------------------------------------------------------------------------------
+# Vessel profiles
+# --------------------------------------------------------------------------------------
+
+[[vessel_profiles]]
+key = "200906_rv_challenger"
+vessel_name = "RV Challenger"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = 0.53, locy = 4.33, locz = 3.29, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+]
+
+[[vessel_profiles]]
+key = "201004_rv_linnaeus"
+vessel_name = "RV Linnaeus"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = -5.715, locy = -1.258, locz = 1.352, rotx = 0.3316, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 18.999, 0.000, 0.000
+]
+
+[[vessel_profiles]]
+key = "201006_rv_challenger"
+vessel_name = "RV Challenger"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = 1.21, locy = 2.97, locz = 2.27, rotx = -0.5058, roty = -0.0042, rotz = 0.3138 } },  # rotation in degrees: -28.980, -0.241, 17.979
+]
+
+[[vessel_profiles]]
+key = "201010_rv_tom_marshall"
+vessel_name = "RV Tom Marshall"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = -4.46, locy = -4.826, locz = 2.48, rotx = 0.5084, roty = -0.0622, rotz = -0.0509 } },  # rotation in degrees: 29.129, -3.564, -2.916
+]
+
+[[vessel_profiles]]
+key = "201102_rv_cape_ferguson"
+vessel_name = "RV Cape Ferguson"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = -2.69, locy = -0.221, locz = 5.555, rotx = 0.5389, roty = -0.0016, rotz = -0.0106 } },  # rotation in degrees: 30.877, -0.092, -0.607
+]
+
+[[vessel_profiles]]
+key = "201104_rv_naturaliste"
+vessel_name = "RV Naturaliste"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = -5.21, locy = -3.34, locz = 3.14, rotx = 0.525, roty = -0.0007, rotz = 0.0375 } },  # rotation in degrees: 30.080, -0.040, 2.149
+]
+
+[[vessel_profiles]]
+key = "201106_rv_challenger"
+vessel_name = "RV Challenger"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = 1.404, locy = 4.412, locz = 4.534, rotx = -0.5409, roty = -0.0605, rotz = -0.24 } },  # rotation in degrees: -30.991, -3.466, -13.751
+]
+
+[[vessel_profiles]]
+key = "201108_solander"
+vessel_name = "Solander"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = -19.057, locy = 3.18, locz = 4.88, rotx = -0.5117, roty = 0.041, rotz = -0.0609 } },  # rotation in degrees: -29.318, 2.349, -3.489
+]
+
+[[vessel_profiles]]
+key = "201204_rv_linnaeus"
+vessel_name = "RV Linnaeus"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = -6.156, locy = -1.477, locz = 1.567, rotx = 0.3529, roty = 0.001, rotz = 0.2548 } },  # rotation in degrees: 20.220, 0.057, 14.599
+]
+
+[[vessel_profiles]]
+key = "201205_rv_challenger"
+vessel_name = "RV Challenger"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = 3.497, locy = 3.23, locz = 3.679, rotx = -0.4283, roty = -0.0429, rotz = 0.1861 } },  # rotation in degrees: -24.540, -2.458, 10.663
+]
+
+[[vessel_profiles]]
+key = "201210_rv_tom_marshall"
+vessel_name = "RV Tom Marshall"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = -5.723, locy = -5.235, locz = 1.769, rotx = 0.5553, roty = -0.0036, rotz = -0.0511 } },  # rotation in degrees: 31.816, -0.206, -2.928
+]
+
+[[vessel_profiles]]
+key = "201304_rv_linnaeus"
+vessel_name = "RV Linnaeus"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = -1.18, locy = 0.7, locz = 2.0, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+]
+
+[[vessel_profiles]]
+key = "201306_rv_challenger"
+vessel_name = "RV Challenger"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = 7.615, locy = 6.329, locz = 4.529, rotx = -0.4283, roty = 0.0176, rotz = -0.2815 } },  # rotation in degrees: -24.540, 1.008, -16.129
+]
+
+[[vessel_profiles]]
+key = "201310_rv_tom_marshall"
+vessel_name = "RV Tom Marshall"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = -5.541, locy = -5.364, locz = 3.224, rotx = 0.5678, roty = 0.0022, rotz = 0.2499 } },  # rotation in degrees: 32.533, 0.126, 14.318
+]
+
+[[vessel_profiles]]
+key = "201403_rv_linnaeus"
+vessel_name = "RV Linnaeus"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = -1.26, locy = 0.704, locz = 2.195, rotx = 0.0254, roty = -0.0126, rotz = -0.0685 } },  # rotation in degrees: 1.455, -0.722, -3.925
+]
+
+[[vessel_profiles]]
+key = "201406_tasmania_bluefin"
+vessel_name = "Tasmania Bluefin"
+sensors = [
+    { key = "USBL", identity = "usbl_linkquest", extrinsics = { locx = -11.916, locy = 4.761, locz = 10.752, rotx = -0.5026, roty = -0.0103, rotz = -0.0327 } },  # rotation in degrees: -28.797, -0.590, -1.874
+]
+
+[[vessel_profiles]]
+key = "201502_tasmania_bluefin"
+vessel_name = "Tasmania Bluefin"
+sensors = [
+    { key = "USBL", identity = "usbl_unrecorded", extrinsics = { locx = -11.062, locy = -6.656, locz = 9.998, rotx = 0.0159, roty = 0.0195, rotz = -0.0464 } },  # rotation in degrees: 0.911, 1.117, -2.659
+]
+
+[[vessel_profiles]]
+key = "201705_silver_streak"
+vessel_name = "Silver Streak"
+sensors = [
+    { key = "USBL", identity = "usbl_evologics", extrinsics = { locx = -4.793, locy = 4.302, locz = 4.043, rotx = -0.0067, roty = 0.0032, rotz = 0.4713 } },  # rotation in degrees: -0.384, 0.183, 27.004
+]
+
+[[vessel_profiles]]
+key = "202102_poppag"
+vessel_name = "PoppaG"
+sensors = [
+    { key = "USBL", identity = "usbl_unrecorded", extrinsics = { locx = -9.4, locy = -3.72, locz = 7.49, rotx = 0.0, roty = 0.23, rotz = -0.21 } },  # rotation in degrees: 0.000, 13.178, -12.032
+]
+
+# --------------------------------------------------------------------------------------
+# Deployment platforms
+# --------------------------------------------------------------------------------------
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20100428_020202"
+platform_profile = "2010_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20110415_020103"
+platform_profile = "2011_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20120430_002423"
+platform_profile = "2012_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20130406_023610"
+platform_profile = "2013_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdchdmy1_20110416_005411"
+platform_profile = "2011_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdchdmy1_20120501_071203"
+platform_profile = "2012_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdchdmy1_20130406_081713"
+platform_profile = "2013_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdchdmy1_20170525_234624"
+platform_profile = "2017_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r23685bc_20100605_021022"
+platform_profile = "2010_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r23685bc_20120530_233021"
+platform_profile = "2012_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r23685bc_20140616_225022"
+platform_profile = "2014_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd5h_20090612_225306"
+platform_profile = "2009_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd5h_20110612_033752"
+platform_profile = "2011_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd5h_20130611_002419"
+platform_profile = "2013_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r7jjskxq_20101023_210332"
+platform_profile = "2010_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r7jjskxq_20121013_060425"
+platform_profile = "2012_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r7jjskxq_20131022_004934"
+platform_profile = "2013_auv_sirius"
+
+# --------------------------------------------------------------------------------------
+# Deployment vessels
+# --------------------------------------------------------------------------------------
+
+[[deployment_vessels]]
+deployment_label = "qdch0ftq_20100428_020202"
+vessel_profile = "201004_rv_linnaeus"
+
+[[deployment_vessels]]
+deployment_label = "qdch0ftq_20110415_020103"
+vessel_profile = "201104_rv_naturaliste"
+
+[[deployment_vessels]]
+deployment_label = "qdch0ftq_20120430_002423"
+vessel_profile = "201204_rv_linnaeus"
+
+[[deployment_vessels]]
+deployment_label = "qdch0ftq_20130406_023610"
+vessel_profile = "201304_rv_linnaeus"
+
+[[deployment_vessels]]
+deployment_label = "qdchdmy1_20110416_005411"
+vessel_profile = "201104_rv_naturaliste"
+
+[[deployment_vessels]]
+deployment_label = "qdchdmy1_20120501_071203"
+vessel_profile = "201204_rv_linnaeus"
+
+[[deployment_vessels]]
+deployment_label = "qdchdmy1_20130406_081713"
+vessel_profile = "201304_rv_linnaeus"
+
+[[deployment_vessels]]
+deployment_label = "qdchdmy1_20170525_234624"
+vessel_profile = "201705_silver_streak"
+
+[[deployment_vessels]]
+deployment_label = "r23685bc_20100605_021022"
+vessel_profile = "201006_rv_challenger"
+
+[[deployment_vessels]]
+deployment_label = "r23685bc_20120530_233021"
+vessel_profile = "201205_rv_challenger"
+
+[[deployment_vessels]]
+deployment_label = "r23685bc_20140616_225022"
+vessel_profile = "201406_tasmania_bluefin"
+
+[[deployment_vessels]]
+deployment_label = "r29mrd5h_20090612_225306"
+vessel_profile = "200906_rv_challenger"
+
+[[deployment_vessels]]
+deployment_label = "r29mrd5h_20110612_033752"
+vessel_profile = "201106_rv_challenger"
+
+[[deployment_vessels]]
+deployment_label = "r29mrd5h_20130611_002419"
+vessel_profile = "201306_rv_challenger"
+
+[[deployment_vessels]]
+deployment_label = "r7jjskxq_20101023_210332"
+vessel_profile = "201010_rv_tom_marshall"
+
+[[deployment_vessels]]
+deployment_label = "r7jjskxq_20121013_060425"
+vessel_profile = "201210_rv_tom_marshall"
+
+[[deployment_vessels]]
+deployment_label = "r7jjskxq_20131022_004934"
+vessel_profile = "201310_rv_tom_marshall"

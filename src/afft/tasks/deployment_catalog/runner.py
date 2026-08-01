@@ -51,7 +51,7 @@ def scaffold_catalog(
     )
 
     return DeploymentCatalog(
-        sensors=build_sensor_stubs(descriptors),
+        sensor_identities=build_sensor_stubs(descriptors),
         platform_profiles=build_platform_profile_stubs(
             descriptors, platform_keys, diagnostics
         ),
@@ -108,7 +108,8 @@ def run_scaffold_catalog(
     logger.info(
         f"wrote {len(catalog.platform_profiles)} platform profile(s), "
         f"{len(catalog.vessel_profiles)} vessel profile(s), and "
-        f"{len(catalog.sensors)} sensor stub(s) to {command.output_file}"
+        f"{len(catalog.sensor_identities)} sensor stub(s) to "
+        f"{command.output_file}"
     )
 
     if command.verbose:
