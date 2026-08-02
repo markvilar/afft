@@ -1,5 +1,6 @@
 """Runner for the transform camera poses task."""
 
+from collections.abc import Mapping
 from pathlib import Path
 
 import numpy as np
@@ -72,7 +73,7 @@ def run_transform_camera_poses(
 
 def run_transform_camera_poses_batch(
     command: TransformCameraPosesBatchCommand,
-    extrinsics: CameraVehicleExtrinsics,
+    extrinsics: Mapping[str, CameraVehicleExtrinsics],
     config: TransformCameraPosesConfig = TransformCameraPosesConfig(),
 ) -> TransformCameraPosesBatchResult:
     """
@@ -85,7 +86,8 @@ def run_transform_camera_poses_batch(
     Arguments
     ---------
     command: Task I/O configuration.
-    extrinsics: Camera position in the vehicle body frame.
+    extrinsics: Camera position in the vehicle body frame, keyed by deployment
+        label. Every discovered input file must have an entry.
     config: Column label configuration.
 
     Returns
@@ -123,12 +125,16 @@ def run_transform_camera_poses_batch(
         input_files, description="Transforming camera poses"
     ):
         label: str = input_file.name.removesuffix(command.input_suffix)
+        if label not in extrinsics:
+            raise KeyError(f"no camera extrinsics for deployment: {label}")
         output_file: Path = (
             command.output_dir / f"{label}{command.output_suffix}"
         )
 
         cameras: pd.DataFrame = pd.read_csv(input_file)
-        vehicles: pd.DataFrame = _apply_extrinsics(cameras, extrinsics, config)
+        vehicles: pd.DataFrame = _apply_extrinsics(
+            cameras, extrinsics[label], config
+        )
         vehicles.to_csv(output_file, index=False)
 
         results[label] = TransformCameraPosesResult(total=len(vehicles))
