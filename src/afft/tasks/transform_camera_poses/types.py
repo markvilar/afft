@@ -11,16 +11,17 @@ class CameraVehicleExtrinsics:
 
     Coordinate convention follows SNAME: posx is forward (bow), posy is
     starboard, posz is downward. Rotation angles follow ZYX intrinsic Euler
-    convention (rotz=yaw, roty=pitch, rotx=roll) and are expressed in degrees.
+    convention (rotz=yaw, roty=pitch, rotx=roll) and are expressed in radians,
+    matching the deployment descriptor's sensor extrinsics.
 
     Attributes
     ----------
     posx: Forward offset from vehicle reference point in metres.
     posy: Lateral offset in metres (positive starboard).
     posz: Vertical offset in metres (positive downward).
-    rotx: Roll in degrees (positive: starboard down).
-    roty: Pitch in degrees (positive: bow up).
-    rotz: Yaw in degrees (positive clockwise viewed from above).
+    rotx: Roll in radians (positive: starboard down).
+    roty: Pitch in radians (positive: bow up).
+    rotz: Yaw in radians (positive clockwise viewed from above).
     """
 
     posx: float = 0.0

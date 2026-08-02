@@ -169,20 +169,28 @@ def correct_poses(
     help="path to write the vehicle poses as CSV",
 )
 @click.option(
-    "--vehicle-config",
-    "vehicle_config_file",
+    "--descriptors",
+    "descriptor_file",
     type=click.Path(exists=True, dir_okay=False),
     required=True,
-    help="vehicle TOML config containing stereo camera extrinsics",
+    help="deployment descriptors TOML file containing camera extrinsics",
+)
+@click.option(
+    "--deployment",
+    "deployment_label",
+    type=str,
+    required=True,
+    help="deployment label to look up in the deployment descriptors file",
 )
 def transform_poses(
     input_file: str,
     output_file: str,
-    vehicle_config_file: str,
+    descriptor_file: str,
+    deployment_label: str,
 ) -> None:
     """Transform camera poses to vehicle reference-point poses using stereo extrinsics."""
     dispatch_transform_camera_poses(
-        input_file, output_file, vehicle_config_file
+        input_file, output_file, descriptor_file, deployment_label
     )
 
 
@@ -202,11 +210,11 @@ def transform_poses(
     help="directory to write vehicle pose CSV files into",
 )
 @click.option(
-    "--vehicle-config",
-    "vehicle_config_file",
+    "--descriptors",
+    "descriptor_file",
     type=click.Path(exists=True, dir_okay=False),
     required=True,
-    help="vehicle TOML config containing stereo camera extrinsics",
+    help="deployment descriptors TOML file containing camera extrinsics",
 )
 @click.option(
     "--input-suffix",
@@ -227,13 +235,13 @@ def transform_poses(
 def batch_transform_poses(
     input_dir: str,
     output_dir: str,
-    vehicle_config_file: str,
+    descriptor_file: str,
     input_suffix: str,
     output_suffix: str,
 ) -> None:
     """Batch-transform camera poses to vehicle reference-point poses."""
     dispatch_transform_camera_poses_batch(
-        input_dir, output_dir, vehicle_config_file, input_suffix, output_suffix
+        input_dir, output_dir, descriptor_file, input_suffix, output_suffix
     )
 
 
