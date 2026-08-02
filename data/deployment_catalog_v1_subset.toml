@@ -137,7 +137,7 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740
+    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 [[platform_profiles]]
@@ -157,7 +157,7 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740
+    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 [[platform_profiles]]
@@ -177,7 +177,7 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740
+    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 [[platform_profiles]]
@@ -200,7 +200,7 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740
+    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 [[platform_profiles]]
@@ -299,7 +299,7 @@ identity = "camera_prosilica"
 
 [platform_profiles.sensors.extrinsics]
 locx = 0.82
-locy = 0.0
+locy = -0.035  # half of the ~0.07 m stereo baseline
 locz = 0.0
 rotx = -0.0373  # -2.137 deg
 roty = -0.0065  # -0.372 deg
@@ -324,7 +324,7 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740
+    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 [[platform_profiles]]
@@ -346,7 +346,7 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = 0.0, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740
+    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 # --------------------------------------------------------------------------------------
