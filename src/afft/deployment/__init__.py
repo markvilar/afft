@@ -28,9 +28,22 @@ from .descriptor_types import (
     VesselIdentity as VesselIdentity,
     VesselSensor as VesselSensor,
 )
+from .descriptor_exporters import (
+    format_table as format_table,
+    write_summary_report as write_summary_report,
+)
 from .descriptor_io import (
     read_deployment_descriptors as read_deployment_descriptors,
     write_deployment_descriptors as write_deployment_descriptors,
+)
+from .descriptor_summary import (
+    CurationGap as CurationGap,
+    DeploymentSummary as DeploymentSummary,
+    DescriptorSummary as DescriptorSummary,
+    GeographicExtent as GeographicExtent,
+    collect_curation_gaps as collect_curation_gaps,
+    collect_unfilled_fields as collect_unfilled_fields,
+    summarize_descriptors as summarize_descriptors,
 )
 from .enrichment import (
     DeploymentCatalogIndex as DeploymentCatalogIndex,

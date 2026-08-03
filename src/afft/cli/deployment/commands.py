@@ -8,6 +8,7 @@ from .actions import (
     dispatch_describe_deployment,
     dispatch_enrich_descriptor,
     dispatch_scaffold_catalog,
+    dispatch_summarize_descriptor,
 )
 
 
@@ -145,3 +146,37 @@ def enrich(
     dispatch_enrich_descriptor(
         input_file, catalog_file, output_file, section, verbose
     )
+
+
+@deployment_group.command()
+@click.option(
+    "--input",
+    "input_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the deployment descriptors TOML file",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    default=None,
+    help="path to write a detailed Markdown report; omit to print a summary",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="list the deployments affected by each curation gap",
+)
+def summarize(
+    input_file: str,
+    output_file: str | None,
+    verbose: bool,
+) -> None:
+    """Summarize the deployments in a deployment descriptors file.
+
+    Without an output path, prints per-file aggregates to the terminal. With
+    one, writes a detailed per-deployment report as Markdown.
+    """
+    dispatch_summarize_descriptor(input_file, output_file, verbose)

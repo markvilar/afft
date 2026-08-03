@@ -14,6 +14,14 @@ from .runner import (
     describe_deployment as describe_deployment,
     run_describe_deployment as run_describe_deployment,
 )
+from .summary_runner import (
+    log_summary as log_summary,
+    run_summarize_descriptor as run_summarize_descriptor,
+)
+from .summary_types import (
+    SummarizeDescriptorCommand as SummarizeDescriptorCommand,
+    SummarizeDescriptorResult as SummarizeDescriptorResult,
+)
 from .types import (
     DeploymentFailure as DeploymentFailure,
     DeploymentWarning as DeploymentWarning,

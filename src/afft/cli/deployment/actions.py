@@ -10,7 +10,9 @@ from afft.tasks.deployment_catalog import (
 from afft.tasks.deployment_descriptor import (
     DescribeDeploymentCommand,
     DescribeDeploymentResult,
+    SummarizeDescriptorCommand,
     run_describe_deployment,
+    run_summarize_descriptor,
 )
 from afft.tasks.deployment_enrichment import (
     EnrichDescriptorCommand,
@@ -78,3 +80,22 @@ def dispatch_enrich_descriptor(
         verbose=verbose,
     )
     run_enrich_descriptor(command)
+
+
+def dispatch_summarize_descriptor(
+    input_file: str | Path,
+    output_file: str | Path | None = None,
+    verbose: bool = False,
+) -> None:
+    """
+    Summarize the deployments in a deployment descriptors file.
+
+    Always exits zero: unfilled curated slots are the summary's output, not a
+    failure of the run.
+    """
+    command = SummarizeDescriptorCommand(
+        input_file=Path(input_file),
+        output_file=Path(output_file) if output_file else None,
+        verbose=verbose,
+    )
+    run_summarize_descriptor(command)
