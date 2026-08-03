@@ -5,8 +5,8 @@
 # equivalents as a trailing comment.
 #
 # Platform profiles are curated at one per calendar year, from the AUV pose
-# families of the 17 deployments whose localizer configs are on disk; no year
-# spans two pose configurations. The family-to-key mapping is dvl -> RDI,
+# families in the deployment localizer configs; no year spans two pose
+# configurations. The family-to-key mapping is dvl -> RDI,
 # stereo -> VIS, deltat -> DELTA_T, depth_sensor -> PAROSCI, and position2d ->
 # LQMODEM through 2014 and EVOLOGICS from 2017. The localizer's sonar family is
 # excluded as an unmeasured placeholder for a device nothing consumes, and
@@ -14,8 +14,8 @@
 # locx the localizer config flags for measurement.
 #
 # Vessel profiles are reshaped from usbl_extrinsics_profiles in
-# config/deployment_configs_all.toml and cover all 52 deployments; the platform
-# side covers the 17 on disk, and the rest follow when the archive does.
+# config/deployment_configs_all.toml and cover all 52 deployments. The platform
+# side also covers all 52, every profile carrying its mounting poses.
 #
 # The OAS / MICRON obstacle avoidance sonar and MP_INPUT are deliberately
 # uncurated: nothing downstream consumes them, and MP_INPUT is not a sensor.
@@ -26,10 +26,17 @@
 # --------------------------------------------------------------------------------------
 
 [[sensor_identities]]
-key = "camera_prosilica"
+key = "camera_avt_prosilica"
 label = "AVT Prosilica GC1380 stereo camera"
 vendor = "AVT"
 product = "Prosilica GC1380"
+type = "stereo_camera"
+
+[[sensor_identities]]
+key = "camera_avt_manta"
+label = "Allied Vision Manta G-1236 stereo camera"
+vendor = "Allied Vision"
+product = "Manta G-1236"
 type = "stereo_camera"
 
 [[sensor_identities]]
@@ -137,7 +144,7 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 [[platform_profiles]]
@@ -157,7 +164,7 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 [[platform_profiles]]
@@ -177,7 +184,7 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 [[platform_profiles]]
@@ -200,7 +207,7 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 [[platform_profiles]]
@@ -222,7 +229,7 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 [[platform_profiles]]
@@ -244,7 +251,29 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+]
+
+[[platform_profiles]]
+key = "2015_auv_sirius"
+platform_label = "AUV Sirius"
+platform_class = "SEABED"
+platform_operator = "ACFR"
+sensors = [
+    { key = "BATT0", identity = "battery_pack" },
+    { key = "BATT1", identity = "battery_pack" },
+    { key = "BATT2", identity = "battery_pack" },
+    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
+    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
+    { key = "EVOLOGICS", identity = "usbl_evologics", extrinsics = { locx = 0.0, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "GPS", identity = "gnss_ublox" },
+    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "SEABIRD", identity = "ctd_seabird" },
+    { key = "THR_PORT", identity = "thruster" },
+    { key = "THR_STBD", identity = "thruster" },
+    { key = "THR_VERT", identity = "thruster" },
+    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 [[platform_profiles]]
@@ -266,7 +295,30 @@ sensors = [
     { key = "THR_PORT", identity = "thruster" },
     { key = "THR_STBD", identity = "thruster" },
     { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+]
+
+# The 2021 syscfg has VIS, SEABIRD and the battery channels commented out, so
+# SEABIRD and the batteries are absent here. The VIS slot is kept, carrying the
+# Manta the vehicle flew by then and the stereo pose from the localizer config;
+# it stays unenriched until a roster names the camera.
+
+[[platform_profiles]]
+key = "2021_auv_sirius"
+platform_label = "AUV Sirius"
+platform_class = "SEABED"
+platform_operator = "ACFR"
+sensors = [
+    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
+    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
+    { key = "EVOLOGICS", identity = "usbl_evologics", extrinsics = { locx = 0.0, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "GPSD", identity = "gnss_ublox" },
+    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "THR_PORT", identity = "thruster" },
+    { key = "THR_STBD", identity = "thruster" },
+    { key = "THR_VERT", identity = "thruster" },
+    { key = "VIS", identity = "camera_avt_manta", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
 ]
 
 # --------------------------------------------------------------------------------------
@@ -410,6 +462,43 @@ sensors = [
 # Deployment platforms
 # --------------------------------------------------------------------------------------
 
+
+[[deployment_platforms]]
+deployment_label = "qd61g27j_20100421_022145"
+platform_profile = "2010_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qd61g27j_20110410_011202"
+platform_profile = "2011_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qd61g27j_20120422_043114"
+platform_profile = "2012_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qd61g27j_20130414_013620"
+platform_profile = "2013_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qd61g27j_20170523_040815"
+platform_profile = "2017_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdc5ghs3_20100430_024508"
+platform_profile = "2010_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdc5ghs3_20120501_033336"
+platform_profile = "2012_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdc5ghs3_20130405_103429"
+platform_profile = "2013_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdc5ghs3_20210315_230947"
+platform_profile = "2021_auv_sirius"
+
 [[deployment_platforms]]
 deployment_label = "qdch0ftq_20100428_020202"
 platform_profile = "2010_auv_sirius"
@@ -427,6 +516,18 @@ deployment_label = "qdch0ftq_20130406_023610"
 platform_profile = "2013_auv_sirius"
 
 [[deployment_platforms]]
+deployment_label = "qdch0ftq_20140327_071251"
+platform_profile = "2014_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20170526_025746"
+platform_profile = "2017_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20210315_034028"
+platform_profile = "2021_auv_sirius"
+
+[[deployment_platforms]]
 deployment_label = "qdchdmy1_20110416_005411"
 platform_profile = "2011_auv_sirius"
 
@@ -439,8 +540,44 @@ deployment_label = "qdchdmy1_20130406_081713"
 platform_profile = "2013_auv_sirius"
 
 [[deployment_platforms]]
+deployment_label = "qdchdmy1_20140328_063358"
+platform_profile = "2014_auv_sirius"
+
+[[deployment_platforms]]
 deployment_label = "qdchdmy1_20170525_234624"
 platform_profile = "2017_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qdchdmy1_20210315_081519"
+platform_profile = "2021_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qtqxshxs_20110815_102540"
+platform_profile = "2011_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qtqxshxs_20150327_015552"
+platform_profile = "2015_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qtqxshxs_20150328_000850"
+platform_profile = "2015_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "qtqxshxs_20150328_042551"
+platform_profile = "2015_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r234xgje_20100604_230524"
+platform_profile = "2010_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r234xgje_20120530_064545"
+platform_profile = "2012_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r234xgje_20140616_205232"
+platform_profile = "2014_auv_sirius"
 
 [[deployment_platforms]]
 deployment_label = "r23685bc_20100605_021022"
@@ -455,7 +592,39 @@ deployment_label = "r23685bc_20140616_225022"
 platform_profile = "2014_auv_sirius"
 
 [[deployment_platforms]]
+deployment_label = "r23m7ms0_20100606_001908"
+platform_profile = "2010_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r23m7ms0_20120601_070118"
+platform_profile = "2012_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r23m7ms0_20140616_044549"
+platform_profile = "2014_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd12_20090613_010853"
+platform_profile = "2009_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd12_20090613_104954"
+platform_profile = "2009_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd12_20110612_045149"
+platform_profile = "2011_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd12_20130611_015335"
+platform_profile = "2013_auv_sirius"
+
+[[deployment_platforms]]
 deployment_label = "r29mrd5h_20090612_225306"
+platform_profile = "2009_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd5h_20090613_100254"
 platform_profile = "2009_auv_sirius"
 
 [[deployment_platforms]]
@@ -476,6 +645,30 @@ platform_profile = "2012_auv_sirius"
 
 [[deployment_platforms]]
 deployment_label = "r7jjskxq_20131022_004934"
+platform_profile = "2013_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r7jjss8n_20101023_210332"
+platform_profile = "2010_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r7jjss8n_20121013_060425"
+platform_profile = "2012_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r7jjss8n_20131022_004934"
+platform_profile = "2013_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r7jjssbh_20101023_210332"
+platform_profile = "2010_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r7jjssbh_20121013_060425"
+platform_profile = "2012_auv_sirius"
+
+[[deployment_platforms]]
+deployment_label = "r7jjssbh_20131022_004934"
 platform_profile = "2013_auv_sirius"
 
 # --------------------------------------------------------------------------------------
