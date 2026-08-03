@@ -5,7 +5,9 @@ from pathlib import Path
 from afft.deployment import EnrichmentSection
 from afft.tasks.deployment_catalog import (
     ScaffoldCatalogCommand,
+    SummarizeCatalogCommand,
     run_scaffold_catalog,
+    run_summarize_catalog,
 )
 from afft.tasks.deployment_descriptor import (
     DescribeDeploymentCommand,
@@ -99,3 +101,19 @@ def dispatch_summarize_descriptor(
         verbose=verbose,
     )
     run_summarize_descriptor(command)
+
+
+def dispatch_summarize_catalog(
+    input_file: str | Path,
+    verbose: bool = False,
+) -> None:
+    """
+    Summarize a curated deployment catalog.
+
+    Always exits zero: curation gaps are the summary's output, not a failure of
+    the run.
+    """
+    command = SummarizeCatalogCommand(
+        input_file=Path(input_file), verbose=verbose
+    )
+    run_summarize_catalog(command)

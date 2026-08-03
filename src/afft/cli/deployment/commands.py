@@ -8,6 +8,7 @@ from .actions import (
     dispatch_describe_deployment,
     dispatch_enrich_descriptor,
     dispatch_scaffold_catalog,
+    dispatch_summarize_catalog,
     dispatch_summarize_descriptor,
 )
 
@@ -180,3 +181,30 @@ def summarize(
     one, writes a detailed per-deployment report as Markdown.
     """
     dispatch_summarize_descriptor(input_file, output_file, verbose)
+
+
+@deployment_group.command()
+@click.option(
+    "--input",
+    "input_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the curated deployment catalog TOML file",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="list the records affected by each curation gap",
+)
+def summarize_catalog(
+    input_file: str,
+    verbose: bool,
+) -> None:
+    """Summarize a curated deployment catalog.
+
+    Prints curation progress to the terminal — record counts, profile
+    assignment coverage, records nothing references, and the curated fields
+    still left empty.
+    """
+    dispatch_summarize_catalog(input_file, verbose)
