@@ -14,6 +14,15 @@ from .catalog_io import (
     read_deployment_catalog as read_deployment_catalog,
     write_deployment_catalog as write_deployment_catalog,
 )
+from .catalog_summary import (
+    AssignmentCoverage as AssignmentCoverage,
+    CatalogCurationGap as CatalogCurationGap,
+    CatalogSummary as CatalogSummary,
+    ProfileAssignment as ProfileAssignment,
+    collect_catalog_curation_gaps as collect_catalog_curation_gaps,
+    collect_unreferenced_sensors as collect_unreferenced_sensors,
+    summarize_catalog as summarize_catalog,
+)
 from .descriptor_types import (
     DeploymentDescriptor as DeploymentDescriptor,
     DeploymentFileSection as DeploymentFileSection,

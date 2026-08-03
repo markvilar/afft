@@ -14,6 +14,14 @@ from .runner import (
     run_scaffold_catalog as run_scaffold_catalog,
     scaffold_catalog as scaffold_catalog,
 )
+from .summary_runner import (
+    log_summary as log_summary,
+    run_summarize_catalog as run_summarize_catalog,
+)
+from .summary_types import (
+    SummarizeCatalogCommand as SummarizeCatalogCommand,
+    SummarizeCatalogResult as SummarizeCatalogResult,
+)
 from .types import (
     CatalogWarning as CatalogWarning,
     ScaffoldCatalogCommand as ScaffoldCatalogCommand,
