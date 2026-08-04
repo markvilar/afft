@@ -164,15 +164,17 @@ def test_summarize_reports_unreferenced_sensor_identities() -> None:
         update={
             "sensor_identities": [
                 *catalog.sensor_identities,
-                _sensor_identity(key="usbl_linkquest"),
+                _sensor_identity(key="usbl_linkquest_transceiver"),
             ]
         }
     )
 
     summary: CatalogSummary = summarize_catalog(catalog)
 
-    assert summary.unreferenced_sensors == ["usbl_linkquest"]
-    assert collect_unreferenced_sensors(catalog) == ["usbl_linkquest"]
+    assert summary.unreferenced_sensors == ["usbl_linkquest_transceiver"]
+    assert collect_unreferenced_sensors(catalog) == [
+        "usbl_linkquest_transceiver"
+    ]
 
 
 def test_summarize_groups_curation_gaps_by_field() -> None:
@@ -215,7 +217,7 @@ def test_summarize_orders_gaps_by_descending_count_then_field() -> None:
     catalog = DeploymentCatalog(
         sensor_identities=[
             _sensor_identity(key="dvl_teledyne", vendor=""),
-            _sensor_identity(key="usbl_linkquest", vendor=""),
+            _sensor_identity(key="usbl_linkquest_transceiver", vendor=""),
         ],
         vessel_profiles=[CatalogVesselProfile(key="linnaeus", vessel_name="")],
     )

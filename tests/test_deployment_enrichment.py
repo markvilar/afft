@@ -102,8 +102,8 @@ def _build_catalog() -> DeploymentCatalog:
                 type="multibeam_sonar",
             ),
             CatalogSensorIdentity(
-                key="usbl_evologics",
-                label="EvoLogics S2CR USBL modem",
+                key="usbl_evologics_transceiver",
+                label="EvoLogics S2CR USBL transceiver",
                 vendor="EvoLogics",
                 product="S2CR 18/34",
                 type="usbl",
@@ -146,7 +146,7 @@ def _build_catalog() -> DeploymentCatalog:
                 sensors=[
                     CatalogProfileSensor(
                         key="USBL",
-                        identity="usbl_evologics",
+                        identity="usbl_evologics_transceiver",
                         extrinsics=CatalogSensorExtrinsics(
                             locx=1.2,
                             locy=-0.4,
