@@ -27,9 +27,16 @@ DVL_SENSOR: CatalogSensorIdentity = CatalogSensorIdentity(
     product="Work Horse Navigator",
     type="dvl",
 )
-USBL_SENSOR: CatalogSensorIdentity = CatalogSensorIdentity(
-    key="usbl_linkquest",
-    label="LinkQuest TrackLink 1500HA USBL",
+USBL_TRANSPONDER: CatalogSensorIdentity = CatalogSensorIdentity(
+    key="usbl_linkquest_transponder",
+    label="LinkQuest TrackLink 1500HA USBL transponder",
+    vendor="LinkQuest",
+    product="TrackLink 1500HA",
+    type="usbl",
+)
+USBL_TRANSCEIVER: CatalogSensorIdentity = CatalogSensorIdentity(
+    key="usbl_linkquest_transceiver",
+    label="LinkQuest TrackLink 1500HA USBL transceiver",
     vendor="LinkQuest",
     product="TrackLink 1500HA",
     type="usbl",
@@ -39,7 +46,7 @@ USBL_SENSOR: CatalogSensorIdentity = CatalogSensorIdentity(
 def _build_catalog() -> DeploymentCatalog:
     """Builds a catalog covering one platform and one vessel profile."""
     return DeploymentCatalog(
-        sensor_identities=[DVL_SENSOR, USBL_SENSOR],
+        sensor_identities=[DVL_SENSOR, USBL_TRANSPONDER, USBL_TRANSCEIVER],
         platform_profiles=[
             CatalogPlatformProfile(
                 key="2010_auv_sirius",
@@ -60,7 +67,7 @@ def _build_catalog() -> DeploymentCatalog:
                         ),
                     ),
                     CatalogProfileSensor(
-                        key="LQMODEM", identity="usbl_linkquest"
+                        key="LQMODEM", identity="usbl_linkquest_transponder"
                     ),
                 ],
             )
@@ -72,7 +79,7 @@ def _build_catalog() -> DeploymentCatalog:
                 sensors=[
                     CatalogProfileSensor(
                         key="USBL",
-                        identity="usbl_linkquest",
+                        identity="usbl_linkquest_transceiver",
                         extrinsics=CatalogSensorExtrinsics(
                             locx=-5.715,
                             locy=-1.258,
