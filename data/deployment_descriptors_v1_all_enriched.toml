@@ -152,7 +152,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -208,7 +208,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -363,7 +363,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -419,7 +419,7 @@ vessel_name = "RV Cape Ferguson"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -592,7 +592,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -662,7 +662,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -818,7 +818,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -881,7 +881,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -1085,7 +1085,7 @@ key = "MICRON"
 
 [[deployments.platform.sensors]]
 key = "EVOLOGICS"
-identity.label = "EvoLogics S2C R 18/34 USBL"
+identity.label = "EvoLogics S2C R 18/34 USBL transponder"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
 identity.type = "usbl"
@@ -1118,7 +1118,7 @@ vessel_name = "Silver Streak"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "EvoLogics S2C R 18/34 USBL"
+identity.label = "EvoLogics S2C R 18/34 USBL transceiver"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
 identity.type = "usbl"
@@ -1272,7 +1272,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -1328,7 +1328,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -1499,7 +1499,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -1569,7 +1569,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -1725,7 +1725,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -1788,7 +1788,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -1953,7 +1953,7 @@ key = "MICRON"
 
 [[deployments.platform.sensors]]
 key = "EVOLOGICS"
-identity.label = "EvoLogics S2C R 18/34 USBL"
+identity.label = "EvoLogics S2C R 18/34 USBL transponder"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
 identity.type = "usbl"
@@ -1986,9 +1986,9 @@ vessel_name = "PoppaG"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "USBL transceiver of unrecorded make"
-identity.vendor = ""
-identity.product = ""
+identity.label = "EvoLogics S2C R 18/34 USBL transceiver"
+identity.vendor = "EvoLogics"
+identity.product = "S2C R 18/34"
 identity.type = "usbl"
 extrinsics.locx = -9.4
 extrinsics.locy = -3.72
@@ -2144,7 +2144,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -2200,7 +2200,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -2359,7 +2359,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -2415,7 +2415,7 @@ vessel_name = "RV Naturaliste"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -2588,7 +2588,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -2658,7 +2658,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -2816,7 +2816,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -2879,7 +2879,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -3059,7 +3059,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -3122,7 +3122,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -3327,7 +3327,7 @@ key = "MICRON"
 
 [[deployments.platform.sensors]]
 key = "EVOLOGICS"
-identity.label = "EvoLogics S2C R 18/34 USBL"
+identity.label = "EvoLogics S2C R 18/34 USBL transponder"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
 identity.type = "usbl"
@@ -3360,7 +3360,7 @@ vessel_name = "Silver Streak"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "EvoLogics S2C R 18/34 USBL"
+identity.label = "EvoLogics S2C R 18/34 USBL transceiver"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
 identity.type = "usbl"
@@ -3527,7 +3527,7 @@ key = "MICRON"
 
 [[deployments.platform.sensors]]
 key = "EVOLOGICS"
-identity.label = "EvoLogics S2C R 18/34 USBL"
+identity.label = "EvoLogics S2C R 18/34 USBL transponder"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
 identity.type = "usbl"
@@ -3560,9 +3560,9 @@ vessel_name = "PoppaG"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "USBL transceiver of unrecorded make"
-identity.vendor = ""
-identity.product = ""
+identity.label = "EvoLogics S2C R 18/34 USBL transceiver"
+identity.vendor = "EvoLogics"
+identity.product = "S2C R 18/34"
 identity.type = "usbl"
 extrinsics.locx = -9.4
 extrinsics.locy = -3.72
@@ -3714,7 +3714,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -3770,7 +3770,7 @@ vessel_name = "RV Naturaliste"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -3938,7 +3938,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -4008,7 +4008,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -4164,7 +4164,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -4227,7 +4227,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -4404,7 +4404,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -4467,7 +4467,7 @@ vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -4670,7 +4670,7 @@ key = "MICRON"
 
 [[deployments.platform.sensors]]
 key = "EVOLOGICS"
-identity.label = "EvoLogics S2C R 18/34 USBL"
+identity.label = "EvoLogics S2C R 18/34 USBL transponder"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
 identity.type = "usbl"
@@ -4703,7 +4703,7 @@ vessel_name = "Silver Streak"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "EvoLogics S2C R 18/34 USBL"
+identity.label = "EvoLogics S2C R 18/34 USBL transceiver"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
 identity.type = "usbl"
@@ -4881,7 +4881,7 @@ key = "MICRON"
 
 [[deployments.platform.sensors]]
 key = "EVOLOGICS"
-identity.label = "EvoLogics S2C R 18/34 USBL"
+identity.label = "EvoLogics S2C R 18/34 USBL transponder"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
 identity.type = "usbl"
@@ -4914,9 +4914,9 @@ vessel_name = "PoppaG"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "USBL transceiver of unrecorded make"
-identity.vendor = ""
-identity.product = ""
+identity.label = "EvoLogics S2C R 18/34 USBL transceiver"
+identity.vendor = "EvoLogics"
+identity.product = "S2C R 18/34"
 identity.type = "usbl"
 extrinsics.locx = -9.4
 extrinsics.locy = -3.72
@@ -5074,7 +5074,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -5130,7 +5130,7 @@ vessel_name = "Solander"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -5347,7 +5347,7 @@ key = "MICRON"
 
 [[deployments.platform.sensors]]
 key = "EVOLOGICS"
-identity.label = "EvoLogics S2C R 18/34 USBL"
+identity.label = "EvoLogics S2C R 18/34 USBL transponder"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
 identity.type = "usbl"
@@ -5379,9 +5379,9 @@ vessel_name = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "USBL transceiver of unrecorded make"
-identity.vendor = ""
-identity.product = ""
+identity.label = "EvoLogics S2C R 18/34 USBL transceiver"
+identity.vendor = "EvoLogics"
+identity.product = "S2C R 18/34"
 identity.type = "usbl"
 extrinsics.locx = -11.062
 extrinsics.locy = -6.656
@@ -5588,7 +5588,7 @@ key = "MICRON"
 
 [[deployments.platform.sensors]]
 key = "EVOLOGICS"
-identity.label = "EvoLogics S2C R 18/34 USBL"
+identity.label = "EvoLogics S2C R 18/34 USBL transponder"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
 identity.type = "usbl"
@@ -5620,9 +5620,9 @@ vessel_name = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "USBL transceiver of unrecorded make"
-identity.vendor = ""
-identity.product = ""
+identity.label = "EvoLogics S2C R 18/34 USBL transceiver"
+identity.vendor = "EvoLogics"
+identity.product = "S2C R 18/34"
 identity.type = "usbl"
 extrinsics.locx = -11.062
 extrinsics.locy = -6.656
@@ -5827,7 +5827,7 @@ key = "MICRON"
 
 [[deployments.platform.sensors]]
 key = "EVOLOGICS"
-identity.label = "EvoLogics S2C R 18/34 USBL"
+identity.label = "EvoLogics S2C R 18/34 USBL transponder"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
 identity.type = "usbl"
@@ -5859,9 +5859,9 @@ vessel_name = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "USBL transceiver of unrecorded make"
-identity.vendor = ""
-identity.product = ""
+identity.label = "EvoLogics S2C R 18/34 USBL transceiver"
+identity.vendor = "EvoLogics"
+identity.product = "S2C R 18/34"
 identity.type = "usbl"
 extrinsics.locx = -11.062
 extrinsics.locy = -6.656
@@ -6016,7 +6016,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -6072,7 +6072,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -6246,7 +6246,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -6316,7 +6316,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -6493,7 +6493,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -6549,7 +6549,7 @@ vessel_name = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -6705,7 +6705,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -6761,7 +6761,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -6932,7 +6932,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -7002,7 +7002,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -7180,7 +7180,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -7236,7 +7236,7 @@ vessel_name = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -7390,7 +7390,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -7446,7 +7446,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -7617,7 +7617,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -7680,7 +7680,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -7860,7 +7860,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -7916,7 +7916,7 @@ vessel_name = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -8049,7 +8049,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -8123,7 +8123,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -8256,7 +8256,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -8330,7 +8330,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -8483,7 +8483,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -8539,7 +8539,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -8710,7 +8710,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -8773,7 +8773,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -8908,7 +8908,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -8982,7 +8982,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -9115,7 +9115,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -9189,7 +9189,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -9341,7 +9341,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -9397,7 +9397,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -9571,7 +9571,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -9634,7 +9634,7 @@ vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -9788,7 +9788,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -9844,7 +9844,7 @@ vessel_name = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -10001,7 +10001,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -10064,7 +10064,7 @@ vessel_name = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -10230,7 +10230,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -10286,7 +10286,7 @@ vessel_name = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -10440,7 +10440,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -10496,7 +10496,7 @@ vessel_name = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -10653,7 +10653,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -10716,7 +10716,7 @@ vessel_name = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -10882,7 +10882,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -10938,7 +10938,7 @@ vessel_name = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -11092,7 +11092,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -11148,7 +11148,7 @@ vessel_name = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -11305,7 +11305,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -11368,7 +11368,7 @@ vessel_name = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -11534,7 +11534,7 @@ identity.type = "battery"
 
 [[deployments.platform.sensors]]
 key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
@@ -11590,7 +11590,7 @@ vessel_name = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "USBL"
-identity.label = "LinkQuest TrackLink 1500HA USBL"
+identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
