@@ -11,11 +11,6 @@ from afft.tasks.collect_squidle_media import (
     DeploymentMatchPolicy,
     run_collect_squidle_media,
 )
-from afft.tasks.process_telemetry import (
-    GroupingStrategy,
-    ProcessTelemetryCommand,
-    run_process_telemetry,
-)
 from afft.tasks.tide_correct_pressure import (
     TideCorrectCommand,
     TideCorrectConfig,
@@ -43,28 +38,6 @@ def dispatch_clip_tables(
         timestamp_format=timestamp_format,
     )
     run_clip_tables(command)
-
-
-def dispatch_process_telemetry(
-    source_dir: str | Path,
-    output_dir: str | Path,
-    config_file: str | Path,
-    pattern: str = "*.csv",
-    grouping_strategy: str = "prefix",
-    timestamp_column: str = "timestamp",
-    timestamp_format: str = "ISO8601",
-) -> None:
-    """Dispatch the telemetry processing pipeline task."""
-    command = ProcessTelemetryCommand(
-        source_dir=Path(source_dir),
-        output_dir=Path(output_dir),
-        config_file=Path(config_file),
-        pattern=pattern,
-        strategy=GroupingStrategy(grouping_strategy),
-        timestamp_column=timestamp_column,
-        timestamp_format=timestamp_format,
-    )
-    run_process_telemetry(command)
 
 
 def dispatch_correct_pressure_tide(

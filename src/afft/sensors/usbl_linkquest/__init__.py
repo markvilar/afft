@@ -1,7 +1,5 @@
 """Processing package for the LinkQuest TrackLink 1500HA USBL."""
 
-from afft.sensors.registry import register_sensor
-
 from .parsers import parse_tracklink_log as parse_tracklink_log
 
 from .processors import (
@@ -21,10 +19,4 @@ from .types import (
     TrackLinkResolvePositionFromMessagesConfig as TrackLinkResolvePositionFromMessagesConfig,
     TrackLinkTransceiverExtrinsics as TrackLinkTransceiverExtrinsics,
     TrackLinkUncertaintyConfig as TrackLinkUncertaintyConfig,
-)
-
-register_sensor(
-    "usbl_linkquest",
-    TrackLinkProcessingFromMessagesConfig,
-    process_tracklink_usbl_from_messages,
 )

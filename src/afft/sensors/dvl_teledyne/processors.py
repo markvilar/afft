@@ -2,12 +2,9 @@
 
 import pandas as pd
 
-from afft.telemetry_processing.pipeline import register_processor
-
 from .types import DvlUncertaintyConfig
 
 
-@register_processor("estimate_dvl_uncertainty")
 def estimate_dvl_uncertainty(
     df: pd.DataFrame,
     config: DvlUncertaintyConfig = DvlUncertaintyConfig(),

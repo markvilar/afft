@@ -2,7 +2,6 @@
 
 import pandas as pd
 
-from afft.telemetry_processing.pipeline import register_processor
 from afft.utils.log import logger
 
 from .types import PairStereoImagesConfig
@@ -19,7 +18,6 @@ def _to_float_seconds(series: pd.Series) -> pd.Series:
     return pd.to_datetime(series).astype("int64") / 1e9
 
 
-@register_processor("pair_stereo_images")
 def pair_stereo_images(
     df: pd.DataFrame,
     config: PairStereoImagesConfig = PairStereoImagesConfig(),

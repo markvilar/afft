@@ -2,12 +2,9 @@
 
 import pandas as pd
 
-from afft.telemetry_processing.pipeline import register_processor
-
 from .types import PressureUncertaintyConfig
 
 
-@register_processor("estimate_pressure_uncertainty")
 def estimate_pressure_uncertainty(
     df: pd.DataFrame,
     config: PressureUncertaintyConfig = PressureUncertaintyConfig(),
