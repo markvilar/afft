@@ -68,48 +68,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -122,6 +81,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -187,48 +162,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -241,6 +175,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -310,57 +260,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "IMU"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -373,6 +273,25 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+    "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
     "IMU",
 ]
 
@@ -439,51 +358,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -497,6 +372,23 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -566,54 +458,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
-
-[[deployments.platform.sensors]]
-key = "EVOLOGICS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -628,6 +473,24 @@ logged_streams = [
     "RDI",
     "IMU",
     "MICRON",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS",
+    "SEABIRD",
+    "MICRON",
+    "EVOLOGICS",
 ]
 
 [deployments.vessel]
@@ -692,48 +555,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -746,6 +568,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -813,57 +651,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "IMU"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -876,6 +664,25 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+    "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
     "IMU",
 ]
 
@@ -942,51 +749,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -1000,6 +763,23 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
@@ -1071,39 +851,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPSD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
-
-[[deployments.platform.sensors]]
-key = "EVOLOGICS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -1118,6 +866,19 @@ logged_streams = [
     "RDI",
     "IMU",
     "MICRON",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "ECOPUCK",
+    "GPSD",
+    "MICRON",
+    "EVOLOGICS",
 ]
 
 [deployments.vessel]
@@ -1186,48 +947,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -1240,6 +960,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -1309,48 +1045,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -1363,6 +1058,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -1432,57 +1143,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "IMU"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -1495,6 +1156,25 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+    "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
     "IMU",
 ]
 
@@ -1563,51 +1243,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -1621,6 +1257,23 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
@@ -1697,54 +1350,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -1758,6 +1364,24 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
@@ -1828,54 +1452,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
-
-[[deployments.platform.sensors]]
-key = "EVOLOGICS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -1890,6 +1467,24 @@ logged_streams = [
     "RDI",
     "IMU",
     "MICRON",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS",
+    "SEABIRD",
+    "MICRON",
+    "EVOLOGICS",
 ]
 
 [deployments.vessel]
@@ -1963,39 +1558,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPSD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
-
-[[deployments.platform.sensors]]
-key = "EVOLOGICS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -2010,6 +1573,19 @@ logged_streams = [
     "RDI",
     "IMU",
     "MICRON",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "ECOPUCK",
+    "GPSD",
+    "MICRON",
+    "EVOLOGICS",
 ]
 
 [deployments.vessel]
@@ -2074,48 +1650,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -2128,6 +1663,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -2192,57 +1743,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "IMU"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -2255,6 +1756,25 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+    "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
     "IMU",
 ]
 
@@ -2321,51 +1841,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -2379,6 +1855,23 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
@@ -2452,54 +1945,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -2513,6 +1959,24 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
@@ -2581,54 +2045,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
-
-[[deployments.platform.sensors]]
-key = "EVOLOGICS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -2643,6 +2060,24 @@ logged_streams = [
     "RDI",
     "IMU",
     "MICRON",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS",
+    "SEABIRD",
+    "MICRON",
+    "EVOLOGICS",
 ]
 
 [deployments.vessel]
@@ -2727,39 +2162,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPSD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
-
-[[deployments.platform.sensors]]
-key = "EVOLOGICS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -2774,6 +2177,19 @@ logged_streams = [
     "RDI",
     "IMU",
     "MICRON",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "ECOPUCK",
+    "GPSD",
+    "MICRON",
+    "EVOLOGICS",
 ]
 
 [deployments.vessel]
@@ -2844,48 +2260,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -2898,6 +2273,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -2980,54 +2371,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
-
-[[deployments.platform.sensors]]
-key = "EVOLOGICS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -3041,6 +2385,24 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS",
+    "SEABIRD",
+    "MICRON",
+    "EVOLOGICS",
 ]
 
 [deployments.vessel]
@@ -3115,54 +2477,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
-
-[[deployments.platform.sensors]]
-key = "EVOLOGICS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -3176,6 +2491,24 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS",
+    "SEABIRD",
+    "MICRON",
+    "EVOLOGICS",
 ]
 
 [deployments.vessel]
@@ -3248,54 +2581,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
-
-[[deployments.platform.sensors]]
-key = "EVOLOGICS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -3309,6 +2595,24 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS",
+    "SEABIRD",
+    "MICRON",
+    "EVOLOGICS",
 ]
 
 [deployments.vessel]
@@ -3376,48 +2680,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -3430,6 +2693,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -3500,57 +2779,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "IMU"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -3563,6 +2792,25 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+    "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
     "IMU",
 ]
 
@@ -3630,54 +2878,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -3691,6 +2892,24 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
@@ -3757,48 +2976,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -3811,6 +2989,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -3878,57 +3072,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "IMU"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -3941,6 +3085,25 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+    "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
     "IMU",
 ]
 
@@ -4009,54 +3172,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -4070,6 +3186,24 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
@@ -4134,48 +3268,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -4188,6 +3281,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -4255,54 +3364,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -4316,6 +3378,24 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -4385,54 +3465,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -4446,6 +3479,24 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
@@ -4508,48 +3559,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -4561,6 +3571,22 @@ logged_streams = [
     "CTL",
     "AUV",
     "MSG",
+]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "RDI",
+    "GPS",
+    "ECOPUCK",
+    "SEABIRD",
+    "OAS",
+    "DELTA_T",
 ]
 
 [deployments.vessel]
@@ -4623,48 +3649,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -4676,6 +3661,22 @@ logged_streams = [
     "CTL",
     "AUV",
     "MSG",
+]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "RDI",
+    "GPS",
+    "ECOPUCK",
+    "SEABIRD",
+    "OAS",
+    "DELTA_T",
 ]
 
 [deployments.vessel]
@@ -4739,48 +3740,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -4793,6 +3753,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -4860,54 +3836,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -4921,6 +3850,24 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
@@ -4985,48 +3932,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -5038,6 +3944,22 @@ logged_streams = [
     "CTL",
     "AUV",
     "MSG",
+]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "RDI",
+    "GPS",
+    "ECOPUCK",
+    "SEABIRD",
+    "OAS",
+    "DELTA_T",
 ]
 
 [deployments.vessel]
@@ -5100,48 +4022,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -5153,6 +4034,22 @@ logged_streams = [
     "CTL",
     "AUV",
     "MSG",
+]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "RDI",
+    "GPS",
+    "ECOPUCK",
+    "SEABIRD",
+    "OAS",
+    "DELTA_T",
 ]
 
 [deployments.vessel]
@@ -5215,48 +4112,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -5269,6 +4125,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -5339,54 +4211,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -5400,6 +4225,24 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
@@ -5464,48 +4307,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -5518,6 +4320,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -5584,51 +4402,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -5642,6 +4416,23 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -5704,51 +4495,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -5762,6 +4509,23 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
@@ -5826,48 +4590,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -5880,6 +4603,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -5946,51 +4685,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -6004,6 +4699,23 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -6066,51 +4778,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -6124,6 +4792,23 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
@@ -6188,48 +4873,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -6242,6 +4886,22 @@ logged_streams = [
     "AUV",
     "MSG",
     "RDI",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -6308,51 +4968,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "OAS"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -6366,6 +4982,23 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
 ]
 
 [deployments.vessel]
@@ -6428,51 +5061,7 @@ topics = [
 ]
 
 [deployments.platform]
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
-
-[[deployments.platform.sensors]]
-key = "RDI"
-
-[[deployments.platform.sensors]]
-key = "PAROSCI"
-
-[[deployments.platform.sensors]]
-key = "THR_PORT"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
+sensors = []
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -6486,6 +5075,23 @@ logged_streams = [
     "MSG",
     "RDI",
     "IMU",
+]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
 ]
 
 [deployments.vessel]
