@@ -55,8 +55,8 @@ def _build_catalog() -> DeploymentCatalog:
                 platform_operator="ACFR",
                 sensors=[
                     CatalogProfileSensor(
-                        key="RDI",
-                        identity="dvl_teledyne",
+                        key="dvl_teledyne",
+                        message_topics=["RDI"],
                         extrinsics=CatalogSensorExtrinsics(
                             locx=0.0,
                             locy=0.0,
@@ -67,7 +67,8 @@ def _build_catalog() -> DeploymentCatalog:
                         ),
                     ),
                     CatalogProfileSensor(
-                        key="LQMODEM", identity="usbl_linkquest_transponder"
+                        key="usbl_linkquest_transponder",
+                        message_topics=["LQMODEM"],
                     ),
                 ],
             )
@@ -78,8 +79,7 @@ def _build_catalog() -> DeploymentCatalog:
                 vessel_name="RV Linnaeus",
                 sensors=[
                     CatalogProfileSensor(
-                        key="USBL",
-                        identity="usbl_linkquest_transceiver",
+                        key="usbl_linkquest_transceiver",
                         extrinsics=CatalogSensorExtrinsics(
                             locx=-5.715,
                             locy=-1.258,
@@ -255,9 +255,7 @@ def test_unknown_sensor_identity_is_rejected() -> None:
                     platform_label="AUV Sirius",
                     platform_class="SEABED",
                     platform_operator="ACFR",
-                    sensors=[
-                        CatalogProfileSensor(key="RDI", identity="dvl_teledyne")
-                    ],
+                    sensors=[CatalogProfileSensor(key="dvl_teledyne")],
                 )
             ]
         )

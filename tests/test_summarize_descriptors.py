@@ -211,9 +211,15 @@ def test_summarize_groups_partially_filled_rosters() -> None:
         ),
         sensors=[
             PlatformSensor(
-                key="RDI", identity=_identity(vendor=""), extrinsics=None
+                key="dvl_teledyne_navigator",
+                identity=_identity(vendor=""),
+                extrinsics=None,
             ),
-            PlatformSensor(key="OAS", identity=None, extrinsics=_extrinsics()),
+            PlatformSensor(
+                key="sonar_obstacle_avoidance",
+                identity=_identity(),
+                extrinsics=_extrinsics(),
+            ),
         ],
     )
     descriptors: list[DeploymentDescriptor] = [
@@ -239,12 +245,17 @@ def test_summarize_groups_partially_filled_rosters() -> None:
     assert gaps["platform.identity.platform_operator"] == [
         "aaa_20100428_020202"
     ]
-    assert gaps["platform.sensors[RDI].identity.vendor"] == [
+    assert gaps["platform.sensors[dvl_teledyne_navigator].identity.vendor"] == [
         "aaa_20100428_020202"
     ]
-    assert gaps["platform.sensors[RDI].extrinsics"] == ["aaa_20100428_020202"]
-    assert gaps["platform.sensors[OAS].identity"] == ["aaa_20100428_020202"]
-    assert "platform.sensors[OAS].extrinsics" not in gaps
+    assert gaps["platform.sensors[dvl_teledyne_navigator].extrinsics"] == [
+        "aaa_20100428_020202"
+    ]
+    # A fully curated sensor contributes no gap at all.
+    assert not any(
+        field.startswith("platform.sensors[sonar_obstacle_avoidance]")
+        for field in gaps
+    )
 
 
 def test_collect_unfilled_fields_reports_empty_platform_label() -> None:

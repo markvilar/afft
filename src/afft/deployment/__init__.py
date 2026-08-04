@@ -58,6 +58,7 @@ from .enrichment import (
     DeploymentCatalogIndex as DeploymentCatalogIndex,
     DeploymentEnrichment as DeploymentEnrichment,
     EnrichmentSection as EnrichmentSection,
+    compare_topics as compare_topics,
     enrich_descriptor as enrich_descriptor,
     enrich_platform_section as enrich_platform_section,
     enrich_vessel_section as enrich_vessel_section,

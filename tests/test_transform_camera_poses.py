@@ -25,6 +25,7 @@ from afft.deployment import (
     DeploymentTelemetrySection,
     PlatformSensor,
     SensorExtrinsics,
+    SensorIdentity,
     write_deployment_descriptors,
 )
 from afft.tasks.transform_camera_poses import (
@@ -98,10 +99,34 @@ def _build_descriptor(
     )
 
 
-def _camera_sensor(posx: float = 0.82) -> PlatformSensor:
-    """A VIS sensor carrying the catalog's curated stereo camera pose."""
+def _camera_identity() -> SensorIdentity:
+    """The curated identity the camera is found by."""
+    return SensorIdentity(
+        label="AVT Prosilica GC1380 stereo camera",
+        vendor="AVT",
+        product="Prosilica GC1380",
+        type="stereo_camera",
+    )
+
+
+def _dvl_sensor() -> PlatformSensor:
+    """A roster entry that is not a camera."""
     return PlatformSensor(
-        key="VIS",
+        key="dvl_teledyne_navigator",
+        identity=SensorIdentity(
+            label="Teledyne RDI Work Horse Navigator DVL",
+            vendor="Teledyne RDI",
+            product="Work Horse Navigator",
+            type="dvl",
+        ),
+    )
+
+
+def _camera_sensor(posx: float = 0.82) -> PlatformSensor:
+    """A camera sensor carrying the catalog's curated stereo camera pose."""
+    return PlatformSensor(
+        key="camera_avt_prosilica",
+        identity=_camera_identity(),
         extrinsics=SensorExtrinsics(
             locx=posx,
             locy=-0.035,
@@ -190,18 +215,21 @@ def test_extrinsics_lookup_names_available_deployments(
 
 
 def test_extrinsics_rejects_roster_without_camera() -> None:
-    descriptor = _build_descriptor(
-        "qdch0ftq_20100428_020202", [PlatformSensor(key="RDI")]
-    )
+    descriptor = _build_descriptor("qdch0ftq_20100428_020202", [_dvl_sensor()])
 
-    with pytest.raises(KeyError, match="no VIS sensor"):
+    with pytest.raises(KeyError, match="no stereo_camera sensor"):
         _camera_extrinsics(descriptor)
 
 
-def test_extrinsics_rejects_unenriched_camera() -> None:
-    """The common case: a roster entry whose extrinsics enrichment never filled."""
+def test_extrinsics_rejects_camera_without_a_pose() -> None:
+    """The common case: a curated camera the catalog has no pose for."""
     descriptor = _build_descriptor(
-        "qdch0ftq_20100428_020202", [PlatformSensor(key="VIS")]
+        "qdch0ftq_20100428_020202",
+        [
+            PlatformSensor(
+                key="camera_avt_prosilica", identity=_camera_identity()
+            )
+        ],
     )
 
     with pytest.raises(ValueError, match="no extrinsics"):
@@ -238,11 +266,15 @@ def test_extrinsics_skip_unenriched_deployments(tmp_path: Path) -> None:
         [
             _build_descriptor("qdch0ftq_20100428_020202", [_camera_sensor()]),
             _build_descriptor(
-                "qd61g27j_20100421_022145", [PlatformSensor(key="VIS")]
+                "qd61g27j_20100421_022145",
+                [
+                    PlatformSensor(
+                        key="camera_avt_prosilica",
+                        identity=_camera_identity(),
+                    )
+                ],
             ),
-            _build_descriptor(
-                "qdch0ftq_20110415_020103", [PlatformSensor(key="RDI")]
-            ),
+            _build_descriptor("qdch0ftq_20110415_020103", [_dvl_sensor()]),
         ],
     )
 

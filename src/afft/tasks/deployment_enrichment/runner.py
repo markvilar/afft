@@ -30,7 +30,10 @@ def enrich_descriptors(
     Enrich a set of deployment descriptors from a curated catalog.
 
     A deployment the catalog assigns no profile is a curation gap rather than
-    a failure: it is reported as a warning and keeps its unfilled slots.
+    a failure: it is reported as a warning and keeps its unfilled slots. So is
+    a roster whose declared topics disagree with the ones the deployment
+    logged — a sensor can be fitted without logging, and the catalog leaves
+    some logged hardware deliberately unmounted.
 
     Arguments
     ---------
@@ -57,6 +60,18 @@ def enrich_descriptors(
         if enrichment.vessel_matched is False:
             diagnostics.warning(
                 descriptor.deployment_label, "no vessel profile assigned"
+            )
+        if enrichment.undeclared_topics:
+            diagnostics.warning(
+                descriptor.deployment_label,
+                "logged topics no curated sensor claims: "
+                f"{', '.join(enrichment.undeclared_topics)}",
+            )
+        if enrichment.unobserved_topics:
+            diagnostics.warning(
+                descriptor.deployment_label,
+                "declared topics the deployment never logged: "
+                f"{', '.join(enrichment.unobserved_topics)}",
             )
         enriched.append(enrichment.descriptor)
 

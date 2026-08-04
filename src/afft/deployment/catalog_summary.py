@@ -196,7 +196,12 @@ def collect_unreferenced_sensors(
     catalog: DeploymentCatalog,
 ) -> list[RecordKey]:
     """
-    Collect the sensor identities no profile sensor references.
+    Collect the sensor identities no profile mounts.
+
+    Not every unmounted identity is an oversight: the catalog keeps reference
+    records for hardware the vehicle carried but nothing downstream consumes,
+    such as the thrusters and the obstacle avoidance sonar. They are reported
+    all the same, since the record itself does not say which it is.
 
     Arguments
     ---------
@@ -204,14 +209,14 @@ def collect_unreferenced_sensors(
 
     Returns
     -------
-    Keys of the unreferenced sensor identities, in file order.
+    Keys of the unmounted sensor identities, in file order.
     """
     profiles: list[CatalogPlatformProfile | CatalogVesselProfile] = [
         *catalog.platform_profiles,
         *catalog.vessel_profiles,
     ]
     referenced: set[str] = {
-        sensor.identity for profile in profiles for sensor in profile.sensors
+        sensor.key for profile in profiles for sensor in profile.sensors
     }
     return [
         sensor.key

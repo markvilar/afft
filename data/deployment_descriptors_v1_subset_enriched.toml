@@ -68,23 +68,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = 0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = -3.125
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -97,7 +84,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -110,7 +110,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = 0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = -3.125
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -123,63 +161,14 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "OAS"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -193,6 +182,22 @@ logged_streams = [
     "MSG",
     "RDI",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
+]
 
 [deployments.vessel]
 
@@ -200,7 +205,8 @@ logged_streams = [
 vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -283,23 +289,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = 0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = -3.125
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -312,7 +305,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -325,7 +331,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = 0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = -3.125
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -338,63 +382,14 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "OAS"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -408,6 +403,22 @@ logged_streams = [
     "MSG",
     "RDI",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
+]
 
 [deployments.vessel]
 
@@ -415,7 +426,8 @@ logged_streams = [
 vessel_name = "RV Naturaliste"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -498,23 +510,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = -0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -527,7 +526,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -540,7 +552,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = -0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = 0.0
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -553,42 +603,10 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -599,44 +617,6 @@ extrinsics.locz = -0.9
 extrinsics.rotx = 0.0
 extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "IMU"
-identity.label = "Inertial measurement unit"
-identity.vendor = ""
-identity.product = ""
-identity.type = "imu"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -651,6 +631,25 @@ logged_streams = [
     "RDI",
     "IMU",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
+    "IMU",
+]
 
 [deployments.vessel]
 
@@ -658,7 +657,8 @@ logged_streams = [
 vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -739,10 +739,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -755,7 +755,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -768,7 +781,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = -0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = 0.0
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -781,42 +832,10 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -827,37 +846,6 @@ extrinsics.locz = -0.9
 extrinsics.rotx = 0.0
 extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -872,6 +860,23 @@ logged_streams = [
     "RDI",
     "IMU",
 ]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
+]
 
 [deployments.vessel]
 
@@ -879,7 +884,8 @@ logged_streams = [
 vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -957,23 +963,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = 0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = -3.125
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -986,7 +979,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -999,7 +1005,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = 0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = -3.125
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -1012,63 +1056,14 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "OAS"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -1082,6 +1077,22 @@ logged_streams = [
     "MSG",
     "RDI",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
+]
 
 [deployments.vessel]
 
@@ -1089,7 +1100,8 @@ logged_streams = [
 vessel_name = "RV Naturaliste"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -1167,23 +1179,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = -0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -1196,7 +1195,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -1209,7 +1221,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = -0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = 0.0
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -1222,42 +1272,10 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -1268,44 +1286,6 @@ extrinsics.locz = -0.9
 extrinsics.rotx = 0.0
 extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "IMU"
-identity.label = "Inertial measurement unit"
-identity.vendor = ""
-identity.product = ""
-identity.type = "imu"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -1320,6 +1300,25 @@ logged_streams = [
     "RDI",
     "IMU",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
+    "IMU",
+]
 
 [deployments.vessel]
 
@@ -1327,7 +1326,8 @@ logged_streams = [
 vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -1406,10 +1406,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -1422,7 +1422,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -1435,7 +1448,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = -0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = 0.0
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -1448,42 +1499,10 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -1494,37 +1513,6 @@ extrinsics.locz = -0.9
 extrinsics.rotx = 0.0
 extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -1539,6 +1527,23 @@ logged_streams = [
     "RDI",
     "IMU",
 ]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
+]
 
 [deployments.vessel]
 
@@ -1546,7 +1551,8 @@ logged_streams = [
 vessel_name = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -1628,23 +1634,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = -0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -1657,7 +1650,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -1670,7 +1676,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = -0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = 0.0
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -1683,73 +1727,10 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
-
-[[deployments.platform.sensors]]
-key = "EVOLOGICS"
+key = "usbl_evologics_transponder"
+message_topics = [
+    "EVOLOGICS_FIX",
+]
 identity.label = "EvoLogics S2C R 18/34 USBL transponder"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
@@ -1775,6 +1756,24 @@ logged_streams = [
     "IMU",
     "MICRON",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "ECOPUCK",
+    "GPS",
+    "SEABIRD",
+    "MICRON",
+    "EVOLOGICS",
+]
 
 [deployments.vessel]
 
@@ -1782,7 +1781,8 @@ logged_streams = [
 vessel_name = "Silver Streak"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_evologics_transceiver"
+message_topics = []
 identity.label = "EvoLogics S2C R 18/34 USBL transceiver"
 identity.vendor = "EvoLogics"
 identity.product = "S2C R 18/34"
@@ -1862,23 +1862,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = 0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = -3.125
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -1891,7 +1878,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -1904,7 +1904,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = 0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = -3.125
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -1917,63 +1955,14 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "OAS"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -1987,6 +1976,22 @@ logged_streams = [
     "MSG",
     "RDI",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
+]
 
 [deployments.vessel]
 
@@ -1994,7 +1999,8 @@ logged_streams = [
 vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -2075,23 +2081,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = -0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -2104,7 +2097,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -2117,7 +2123,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = -0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = 0.0
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -2130,42 +2174,10 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -2176,44 +2188,6 @@ extrinsics.locz = -0.9
 extrinsics.rotx = 0.0
 extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "IMU"
-identity.label = "Inertial measurement unit"
-identity.vendor = ""
-identity.product = ""
-identity.type = "imu"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -2228,6 +2202,25 @@ logged_streams = [
     "RDI",
     "IMU",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
+    "IMU",
+]
 
 [deployments.vessel]
 
@@ -2235,7 +2228,8 @@ logged_streams = [
 vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -2316,23 +2310,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = -0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -2345,7 +2326,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -2358,7 +2352,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = -0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = 0.0
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -2371,49 +2403,10 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -2424,30 +2417,6 @@ extrinsics.locz = -0.9
 extrinsics.rotx = 0.0
 extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -2462,6 +2431,24 @@ logged_streams = [
     "RDI",
     "IMU",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "SEABIRD",
+    "MICRON",
+]
 
 [deployments.vessel]
 
@@ -2469,7 +2456,8 @@ logged_streams = [
 vessel_name = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -2547,10 +2535,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -2563,55 +2551,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
-identity.label = "Paroscientific Digiquartz pressure sensor"
-identity.vendor = "Paroscientific"
-identity.product = "Digiquartz"
-identity.type = "pressure"
-extrinsics.locx = 0.4
-extrinsics.locy = 0.0
-extrinsics.locz = -0.23
-extrinsics.rotx = 0.0
-extrinsics.roty = 0.0
-extrinsics.rotz = 0.0
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
-identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
-identity.vendor = "LinkQuest"
-identity.product = "TrackLink 1500HA"
-identity.type = "usbl"
-
-[[deployments.platform.sensors]]
-key = "RDI"
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -2624,31 +2577,29 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
 identity.label = "WET Labs ECO Puck Triplet sensor"
 identity.vendor = "WET Labs"
 identity.product = "ECO Puck Triplet"
 identity.type = "optical"
 
 [[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
 
 [[deployments.platform.sensors]]
-key = "OAS"
-
-[[deployments.platform.sensors]]
-key = "DELTA_T"
+key = "multibeam_deltat"
+message_topics = []
 identity.label = "Delta T multibeam profiling sonar"
 identity.vendor = ""
 identity.product = ""
@@ -2659,6 +2610,32 @@ extrinsics.locz = 0.0
 extrinsics.rotx = 0.0
 extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
+identity.label = "Paroscientific Digiquartz pressure sensor"
+identity.vendor = "Paroscientific"
+identity.product = "Digiquartz"
+identity.type = "pressure"
+extrinsics.locx = 0.4
+extrinsics.locy = 0.0
+extrinsics.locz = -0.23
+extrinsics.rotx = 0.0
+extrinsics.roty = 0.0
+extrinsics.rotz = 0.0
+
+[[deployments.platform.sensors]]
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
+identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
+identity.vendor = "LinkQuest"
+identity.product = "TrackLink 1500HA"
+identity.type = "usbl"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -2671,6 +2648,22 @@ logged_streams = [
     "AUV",
     "MSG",
 ]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_STBD",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "RDI",
+    "GPS",
+    "ECOPUCK",
+    "SEABIRD",
+    "OAS",
+    "DELTA_T",
+]
 
 [deployments.vessel]
 
@@ -2678,7 +2671,8 @@ logged_streams = [
 vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -2754,23 +2748,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = 0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = -3.125
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -2783,7 +2764,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -2796,7 +2790,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = 0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = -3.125
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -2809,63 +2841,14 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "OAS"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -2879,6 +2862,22 @@ logged_streams = [
     "MSG",
     "RDI",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
+]
 
 [deployments.vessel]
 
@@ -2886,7 +2885,8 @@ logged_streams = [
 vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -2970,23 +2970,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = -0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -2999,7 +2986,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -3012,7 +3012,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = -0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = 0.0
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -3025,42 +3063,10 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -3071,37 +3077,6 @@ extrinsics.locz = -0.9
 extrinsics.rotx = 0.0
 extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -3116,6 +3091,24 @@ logged_streams = [
     "RDI",
     "IMU",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
+]
 
 [deployments.vessel]
 
@@ -3123,7 +3116,8 @@ logged_streams = [
 vessel_name = "RV Challenger"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -3201,23 +3195,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = 0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = -3.125
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -3230,7 +3211,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -3243,7 +3237,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = 0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = -3.125
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -3256,63 +3288,14 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
 identity.type = "usbl"
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "OAS"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -3326,6 +3309,22 @@ logged_streams = [
     "MSG",
     "RDI",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
+]
 
 [deployments.vessel]
 
@@ -3333,7 +3332,8 @@ logged_streams = [
 vessel_name = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -3413,10 +3413,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -3429,7 +3429,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -3442,7 +3455,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = -0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = 0.0
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -3455,42 +3506,10 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -3501,37 +3520,6 @@ extrinsics.locz = -0.9
 extrinsics.rotx = 0.0
 extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "ECOPUCK"
-identity.label = "WET Labs ECO Puck Triplet sensor"
-identity.vendor = "WET Labs"
-identity.product = "ECO Puck Triplet"
-identity.type = "optical"
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "OAS"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -3546,6 +3534,23 @@ logged_streams = [
     "RDI",
     "IMU",
 ]
+sensors = [
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "ECOPUCK",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "OAS",
+]
 
 [deployments.vessel]
 
@@ -3553,7 +3558,8 @@ logged_streams = [
 vessel_name = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -3629,23 +3635,10 @@ platform_class = "SEABED"
 platform_operator = "ACFR"
 
 [[deployments.platform.sensors]]
-key = "DELTA_T"
-identity.label = "Delta T multibeam profiling sonar"
-identity.vendor = ""
-identity.product = ""
-identity.type = "multibeam_sonar"
-extrinsics.locx = 0.588
-extrinsics.locy = 0.25
-extrinsics.locz = 0.048
-extrinsics.rotx = -0.0076
-extrinsics.roty = 0.084
-extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "MP_INPUT"
-
-[[deployments.platform.sensors]]
-key = "VIS"
+key = "camera_avt_prosilica"
+message_topics = [
+    "VIS",
+]
 identity.label = "AVT Prosilica GC1380 stereo camera"
 identity.vendor = "AVT"
 identity.product = "Prosilica GC1380"
@@ -3658,7 +3651,20 @@ extrinsics.roty = -0.0065
 extrinsics.rotz = 1.5488
 
 [[deployments.platform.sensors]]
-key = "RDI"
+key = "ctd_seabird"
+message_topics = [
+    "SEABIRD",
+]
+identity.label = "Seabird SBE 37-SIP CTD"
+identity.vendor = "Seabird"
+identity.product = "SBE 37-SIP"
+identity.type = "ctd"
+
+[[deployments.platform.sensors]]
+key = "dvl_teledyne_navigator"
+message_topics = [
+    "RDI",
+]
 identity.label = "Teledyne RDI Work Horse Navigator DVL"
 identity.vendor = "Teledyne RDI"
 identity.product = "Work Horse Navigator"
@@ -3671,7 +3677,45 @@ extrinsics.roty = 3.1416
 extrinsics.rotz = -1.5708
 
 [[deployments.platform.sensors]]
-key = "PAROSCI"
+key = "ecopuck_wetlabs"
+message_topics = [
+    "ECOPUCK",
+]
+identity.label = "WET Labs ECO Puck Triplet sensor"
+identity.vendor = "WET Labs"
+identity.product = "ECO Puck Triplet"
+identity.type = "optical"
+
+[[deployments.platform.sensors]]
+key = "gnss_ublox"
+message_topics = [
+    "GPS_RMC",
+    "GPS_GSV",
+]
+identity.label = "u-blox GNSS receiver"
+identity.vendor = "u-blox"
+identity.product = ""
+identity.type = "gnss"
+
+[[deployments.platform.sensors]]
+key = "multibeam_deltat"
+message_topics = []
+identity.label = "Delta T multibeam profiling sonar"
+identity.vendor = ""
+identity.product = ""
+identity.type = "multibeam_sonar"
+extrinsics.locx = 0.588
+extrinsics.locy = 0.25
+extrinsics.locz = 0.048
+extrinsics.rotx = -0.0076
+extrinsics.roty = 0.084
+extrinsics.rotz = 0.0
+
+[[deployments.platform.sensors]]
+key = "pressure_parosci"
+message_topics = [
+    "PAROSCI",
+]
 identity.label = "Paroscientific Digiquartz pressure sensor"
 identity.vendor = "Paroscientific"
 identity.product = "Digiquartz"
@@ -3684,42 +3728,10 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments.platform.sensors]]
-key = "THR_PORT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "THR_VERT"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "BATT0"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT1"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "BATT2"
-identity.label = "Vehicle battery pack"
-identity.vendor = ""
-identity.product = ""
-identity.type = "battery"
-
-[[deployments.platform.sensors]]
-key = "LQMODEM"
+key = "usbl_linkquest_transponder"
+message_topics = [
+    "LQMODEM",
+]
 identity.label = "LinkQuest TrackLink 1500HA USBL transponder"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"
@@ -3730,30 +3742,6 @@ extrinsics.locz = -0.9
 extrinsics.rotx = 0.0
 extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
-
-[[deployments.platform.sensors]]
-key = "GPS"
-identity.label = "u-blox GNSS receiver"
-identity.vendor = "u-blox"
-identity.product = ""
-identity.type = "gnss"
-
-[[deployments.platform.sensors]]
-key = "THR_STBD"
-identity.label = "Vehicle thruster"
-identity.vendor = ""
-identity.product = ""
-identity.type = "thruster"
-
-[[deployments.platform.sensors]]
-key = "SEABIRD"
-identity.label = "Seabird SBE 37-SIP CTD"
-identity.vendor = "Seabird"
-identity.product = "SBE 37-SIP"
-identity.type = "ctd"
-
-[[deployments.platform.sensors]]
-key = "MICRON"
 
 [deployments.system]
 vehicle_name = "SEABED"
@@ -3768,6 +3756,23 @@ logged_streams = [
     "RDI",
     "IMU",
 ]
+sensors = [
+    "DELTA_T",
+    "MP_INPUT",
+    "VIS",
+    "RDI",
+    "PAROSCI",
+    "THR_PORT",
+    "THR_VERT",
+    "BATT0",
+    "BATT1",
+    "BATT2",
+    "LQMODEM",
+    "GPS",
+    "THR_STBD",
+    "SEABIRD",
+    "MICRON",
+]
 
 [deployments.vessel]
 
@@ -3775,7 +3780,8 @@ logged_streams = [
 vessel_name = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
-key = "USBL"
+key = "usbl_linkquest_transceiver"
+message_topics = []
 identity.label = "LinkQuest TrackLink 1500HA USBL transceiver"
 identity.vendor = "LinkQuest"
 identity.product = "TrackLink 1500HA"

@@ -8,7 +8,6 @@ from .builders import (
     build_vessel_profile_stubs as build_vessel_profile_stubs,
     map_platform_profile_keys as map_platform_profile_keys,
     map_vessel_profile_keys as map_vessel_profile_keys,
-    sensor_identity_key as sensor_identity_key,
 )
 from .runner import (
     run_scaffold_catalog as run_scaffold_catalog,

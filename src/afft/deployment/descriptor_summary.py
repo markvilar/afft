@@ -149,13 +149,17 @@ def _sensor_gaps(
     sensors: list[PlatformSensor] | list[VesselSensor],
     section: str,
 ) -> list[FieldName]:
-    """Collect the unfilled slots of a platform or vessel sensor roster."""
+    """
+    Collect the unfilled slots of a platform or vessel sensor roster.
+
+    A roster is written whole by enrichment, so a sensor that exists at all
+    has an identity: the gaps are the identity's empty fields and a missing
+    pose. An unenriched descriptor shows up as an empty roster instead.
+    """
     unfilled: list[FieldName] = []
     for sensor in sensors:
         prefix: str = f"{section}.sensors[{sensor.key}]"
-        if sensor.identity is None:
-            unfilled.append(f"{prefix}.identity")
-        else:
+        if sensor.identity is not None:
             unfilled.extend(
                 _empty_identity_fields(sensor.identity, f"{prefix}.identity")
             )
