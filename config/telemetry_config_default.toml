@@ -1,5 +1,7 @@
-# Example pipeline config for the process-telemetry task.
-# Pass this file via: afft tasks process-telemetry SOURCE OUTPUT --config <this file>
+# Reference record of the telemetry processing pipeline and its parameters.
+# No task reads this file: the CSV-based process-telemetry task was removed in
+# #197, and the deployment package pipeline that replaces it (#177) is not yet
+# built. Kept for the processor ordering and parameter values below.
 #
 # Each [[telemetry_processing_pipeline]] entry runs one processor in order.
 # The optional [telemetry_processing_pipeline.config] sub-table overrides the
