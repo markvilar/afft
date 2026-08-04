@@ -17,25 +17,6 @@ from .types import ScaffoldCatalogDiagnostics
 _NON_ALPHANUMERIC_PATTERN = re.compile(r"[^a-z0-9]+")
 
 
-def sensor_identity_key(sensor_key: str) -> str:
-    """
-    Derive a stub sensor identity key from a roster sensor key.
-
-    The identity of the hardware behind a key is not derivable from a
-    deployment, so the stub is keyed on the lowercased roster key (``"RDI"``
-    -> ``"rdi"``) for the curator to rename once vendor and product are known.
-
-    Arguments
-    ---------
-    sensor_key: Roster sensor key, as it appears in the system config.
-
-    Returns
-    -------
-    The stub identity key.
-    """
-    return _snake_case(sensor_key)
-
-
 def map_platform_profile_keys(
     descriptors: list[DeploymentDescriptor],
 ) -> dict[str, str]:
@@ -118,20 +99,24 @@ def build_sensor_stubs(
     descriptors: list[DeploymentDescriptor],
 ) -> list[CatalogSensorIdentity]:
     """
-    Build one sensor identity stub per observed roster sensor key.
+    Build one sensor identity stub per observed system config sensor label.
+
+    The hardware behind a label is not derivable from a deployment, so the
+    stub is keyed on the lowercased label (``"RDI"`` -> ``"rdi"``) for the
+    curator to rename once vendor and product are known.
 
     Arguments
     ---------
-    descriptors: Deployment descriptors to collect sensor keys from.
+    descriptors: Deployment descriptors to collect sensor labels from.
 
     Returns
     -------
     Sensor stubs with empty curated fields, sorted by key.
     """
     identity_keys: set[str] = {
-        sensor_identity_key(sensor.key)
+        _snake_case(label)
         for descriptor in descriptors
-        for sensor in descriptor.platform.sensors
+        for label in descriptor.system.sensors
     }
     return [
         CatalogSensorIdentity(key=key, label="", vendor="", product="", type="")
@@ -147,10 +132,14 @@ def build_platform_profile_stubs(
     """
     Build one platform profile stub per assigned profile key.
 
-    A profile's sensor list is the union of the roster keys observed across its
-    deployments: enrichment fills only the slots whose key matches, so a union
-    serves every roster in the group. Extrinsics are omitted rather than
-    zero-filled — an all-zero pose is a real mounting here, not a placeholder.
+    A profile's sensor list is the union of the system config sensor labels
+    observed across its deployments, each stubbed under its lowercased key.
+    Extrinsics are omitted rather than zero-filled — an all-zero pose is a real
+    mounting here, not a placeholder.
+
+    A stub claims a topic only where the label was also observed in the group's
+    telemetry, so the mapping starts from evidence: the labels that name no
+    topic, and the topics no label matches, are the curator's work.
 
     Arguments
     ---------
@@ -163,15 +152,17 @@ def build_platform_profile_stubs(
     Platform profile stubs with empty curated fields, sorted by key.
     """
     rosters: dict[str, set[str]] = {}
+    topics: dict[str, set[str]] = {}
     platform_classes: dict[str, str] = {}
     for descriptor in descriptors:
         profile_key: str = profile_keys[descriptor.deployment_label]
-        if not descriptor.platform.sensors:
+        if not descriptor.system.sensors:
             diagnostics.warning(
-                descriptor.deployment_label, "empty platform sensor roster"
+                descriptor.deployment_label, "empty system config sensor roster"
             )
-        rosters.setdefault(profile_key, set()).update(
-            sensor.key for sensor in descriptor.platform.sensors
+        rosters.setdefault(profile_key, set()).update(descriptor.system.sensors)
+        topics.setdefault(profile_key, set()).update(
+            descriptor.telemetry.topics
         )
         platform_classes[profile_key] = descriptor.system.vehicle_name
 
@@ -183,9 +174,12 @@ def build_platform_profile_stubs(
             platform_operator="",
             sensors=[
                 CatalogProfileSensor(
-                    key=sensor_key, identity=sensor_identity_key(sensor_key)
+                    key=_snake_case(label),
+                    message_topics=(
+                        [label] if label in topics[profile_key] else []
+                    ),
                 )
-                for sensor_key in sorted(rosters[profile_key])
+                for label in sorted(rosters[profile_key])
             ],
         )
         for profile_key in sorted(rosters)

@@ -57,19 +57,27 @@ class SensorExtrinsics(BaseModel):
 
 class PlatformSensor(BaseModel):
     """
-    A sensor mounted on the deployment's platform.
+    A sensor mounted on the deployment's platform. The whole roster is curated
+    — enrichment writes it from the assigned catalog profile — so a platform
+    section either has no sensors at all or has them fully identified.
 
     Attributes
     ----------
-    key: Terse sensor identifier (e.g. ``"RDI"``); the catalog lookup key.
-    identity: Curated sensor metadata; ``None`` until enrichment fills it.
+    key: Curated sensor identifier (e.g. ``"dvl_teledyne_navigator"``); the
+        catalog lookup key.
+    message_topics: RAW telemetry topics the sensor emits, carried from the
+        catalog so the descriptor states the mapping a build used. Empty where
+        the sensor emits no topic.
+    identity: Curated sensor metadata; ``None`` only on a roster no enrichment
+        wrote.
     extrinsics: Mounting pose in the vehicle (SNAME) body frame; ``None``
-        until enrichment fills it.
+        where the sensor has no surveyed pose.
     """
 
     model_config = ConfigDict(frozen=True)
 
     key: str
+    message_topics: list[str] = Field(default_factory=list)
     identity: SensorIdentity | None = None
     extrinsics: SensorExtrinsics | None = None
 
@@ -81,15 +89,20 @@ class VesselSensor(BaseModel):
 
     Attributes
     ----------
-    key: Terse sensor identifier (e.g. ``"USBL"``); the catalog lookup key.
-    identity: Curated sensor metadata; ``None`` until enrichment fills it.
-    extrinsics: Mounting pose in the ship reference frame; ``None`` until
-        enrichment fills it.
+    key: Curated sensor identifier (e.g. ``"usbl_linkquest_transceiver"``);
+        the catalog lookup key.
+    message_topics: RAW telemetry topics the sensor emits; empty for the
+        topside sensors, whose data arrives through a file role instead.
+    identity: Curated sensor metadata; ``None`` only on a roster no enrichment
+        wrote.
+    extrinsics: Mounting pose in the ship reference frame; ``None`` where the
+        sensor has no surveyed pose.
     """
 
     model_config = ConfigDict(frozen=True)
 
     key: str
+    message_topics: list[str] = Field(default_factory=list)
     identity: SensorIdentity | None = None
     extrinsics: SensorExtrinsics | None = None
 
@@ -133,14 +146,16 @@ class DeploymentPlatformSection(BaseModel):
     """
     The deployment platform's curated identity and its sensor roster.
 
-    The roster comes from the SEABED system config at describe time; the
-    curated slots are filled by enrichment. Poses are in the vehicle (SNAME)
-    body frame.
+    Filled entirely by enrichment from the assigned catalog profile: the
+    system config's roster is a vehicle-scoped set of labels rather than a
+    curated vocabulary, and it is kept as observed data on the system section
+    instead. Poses are in the vehicle (SNAME) body frame.
 
     Attributes
     ----------
     identity: Curated platform identity; ``None`` until enrichment fills it.
-    sensors: One entry per configured platform sensor.
+    sensors: One entry per curated platform sensor; empty until enrichment
+        fills it.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -181,6 +196,11 @@ class DeploymentSystemSection(BaseModel):
     log_directory: On-vehicle log directory (e.g. ``"/files1/Log"``).
     logged_streams: Stream types written to disk (e.g. ``["SYSLOG", "RAW",
         "CTL", "AUV", "MSG", "RDI"]``).
+    sensors: Sensor labels the config declares (e.g. ``["RDI", "VIS",
+        "MP_INPUT"]``), kept as observed data. The labels are scoped to one
+        vehicle configuration and the roster is not always complete, so it
+        stands beside the curated ``platform.sensors`` rather than feeding it
+        — its value is that the two can disagree.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -189,6 +209,7 @@ class DeploymentSystemSection(BaseModel):
     vehicle_config: str
     log_directory: str
     logged_streams: list[str]
+    sensors: list[str] = Field(default_factory=list)
 
 
 class DeploymentFileSection(BaseModel):
@@ -249,8 +270,10 @@ class DeploymentDescriptor(BaseModel):
     metadata: Collected deployment metadata.
     files: Inventory of the deployment's files, keyed by role.
     telemetry: Message topics observed in the RAW AUV logs.
-    platform: The platform's curated identity and its sensor roster.
-    system: The vehicle's identity and logging setup.
+    platform: The platform's curated identity and its sensor roster; empty
+        until enrichment fills it.
+    system: The vehicle's identity, logging setup, and configured sensor
+        labels.
     vessel: The support vessel's curated identity and its sensor roster; empty
         until enrichment fills it.
     """

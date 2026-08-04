@@ -6,9 +6,11 @@
 #
 # Platform profiles are curated at one per calendar year, from the AUV pose
 # families in the deployment localizer configs; no year spans two pose
-# configurations. The family-to-key mapping is dvl -> RDI,
-# stereo -> VIS, deltat -> DELTA_T, depth_sensor -> PAROSCI, and position2d ->
-# LQMODEM through 2014 and EVOLOGICS from 2017. The localizer's sonar family is
+# configurations. The family-to-key mapping is dvl ->
+# dvl_teledyne_navigator, stereo -> the camera of the era, deltat ->
+# multibeam_deltat, depth_sensor -> pressure_parosci, and position2d ->
+# usbl_linkquest_transponder through 2014 and usbl_evologics_transponder from
+# 2017. The localizer's sonar family is
 # excluded as an unmeasured placeholder for a device nothing consumes, and
 # nav_frame is not a sensor. PAROSCI carries its pose as written, including the
 # locx the localizer config flags for measurement.
@@ -17,9 +19,17 @@
 # config/deployment_configs_all.toml and cover all 52 deployments. The platform
 # side also covers all 52, every profile carrying its mounting poses.
 #
-# The OAS / MICRON obstacle avoidance sonar and MP_INPUT are deliberately
-# uncurated: nothing downstream consumes them, and MP_INPUT is not a sensor.
-# Roster keys with no entry here are simply left unenriched.
+# A profile sensor is keyed on the sensor_identities record of the unit fitted
+# to that slot, so the two tables share one vocabulary, and message_topics
+# carries the mapping from RAW telemetry topics to the sensor that emits them.
+# Enrichment writes a profile's roster into the descriptor whole, so a profile
+# states the vehicle as curated rather than as the system config labelled it.
+#
+# The thrusters, the battery packs, the MICRON / OAS obstacle avoidance sonar
+# and the IMU are deliberately unmounted: nothing downstream consumes them.
+# Their hardware keeps a sensor_identities record so it stays described, except
+# the IMU, which no deployment logs a topic for. MP_INPUT is not a sensor and
+# has no record at all.
 
 # --------------------------------------------------------------------------------------
 # Sensor identities
@@ -40,7 +50,7 @@ product = "Manta G-1236"
 type = "stereo_camera"
 
 [[sensor_identities]]
-key = "dvl_teledyne"
+key = "dvl_teledyne_navigator"
 label = "Teledyne RDI Work Horse Navigator DVL"
 vendor = "Teledyne RDI"
 product = "Work Horse Navigator"
@@ -110,11 +120,25 @@ product = ""
 type = "multibeam_sonar"
 
 [[sensor_identities]]
-key = "imu"
-label = "Inertial measurement unit"
+key = "oxygen_aanderaa"
+label = "Aanderaa 4319 oxygen optode"
+vendor = "Aanderaa"
+product = "4319"
+type = "oxygen"
+
+[[sensor_identities]]
+key = "sonar_micron"
+label = "Tritech Micron scanning sonar"
+vendor = "Tritech"
+product = "Micron"
+type = "sonar"
+
+[[sensor_identities]]
+key = "sonar_obstacle_avoidance"
+label = "Obstacle avoidance sonar"
 vendor = ""
 product = ""
-type = "imu"
+type = "sonar"
 
 [[sensor_identities]]
 key = "thruster"
@@ -140,18 +164,14 @@ platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
 sensors = [
-    { key = "BATT", identity = "battery_pack" },
-    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.55, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
-    { key = "GPS", identity = "gnss_ublox" },
-    { key = "LQMODEM", identity = "usbl_linkquest_transponder" },
-    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
-    { key = "SEABIRD", identity = "ctd_seabird" },
-    { key = "THR_PORT", identity = "thruster" },
-    { key = "THR_STBD", identity = "thruster" },
-    { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "camera_avt_prosilica", message_topics = ["VIS"], extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "ctd_seabird", message_topics = ["SEABIRD"] },
+    { key = "dvl_teledyne_navigator", message_topics = ["RDI"], extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "ecopuck_wetlabs", message_topics = ["ECOPUCK"] },
+    { key = "gnss_ublox", message_topics = ["GPS_RMC", "GPS_GSV"] },
+    { key = "multibeam_deltat", message_topics = [], extrinsics = { locx = 0.55, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "pressure_parosci", message_topics = ["PAROSCI"], extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "usbl_linkquest_transponder", message_topics = ["LQMODEM"] },
 ]
 
 [[platform_profiles]]
@@ -160,18 +180,14 @@ platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
 sensors = [
-    { key = "BATT", identity = "battery_pack" },
-    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = 0.0076, roty = 0.084, rotz = -3.125 } },  # rotation in degrees: 0.435, 4.813, -179.049
-    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
-    { key = "GPS", identity = "gnss_ublox" },
-    { key = "LQMODEM", identity = "usbl_linkquest_transponder" },
-    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
-    { key = "SEABIRD", identity = "ctd_seabird" },
-    { key = "THR_PORT", identity = "thruster" },
-    { key = "THR_STBD", identity = "thruster" },
-    { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "camera_avt_prosilica", message_topics = ["VIS"], extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "ctd_seabird", message_topics = ["SEABIRD"] },
+    { key = "dvl_teledyne_navigator", message_topics = ["RDI"], extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "ecopuck_wetlabs", message_topics = ["ECOPUCK"] },
+    { key = "gnss_ublox", message_topics = ["GPS_RMC", "GPS_GSV"] },
+    { key = "multibeam_deltat", message_topics = [], extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = 0.0076, roty = 0.084, rotz = -3.125 } },  # rotation in degrees: 0.435, 4.813, -179.049
+    { key = "pressure_parosci", message_topics = ["PAROSCI"], extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "usbl_linkquest_transponder", message_topics = ["LQMODEM"] },
 ]
 
 [[platform_profiles]]
@@ -180,18 +196,14 @@ platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
 sensors = [
-    { key = "BATT", identity = "battery_pack" },
-    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = 0.0076, roty = 0.084, rotz = -3.125 } },  # rotation in degrees: 0.435, 4.813, -179.049
-    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
-    { key = "GPS", identity = "gnss_ublox" },
-    { key = "LQMODEM", identity = "usbl_linkquest_transponder" },
-    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
-    { key = "SEABIRD", identity = "ctd_seabird" },
-    { key = "THR_PORT", identity = "thruster" },
-    { key = "THR_STBD", identity = "thruster" },
-    { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "camera_avt_prosilica", message_topics = ["VIS"], extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "ctd_seabird", message_topics = ["SEABIRD"] },
+    { key = "dvl_teledyne_navigator", message_topics = ["RDI"], extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "ecopuck_wetlabs", message_topics = ["ECOPUCK"] },
+    { key = "gnss_ublox", message_topics = ["GPS_RMC", "GPS_GSV"] },
+    { key = "multibeam_deltat", message_topics = [], extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = 0.0076, roty = 0.084, rotz = -3.125 } },  # rotation in degrees: 0.435, 4.813, -179.049
+    { key = "pressure_parosci", message_topics = ["PAROSCI"], extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "usbl_linkquest_transponder", message_topics = ["LQMODEM"] },
 ]
 
 [[platform_profiles]]
@@ -200,21 +212,14 @@ platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
 sensors = [
-    { key = "BATT0", identity = "battery_pack" },
-    { key = "BATT1", identity = "battery_pack" },
-    { key = "BATT2", identity = "battery_pack" },
-    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
-    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
-    { key = "GPS", identity = "gnss_ublox" },
-    { key = "IMU", identity = "imu" },
-    { key = "LQMODEM", identity = "usbl_linkquest_transponder", extrinsics = { locx = -1.27, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
-    { key = "SEABIRD", identity = "ctd_seabird" },
-    { key = "THR_PORT", identity = "thruster" },
-    { key = "THR_STBD", identity = "thruster" },
-    { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "camera_avt_prosilica", message_topics = ["VIS"], extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "ctd_seabird", message_topics = ["SEABIRD"] },
+    { key = "dvl_teledyne_navigator", message_topics = ["RDI"], extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "ecopuck_wetlabs", message_topics = ["ECOPUCK"] },
+    { key = "gnss_ublox", message_topics = ["GPS_RMC", "GPS_GSV"] },
+    { key = "multibeam_deltat", message_topics = [], extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
+    { key = "pressure_parosci", message_topics = ["PAROSCI"], extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "usbl_linkquest_transponder", message_topics = ["LQMODEM"], extrinsics = { locx = -1.27, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
 ]
 
 [[platform_profiles]]
@@ -223,20 +228,14 @@ platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
 sensors = [
-    { key = "BATT0", identity = "battery_pack" },
-    { key = "BATT1", identity = "battery_pack" },
-    { key = "BATT2", identity = "battery_pack" },
-    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
-    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
-    { key = "GPS", identity = "gnss_ublox" },
-    { key = "LQMODEM", identity = "usbl_linkquest_transponder", extrinsics = { locx = -1.27, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
-    { key = "SEABIRD", identity = "ctd_seabird" },
-    { key = "THR_PORT", identity = "thruster" },
-    { key = "THR_STBD", identity = "thruster" },
-    { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "camera_avt_prosilica", message_topics = ["VIS"], extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "ctd_seabird", message_topics = ["SEABIRD"] },
+    { key = "dvl_teledyne_navigator", message_topics = ["RDI"], extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "ecopuck_wetlabs", message_topics = ["ECOPUCK"] },
+    { key = "gnss_ublox", message_topics = ["GPS_RMC", "GPS_GSV"] },
+    { key = "multibeam_deltat", message_topics = [], extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
+    { key = "pressure_parosci", message_topics = ["PAROSCI"], extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "usbl_linkquest_transponder", message_topics = ["LQMODEM"], extrinsics = { locx = -1.27, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
 ]
 
 [[platform_profiles]]
@@ -245,20 +244,14 @@ platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
 sensors = [
-    { key = "BATT0", identity = "battery_pack" },
-    { key = "BATT1", identity = "battery_pack" },
-    { key = "BATT2", identity = "battery_pack" },
-    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
-    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
-    { key = "GPS", identity = "gnss_ublox" },
-    { key = "LQMODEM", identity = "usbl_linkquest_transponder", extrinsics = { locx = -1.27, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
-    { key = "SEABIRD", identity = "ctd_seabird" },
-    { key = "THR_PORT", identity = "thruster" },
-    { key = "THR_STBD", identity = "thruster" },
-    { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "camera_avt_prosilica", message_topics = ["VIS"], extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "ctd_seabird", message_topics = ["SEABIRD"] },
+    { key = "dvl_teledyne_navigator", message_topics = ["RDI"], extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "ecopuck_wetlabs", message_topics = ["ECOPUCK"] },
+    { key = "gnss_ublox", message_topics = ["GPS_RMC", "GPS_GSV"] },
+    { key = "multibeam_deltat", message_topics = [], extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
+    { key = "pressure_parosci", message_topics = ["PAROSCI"], extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "usbl_linkquest_transponder", message_topics = ["LQMODEM"], extrinsics = { locx = -1.27, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
 ]
 
 [[platform_profiles]]
@@ -267,20 +260,14 @@ platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
 sensors = [
-    { key = "BATT0", identity = "battery_pack" },
-    { key = "BATT1", identity = "battery_pack" },
-    { key = "BATT2", identity = "battery_pack" },
-    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
-    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
-    { key = "EVOLOGICS", identity = "usbl_evologics_transponder", extrinsics = { locx = 0.0, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "GPS", identity = "gnss_ublox" },
-    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
-    { key = "SEABIRD", identity = "ctd_seabird" },
-    { key = "THR_PORT", identity = "thruster" },
-    { key = "THR_STBD", identity = "thruster" },
-    { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "camera_avt_prosilica", message_topics = ["VIS"], extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "ctd_seabird", message_topics = ["SEABIRD"] },
+    { key = "dvl_teledyne_navigator", message_topics = ["RDI"], extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "ecopuck_wetlabs", message_topics = ["ECOPUCK"] },
+    { key = "gnss_ublox", message_topics = ["GPS_RMC", "GPS_GSV"] },
+    { key = "multibeam_deltat", message_topics = [], extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
+    { key = "pressure_parosci", message_topics = ["PAROSCI"], extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "usbl_evologics_transponder", message_topics = ["EVOLOGICS_FIX"], extrinsics = { locx = 0.0, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
 ]
 
 [[platform_profiles]]
@@ -289,26 +276,21 @@ platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
 sensors = [
-    { key = "BATT0", identity = "battery_pack" },
-    { key = "BATT1", identity = "battery_pack" },
-    { key = "BATT2", identity = "battery_pack" },
-    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
-    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
-    { key = "EVOLOGICS", identity = "usbl_evologics_transponder", extrinsics = { locx = 0.0, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "GPS", identity = "gnss_ublox" },
-    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
-    { key = "SEABIRD", identity = "ctd_seabird" },
-    { key = "THR_PORT", identity = "thruster" },
-    { key = "THR_STBD", identity = "thruster" },
-    { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_avt_prosilica", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "camera_avt_prosilica", message_topics = ["VIS"], extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "ctd_seabird", message_topics = ["SEABIRD"] },
+    { key = "dvl_teledyne_navigator", message_topics = ["RDI"], extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "ecopuck_wetlabs", message_topics = ["ECOPUCK"] },
+    { key = "gnss_ublox", message_topics = ["GPS_RMC", "GPS_GSV"] },
+    { key = "multibeam_deltat", message_topics = [], extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
+    { key = "pressure_parosci", message_topics = ["PAROSCI"], extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "usbl_evologics_transponder", message_topics = ["EVOLOGICS_FIX"], extrinsics = { locx = 0.0, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
 ]
 
-# The 2021 syscfg has VIS, SEABIRD and the battery channels commented out, so
-# SEABIRD and the batteries are absent here. The VIS slot is kept, carrying the
-# Manta the vehicle flew by then and the stereo pose from the localizer config;
-# it stays unenriched until a roster names the camera.
+# The 2021 syscfg has the camera, the CTD and the battery channels commented
+# out, so the CTD is absent here. The camera is kept — the deployments log VIS
+# throughout — carrying the Manta the vehicle flew by then and the stereo pose
+# from the localizer config. The oxygen optode is the reverse case: the syscfg
+# names no channel for it, but all three deployments log AANDERAA_4319.
 
 [[platform_profiles]]
 key = "2021_auv_sirius"
@@ -316,16 +298,14 @@ platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
 sensors = [
-    { key = "DELTA_T", identity = "multibeam_deltat", extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
-    { key = "ECOPUCK", identity = "ecopuck_wetlabs" },
-    { key = "EVOLOGICS", identity = "usbl_evologics_transponder", extrinsics = { locx = 0.0, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "GPSD", identity = "gnss_ublox" },
-    { key = "PAROSCI", identity = "pressure_parosci", extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
-    { key = "RDI", identity = "dvl_teledyne", extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
-    { key = "THR_PORT", identity = "thruster" },
-    { key = "THR_STBD", identity = "thruster" },
-    { key = "THR_VERT", identity = "thruster" },
-    { key = "VIS", identity = "camera_avt_manta", extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "camera_avt_manta", message_topics = ["VIS"], extrinsics = { locx = 0.82, locy = -0.035, locz = 0.0, rotx = -0.0373, roty = -0.0065, rotz = 1.5488 } },  # rotation in degrees: -2.137, -0.372, 88.740; locy: half of the ~0.07 m stereo baseline
+    { key = "dvl_teledyne_navigator", message_topics = ["RDI"], extrinsics = { locx = 0.0, locy = 0.0, locz = 0.0, rotx = 0.0, roty = 3.1416, rotz = -1.5708 } },  # rotation in degrees: 0.000, 180.000, -90.000
+    { key = "ecopuck_wetlabs", message_topics = ["ECOPUCK"] },
+    { key = "gnss_ublox", message_topics = ["GPS_RMC", "GPS_GSV"] },
+    { key = "multibeam_deltat", message_topics = [], extrinsics = { locx = 0.588, locy = 0.25, locz = 0.048, rotx = -0.0076, roty = 0.084, rotz = 0.0 } },  # rotation in degrees: -0.435, 4.813, 0.000
+    { key = "oxygen_aanderaa", message_topics = ["AANDERAA_4319"] },
+    { key = "pressure_parosci", message_topics = ["PAROSCI"], extrinsics = { locx = 0.4, locy = 0.0, locz = -0.23, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "usbl_evologics_transponder", message_topics = ["EVOLOGICS_FIX"], extrinsics = { locx = 0.0, locy = 0.0, locz = -0.9, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
 ]
 
 # --------------------------------------------------------------------------------------
@@ -336,133 +316,133 @@ sensors = [
 key = "200906_rv_challenger"
 vessel_name = "RV Challenger"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = 0.53, locy = 4.33, locz = 3.29, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = 0.53, locy = 4.33, locz = 3.29, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
 ]
 
 [[vessel_profiles]]
 key = "201004_rv_linnaeus"
 vessel_name = "RV Linnaeus"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = -5.715, locy = -1.258, locz = 1.352, rotx = 0.3316, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 18.999, 0.000, 0.000
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = -5.715, locy = -1.258, locz = 1.352, rotx = 0.3316, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 18.999, 0.000, 0.000
 ]
 
 [[vessel_profiles]]
 key = "201006_rv_challenger"
 vessel_name = "RV Challenger"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = 1.21, locy = 2.97, locz = 2.27, rotx = -0.5058, roty = -0.0042, rotz = 0.3138 } },  # rotation in degrees: -28.980, -0.241, 17.979
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = 1.21, locy = 2.97, locz = 2.27, rotx = -0.5058, roty = -0.0042, rotz = 0.3138 } },  # rotation in degrees: -28.980, -0.241, 17.979
 ]
 
 [[vessel_profiles]]
 key = "201010_rv_tom_marshall"
 vessel_name = "RV Tom Marshall"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = -4.46, locy = -4.826, locz = 2.48, rotx = 0.5084, roty = -0.0622, rotz = -0.0509 } },  # rotation in degrees: 29.129, -3.564, -2.916
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = -4.46, locy = -4.826, locz = 2.48, rotx = 0.5084, roty = -0.0622, rotz = -0.0509 } },  # rotation in degrees: 29.129, -3.564, -2.916
 ]
 
 [[vessel_profiles]]
 key = "201102_rv_cape_ferguson"
 vessel_name = "RV Cape Ferguson"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = -2.69, locy = -0.221, locz = 5.555, rotx = 0.5389, roty = -0.0016, rotz = -0.0106 } },  # rotation in degrees: 30.877, -0.092, -0.607
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = -2.69, locy = -0.221, locz = 5.555, rotx = 0.5389, roty = -0.0016, rotz = -0.0106 } },  # rotation in degrees: 30.877, -0.092, -0.607
 ]
 
 [[vessel_profiles]]
 key = "201104_rv_naturaliste"
 vessel_name = "RV Naturaliste"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = -5.21, locy = -3.34, locz = 3.14, rotx = 0.525, roty = -0.0007, rotz = 0.0375 } },  # rotation in degrees: 30.080, -0.040, 2.149
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = -5.21, locy = -3.34, locz = 3.14, rotx = 0.525, roty = -0.0007, rotz = 0.0375 } },  # rotation in degrees: 30.080, -0.040, 2.149
 ]
 
 [[vessel_profiles]]
 key = "201106_rv_challenger"
 vessel_name = "RV Challenger"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = 1.404, locy = 4.412, locz = 4.534, rotx = -0.5409, roty = -0.0605, rotz = -0.24 } },  # rotation in degrees: -30.991, -3.466, -13.751
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = 1.404, locy = 4.412, locz = 4.534, rotx = -0.5409, roty = -0.0605, rotz = -0.24 } },  # rotation in degrees: -30.991, -3.466, -13.751
 ]
 
 [[vessel_profiles]]
 key = "201108_solander"
 vessel_name = "Solander"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = -19.057, locy = 3.18, locz = 4.88, rotx = -0.5117, roty = 0.041, rotz = -0.0609 } },  # rotation in degrees: -29.318, 2.349, -3.489
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = -19.057, locy = 3.18, locz = 4.88, rotx = -0.5117, roty = 0.041, rotz = -0.0609 } },  # rotation in degrees: -29.318, 2.349, -3.489
 ]
 
 [[vessel_profiles]]
 key = "201204_rv_linnaeus"
 vessel_name = "RV Linnaeus"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = -6.156, locy = -1.477, locz = 1.567, rotx = 0.3529, roty = 0.001, rotz = 0.2548 } },  # rotation in degrees: 20.220, 0.057, 14.599
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = -6.156, locy = -1.477, locz = 1.567, rotx = 0.3529, roty = 0.001, rotz = 0.2548 } },  # rotation in degrees: 20.220, 0.057, 14.599
 ]
 
 [[vessel_profiles]]
 key = "201205_rv_challenger"
 vessel_name = "RV Challenger"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = 3.497, locy = 3.23, locz = 3.679, rotx = -0.4283, roty = -0.0429, rotz = 0.1861 } },  # rotation in degrees: -24.540, -2.458, 10.663
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = 3.497, locy = 3.23, locz = 3.679, rotx = -0.4283, roty = -0.0429, rotz = 0.1861 } },  # rotation in degrees: -24.540, -2.458, 10.663
 ]
 
 [[vessel_profiles]]
 key = "201210_rv_tom_marshall"
 vessel_name = "RV Tom Marshall"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = -5.723, locy = -5.235, locz = 1.769, rotx = 0.5553, roty = -0.0036, rotz = -0.0511 } },  # rotation in degrees: 31.816, -0.206, -2.928
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = -5.723, locy = -5.235, locz = 1.769, rotx = 0.5553, roty = -0.0036, rotz = -0.0511 } },  # rotation in degrees: 31.816, -0.206, -2.928
 ]
 
 [[vessel_profiles]]
 key = "201304_rv_linnaeus"
 vessel_name = "RV Linnaeus"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = -1.18, locy = 0.7, locz = 2.0, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = -1.18, locy = 0.7, locz = 2.0, rotx = 0.0, roty = 0.0, rotz = 0.0 } },  # rotation in degrees: 0.000, 0.000, 0.000
 ]
 
 [[vessel_profiles]]
 key = "201306_rv_challenger"
 vessel_name = "RV Challenger"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = 7.615, locy = 6.329, locz = 4.529, rotx = -0.4283, roty = 0.0176, rotz = -0.2815 } },  # rotation in degrees: -24.540, 1.008, -16.129
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = 7.615, locy = 6.329, locz = 4.529, rotx = -0.4283, roty = 0.0176, rotz = -0.2815 } },  # rotation in degrees: -24.540, 1.008, -16.129
 ]
 
 [[vessel_profiles]]
 key = "201310_rv_tom_marshall"
 vessel_name = "RV Tom Marshall"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = -5.541, locy = -5.364, locz = 3.224, rotx = 0.5678, roty = 0.0022, rotz = 0.2499 } },  # rotation in degrees: 32.533, 0.126, 14.318
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = -5.541, locy = -5.364, locz = 3.224, rotx = 0.5678, roty = 0.0022, rotz = 0.2499 } },  # rotation in degrees: 32.533, 0.126, 14.318
 ]
 
 [[vessel_profiles]]
 key = "201403_rv_linnaeus"
 vessel_name = "RV Linnaeus"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = -1.26, locy = 0.704, locz = 2.195, rotx = 0.0254, roty = -0.0126, rotz = -0.0685 } },  # rotation in degrees: 1.455, -0.722, -3.925
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = -1.26, locy = 0.704, locz = 2.195, rotx = 0.0254, roty = -0.0126, rotz = -0.0685 } },  # rotation in degrees: 1.455, -0.722, -3.925
 ]
 
 [[vessel_profiles]]
 key = "201406_tasmania_bluefin"
 vessel_name = "Tasmania Bluefin"
 sensors = [
-    { key = "USBL", identity = "usbl_linkquest_transceiver", extrinsics = { locx = -11.916, locy = 4.761, locz = 10.752, rotx = -0.5026, roty = -0.0103, rotz = -0.0327 } },  # rotation in degrees: -28.797, -0.590, -1.874
+    { key = "usbl_linkquest_transceiver", message_topics = [], extrinsics = { locx = -11.916, locy = 4.761, locz = 10.752, rotx = -0.5026, roty = -0.0103, rotz = -0.0327 } },  # rotation in degrees: -28.797, -0.590, -1.874
 ]
 
 [[vessel_profiles]]
 key = "201502_tasmania_bluefin"
 vessel_name = "Tasmania Bluefin"
 sensors = [
-    { key = "USBL", identity = "usbl_evologics_transceiver", extrinsics = { locx = -11.062, locy = -6.656, locz = 9.998, rotx = 0.0159, roty = 0.0195, rotz = -0.0464 } },  # rotation in degrees: 0.911, 1.117, -2.659
+    { key = "usbl_evologics_transceiver", message_topics = [], extrinsics = { locx = -11.062, locy = -6.656, locz = 9.998, rotx = 0.0159, roty = 0.0195, rotz = -0.0464 } },  # rotation in degrees: 0.911, 1.117, -2.659
 ]
 
 [[vessel_profiles]]
 key = "201705_silver_streak"
 vessel_name = "Silver Streak"
 sensors = [
-    { key = "USBL", identity = "usbl_evologics_transceiver", extrinsics = { locx = -4.793, locy = 4.302, locz = 4.043, rotx = -0.0067, roty = 0.0032, rotz = 0.4713 } },  # rotation in degrees: -0.384, 0.183, 27.004
+    { key = "usbl_evologics_transceiver", message_topics = [], extrinsics = { locx = -4.793, locy = 4.302, locz = 4.043, rotx = -0.0067, roty = 0.0032, rotz = 0.4713 } },  # rotation in degrees: -0.384, 0.183, 27.004
 ]
 
 [[vessel_profiles]]
 key = "202102_poppag"
 vessel_name = "PoppaG"
 sensors = [
-    { key = "USBL", identity = "usbl_evologics_transceiver", extrinsics = { locx = -9.4, locy = -3.72, locz = 7.49, rotx = 0.0, roty = 0.23, rotz = -0.21 } },  # rotation in degrees: 0.000, 13.178, -12.032
+    { key = "usbl_evologics_transceiver", message_topics = [], extrinsics = { locx = -9.4, locy = -3.72, locz = 7.49, rotx = 0.0, roty = 0.23, rotz = -0.21 } },  # rotation in degrees: 0.000, 13.178, -12.032
 ]
 
 # --------------------------------------------------------------------------------------

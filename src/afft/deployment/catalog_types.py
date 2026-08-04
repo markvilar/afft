@@ -8,11 +8,14 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 class CatalogSensorIdentity(BaseModel):
     """
-    A curated sensor identity record.
+    A curated sensor identity record, describing one physical unit rather than
+    a hardware type: a slot fitted with its own device carries its own record.
 
     Attributes
     ----------
-    key: Catalog lookup key, referenced by ``CatalogProfileSensor.identity``.
+    key: Catalog lookup key, named by ``CatalogProfileSensor.key``. Lowercase,
+        descriptive, and underscore-separated, carrying as much of the vendor
+        and product as the record knows (e.g. ``"dvl_teledyne_navigator"``).
     label: Human-readable sensor name.
     vendor: Manufacturer.
     product: Product name.
@@ -58,9 +61,14 @@ class CatalogProfileSensor(BaseModel):
 
     Attributes
     ----------
-    key: Sensor identifier, matched against ``PlatformSensor.key`` /
-        ``VesselSensor.key`` during enrichment.
-    identity: Key of the ``CatalogSensorIdentity`` describing this hardware.
+    key: Key of the ``CatalogSensorIdentity`` describing the mounted unit;
+        enrichment writes it to the descriptor roster as the sensor's key.
+    message_topics: RAW telemetry topics the sensor emits. A topic cannot be
+        derived from the key by string equality — ``GPS_RMC`` and ``GPS_GSV``
+        come from one receiver — so the mapping is curated. Empty where the
+        sensor emits no topic, either because it logs nothing (``DELTA_T``) or
+        because its data arrives by another route (the vessel's ``USBL``,
+        through the ``usbl_logs`` file role).
     extrinsics: Curated mounting pose; ``None`` where the sensor has no
         surveyed pose.
     """
@@ -68,7 +76,7 @@ class CatalogProfileSensor(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     key: str
-    identity: str
+    message_topics: list[str] = Field(default_factory=list)
     extrinsics: CatalogSensorExtrinsics | None = None
 
 
@@ -253,10 +261,10 @@ def _check_sensor_identities(
     sensors: list[CatalogProfileSensor],
     sensor_keys: set[str],
 ) -> None:
-    """Check that every profile sensor identity names a catalog sensor."""
+    """Check that every profile sensor key names a catalog sensor identity."""
     for sensor in sensors:
-        if sensor.identity not in sensor_keys:
+        if sensor.key not in sensor_keys:
             raise ValueError(
-                f"profile {profile_key!r} sensor {sensor.key!r} references "
-                f"unknown sensor identity: {sensor.identity!r}"
+                f"profile {profile_key!r} references unknown sensor identity: "
+                f"{sensor.key!r}"
             )

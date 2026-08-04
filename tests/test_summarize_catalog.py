@@ -61,8 +61,8 @@ def _build_catalog() -> DeploymentCatalog:
                 platform_operator="ACFR",
                 sensors=[
                     CatalogProfileSensor(
-                        key="RDI",
-                        identity="dvl_teledyne",
+                        key="dvl_teledyne",
+                        message_topics=["RDI"],
                         extrinsics=_extrinsics(),
                     )
                 ],
@@ -180,7 +180,10 @@ def test_summarize_reports_unreferenced_sensor_identities() -> None:
 def test_summarize_groups_curation_gaps_by_field() -> None:
     """Gaps group by field and carry the records they affect."""
     catalog = DeploymentCatalog(
-        sensor_identities=[_sensor_identity(vendor="")],
+        sensor_identities=[
+            _sensor_identity(vendor=""),
+            _sensor_identity(key="sonar_obstacle_avoidance"),
+        ],
         platform_profiles=[
             CatalogPlatformProfile(
                 key="sirius_2010",
@@ -188,10 +191,12 @@ def test_summarize_groups_curation_gaps_by_field() -> None:
                 platform_class="SEABED",
                 platform_operator="",
                 sensors=[
-                    CatalogProfileSensor(key="RDI", identity="dvl_teledyne"),
                     CatalogProfileSensor(
-                        key="OAS",
-                        identity="dvl_teledyne",
+                        key="dvl_teledyne", message_topics=["RDI"]
+                    ),
+                    CatalogProfileSensor(
+                        key="sonar_obstacle_avoidance",
+                        message_topics=["OAS"],
                         extrinsics=_extrinsics(),
                     ),
                 ],
@@ -207,7 +212,9 @@ def test_summarize_groups_curation_gaps_by_field() -> None:
 
     assert gaps["sensor_identities.vendor"] == ["dvl_teledyne"]
     assert gaps["platform_profiles.platform_operator"] == ["sirius_2010"]
-    assert gaps["platform_profiles.sensors.extrinsics"] == ["sirius_2010[RDI]"]
+    assert gaps["platform_profiles.sensors.extrinsics"] == [
+        "sirius_2010[dvl_teledyne]"
+    ]
     assert gaps["vessel_profiles.vessel_name"] == ["linnaeus"]
     assert "platform_profiles.platform_label" not in gaps
 

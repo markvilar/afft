@@ -32,7 +32,7 @@ from afft.tasks.transform_camera_poses import (
     run_transform_camera_poses_batch,
 )
 
-CAMERA_SENSOR_KEY: str = "VIS"
+CAMERA_SENSOR_TYPE: str = "stereo_camera"
 
 
 def dispatch_process_renav(
@@ -208,12 +208,12 @@ def _camera_extrinsics(
     if sensor is None:
         raise KeyError(
             f"deployment {descriptor.deployment_label} has no"
-            f" {CAMERA_SENSOR_KEY} sensor in its platform roster"
+            f" {CAMERA_SENSOR_TYPE} sensor in its platform roster"
         )
     if sensor.extrinsics is None:
         raise ValueError(
             f"deployment {descriptor.deployment_label} has no extrinsics for"
-            f" its {CAMERA_SENSOR_KEY} sensor"
+            f" its {CAMERA_SENSOR_TYPE} sensor"
         )
     return _camera_vehicle_extrinsics(sensor.extrinsics)
 
@@ -221,9 +221,13 @@ def _camera_extrinsics(
 def _find_camera_sensor(
     descriptor: DeploymentDescriptor,
 ) -> PlatformSensor | None:
+    # The roster is keyed on the mounted unit, and the vehicle flew two
+    # different cameras over the years, so the camera is found by sensor type
+    # rather than by key.
     for sensor in descriptor.platform.sensors:
-        if sensor.key == CAMERA_SENSOR_KEY:
-            return sensor
+        if sensor.identity is not None:
+            if sensor.identity.type == CAMERA_SENSOR_TYPE:
+                return sensor
     return None
 
 

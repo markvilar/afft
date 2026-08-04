@@ -15,7 +15,6 @@ from afft.deployment import (
     DeploymentPlatformSection,
     DeploymentSystemSection,
     DeploymentTelemetrySection,
-    PlatformSensor,
     read_deployment_catalog,
     write_deployment_descriptors,
 )
@@ -31,7 +30,8 @@ def _build_descriptor(
     label: str,
     moment: datetime,
     campaign: str,
-    sensor_keys: tuple[str, ...],
+    sensor_labels: tuple[str, ...],
+    topics: tuple[str, ...] = (),
     usbl_logs: tuple[str, ...] = ("usbl/log-1.txt",),
 ) -> DeploymentDescriptor:
     """Builds a descriptor carrying only the fields the scaffolder reads."""
@@ -47,15 +47,14 @@ def _build_descriptor(
             magnetic_variation=-1.16,
         ),
         files=DeploymentFileSection(usbl_logs=list(usbl_logs)),
-        telemetry=DeploymentTelemetrySection(topics=[]),
-        platform=DeploymentPlatformSection(
-            sensors=[PlatformSensor(key=key) for key in sensor_keys]
-        ),
+        telemetry=DeploymentTelemetrySection(topics=list(topics)),
+        platform=DeploymentPlatformSection(),
         system=DeploymentSystemSection(
             vehicle_name="SEABED",
             vehicle_config="NORM_CFG",
             log_directory="/files1/Log",
             logged_streams=["RAW"],
+            sensors=list(sensor_labels),
         ),
     )
 
@@ -69,12 +68,14 @@ def descriptors() -> list[DeploymentDescriptor]:
             datetime(2010, 4, 28, 2, 2, 2, tzinfo=timezone.utc),
             "WA201004",
             ("RDI", "VIS"),
+            topics=("RDI", "VIS"),
         ),
         _build_descriptor(
             "qd61g27j_20100421_022145",
             datetime(2010, 4, 21, 2, 21, 45, tzinfo=timezone.utc),
             "WA201004",
             ("RDI", "PAROSCI"),
+            topics=("RDI",),
         ),
         _build_descriptor(
             "qdch0ftq_20110415_020103",
@@ -105,14 +106,15 @@ def test_platform_profile_sensors_are_the_union_of_the_year(
 
     profile = catalog.platform_profiles[0]
     assert [sensor.key for sensor in profile.sensors] == [
-        "PAROSCI",
-        "RDI",
-        "VIS",
-    ]
-    assert [sensor.identity for sensor in profile.sensors] == [
         "parosci",
         "rdi",
         "vis",
+    ]
+    # A stub claims a label only where the group also logged it as a topic.
+    assert [sensor.message_topics for sensor in profile.sensors] == [
+        [],
+        ["RDI"],
+        ["VIS"],
     ]
     assert all(sensor.extrinsics is None for sensor in profile.sensors)
 

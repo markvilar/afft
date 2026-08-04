@@ -9,6 +9,7 @@ from rich.progress import Progress
 from afft.deployment import (
     DeploymentDescriptor,
     DeploymentFiles,
+    DeploymentPlatformSection,
     collect_deployment_files,
     write_deployment_descriptors,
 )
@@ -22,7 +23,6 @@ from afft.utils.log import logger
 from .builders import (
     build_deployment_file_section,
     build_deployment_metadata,
-    build_platform_section,
     build_system_section,
     build_telemetry_section,
 )
@@ -131,6 +131,10 @@ def describe_deployment(
     the results onto the descriptor's sections. The localizer config is parsed
     for validation only — nothing from it reaches the descriptor.
 
+    The description is purely observational: the curated platform and vessel
+    sections are left empty for enrichment, which holds the sensor vocabulary
+    the descriptor's rosters are keyed on.
+
     Arguments
     ---------
     directory: Deployment root directory.
@@ -158,8 +162,7 @@ def describe_deployment(
     system_config: SeabedSystemConfig = parse_system_config(files.system_config)
     parse_localizer_config(files.localizer_config)
 
-    platform = build_platform_section(system_config)
-    if not platform.sensors:
+    if not system_config.sensors.entries:
         diagnostics.warning(
             deployment_label, "empty sensor roster in the system config"
         )
@@ -172,7 +175,7 @@ def describe_deployment(
         ),
         files=build_deployment_file_section(files),
         telemetry=build_telemetry_section(files, deployment_label, diagnostics),
-        platform=platform,
+        platform=DeploymentPlatformSection(),
         system=build_system_section(system_config),
     )
 

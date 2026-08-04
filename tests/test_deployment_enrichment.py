@@ -25,7 +25,6 @@ from afft.deployment import (
     DeploymentSystemSection,
     DeploymentTelemetrySection,
     EnrichmentSection,
-    PlatformSensor,
     enrich_descriptor,
     read_deployment_descriptors,
     write_deployment_catalog,
@@ -44,7 +43,7 @@ UNASSIGNED_LABEL: str = "qd61g27j_20100421_022145"
 
 def _build_descriptor(
     label: str,
-    sensor_keys: tuple[str, ...] = ("RDI", "VIS", "MICRON"),
+    topics: tuple[str, ...] = ("RDI", "VIS", "MICRON"),
 ) -> DeploymentDescriptor:
     """Builds a descriptor carrying only the fields enrichment reads."""
     return DeploymentDescriptor(
@@ -59,15 +58,14 @@ def _build_descriptor(
             magnetic_variation=-1.16,
         ),
         files=DeploymentFileSection(),
-        telemetry=DeploymentTelemetrySection(topics=[]),
-        platform=DeploymentPlatformSection(
-            sensors=[PlatformSensor(key=key) for key in sensor_keys]
-        ),
+        telemetry=DeploymentTelemetrySection(topics=list(topics)),
+        platform=DeploymentPlatformSection(),
         system=DeploymentSystemSection(
             vehicle_name="SEABED",
             vehicle_config="NORM_CFG",
             log_directory="/files1/Log",
             logged_streams=["RAW"],
+            sensors=["RDI", "VIS", "MICRON"],
         ),
     )
 
@@ -75,27 +73,28 @@ def _build_descriptor(
 def _build_catalog() -> DeploymentCatalog:
     """
     Builds a catalog assigning both profiles to one deployment and neither to
-    the other, with a platform profile carrying an entry — ``DELTA_T`` — that
-    no roster names and lacking one — ``MICRON`` — that every roster does.
+    the other, with a platform profile mounting a sensor the system config
+    roster does not name — the multibeam — and leaving one it does name — the
+    MICRON sonar — unmounted.
     """
     return DeploymentCatalog(
         sensor_identities=[
             CatalogSensorIdentity(
-                key="dvl_teledyne",
+                key="dvl_teledyne_navigator",
                 label="Teledyne RDI Work Horse Navigator DVL",
                 vendor="Teledyne RDI",
                 product="Work Horse Navigator",
                 type="dvl",
             ),
             CatalogSensorIdentity(
-                key="camera_prosilica",
+                key="camera_avt_prosilica",
                 label="AVT Prosilica GC1380 stereo camera",
                 vendor="AVT",
                 product="Prosilica GC1380",
                 type="stereo_camera",
             ),
             CatalogSensorIdentity(
-                key="sonar_deltat",
+                key="multibeam_deltat",
                 label="Imagenex DeltaT multibeam sonar",
                 vendor="Imagenex",
                 product="DeltaT 837B",
@@ -117,8 +116,8 @@ def _build_catalog() -> DeploymentCatalog:
                 platform_operator="ACFR",
                 sensors=[
                     CatalogProfileSensor(
-                        key="RDI",
-                        identity="dvl_teledyne",
+                        key="dvl_teledyne_navigator",
+                        message_topics=["RDI"],
                         extrinsics=CatalogSensorExtrinsics(
                             locx=0.55,
                             locy=0.0,
@@ -130,12 +129,11 @@ def _build_catalog() -> DeploymentCatalog:
                     ),
                     # Curated without a surveyed pose, the common outcome.
                     CatalogProfileSensor(
-                        key="VIS", identity="camera_prosilica"
+                        key="camera_avt_prosilica", message_topics=["VIS"]
                     ),
-                    # Carried by the profile but named by no roster.
-                    CatalogProfileSensor(
-                        key="DELTA_T", identity="sonar_deltat"
-                    ),
+                    # Mounted though the system config names no channel for
+                    # it, and emitting no topic of its own.
+                    CatalogProfileSensor(key="multibeam_deltat"),
                 ],
             )
         ],
@@ -145,8 +143,7 @@ def _build_catalog() -> DeploymentCatalog:
                 vessel_name="RV Linnaeus",
                 sensors=[
                     CatalogProfileSensor(
-                        key="USBL",
-                        identity="usbl_evologics_transceiver",
+                        key="usbl_evologics_transceiver",
                         extrinsics=CatalogSensorExtrinsics(
                             locx=1.2,
                             locy=-0.4,
@@ -208,7 +205,8 @@ def test_matched_sensor_gets_its_identity_and_extrinsics(
     assert platform.identity.platform_operator == "ACFR"
 
     dvl = platform.sensors[0]
-    assert dvl.key == "RDI"
+    assert dvl.key == "dvl_teledyne_navigator"
+    assert dvl.message_topics == ["RDI"]
     assert dvl.identity is not None
     assert dvl.identity.vendor == "Teledyne RDI"
     assert dvl.extrinsics is not None
@@ -222,31 +220,61 @@ def test_catalog_entry_without_extrinsics_fills_identity_only(
     enrichment = enrich_descriptor(_build_descriptor(PLATFORM_LABEL), index)
 
     camera = enrichment.descriptor.platform.sensors[1]
-    assert camera.key == "VIS"
+    assert camera.key == "camera_avt_prosilica"
     assert camera.identity is not None
     assert camera.identity.product == "Prosilica GC1380"
     assert camera.extrinsics is None
 
 
-def test_roster_key_absent_from_the_profile_stays_unfilled(
+def test_platform_roster_comes_wholly_from_the_profile(
     index: DeploymentCatalogIndex,
 ) -> None:
-    enrichment = enrich_descriptor(_build_descriptor(PLATFORM_LABEL), index)
+    descriptor = _build_descriptor(PLATFORM_LABEL)
 
-    sonar = enrichment.descriptor.platform.sensors[2]
-    assert sonar.key == "MICRON"
-    assert sonar.identity is None
-    assert sonar.extrinsics is None
+    enrichment = enrich_descriptor(descriptor, index)
 
-
-def test_profile_entry_absent_from_the_roster_is_not_added(
-    index: DeploymentCatalogIndex,
-) -> None:
-    enrichment = enrich_descriptor(_build_descriptor(PLATFORM_LABEL), index)
-
+    # The multibeam is mounted though the system config roster omits it, and
+    # the MICRON sonar the roster names is left off, since no profile mounts
+    # it.
     assert [
         sensor.key for sensor in enrichment.descriptor.platform.sensors
-    ] == ["RDI", "VIS", "MICRON"]
+    ] == [
+        "dvl_teledyne_navigator",
+        "camera_avt_prosilica",
+        "multibeam_deltat",
+    ]
+    assert descriptor.system.sensors == ["RDI", "VIS", "MICRON"]
+
+
+def test_topic_mismatches_are_reported_in_both_directions(
+    index: DeploymentCatalogIndex,
+) -> None:
+    enrichment = enrich_descriptor(
+        _build_descriptor(PLATFORM_LABEL, topics=("RDI", "MICRON")), index
+    )
+
+    assert enrichment.undeclared_topics == ["MICRON"]
+    assert enrichment.unobserved_topics == ["VIS"]
+
+
+def test_matching_topics_are_not_reported(
+    index: DeploymentCatalogIndex,
+) -> None:
+    enrichment = enrich_descriptor(
+        _build_descriptor(PLATFORM_LABEL, topics=("RDI", "VIS")), index
+    )
+
+    assert enrichment.undeclared_topics == []
+    assert enrichment.unobserved_topics == []
+
+
+def test_topics_are_not_compared_without_a_platform_profile(
+    index: DeploymentCatalogIndex,
+) -> None:
+    enrichment = enrich_descriptor(_build_descriptor(UNASSIGNED_LABEL), index)
+
+    assert enrichment.undeclared_topics == []
+    assert enrichment.unobserved_topics == []
 
 
 def test_vessel_section_is_filled_entirely_from_the_profile(
@@ -258,9 +286,13 @@ def test_vessel_section_is_filled_entirely_from_the_profile(
     assert enrichment.vessel_matched is True
     assert vessel.identity is not None
     assert vessel.identity.vessel_name == "RV Linnaeus"
-    assert [sensor.key for sensor in vessel.sensors] == ["USBL"]
+    assert [sensor.key for sensor in vessel.sensors] == [
+        "usbl_evologics_transceiver"
+    ]
 
     modem = vessel.sensors[0]
+    # The transceiver's data arrives through the usbl_logs file role.
+    assert modem.message_topics == []
     assert modem.identity is not None
     assert modem.identity.type == "usbl"
     assert modem.extrinsics is not None
@@ -290,6 +322,10 @@ def test_missing_assignments_are_warned_about_per_section(
         (warning.deployment_label, warning.message)
         for warning in diagnostics.warnings
     ] == [
+        (
+            PLATFORM_LABEL,
+            "logged topics no curated sensor claims: MICRON",
+        ),
         (UNASSIGNED_LABEL, "no platform profile assigned"),
         (UNASSIGNED_LABEL, "no vessel profile assigned"),
     ]
@@ -335,6 +371,20 @@ def test_unrequested_section_is_not_warned_about(
     assert [warning.message for warning in diagnostics.warnings] == [
         "no vessel profile assigned"
     ]
+
+
+def test_topic_mismatches_are_warned_about(
+    descriptors: list[DeploymentDescriptor], catalog: DeploymentCatalog
+) -> None:
+    diagnostics = EnrichDescriptorDiagnostics()
+
+    enrich_descriptors(descriptors, catalog, diagnostics)
+
+    assert [
+        warning.message
+        for warning in diagnostics.warnings
+        if warning.deployment_label == PLATFORM_LABEL
+    ] == ["logged topics no curated sensor claims: MICRON"]
 
 
 def _write_inputs(

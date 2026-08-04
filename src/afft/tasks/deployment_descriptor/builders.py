@@ -8,10 +8,8 @@ from afft.deployment import (
     DeploymentFiles,
     DeploymentFileSection,
     DeploymentMetadata,
-    DeploymentPlatformSection,
     DeploymentSystemSection,
     DeploymentTelemetrySection,
-    PlatformSensor,
 )
 from afft.seabed import SeabedSystemConfig
 
@@ -70,39 +68,14 @@ def build_system_section(
 
     Returns
     -------
-    The deployment vehicle's identity and logging setup.
+    The deployment vehicle's identity, logging setup, and sensor labels.
     """
     return DeploymentSystemSection(
         vehicle_name=system_config.vehicle.vehicle_name,
         vehicle_config=system_config.vehicle.vehicle_config,
         log_directory=system_config.logger.log_dir,
         logged_streams=system_config.logger.logged_streams,
-    )
-
-
-def build_platform_section(
-    system_config: SeabedSystemConfig,
-) -> DeploymentPlatformSection:
-    """
-    Map a parsed SEABED system config onto the descriptor's platform section.
-
-    The section's curated ``identity`` slot and the sensors' ``identity`` and
-    ``extrinsics`` slots are left unfilled; an enrichment process populates
-    them later.
-
-    Arguments
-    ---------
-    system_config: Parsed SEABED system config.
-
-    Returns
-    -------
-    The platform's configured sensor roster, keys only.
-    """
-    return DeploymentPlatformSection(
-        sensors=[
-            PlatformSensor(key=entry.name)
-            for entry in system_config.sensors.entries
-        ]
+        sensors=[entry.name for entry in system_config.sensors.entries],
     )
 
 

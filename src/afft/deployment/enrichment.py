@@ -3,7 +3,7 @@
 from enum import StrEnum
 from typing import Self
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, Field
 
 from .catalog_types import (
     CatalogPlatformProfile,
@@ -140,6 +140,10 @@ class DeploymentEnrichment(BaseModel):
         ``None`` if the platform section was not requested.
     vessel_matched: Whether the vessel section resolved to a profile; ``None``
         if the vessel section was not requested.
+    undeclared_topics: Topics the deployment logged that no curated sensor
+        claims, sorted.
+    unobserved_topics: Topics the curated roster declares that the deployment
+        never logged, sorted.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -147,6 +151,8 @@ class DeploymentEnrichment(BaseModel):
     descriptor: DeploymentDescriptor
     platform_matched: bool | None = None
     vessel_matched: bool | None = None
+    undeclared_topics: list[str] = Field(default_factory=list)
+    unobserved_topics: list[str] = Field(default_factory=list)
 
 
 def enrich_descriptor(
@@ -170,7 +176,8 @@ def enrich_descriptor(
 
     Returns
     -------
-    The enriched descriptor and which requested sections resolved.
+    The enriched descriptor, which requested sections resolved, and how the
+    resolved roster's declared topics compare to the observed ones.
     """
     updates: dict[str, DeploymentPlatformSection | DeploymentVesselSection] = {}
     platform_matched: bool | None = None
@@ -196,11 +203,52 @@ def enrich_descriptor(
                 descriptor.vessel, vessel_profile, index.sensor_identities
             )
 
+    enriched: DeploymentDescriptor = descriptor.model_copy(update=updates)
+    undeclared_topics: list[str] = []
+    unobserved_topics: list[str] = []
+    # The platform sensors own the RAW topics, so the comparison only means
+    # something once their roster is the curated one.
+    if platform_matched:
+        undeclared_topics, unobserved_topics = compare_topics(enriched)
+
     return DeploymentEnrichment(
-        descriptor=descriptor.model_copy(update=updates),
+        descriptor=enriched,
         platform_matched=platform_matched,
         vessel_matched=vessel_matched,
+        undeclared_topics=undeclared_topics,
+        unobserved_topics=unobserved_topics,
     )
+
+
+def compare_topics(
+    descriptor: DeploymentDescriptor,
+) -> tuple[list[str], list[str]]:
+    """
+    Compare the topics a descriptor's curated roster declares against the
+    topics its deployment logged.
+
+    A mismatch is a curation signal rather than an error in either direction:
+    a sensor can be fitted and log nothing, and a logged topic can belong to
+    hardware the catalog deliberately leaves unmounted.
+
+    Arguments
+    ---------
+    descriptor: Enriched descriptor to check.
+
+    Returns
+    -------
+    The observed topics no sensor claims and the declared topics the
+    deployment never logged, each sorted.
+    """
+    sensors: list[PlatformSensor | VesselSensor] = [
+        *descriptor.platform.sensors,
+        *descriptor.vessel.sensors,
+    ]
+    declared: set[str] = {
+        topic for sensor in sensors for topic in sensor.message_topics
+    }
+    observed: set[str] = set(descriptor.telemetry.topics)
+    return sorted(observed - declared), sorted(declared - observed)
 
 
 def enrich_platform_section(
@@ -209,11 +257,11 @@ def enrich_platform_section(
     identities: dict[CatalogKey, CatalogSensorIdentity],
 ) -> DeploymentPlatformSection:
     """
-    Fill a platform section's curated slots from a platform profile.
+    Fill a platform section from a platform profile.
 
-    The roster comes from the deployment's system config, so it is preserved
-    key by key: a roster key the profile does not carry keeps its empty slots,
-    and a profile entry no roster key names is unused.
+    Every field of the section is curated — the deployment data names the
+    vehicle's sensors only by system config label, a vocabulary of its own —
+    so the profile's roster replaces the section's contents outright.
 
     Arguments
     ---------
@@ -225,9 +273,6 @@ def enrich_platform_section(
     -------
     The enriched platform section.
     """
-    entries: dict[str, CatalogProfileSensor] = {
-        sensor.key: sensor for sensor in profile.sensors
-    }
     return section.model_copy(
         update={
             "identity": PlatformIdentity(
@@ -235,16 +280,9 @@ def enrich_platform_section(
                 platform_class=profile.platform_class,
                 platform_operator=profile.platform_operator,
             ),
-            "sensors": [
-                PlatformSensor(
-                    key=sensor.key,
-                    identity=_sensor_identity(
-                        entries.get(sensor.key), identities
-                    ),
-                    extrinsics=_sensor_extrinsics(entries.get(sensor.key)),
-                )
-                for sensor in section.sensors
-            ],
+            "sensors": _resolve_sensors(
+                profile.sensors, identities, PlatformSensor
+            ),
         }
     )
 
@@ -274,26 +312,42 @@ def enrich_vessel_section(
     return section.model_copy(
         update={
             "identity": VesselIdentity(vessel_name=profile.vessel_name),
-            "sensors": [
-                VesselSensor(
-                    key=sensor.key,
-                    identity=_sensor_identity(sensor, identities),
-                    extrinsics=_sensor_extrinsics(sensor),
-                )
-                for sensor in profile.sensors
-            ],
+            "sensors": _resolve_sensors(
+                profile.sensors, identities, VesselSensor
+            ),
         }
     )
 
 
+def _resolve_sensors[SensorT: (PlatformSensor, VesselSensor)](
+    sensors: list[CatalogProfileSensor],
+    identities: dict[CatalogKey, CatalogSensorIdentity],
+    sensor_type: type[SensorT],
+) -> list[SensorT]:
+    """
+    Resolve a profile's roster into descriptor sensors.
+
+    The two bodies differ only in which sensor model their roster holds: both
+    key a sensor on its catalog identity, and both carry the curated topic
+    mapping and pose through unchanged.
+    """
+    return [
+        sensor_type(
+            key=sensor.key,
+            message_topics=list(sensor.message_topics),
+            identity=_sensor_identity(sensor, identities),
+            extrinsics=_sensor_extrinsics(sensor),
+        )
+        for sensor in sensors
+    ]
+
+
 def _sensor_identity(
-    entry: CatalogProfileSensor | None,
+    entry: CatalogProfileSensor,
     identities: dict[CatalogKey, CatalogSensorIdentity],
 ) -> SensorIdentity | None:
-    """Resolve a profile sensor's identity reference against the catalog."""
-    if entry is None:
-        return None
-    identity: CatalogSensorIdentity | None = identities.get(entry.identity)
+    """Resolve a profile sensor's key against the catalog identity records."""
+    identity: CatalogSensorIdentity | None = identities.get(entry.key)
     if identity is None:
         return None
     return SensorIdentity(
@@ -305,10 +359,10 @@ def _sensor_identity(
 
 
 def _sensor_extrinsics(
-    entry: CatalogProfileSensor | None,
+    entry: CatalogProfileSensor,
 ) -> SensorExtrinsics | None:
     """Convert a profile sensor's curated pose to descriptor extrinsics."""
-    if entry is None or entry.extrinsics is None:
+    if entry.extrinsics is None:
         return None
     return SensorExtrinsics(
         locx=entry.extrinsics.locx,

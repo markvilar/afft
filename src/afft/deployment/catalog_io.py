@@ -117,9 +117,12 @@ def _format_profile_sensors(sensors: list[CatalogProfileSensor]) -> str:
 
     lines: list[str] = ["sensors = ["]
     for sensor in sensors:
+        topics: str = ", ".join(
+            _toml_string(topic) for topic in sensor.message_topics
+        )
         entry: str = (
             f"    {{ key = {_toml_string(sensor.key)}, "
-            f"identity = {_toml_string(sensor.identity)}"
+            f"message_topics = [{topics}]"
         )
         comment: str = ""
         if sensor.extrinsics is not None:
