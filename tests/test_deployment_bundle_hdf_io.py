@@ -6,10 +6,8 @@ from pathlib import Path
 import pandas as pd
 import pytest
 
-from afft.deployment.bundle_factories import (
-    open_deployment_bundle_reader,
-    open_deployment_bundle_writer,
-)
+from afft.deployment.bundle_hdf_readers import open_deployment_bundle_reader
+from afft.deployment.bundle_hdf_writers import open_deployment_bundle_writer
 from afft.deployment.bundle_types import (
     DeploymentBundleHeader,
     DeploymentIdentity,
@@ -201,8 +199,8 @@ def test_raw_telemetry_round_trip_and_window(tmp_path: Path) -> None:
         assert len(full) == 5
 
         class _Window:
-            start = timestamps[1]
-            end = timestamps[3]
+            start: datetime | None = timestamps[1]
+            end: datetime | None = timestamps[3]
 
         windowed = reader.telemetry.raw.read(
             "dvl_teledyne_navigator", "RDI", window=_Window()
