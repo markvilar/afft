@@ -23,6 +23,15 @@ from .catalog_summary import (
     collect_unreferenced_sensors as collect_unreferenced_sensors,
     summarize_catalog as summarize_catalog,
 )
+from .common_types import (
+    DeploymentMetadata as DeploymentMetadata,
+    PlatformIdentity as PlatformIdentity,
+    PlatformSensor as PlatformSensor,
+    SensorExtrinsics as SensorExtrinsics,
+    SensorIdentity as SensorIdentity,
+    VesselIdentity as VesselIdentity,
+    VesselSensor as VesselSensor,
+)
 from .descriptor_types import (
     DeploymentDescriptor as DeploymentDescriptor,
     DeploymentFileSection as DeploymentFileSection,
@@ -30,12 +39,6 @@ from .descriptor_types import (
     DeploymentSystemSection as DeploymentSystemSection,
     DeploymentTelemetrySection as DeploymentTelemetrySection,
     DeploymentVesselSection as DeploymentVesselSection,
-    PlatformIdentity as PlatformIdentity,
-    PlatformSensor as PlatformSensor,
-    SensorExtrinsics as SensorExtrinsics,
-    SensorIdentity as SensorIdentity,
-    VesselIdentity as VesselIdentity,
-    VesselSensor as VesselSensor,
 )
 from .descriptor_exporters import (
     format_table as format_table,
@@ -74,7 +77,6 @@ from .loader import (
 from .types import (
     DeploymentConfig as DeploymentConfig,
     DeploymentInfo as DeploymentInfo,
-    DeploymentMetadata as DeploymentMetadata,
     TopsideUsblModemConfig as TopsideUsblModemConfig,
     UsblUncertaintyProfile as UsblUncertaintyProfile,
 )

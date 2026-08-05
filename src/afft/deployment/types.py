@@ -4,6 +4,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
+from .common_types import DeploymentMetadata
+
 
 class UsblUncertaintyProfile(BaseModel):
     """
@@ -83,30 +85,6 @@ class DeploymentConfig(BaseModel):
     usbl_modem: TopsideUsblModemConfig
     usbl_uncertainty: UsblUncertaintyProfile
     sensor_keys: tuple[str, ...] = ()
-
-
-class DeploymentMetadata(BaseModel):
-    """
-    Collected metadata for a single AUV deployment.
-
-    Attributes
-    ----------
-    acfr_deployment_label: ACFR mission file stem.
-    acfr_campaign_label: ACFR campaign directory name.
-    acfr_platform_label: ACFR platform name.
-    origin_latitude: Deployment origin latitude in decimal degrees.
-    origin_longitude: Deployment origin longitude in decimal degrees.
-    magnetic_variation: Magnetic variation at the origin in degrees.
-    """
-
-    model_config = ConfigDict(frozen=True)
-
-    acfr_deployment_label: str
-    acfr_campaign_label: str
-    acfr_platform_label: str
-    origin_latitude: float
-    origin_longitude: float
-    magnetic_variation: float
 
 
 class DeploymentInfo(BaseModel):

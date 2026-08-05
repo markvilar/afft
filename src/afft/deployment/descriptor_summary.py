@@ -5,13 +5,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
-from .descriptor_types import (
-    DeploymentDescriptor,
-    DeploymentFileSection,
-    PlatformSensor,
-    SensorIdentity,
-    VesselSensor,
-)
+from .common_types import PlatformSensor, SensorIdentity, VesselSensor
+from .descriptor_types import DeploymentDescriptor, DeploymentFileSection
 
 type FieldName = str
 type CampaignLabel = str
