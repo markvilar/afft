@@ -97,10 +97,7 @@ def _format_table(
     for key, value in table.items():
         if isinstance(value, dict):
             if dotted_children:
-                lines.extend(
-                    f"{key}.{_format_pair(nested_key, nested_value)}"
-                    for nested_key, nested_value in value.items()
-                )
+                lines.extend(_format_dotted_pairs(key, value))
             else:
                 tables.append((key, value))
         elif _is_table_array(value):
@@ -132,6 +129,29 @@ def _is_table_array(value: Any) -> bool:
         and bool(value)
         and all(isinstance(entry, dict) for entry in value)
     )
+
+
+def _format_dotted_pairs(prefix: str, table: dict[str, Any]) -> list[str]:
+    """
+    Format a nested table as dotted-key lines, recursing through nested
+    dicts so every leaf value becomes its own ``prefix.path = value`` line.
+
+    Arguments
+    ---------
+    prefix: Dotted key path built so far.
+    table: The table's contents.
+
+    Returns
+    -------
+    One dotted-key line per leaf value.
+    """
+    lines: list[str] = []
+    for key, value in table.items():
+        if isinstance(value, dict):
+            lines.extend(_format_dotted_pairs(f"{prefix}.{key}", value))
+        else:
+            lines.append(f"{prefix}.{_format_pair(key, value)}")
+    return lines
 
 
 def _format_pair(key: str, value: Any) -> str:

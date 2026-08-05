@@ -27,6 +27,7 @@ from .common_types import (
     DeploymentMetadata as DeploymentMetadata,
     PlatformIdentity as PlatformIdentity,
     PlatformSensor as PlatformSensor,
+    SensorCalibration as SensorCalibration,
     SensorExtrinsics as SensorExtrinsics,
     SensorIdentity as SensorIdentity,
     VesselIdentity as VesselIdentity,
