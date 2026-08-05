@@ -83,14 +83,14 @@ class SensorCalibration(BaseModel):
 
     Attributes
     ----------
-    sensor_type: Discriminates which calibration model ``parameters``
+    calibration_type: Discriminates which calibration model ``parameters``
         follows, e.g. ``"pinhole"``, ``"fisheye"``.
     parameters: Named calibration values for that model.
     """
 
     model_config = ConfigDict(frozen=True)
 
-    sensor_type: str
+    calibration_type: str
     parameters: dict[str, float]
 
 

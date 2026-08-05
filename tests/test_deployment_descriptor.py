@@ -147,7 +147,7 @@ def test_filled_curated_slots_round_trip(tmp_path: Path) -> None:
                             rotz=3.14,
                         ),
                         calibration=SensorCalibration(
-                            sensor_type="pinhole",
+                            calibration_type="pinhole",
                             parameters={"fx": 500.0, "fy": 500.0},
                         ),
                     )
@@ -179,7 +179,7 @@ def test_filled_vessel_section_round_trip(tmp_path: Path) -> None:
                             rotz=1.57,
                         ),
                         calibration=SensorCalibration(
-                            sensor_type="pinhole",
+                            calibration_type="pinhole",
                             parameters={"fx": 500.0, "fy": 500.0},
                         ),
                     )
