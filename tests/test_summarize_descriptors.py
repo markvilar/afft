@@ -10,17 +10,17 @@ from click.testing import CliRunner, Result
 from afft.cli.entrypoint import cli
 from afft.deployment import (
     DeploymentDescriptor,
-    DeploymentFileSection,
     DeploymentMetadata,
-    DeploymentPlatformSection,
-    DeploymentSystemSection,
-    DeploymentTelemetrySection,
-    DeploymentVesselSection,
     DescriptorSummary,
+    FileDescriptorSection,
+    PlatformDescriptorSection,
     PlatformIdentity,
     PlatformSensor,
     SensorExtrinsics,
     SensorIdentity,
+    SystemDescriptorSection,
+    TelemetryDescriptorSection,
+    VesselDescriptorSection,
     VesselIdentity,
     collect_unfilled_fields,
     summarize_descriptors,
@@ -59,8 +59,8 @@ def _build_descriptor(
     longitude: float = 113.9,
     topics: tuple[str, ...] = ("RDI", "GPS_RMC"),
     platform_label: str = "auv-sirius",
-    platform: DeploymentPlatformSection | None = None,
-    vessel: DeploymentVesselSection | None = None,
+    platform: PlatformDescriptorSection | None = None,
+    vessel: VesselDescriptorSection | None = None,
 ) -> DeploymentDescriptor:
     """Builds a descriptor carrying only the fields the summarizer reads."""
     return DeploymentDescriptor(
@@ -74,13 +74,13 @@ def _build_descriptor(
             origin_longitude=longitude,
             magnetic_variation=-1.16,
         ),
-        files=DeploymentFileSection(
+        files=FileDescriptorSection(
             raw_messages=["messages/a.RAW.auv"],
             usbl_logs=["usbl/log-1.txt"],
         ),
-        telemetry=DeploymentTelemetrySection(topics=list(topics)),
+        telemetry=TelemetryDescriptorSection(topics=list(topics)),
         platform=platform if platform else _enriched_platform(),
-        system=DeploymentSystemSection(
+        system=SystemDescriptorSection(
             vehicle_name="SEABED",
             vehicle_config="NORM_CFG",
             log_directory="/files1/Log",
@@ -90,9 +90,9 @@ def _build_descriptor(
     )
 
 
-def _enriched_platform() -> DeploymentPlatformSection:
+def _enriched_platform() -> PlatformDescriptorSection:
     """Builds a fully enriched platform section."""
-    return DeploymentPlatformSection(
+    return PlatformDescriptorSection(
         identity=PlatformIdentity(
             platform_label="AUV Sirius",
             platform_class="SEABED",
@@ -106,16 +106,16 @@ def _enriched_platform() -> DeploymentPlatformSection:
     )
 
 
-def _enriched_vessel() -> DeploymentVesselSection:
+def _enriched_vessel() -> VesselDescriptorSection:
     """Builds a fully enriched vessel section."""
-    return DeploymentVesselSection(
+    return VesselDescriptorSection(
         identity=VesselIdentity(vessel_name="RV Linnaeus"), sensors=[]
     )
 
 
-def _unenriched_platform() -> DeploymentPlatformSection:
+def _unenriched_platform() -> PlatformDescriptorSection:
     """Builds a platform section as `describe` leaves it."""
-    return DeploymentPlatformSection(
+    return PlatformDescriptorSection(
         identity=None, sensors=[PlatformSensor(key="RDI")]
     )
 
@@ -190,7 +190,7 @@ def test_summarize_reports_unenriched_descriptors() -> None:
             "WA201004",
             platform_label="",
             platform=_unenriched_platform(),
-            vessel=DeploymentVesselSection(),
+            vessel=VesselDescriptorSection(),
         )
     ]
 
@@ -203,7 +203,7 @@ def test_summarize_reports_unenriched_descriptors() -> None:
 
 def test_summarize_groups_partially_filled_rosters() -> None:
     """Gaps group by field and carry the deployments they affect."""
-    partial = DeploymentPlatformSection(
+    partial = PlatformDescriptorSection(
         identity=PlatformIdentity(
             platform_label="AUV Sirius",
             platform_class="SEABED",

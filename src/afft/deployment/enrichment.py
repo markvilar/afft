@@ -22,8 +22,8 @@ from .common_types import (
 )
 from .descriptor_types import (
     DeploymentDescriptor,
-    DeploymentPlatformSection,
-    DeploymentVesselSection,
+    PlatformDescriptorSection,
+    VesselDescriptorSection,
 )
 
 type CatalogKey = str
@@ -181,7 +181,7 @@ def enrich_descriptor(
     The enriched descriptor, which requested sections resolved, and how the
     resolved roster's declared topics compare to the observed ones.
     """
-    updates: dict[str, DeploymentPlatformSection | DeploymentVesselSection] = {}
+    updates: dict[str, PlatformDescriptorSection | VesselDescriptorSection] = {}
     platform_matched: bool | None = None
     vessel_matched: bool | None = None
 
@@ -254,10 +254,10 @@ def compare_topics(
 
 
 def enrich_platform_section(
-    section: DeploymentPlatformSection,
+    section: PlatformDescriptorSection,
     profile: CatalogPlatformProfile,
     identities: dict[CatalogKey, CatalogSensorIdentity],
-) -> DeploymentPlatformSection:
+) -> PlatformDescriptorSection:
     """
     Fill a platform section from a platform profile.
 
@@ -290,10 +290,10 @@ def enrich_platform_section(
 
 
 def enrich_vessel_section(
-    section: DeploymentVesselSection,
+    section: VesselDescriptorSection,
     profile: CatalogVesselProfile,
     identities: dict[CatalogKey, CatalogSensorIdentity],
-) -> DeploymentVesselSection:
+) -> VesselDescriptorSection:
     """
     Fill a vessel section from a vessel profile.
 

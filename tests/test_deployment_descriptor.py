@@ -7,15 +7,15 @@ import pytest
 
 from afft.deployment import (
     DeploymentDescriptor,
-    DeploymentFileSection,
     DeploymentMetadata,
-    DeploymentPlatformSection,
-    DeploymentSystemSection,
-    DeploymentTelemetrySection,
-    DeploymentVesselSection,
+    FileDescriptorSection,
+    PlatformDescriptorSection,
     PlatformIdentity,
     PlatformSensor,
     SensorExtrinsics,
+    SystemDescriptorSection,
+    TelemetryDescriptorSection,
+    VesselDescriptorSection,
     VesselIdentity,
     VesselSensor,
     collect_deployment_files,
@@ -67,15 +67,15 @@ def _build_descriptor() -> DeploymentDescriptor:
             origin_longitude=115.5,
             magnetic_variation=-1.5,
         ),
-        files=DeploymentFileSection(
+        files=FileDescriptorSection(
             raw_messages=["messages/20170525_2346.RAW.auv"],
             system_config=["messages/20170525_2346.SEABED.syscfg"],
         ),
-        telemetry=DeploymentTelemetrySection(topics=["RDI", "VIS"]),
-        platform=DeploymentPlatformSection(
+        telemetry=TelemetryDescriptorSection(topics=["RDI", "VIS"]),
+        platform=PlatformDescriptorSection(
             sensors=[PlatformSensor(key="RDI"), PlatformSensor(key="VIS")]
         ),
-        system=DeploymentSystemSection(
+        system=SystemDescriptorSection(
             vehicle_name="SEABED",
             vehicle_config="NORM_CFG",
             log_directory="/files1/Log",
@@ -117,7 +117,7 @@ def test_unfilled_curated_slots_are_omitted(tmp_path: Path) -> None:
     assert "extrinsics" not in entry["platform"]["sensors"][0]
 
     descriptors = read_deployment_descriptors(path)
-    assert descriptors[0].vessel == DeploymentVesselSection()
+    assert descriptors[0].vessel == VesselDescriptorSection()
     assert descriptors[0].platform.identity is None
     assert descriptors[0].platform.sensors[0].identity is None
     assert descriptors[0].platform.sensors[0].extrinsics is None
@@ -126,7 +126,7 @@ def test_unfilled_curated_slots_are_omitted(tmp_path: Path) -> None:
 def test_filled_curated_slots_round_trip(tmp_path: Path) -> None:
     descriptor = _build_descriptor().model_copy(
         update={
-            "platform": DeploymentPlatformSection(
+            "platform": PlatformDescriptorSection(
                 identity=PlatformIdentity(
                     platform_label="AUV Sirius",
                     platform_class="SEABED",
@@ -158,7 +158,7 @@ def test_filled_curated_slots_round_trip(tmp_path: Path) -> None:
 def test_filled_vessel_section_round_trip(tmp_path: Path) -> None:
     descriptor = _build_descriptor().model_copy(
         update={
-            "vessel": DeploymentVesselSection(
+            "vessel": VesselDescriptorSection(
                 identity=VesselIdentity(vessel_name="RV Linnaeus"),
                 sensors=[
                     VesselSensor(

@@ -9,7 +9,7 @@ from rich.progress import Progress
 from afft.deployment import (
     DeploymentDescriptor,
     DeploymentFiles,
-    DeploymentPlatformSection,
+    PlatformDescriptorSection,
     collect_deployment_files,
     write_deployment_descriptors,
 )
@@ -175,7 +175,7 @@ def describe_deployment(
         ),
         files=build_deployment_file_section(files),
         telemetry=build_telemetry_section(files, deployment_label, diagnostics),
-        platform=DeploymentPlatformSection(),
+        platform=PlatformDescriptorSection(),
         system=build_system_section(system_config),
     )
 

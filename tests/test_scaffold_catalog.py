@@ -10,11 +10,11 @@ from click.testing import CliRunner, Result
 from afft.cli.entrypoint import cli
 from afft.deployment import (
     DeploymentDescriptor,
-    DeploymentFileSection,
     DeploymentMetadata,
-    DeploymentPlatformSection,
-    DeploymentSystemSection,
-    DeploymentTelemetrySection,
+    FileDescriptorSection,
+    PlatformDescriptorSection,
+    SystemDescriptorSection,
+    TelemetryDescriptorSection,
     read_deployment_catalog,
     write_deployment_descriptors,
 )
@@ -46,10 +46,10 @@ def _build_descriptor(
             origin_longitude=113.9,
             magnetic_variation=-1.16,
         ),
-        files=DeploymentFileSection(usbl_logs=list(usbl_logs)),
-        telemetry=DeploymentTelemetrySection(topics=list(topics)),
-        platform=DeploymentPlatformSection(),
-        system=DeploymentSystemSection(
+        files=FileDescriptorSection(usbl_logs=list(usbl_logs)),
+        telemetry=TelemetryDescriptorSection(topics=list(topics)),
+        platform=PlatformDescriptorSection(),
+        system=SystemDescriptorSection(
             vehicle_name="SEABED",
             vehicle_config="NORM_CFG",
             log_directory="/files1/Log",
