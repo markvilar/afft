@@ -48,7 +48,7 @@ def normalize_dtypes(
     """
     frame = frame.copy()
     for column, dtype in dtypes.items():
-        if dtype == "datetime64[ns, UTC]":
+        if pd.api.types.pandas_dtype(dtype) == _DATETIME_UTC_DTYPE:
             frame[column] = pd.to_datetime(frame[column], utc=True)
         else:
             frame[column] = frame[column].astype(dtype)
@@ -442,14 +442,18 @@ def open_deployment_bundle_writer(
 
 _HEADER_PATH: str = "bundle"
 
+_DATETIME_UTC_DTYPE: pd.DatetimeTZDtype = pd.DatetimeTZDtype(
+    unit="ns", tz="UTC"
+)
+
 _RAW_TELEMETRY_REQUIRED_DTYPES: dict[str, str] = {
-    "timestamp": "datetime64[ns, UTC]",
+    "timestamp": str(_DATETIME_UTC_DTYPE),
     "sensor_key": "category",
     "message_topic": "category",
 }
 
 _PROCESSED_TELEMETRY_REQUIRED_DTYPES: dict[str, str] = {
-    "timestamp": "datetime64[ns, UTC]",
+    "timestamp": str(_DATETIME_UTC_DTYPE),
     "message_topic": "category",
 }
 
