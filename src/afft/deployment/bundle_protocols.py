@@ -252,24 +252,23 @@ class RawTelemetryBundleSectionWriter(Protocol):
 class ProcessedTelemetryBundleSectionWriter(Protocol):
     """Write primitives for a bundle's ``telemetry/processed`` section."""
 
-    def append(
-        self,
-        sensor_key: str,
-        topic: str,
-        frame: pd.DataFrame,
-        provenance: ProcessedProvenance,
+    def append_messages(
+        self, sensor_key: str, topic: str, frame: pd.DataFrame
     ) -> None:
         """Append rows to one processed telemetry table."""
         ...
 
-    def replace(
-        self,
-        sensor_key: str,
-        topic: str,
-        frame: pd.DataFrame,
-        provenance: ProcessedProvenance,
+    def replace_messages(
+        self, sensor_key: str, topic: str, frame: pd.DataFrame
     ) -> None:
         """Replace one processed telemetry table."""
+        ...
+
+    def write_provenance(
+        self, sensor_key: str, topic: str, value: ProcessedProvenance
+    ) -> None:
+        """Write the provenance for one processed telemetry table, creating
+        it if absent or overwriting it if present."""
         ...
 
 
