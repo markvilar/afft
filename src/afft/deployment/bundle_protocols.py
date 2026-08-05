@@ -1,9 +1,6 @@
 """Storage-agnostic read and write interfaces for a deployment bundle."""
 
-from collections.abc import Iterator
-from contextlib import contextmanager
 from datetime import datetime
-from pathlib import Path
 from typing import Protocol
 
 import pandas as pd
@@ -303,47 +300,3 @@ class DeploymentBundleWriter(Protocol):
     vessel: VesselBundleSectionWriter
     telemetry: TelemetryBundleSectionWriter
     metocean: MetoceanBundleSectionWriter
-
-
-@contextmanager
-def open_deployment_bundle_reader(
-    path: Path,
-) -> Iterator[DeploymentBundleReader]:
-    """
-    Open a deployment bundle for reading.
-
-    Arguments
-    ---------
-    path: Path to the deployment bundle file.
-
-    Returns
-    -------
-    A context manager yielding a ``DeploymentBundleReader``.
-    """
-    raise NotImplementedError(
-        "open_deployment_bundle_reader has no concrete implementation yet; "
-        "see afft #208"
-    )
-    yield  # pragma: no cover
-
-
-@contextmanager
-def open_deployment_bundle_writer(
-    path: Path,
-) -> Iterator[DeploymentBundleWriter]:
-    """
-    Open a deployment bundle for writing.
-
-    Arguments
-    ---------
-    path: Path to the deployment bundle file.
-
-    Returns
-    -------
-    A context manager yielding a ``DeploymentBundleWriter``.
-    """
-    raise NotImplementedError(
-        "open_deployment_bundle_writer has no concrete implementation yet; "
-        "see afft #208"
-    )
-    yield  # pragma: no cover
