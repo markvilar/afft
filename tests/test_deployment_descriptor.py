@@ -12,6 +12,7 @@ from afft.deployment import (
     PlatformDescriptorSection,
     PlatformIdentity,
     PlatformSensor,
+    SensorCalibration,
     SensorExtrinsics,
     SystemDescriptorSection,
     TelemetryDescriptorSection,
@@ -115,12 +116,14 @@ def test_unfilled_curated_slots_are_omitted(tmp_path: Path) -> None:
     assert "identity" not in entry["platform"]
     assert "identity" not in entry["platform"]["sensors"][0]
     assert "extrinsics" not in entry["platform"]["sensors"][0]
+    assert "calibration" not in entry["platform"]["sensors"][0]
 
     descriptors = read_deployment_descriptors(path)
     assert descriptors[0].vessel == VesselDescriptorSection()
     assert descriptors[0].platform.identity is None
     assert descriptors[0].platform.sensors[0].identity is None
     assert descriptors[0].platform.sensors[0].extrinsics is None
+    assert descriptors[0].platform.sensors[0].calibration is None
 
 
 def test_filled_curated_slots_round_trip(tmp_path: Path) -> None:
@@ -142,6 +145,10 @@ def test_filled_curated_slots_round_trip(tmp_path: Path) -> None:
                             rotx=0.0,
                             roty=0.0,
                             rotz=3.14,
+                        ),
+                        calibration=SensorCalibration(
+                            sensor_type="pinhole",
+                            parameters={"fx": 500.0, "fy": 500.0},
                         ),
                     )
                 ],
@@ -170,6 +177,10 @@ def test_filled_vessel_section_round_trip(tmp_path: Path) -> None:
                             rotx=0.0,
                             roty=0.0,
                             rotz=1.57,
+                        ),
+                        calibration=SensorCalibration(
+                            sensor_type="pinhole",
+                            parameters={"fx": 500.0, "fy": 500.0},
                         ),
                     )
                 ],

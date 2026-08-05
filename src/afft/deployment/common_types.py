@@ -75,6 +75,25 @@ class SensorExtrinsics(BaseModel):
     rotz: float
 
 
+class SensorCalibration(BaseModel):
+    """
+    A sensor's calibration. Filled during bundle building from parsed
+    calibration files, not by enrichment — unlike identity and extrinsics,
+    it has no catalog source.
+
+    Attributes
+    ----------
+    sensor_type: Discriminates which calibration model ``parameters``
+        follows, e.g. ``"pinhole"``, ``"fisheye"``.
+    parameters: Named calibration values for that model.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    sensor_type: str
+    parameters: dict[str, float]
+
+
 class PlatformSensor(BaseModel):
     """
     A sensor mounted on the deployment's platform. The whole roster is curated
@@ -92,6 +111,8 @@ class PlatformSensor(BaseModel):
         wrote.
     extrinsics: Mounting pose in the vehicle (SNAME) body frame; ``None``
         where the sensor has no surveyed pose.
+    calibration: Camera calibration parameters; ``None`` until bundle
+        building resolves it from parsed calibration files.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -100,6 +121,7 @@ class PlatformSensor(BaseModel):
     message_topics: list[str] = Field(default_factory=list)
     identity: SensorIdentity | None = None
     extrinsics: SensorExtrinsics | None = None
+    calibration: SensorCalibration | None = None
 
 
 class VesselSensor(BaseModel):
@@ -117,6 +139,8 @@ class VesselSensor(BaseModel):
         wrote.
     extrinsics: Mounting pose in the ship reference frame; ``None`` where the
         sensor has no surveyed pose.
+    calibration: Camera calibration parameters; ``None`` until bundle
+        building resolves it from parsed calibration files.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -125,6 +149,7 @@ class VesselSensor(BaseModel):
     message_topics: list[str] = Field(default_factory=list)
     identity: SensorIdentity | None = None
     extrinsics: SensorExtrinsics | None = None
+    calibration: SensorCalibration | None = None
 
 
 class PlatformIdentity(BaseModel):
