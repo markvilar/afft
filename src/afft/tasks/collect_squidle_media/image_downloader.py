@@ -9,8 +9,6 @@ import httpx
 from rich.console import Console
 from rich.progress import Progress, TaskID
 
-from afft.utils.log import logger
-
 from .types import (
     CollectSquidleMediaCommand,
     DeploymentImagesDownload,
@@ -78,7 +76,6 @@ def download_image(
     except Exception as error:  # isolate per-image failures
         image.status = ImageDownloadStatus.FAILED
         image.error = str(error)
-        logger.warning(f"download failed {image.destination.name!r}: {error}")
 
 
 def download_deployment(
