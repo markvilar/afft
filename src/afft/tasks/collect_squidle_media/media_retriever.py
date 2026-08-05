@@ -11,7 +11,6 @@ from rich.console import Console
 from rich.progress import Progress, TaskID
 
 from afft.squidle import Deployment, SquidleClient
-from afft.utils.log import logger
 
 from .types import CollectSquidleMediaCommand, DeploymentState, TaskState
 
@@ -45,8 +44,6 @@ def fetch_media_items(
         entry.media = client.fetch_media(entry.squidle_deployment.id)
     except Exception as error:  # isolate API/export failures per deployment
         entry.error = str(error)
-        label: str = entry.deployment_info.metadata.acfr_deployment_label
-        logger.warning(f"media retrieval failed for {label!r}: {error}")
     return entry
 
 
@@ -185,6 +182,6 @@ def retrieve_deployment_media(
             except KeyboardInterrupt:
                 # Cancel not-yet-started work so Ctrl+C does not block on the
                 # whole queue; only in-flight retrievals still drain.
-                logger.warning("media retrieval interrupted; cancelling")
+                console.print("media retrieval interrupted; cancelling")
                 executor.shutdown(wait=False, cancel_futures=True)
                 raise
