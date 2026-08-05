@@ -38,6 +38,8 @@ from .bundle_protocols import (
     TimeWindow as TimeWindow,
     VesselBundleSectionReader as VesselBundleSectionReader,
     VesselBundleSectionWriter as VesselBundleSectionWriter,
+)
+from .bundle_factories import (
     open_deployment_bundle_reader as open_deployment_bundle_reader,
     open_deployment_bundle_writer as open_deployment_bundle_writer,
 )
