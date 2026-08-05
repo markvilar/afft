@@ -12,16 +12,18 @@ from .catalog_types import (
     CatalogVesselProfile,
     DeploymentCatalog,
 )
-from .descriptor_types import (
-    DeploymentDescriptor,
-    DeploymentPlatformSection,
-    DeploymentVesselSection,
+from .common_types import (
     PlatformIdentity,
     PlatformSensor,
     SensorExtrinsics,
     SensorIdentity,
     VesselIdentity,
     VesselSensor,
+)
+from .descriptor_types import (
+    DeploymentDescriptor,
+    DeploymentPlatformSection,
+    DeploymentVesselSection,
 )
 
 type CatalogKey = str
