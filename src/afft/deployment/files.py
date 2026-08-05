@@ -13,7 +13,7 @@ class DeploymentFiles(BaseModel):
 
     A runtime index of absolute paths, resolved once so that downstream
     parsers and builders never re-walk the deployment tree. It is never
-    serialized — it is projected onto a ``DeploymentFileSection`` first.
+    serialized — it is projected onto a ``FileDescriptorSection`` first.
 
     Attributes
     ----------

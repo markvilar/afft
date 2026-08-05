@@ -34,11 +34,11 @@ from .common_types import (
 )
 from .descriptor_types import (
     DeploymentDescriptor as DeploymentDescriptor,
-    DeploymentFileSection as DeploymentFileSection,
-    DeploymentPlatformSection as DeploymentPlatformSection,
-    DeploymentSystemSection as DeploymentSystemSection,
-    DeploymentTelemetrySection as DeploymentTelemetrySection,
-    DeploymentVesselSection as DeploymentVesselSection,
+    FileDescriptorSection as FileDescriptorSection,
+    PlatformDescriptorSection as PlatformDescriptorSection,
+    SystemDescriptorSection as SystemDescriptorSection,
+    TelemetryDescriptorSection as TelemetryDescriptorSection,
+    VesselDescriptorSection as VesselDescriptorSection,
 )
 from .descriptor_exporters import (
     format_table as format_table,

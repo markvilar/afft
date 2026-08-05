@@ -13,7 +13,7 @@ from .common_types import (
 )
 
 
-class DeploymentPlatformSection(BaseModel):
+class PlatformDescriptorSection(BaseModel):
     """
     The deployment platform's curated identity and its sensor roster.
 
@@ -35,7 +35,7 @@ class DeploymentPlatformSection(BaseModel):
     sensors: list[PlatformSensor] = Field(default_factory=list)
 
 
-class DeploymentVesselSection(BaseModel):
+class VesselDescriptorSection(BaseModel):
     """
     The support vessel's curated identity and its sensor roster.
 
@@ -55,7 +55,7 @@ class DeploymentVesselSection(BaseModel):
     sensors: list[VesselSensor] = Field(default_factory=list)
 
 
-class DeploymentSystemSection(BaseModel):
+class SystemDescriptorSection(BaseModel):
     """
     The deployment vehicle's identity and logging setup, from the SEABED
     system config.
@@ -83,7 +83,7 @@ class DeploymentSystemSection(BaseModel):
     sensors: list[str] = Field(default_factory=list)
 
 
-class DeploymentFileSection(BaseModel):
+class FileDescriptorSection(BaseModel):
     """
     Flat inventory of a deployment's files, keyed by role.
 
@@ -115,7 +115,7 @@ class DeploymentFileSection(BaseModel):
     usbl_logs: list[str] = Field(default_factory=list)
 
 
-class DeploymentTelemetrySection(BaseModel):
+class TelemetryDescriptorSection(BaseModel):
     """
     Message topics observed in the deployment's RAW AUV telemetry logs.
 
@@ -155,11 +155,11 @@ class DeploymentDescriptor(BaseModel):
     deployment_datetime: datetime
 
     metadata: DeploymentMetadata
-    files: DeploymentFileSection
-    telemetry: DeploymentTelemetrySection
-    platform: DeploymentPlatformSection
-    system: DeploymentSystemSection
+    files: FileDescriptorSection
+    telemetry: TelemetryDescriptorSection
+    platform: PlatformDescriptorSection
+    system: SystemDescriptorSection
 
-    vessel: DeploymentVesselSection = Field(
-        default_factory=DeploymentVesselSection
+    vessel: VesselDescriptorSection = Field(
+        default_factory=VesselDescriptorSection
     )

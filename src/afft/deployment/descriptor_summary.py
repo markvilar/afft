@@ -6,7 +6,7 @@ from datetime import datetime
 from pydantic import BaseModel, ConfigDict, Field
 
 from .common_types import PlatformSensor, SensorIdentity, VesselSensor
-from .descriptor_types import DeploymentDescriptor, DeploymentFileSection
+from .descriptor_types import DeploymentDescriptor, FileDescriptorSection
 
 type FieldName = str
 type CampaignLabel = str
@@ -222,7 +222,7 @@ def _summarize_deployment(
         campaign_label=descriptor.metadata.acfr_campaign_label,
         file_counts={
             section: len(getattr(descriptor.files, section))
-            for section in DeploymentFileSection.model_fields
+            for section in FileDescriptorSection.model_fields
         },
         topics=list(descriptor.telemetry.topics),
         platform_sensor_keys=[
@@ -274,7 +274,7 @@ def summarize_descriptors(
             for deployment in deployments
             if deployment.file_counts[section] > 0
         )
-        for section in DeploymentFileSection.model_fields
+        for section in FileDescriptorSection.model_fields
     }
 
     latitudes: list[float] = [

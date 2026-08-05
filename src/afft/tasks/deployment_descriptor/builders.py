@@ -6,10 +6,10 @@ from pathlib import Path
 
 from afft.deployment import (
     DeploymentFiles,
-    DeploymentFileSection,
     DeploymentMetadata,
-    DeploymentSystemSection,
-    DeploymentTelemetrySection,
+    FileDescriptorSection,
+    SystemDescriptorSection,
+    TelemetryDescriptorSection,
 )
 from afft.seabed import SeabedSystemConfig
 
@@ -25,7 +25,7 @@ _TOPIC_PATTERN = re.compile(r"^([A-Z][A-Z0-9_]*):")
 
 def build_deployment_file_section(
     files: DeploymentFiles,
-) -> DeploymentFileSection:
+) -> FileDescriptorSection:
     """
     Project a file manifest onto the descriptor's file inventory.
 
@@ -44,7 +44,7 @@ def build_deployment_file_section(
     def singular(path: Path | None) -> list[str]:
         return relative([path]) if path is not None else []
 
-    return DeploymentFileSection(
+    return FileDescriptorSection(
         raw_messages=relative(files.raw_messages),
         system_config=singular(files.system_config),
         localizer_config=singular(files.localizer_config),
@@ -58,7 +58,7 @@ def build_deployment_file_section(
 
 def build_system_section(
     system_config: SeabedSystemConfig,
-) -> DeploymentSystemSection:
+) -> SystemDescriptorSection:
     """
     Map a parsed SEABED system config onto the descriptor's system section.
 
@@ -70,7 +70,7 @@ def build_system_section(
     -------
     The deployment vehicle's identity, logging setup, and sensor labels.
     """
-    return DeploymentSystemSection(
+    return SystemDescriptorSection(
         vehicle_name=system_config.vehicle.vehicle_name,
         vehicle_config=system_config.vehicle.vehicle_config,
         log_directory=system_config.logger.log_dir,
@@ -83,7 +83,7 @@ def build_telemetry_section(
     files: DeploymentFiles,
     deployment_label: str,
     diagnostics: DescribeDeploymentDiagnostics,
-) -> DeploymentTelemetrySection:
+) -> TelemetryDescriptorSection:
     """
     Collect the message topics observed in the deployment's RAW AUV logs.
 
@@ -99,7 +99,7 @@ def build_telemetry_section(
     """
     if not files.raw_messages:
         diagnostics.warning(deployment_label, "no RAW.auv files")
-        return DeploymentTelemetrySection(topics=[])
+        return TelemetryDescriptorSection(topics=[])
 
     topics: set[str] = set()
     for raw_file in files.raw_messages:
@@ -113,7 +113,7 @@ def build_telemetry_section(
             deployment_label,
             f"no message topics in {len(files.raw_messages)} RAW.auv file(s)",
         )
-    return DeploymentTelemetrySection(topics=sorted(topics))
+    return TelemetryDescriptorSection(topics=sorted(topics))
 
 
 def build_deployment_metadata(

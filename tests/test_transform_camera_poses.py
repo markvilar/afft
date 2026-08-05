@@ -18,14 +18,14 @@ from afft.cli.renav.actions import (
 )
 from afft.deployment import (
     DeploymentDescriptor,
-    DeploymentFileSection,
     DeploymentMetadata,
-    DeploymentPlatformSection,
-    DeploymentSystemSection,
-    DeploymentTelemetrySection,
+    FileDescriptorSection,
+    PlatformDescriptorSection,
     PlatformSensor,
     SensorExtrinsics,
     SensorIdentity,
+    SystemDescriptorSection,
+    TelemetryDescriptorSection,
     write_deployment_descriptors,
 )
 from afft.tasks.transform_camera_poses import (
@@ -87,10 +87,10 @@ def _build_descriptor(
             origin_longitude=113.9,
             magnetic_variation=-1.16,
         ),
-        files=DeploymentFileSection(),
-        telemetry=DeploymentTelemetrySection(topics=[]),
-        platform=DeploymentPlatformSection(sensors=sensors),
-        system=DeploymentSystemSection(
+        files=FileDescriptorSection(),
+        telemetry=TelemetryDescriptorSection(topics=[]),
+        platform=PlatformDescriptorSection(sensors=sensors),
+        system=SystemDescriptorSection(
             vehicle_name="SEABED",
             vehicle_config="NORM_CFG",
             log_directory="/files1/Log",
