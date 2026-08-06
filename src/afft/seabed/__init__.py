@@ -10,6 +10,8 @@ from .localizer_types import SensorPoseEntry as SensorPoseEntry
 from .localizer_types import ShipSensorConfig as ShipSensorConfig
 from .message_interfaces import Message as Message
 from .message_interfaces import MessageParser as MessageParser
+from .message_interfaces import MessageTypeName as MessageTypeName
+from .message_interfaces import Topic as Topic
 from .message_parser_registry import (
     MessageParserRegistry as MessageParserRegistry,
 )
