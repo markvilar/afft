@@ -140,3 +140,4 @@ class LinearModel:
 - Never reference Claude in commits, pull requests, source code, or documentation. This includes `Co-Authored-By` trailers, body text, or any other attribution to Claude or Anthropic.
 - Use `` ` `` (backtick) for inline code and code blocks in GitHub issues and pull requests, not `` \` `` (escaped backtick).
 - Never run `git commit` without explicit confirmation from the user in that conversation. An instruction to implement, fix, or finish a task is not itself confirmation to commit — ask, or wait to be asked.
+- Pull request descriptions: a brief `## Summary` section describing what changed, followed by a footer referencing the issue it closes (e.g. `Closes #214`).
