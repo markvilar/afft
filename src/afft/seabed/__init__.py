@@ -1,6 +1,5 @@
 """Package for message processing functionality for SEABED-class AUVs."""
 
-from .concrete_messages import get_message_type as get_message_type
 from .localizer_io import read_localizer_config as read_localizer_config
 from .localizer_io import write_localizer_config as write_localizer_config
 from .localizer_parsers import parse_localizer_config as parse_localizer_config
@@ -11,8 +10,15 @@ from .localizer_types import SensorPoseEntry as SensorPoseEntry
 from .localizer_types import ShipSensorConfig as ShipSensorConfig
 from .message_interfaces import Message as Message
 from .message_interfaces import MessageParser as MessageParser
+from .message_parser_registry import (
+    MessageParserRegistry as MessageParserRegistry,
+)
+from .message_parser_registry import (
+    build_message_parser_registry as build_message_parser_registry,
+)
+from .message_parser_registry import parse_message_lines as parse_message_lines
 from .message_parsers import get_message_parser as get_message_parser
-from .message_protocol import parse_message_lines as parse_message_lines
+from .message_types import get_message_type as get_message_type
 from .system_io import read_system_config as read_system_config
 from .system_io import write_system_config as write_system_config
 from .system_parsers import parse_system_config as parse_system_config
