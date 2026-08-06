@@ -14,8 +14,6 @@ from .message_interfaces import (
 from .message_parsers import get_message_parser, parse_message_header
 from .message_types import MessageHeader, get_message_type
 
-from afft.utils.log import logger
-
 
 @dataclass(frozen=True)
 class MessageParserRegistryEntry:
@@ -97,9 +95,24 @@ def build_message_parser_registry(
     return registry
 
 
+@dataclass(frozen=True)
+class ParseMessageResult:
+    """
+    Attributes
+    ----------
+    message_groups: Parsed messages grouped by topic.
+    skipped: Per-topic counts of lines with no registered parser.
+    failed: Per-topic counts of lines that failed to parse.
+    """
+
+    message_groups: dict[Topic, list[Message[Any, Any]]]
+    skipped: Counter[Topic]
+    failed: Counter[Topic]
+
+
 def parse_message_lines(
     lines: list[str], registry: MessageParserRegistry
-) -> dict[str, list[Message[Any, Any]]]:
+) -> ParseMessageResult:
     """Parses lines as message types in the given registry."""
 
     message_groups: dict[str, list[Message[Any, Any]]] = dict()
@@ -126,28 +139,6 @@ def parse_message_lines(
             message_groups[header.topic] = list()
         message_groups[header.topic].append(parsed_message)
 
-    if skipped:
-        logger.warning(
-            "Skipped messages with no protocol item ({} topics, {} total):{}".format(
-                len(skipped),
-                sum(skipped.values()),
-                "".join(
-                    f"\n  {topic}: {count}"
-                    for topic, count in sorted(skipped.items())
-                ),
-            )
-        )
-
-    if failed:
-        logger.warning(
-            "Failed to parse messages ({} topics, {} total):{}".format(
-                len(failed),
-                sum(failed.values()),
-                "".join(
-                    f"\n  {topic}: {count}"
-                    for topic, count in sorted(failed.items())
-                ),
-            )
-        )
-
-    return message_groups
+    return ParseMessageResult(
+        message_groups=message_groups, skipped=skipped, failed=failed
+    )

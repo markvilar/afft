@@ -14,6 +14,9 @@ from .message_parser_registry import (
     MessageParserRegistry as MessageParserRegistry,
 )
 from .message_parser_registry import (
+    ParseMessageResult as ParseMessageResult,
+)
+from .message_parser_registry import (
     build_message_parser_registry as build_message_parser_registry,
 )
 from .message_parser_registry import parse_message_lines as parse_message_lines

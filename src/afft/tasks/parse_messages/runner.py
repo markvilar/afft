@@ -30,8 +30,11 @@ def run_parse_messages(
     raw_config: dict[str, Any] = io.read_config(command.config_file)
     config = _load_config(raw_config)
 
-    messages = _parse_messages(command.source_file, config)
-    dataframes = _build_dataframes(messages, config, command.prefix)
+    result = _parse_messages(command.source_file, config)
+    _log_parse_result(result)
+    dataframes = _build_dataframes(
+        result.message_groups, config, command.prefix
+    )
 
     if command.database:
         assert credentials is not None, (
@@ -59,12 +62,38 @@ def _load_config(raw: dict[str, Any]) -> ParseMessageConfig:
 
 def _parse_messages(
     source_file: Path, config: ParseMessageConfig
-) -> MessageGroups:
+) -> seabed.ParseMessageResult:
     lines: list[str] = io.read_lines(source_file)
     registry: seabed.MessageParserRegistry = (
         seabed.build_message_parser_registry(config.message_maps)
     )
     return seabed.parse_message_lines(lines, registry)
+
+
+def _log_parse_result(result: seabed.ParseMessageResult) -> None:
+    if result.skipped:
+        logger.warning(
+            "Skipped messages with no protocol item ({} topics, {} total):{}".format(
+                len(result.skipped),
+                sum(result.skipped.values()),
+                "".join(
+                    f"\n  {topic}: {count}"
+                    for topic, count in sorted(result.skipped.items())
+                ),
+            )
+        )
+
+    if result.failed:
+        logger.warning(
+            "Failed to parse messages ({} topics, {} total):{}".format(
+                len(result.failed),
+                sum(result.failed.values()),
+                "".join(
+                    f"\n  {topic}: {count}"
+                    for topic, count in sorted(result.failed.items())
+                ),
+            )
+        )
 
 
 def _build_dataframes(
