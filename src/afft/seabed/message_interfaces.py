@@ -5,21 +5,18 @@ from typing import Any, Generic, Protocol, Self, TypeVar
 
 
 Header = TypeVar("Header", covariant=True)
-Body = TypeVar("Body", covariant=True)
+Payload = TypeVar("Payload", covariant=True)
+
+type Topic = str
+type MessageTypeName = str
 
 
-class Message(Protocol, Generic[Header, Body]):
+class MessageParseError(ValueError):
+    """Raised when a log line cannot be parsed as a message."""
+
+
+class Message(Protocol, Generic[Header, Payload]):
     """Class representing a message interface."""
-
-    @property
-    def header_type(self) -> type:
-        """Returns the header type for the message."""
-        ...
-
-    @property
-    def body_type(self) -> type:
-        """Returns the body type for the message."""
-        ...
 
     @property
     def header(self) -> Header:
@@ -27,8 +24,8 @@ class Message(Protocol, Generic[Header, Body]):
         ...
 
     @property
-    def body(self) -> Body:
-        """Returns the body instance of the message."""
+    def payload(self) -> Payload:
+        """Returns the payload instance of the message."""
         ...
 
     def to_dict(self: Self) -> dict[str, Any]:
@@ -36,4 +33,4 @@ class Message(Protocol, Generic[Header, Body]):
         ...
 
 
-type MessageParser = Callable[[str], Any]
+type MessageParser = Callable[[str], Message[Any, Any]]

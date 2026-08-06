@@ -6,34 +6,50 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-from .message_interfaces import MessageParser
-from .concrete_messages import (
+from pydantic import ValidationError
+
+from .message_interfaces import MessageParseError, MessageParser
+from .message_types import (
     MessageHeader,
-    ImageCaptureMessage,
-    SeabirdCTDMessage,
-    AanderaaCTDMessage,
-    EcopuckMessage,
-    ParosciPressureMessage,
-    TeledyneDVLMessage,
-    TrackLinkModemMessage,
-    EvologicsModemMessage,
-    MicronSonarMessage,
-    OASonarMessage,
-    GpsGsvMessage,
-    GpsRmcMessage,
-    BatteryMessage,
-    ThrusterMessage,
+    ImageCaptureMessageV1,
+    ImageCaptureMessagePayloadV1,
+    SeabirdCTDMessageV1,
+    SeabirdCTDMessagePayloadV1,
+    AanderaaCTDMessageV1,
+    AanderaaCTDMessagePayloadV1,
+    EcopuckMessageV1,
+    EcopuckMessagePayloadV1,
+    ParosciPressureMessageV1,
+    ParosciPressureMessagePayloadV1,
+    TeledyneDVLMessageV1,
+    TeledyneDVLMessagePayloadV1,
+    TrackLinkModemMessageV1,
+    TrackLinkModemMessagePayloadV1,
+    EvologicsModemMessageV1,
+    EvologicsModemMessagePayloadV1,
+    MicronSonarMessageV1,
+    MicronSonarMessagePayloadV1,
+    OASonarMessageV1,
+    OASonarMessagePayloadV1,
+    GpsGsvMessageV1,
+    GpsGsvMessagePayloadV1,
+    GpsRmcMessageV1,
+    GpsRmcMessagePayloadV1,
+    BatteryMessageV1,
+    BatteryMessagePayloadV1,
+    ThrusterMessageV1,
+    ThrusterMessagePayloadV1,
 )
 
 
-MESSAGE_HEADER_REGEX = r"""
+MESSAGE_HEADER_V1_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+).*   # unlimited of any character after timestamp
     $
     """
 
-IMAGE_CAPTURE_REGEX = r"""
+IMAGE_CAPTURE_V1_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -43,7 +59,7 @@ IMAGE_CAPTURE_REGEX = r"""
     $
     """
 
-SEABIRD_CTD_REGEX = r"""
+SEABIRD_CTD_V1_REGEX = r"""
     ^
     (?P<topic>\w+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -55,7 +71,7 @@ SEABIRD_CTD_REGEX = r"""
     $
     """
 
-AANDERAA_CTD_REGEX = r"""
+AANDERAA_CTD_V1_REGEX = r"""
     ^
     (?P<topic>\w+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -67,7 +83,7 @@ AANDERAA_CTD_REGEX = r"""
     $
     """
 
-ECOPUCK_REGEX = r"""
+ECOPUCK_V1_REGEX = r"""
     ^
     (?P<topic>\w+):\s+
     (?P<timestamp>[-+]?\d+\.\d+)\s+
@@ -78,7 +94,7 @@ ECOPUCK_REGEX = r"""
     $
     """
 
-PAROSCI_REGEX = r"""
+PAROSCI_V1_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -86,7 +102,7 @@ PAROSCI_REGEX = r"""
     $
     """
 
-TELEDYNE_DVL_REGEX = r"""
+TELEDYNE_DVL_V1_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -113,7 +129,7 @@ TELEDYNE_DVL_REGEX = r"""
     $
     """
 
-LQ_MODEM_REGEX = r"""
+LQ_MODEM_V1_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -128,7 +144,7 @@ LQ_MODEM_REGEX = r"""
     $
     """
 
-EVOLOGICS_MODEM_REGEX = r"""
+EVOLOGICS_MODEM_V1_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -147,7 +163,7 @@ EVOLOGICS_MODEM_REGEX = r"""
     $
     """
 
-MICRON_REGEX = r"""
+MICRON_V1_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -158,7 +174,7 @@ MICRON_REGEX = r"""
     $
     """
 
-OAS_REGEX = r"""
+OAS_V1_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -168,7 +184,7 @@ OAS_REGEX = r"""
     $
     """
 
-THRUSTER_REGEX = r"""
+THRUSTER_V1_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -179,7 +195,7 @@ THRUSTER_REGEX = r"""
     $
     """
 
-GPS_GSV_REGEX = r"""
+GPS_GSV_V1_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -187,7 +203,7 @@ GPS_GSV_REGEX = r"""
     $
     """
 
-GPS_RMC_REGEX = r"""
+GPS_RMC_V1_REGEX = r"""
     ^
     (?P<topic>.+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -201,7 +217,7 @@ GPS_RMC_REGEX = r"""
     $
     """
 
-BATTERY_REGEX = r"""
+BATTERY_V1_REGEX = r"""
     ^
     (?P<topic>\w+?):\s+
     (?P<timestamp>\d+\.\d+)\s+
@@ -223,341 +239,383 @@ def _unix_epoch_to_datetime(ts: float) -> datetime:
 def parse_message_header(line: str) -> MessageHeader:
     """Parses the header from a message line."""
 
-    pattern = re.compile(MESSAGE_HEADER_REGEX, re.VERBOSE)
+    pattern = re.compile(MESSAGE_HEADER_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse header: {line}")
+        raise MessageParseError(f"failed to parse header: {line}")
 
-    header = MessageHeader(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
+    try:
+        return MessageHeader(
+            topic=match["topic"],
+            timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+        )
+    except ValidationError as error:
+        raise MessageParseError(f"failed to parse header: {line}") from error
 
-    return header
 
-
-def parse_image_message(line: str) -> ImageCaptureMessage:
+def parse_image_message_v1(line: str) -> ImageCaptureMessageV1:
     """Parses a message line as an image capture message."""
 
-    pattern = re.compile(IMAGE_CAPTURE_REGEX, re.VERBOSE)
+    pattern = re.compile(IMAGE_CAPTURE_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse image message: {line}")
+        raise MessageParseError(f"failed to parse image message: {line}")
 
-    header = ImageCaptureMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
-
-    filename: str = str(match["filename"])
-    label: str = Path(match["filename"]).stem
-    trigger_time: datetime = _unix_epoch_to_datetime(
-        float(match["trigger_time"])
-    )
     exposure_logged: bool = match["exposure"] is not None
 
-    exposure: int = int(match["exposure"]) if exposure_logged else 0
+    try:
+        return ImageCaptureMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=ImageCaptureMessagePayloadV1(
+                label=Path(match["filename"]).stem,
+                filename=match["filename"],
+                trigger_time=_unix_epoch_to_datetime(
+                    float(match["trigger_time"])
+                ),
+                exposure_logged=exposure_logged,
+                exposure=match["exposure"] if exposure_logged else 0,
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse image message: {line}"
+        ) from error
 
-    body = ImageCaptureMessage.body_type(
-        label=label,
-        filename=filename,
-        trigger_time=trigger_time,
-        exposure_logged=exposure_logged,
-        exposure=exposure,
-    )
 
-    return ImageCaptureMessage(header, body)
-
-
-def parse_seabird_ctd_message(line: str) -> SeabirdCTDMessage:
+def parse_seabird_ctd_message_v1(line: str) -> SeabirdCTDMessageV1:
     """Parses a message line as a Seabird CTD message."""
 
-    pattern = re.compile(SEABIRD_CTD_REGEX, re.VERBOSE)
+    pattern = re.compile(SEABIRD_CTD_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse Seabird CTD message: {line}")
+        raise MessageParseError(f"failed to parse Seabird CTD message: {line}")
 
-    header = SeabirdCTDMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
+    try:
+        return SeabirdCTDMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=SeabirdCTDMessagePayloadV1(
+                conductivity=match["conductivity"],
+                temperature=match["temperature"],
+                salinity=match["salinity"],
+                pressure=match["pressure"],
+                sound_velocity=match["sound_velocity"],
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse Seabird CTD message: {line}"
+        ) from error
 
-    body = SeabirdCTDMessage.body_type(
-        conductivity=float(match["conductivity"]),
-        temperature=float(match["temperature"]),
-        salinity=float(match["salinity"]),
-        pressure=float(match["pressure"]),
-        sound_velocity=float(match["sound_velocity"]),
-    )
 
-    return SeabirdCTDMessage(header, body)
-
-
-def parse_aanderaa_ctd_message(line: str) -> AanderaaCTDMessage:
+def parse_aanderaa_ctd_message_v1(line: str) -> AanderaaCTDMessageV1:
     """Parses a message line as an Aanderaa CTD message."""
 
-    pattern = re.compile(AANDERAA_CTD_REGEX, re.VERBOSE)
+    pattern = re.compile(AANDERAA_CTD_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse Aanderaa CTD message: {line}")
+        raise MessageParseError(f"failed to parse Aanderaa CTD message: {line}")
 
-    header = AanderaaCTDMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
+    try:
+        return AanderaaCTDMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=AanderaaCTDMessagePayloadV1(
+                conductivity=match["conductivity"],
+                temperature=match["temperature"],
+                salinity=match["salinity"],
+                pressure=match["pressure"],
+                sound_velocity=match["sound_velocity"],
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse Aanderaa CTD message: {line}"
+        ) from error
 
-    body = AanderaaCTDMessage.body_type(
-        conductivity=float(match["conductivity"]),
-        temperature=float(match["temperature"]),
-        salinity=float(match["salinity"]),
-        pressure=float(match["pressure"]),
-        sound_velocity=float(match["sound_velocity"]),
-    )
 
-    return AanderaaCTDMessage(header, body)
-
-
-def parse_ecopuck_message(line: str) -> EcopuckMessage:
+def parse_ecopuck_message_v1(line: str) -> EcopuckMessageV1:
     """Parses a message line as an Ecopuck water quality message."""
 
-    pattern = re.compile(ECOPUCK_REGEX, re.VERBOSE)
+    pattern = re.compile(ECOPUCK_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse Ecopuck message: {line}")
+        raise MessageParseError(f"failed to parse Ecopuck message: {line}")
 
-    header = EcopuckMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
+    try:
+        return EcopuckMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=EcopuckMessagePayloadV1(
+                chlorophyll=match["chlorophyll"],
+                backscatter=match["backscatter"],
+                cdom=match["cdom"],
+                temperature=match["temperature"],
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse Ecopuck message: {line}"
+        ) from error
 
-    body = EcopuckMessage.body_type(
-        chlorophyll=float(match["chlorophyll"]),
-        backscatter=float(match["backscatter"]),
-        cdom=float(match["cdom"]),
-        temperature=float(match["temperature"]),
-    )
 
-    return EcopuckMessage(header, body)
-
-
-def parse_parosci_pressure_message(line: str) -> ParosciPressureMessage:
+def parse_parosci_pressure_message_v1(line: str) -> ParosciPressureMessageV1:
     """Parses a message line as a Parosci pressure message."""
-    pattern = re.compile(PAROSCI_REGEX, re.VERBOSE)
+    pattern = re.compile(PAROSCI_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse message line: {line}")
+        raise MessageParseError(f"failed to parse message line: {line}")
 
-    header = ParosciPressureMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
+    try:
+        return ParosciPressureMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=ParosciPressureMessagePayloadV1(depth=match["depth"]),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse message line: {line}"
+        ) from error
 
-    body = ParosciPressureMessage.body_type(
-        depth=float(match["depth"]),
-    )
 
-    return ParosciPressureMessage(header, body)
-
-
-def parse_teledyne_dvl_message(line: str) -> TeledyneDVLMessage:
+def parse_teledyne_dvl_message_v1(line: str) -> TeledyneDVLMessageV1:
     """Parses a message line as a Teledyne DVL message."""
 
-    pattern = re.compile(TELEDYNE_DVL_REGEX, re.VERBOSE)
+    pattern = re.compile(TELEDYNE_DVL_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse message line: {line}")
+        raise MessageParseError(f"failed to parse message line: {line}")
 
-    header: MessageHeader = TeledyneDVLMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
+    try:
+        return TeledyneDVLMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=TeledyneDVLMessagePayloadV1(
+                altitude=match["altitude"],
+                range_01=match["range_01"],
+                range_02=match["range_02"],
+                range_03=match["range_03"],
+                range_04=match["range_04"],
+                heading=match["heading"],
+                pitch=match["pitch"],
+                roll=match["roll"],
+                velocity_x=match["velocity_x"],
+                velocity_y=match["velocity_y"],
+                velocity_z=match["velocity_z"],
+                dmg_x=match["dmg_x"],
+                dmg_y=match["dmg_y"],
+                dmg_z=match["dmg_z"],
+                course_over_ground=match["course_over_ground"],
+                speed_over_ground=match["speed_over_ground"],
+                true_heading=match["true_heading"],
+                gimbal_pitch=match["gimbal_pitch"],
+                sound_velocity=match["sound_velocity"],
+                bottom_track_status=match["bottom_track_status"],
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse message line: {line}"
+        ) from error
 
-    body = TeledyneDVLMessage.body_type(
-        altitude=float(match["altitude"]),
-        range_01=float(match["range_01"]),
-        range_02=float(match["range_02"]),
-        range_03=float(match["range_03"]),
-        range_04=float(match["range_04"]),
-        heading=float(match["heading"]),
-        pitch=float(match["pitch"]),
-        roll=float(match["roll"]),
-        velocity_x=float(match["velocity_x"]),
-        velocity_y=float(match["velocity_y"]),
-        velocity_z=float(match["velocity_z"]),
-        dmg_x=float(match["dmg_x"]),
-        dmg_y=float(match["dmg_y"]),
-        dmg_z=float(match["dmg_z"]),
-        course_over_ground=float(match["course_over_ground"]),
-        speed_over_ground=float(match["speed_over_ground"]),
-        true_heading=float(match["true_heading"]),
-        gimbal_pitch=float(match["gimbal_pitch"]),
-        sound_velocity=float(match["sound_velocity"]),
-        bottom_track_status=int(match["bottom_track_status"]),
-    )
 
-    return TeledyneDVLMessage(header, body)
-
-
-def parse_lq_modem_message(line: str) -> TrackLinkModemMessage:
+def parse_lq_modem_message_v1(line: str) -> TrackLinkModemMessageV1:
     """Parses a message line as a LQ modem message."""
 
-    pattern = re.compile(LQ_MODEM_REGEX, re.VERBOSE)
+    pattern = re.compile(LQ_MODEM_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse message line: {line}")
+        raise MessageParseError(f"failed to parse message line: {line}")
 
-    header: MessageHeader = TrackLinkModemMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
+    try:
+        return TrackLinkModemMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=TrackLinkModemMessagePayloadV1(
+                ship_latitude=match["ship_latitude"],
+                ship_longitude=match["ship_longitude"],
+                ship_roll=match["ship_roll"],
+                ship_pitch=match["ship_pitch"],
+                ship_heading=match["ship_heading"],
+                device_time=match["device_time"],
+                target_bearing_angle=match["target_bearing_angle"],
+                target_slant_range=match["target_slant_range"],
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse message line: {line}"
+        ) from error
 
-    body = TrackLinkModemMessage.body_type(
-        ship_latitude=float(match["ship_latitude"]),
-        ship_longitude=float(match["ship_longitude"]),
-        ship_roll=float(match["ship_roll"]),
-        ship_pitch=float(match["ship_pitch"]),
-        ship_heading=float(match["ship_heading"]),
-        device_time=float(match["device_time"]),
-        target_bearing_angle=float(match["target_bearing_angle"]),
-        target_slant_range=float(match["target_slant_range"]),
-    )
 
-    return TrackLinkModemMessage(header, body)
-
-
-def parse_evologics_modem_message(line: str) -> EvologicsModemMessage:
+def parse_evologics_modem_message_v1(line: str) -> EvologicsModemMessageV1:
     """Parses a message line as an Evologics USBL message."""
 
-    pattern = re.compile(EVOLOGICS_MODEM_REGEX, re.VERBOSE)
+    pattern = re.compile(EVOLOGICS_MODEM_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse message line: {line}")
+        raise MessageParseError(f"failed to parse message line: {line}")
 
-    header = EvologicsModemMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
+    try:
+        return EvologicsModemMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=EvologicsModemMessagePayloadV1(
+                target_latitude=match["target_latitude"],
+                target_longitude=match["target_longitude"],
+                target_depth=match["target_depth"],
+                target_x=match["target_x"],
+                target_y=match["target_y"],
+                target_z=match["target_z"],
+                accuracy=match["accuracy"],
+                ship_latitude=match["ship_latitude"],
+                ship_longitude=match["ship_longitude"],
+                ship_roll=match["ship_roll"],
+                ship_pitch=match["ship_pitch"],
+                ship_heading=match["ship_heading"],
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse message line: {line}"
+        ) from error
 
-    body = EvologicsModemMessage.body_type(
-        target_latitude=float(match["target_latitude"]),
-        target_longitude=float(match["target_longitude"]),
-        target_depth=float(match["target_depth"]),
-        target_x=float(match["target_x"]),
-        target_y=float(match["target_y"]),
-        target_z=float(match["target_z"]),
-        accuracy=float(match["accuracy"]),
-        ship_latitude=float(match["ship_latitude"]),
-        ship_longitude=float(match["ship_longitude"]),
-        ship_roll=float(match["ship_roll"]),
-        ship_pitch=float(match["ship_pitch"]),
-        ship_heading=float(match["ship_heading"]),
-    )
 
-    return EvologicsModemMessage(header, body)
-
-
-def parse_micron_sonar_message(line: str) -> MicronSonarMessage:
+def parse_micron_sonar_message_v1(line: str) -> MicronSonarMessageV1:
     """Parses a message line as a Micron sonar message."""
 
-    pattern = re.compile(MICRON_REGEX, re.VERBOSE)
+    pattern = re.compile(MICRON_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse message line: {line}")
+        raise MessageParseError(f"failed to parse message line: {line}")
 
-    header = MicronSonarMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
+    try:
+        return MicronSonarMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=MicronSonarMessagePayloadV1(
+                profile_range=match["profile_range"],
+                profile_altitude=match["profile_altitude"],
+                pseudo_forward_distance=match["pseudo_forward_distance"],
+                angle=match["angle"],
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse message line: {line}"
+        ) from error
 
-    body = MicronSonarMessage.body_type(
-        profile_range=float(match["profile_range"]),
-        profile_altitude=float(match["profile_altitude"]),
-        pseudo_forward_distance=float(match["pseudo_forward_distance"]),
-        angle=float(match["angle"]),
-    )
 
-    return MicronSonarMessage(header, body)
-
-
-def parse_obstacle_avoidance_sonar_message(line: str) -> OASonarMessage:
+def parse_obstacle_avoidance_sonar_message_v1(line: str) -> OASonarMessageV1:
     """Parses a message line as an OA sonar message."""
 
-    pattern = re.compile(OAS_REGEX, re.VERBOSE)
+    pattern = re.compile(OAS_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse message line: {line}")
+        raise MessageParseError(f"failed to parse message line: {line}")
 
-    header = OASonarMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
+    try:
+        return OASonarMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=OASonarMessagePayloadV1(
+                profile_range=match["profile_range"],
+                profile_altitude=match["profile_altitude"],
+                pseudo_forward_distance=match["pseudo_forward_distance"],
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse message line: {line}"
+        ) from error
 
-    body = OASonarMessage.body_type(
-        profile_range=float(match["profile_range"]),
-        profile_altitude=float(match["profile_altitude"]),
-        pseudo_forward_distance=float(match["pseudo_forward_distance"]),
-    )
 
-    return OASonarMessage(header, body)
-
-
-def parse_gps_gsv_message(line: str) -> GpsGsvMessage:
+def parse_gps_gsv_message_v1(line: str) -> GpsGsvMessageV1:
     """Parses a message line as a GPS satellites-in-view message."""
 
-    pattern = re.compile(GPS_GSV_REGEX, re.VERBOSE)
+    pattern = re.compile(GPS_GSV_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse GPS GSV message: {line}")
+        raise MessageParseError(f"failed to parse GPS GSV message: {line}")
 
-    header = GpsGsvMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
+    try:
+        return GpsGsvMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=GpsGsvMessagePayloadV1(
+                satellites_in_view=match["satellites_in_view"],
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse GPS GSV message: {line}"
+        ) from error
 
-    body = GpsGsvMessage.body_type(
-        satellites_in_view=int(match["satellites_in_view"]),
-    )
 
-    return GpsGsvMessage(header, body)
-
-
-def parse_gps_rmc_message(line: str) -> GpsRmcMessage:
+def parse_gps_rmc_message_v1(line: str) -> GpsRmcMessageV1:
     """Parses a message line as a GPS recommended minimum navigation message."""
 
-    pattern = re.compile(GPS_RMC_REGEX, re.VERBOSE)
+    pattern = re.compile(GPS_RMC_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse GPS RMC message: {line}")
+        raise MessageParseError(f"failed to parse GPS RMC message: {line}")
 
-    header = GpsRmcMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
-
-    body = GpsRmcMessage.body_type(
-        latitude=float(match["latitude"]),
-        longitude=float(match["longitude"]),
-        bad=int(match["bad"]),
-        status=str(match["status"]),
-        speed_knots=float(match["speed"]),
-        course_over_ground=float(match["course"]),
-        magnetic_variation=float(match["magnetic_variation"]),
-    )
-
-    return GpsRmcMessage(header, body)
+    try:
+        return GpsRmcMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=GpsRmcMessagePayloadV1(
+                latitude=match["latitude"],
+                longitude=match["longitude"],
+                bad=match["bad"],
+                status=match["status"],
+                speed_knots=match["speed"],
+                course_over_ground=match["course"],
+                magnetic_variation=match["magnetic_variation"],
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse GPS RMC message: {line}"
+        ) from error
 
 
 BATTERY_TOPIC_TO_NAME: dict[str, str] = {
@@ -568,31 +626,35 @@ BATTERY_TOPIC_TO_NAME: dict[str, str] = {
 }
 
 
-def parse_battery_message(line: str) -> BatteryMessage:
-    """Parses a message line as a BatteryMessage object."""
+def parse_battery_message_v1(line: str) -> BatteryMessageV1:
+    """Parses a message line as a BatteryMessageV1 object."""
 
-    pattern = re.compile(BATTERY_REGEX, re.VERBOSE)
+    pattern = re.compile(BATTERY_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse message line: {line}")
+        raise MessageParseError(f"failed to parse message line: {line}")
 
-    header = BatteryMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
-
-    body = BatteryMessage.body_type(
-        label=BATTERY_TOPIC_TO_NAME[header.topic],
-        time_left=int(match["time_left"]),
-        current=float(match["current"]),
-        voltage=float(match["voltage"]),
-        power=float(match["power"]),
-        charge_percent=int(match["charge_percent"]),
-        charging=bool(int(match["charging"])),
-    )
-
-    return BatteryMessage(header, body)
+    try:
+        return BatteryMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=BatteryMessagePayloadV1(
+                label=BATTERY_TOPIC_TO_NAME[match["topic"]],
+                time_left=match["time_left"],
+                current=match["current"],
+                voltage=match["voltage"],
+                power=match["power"],
+                charge_percent=match["charge_percent"],
+                charging=bool(int(match["charging"])),
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse message line: {line}"
+        ) from error
 
 
 THRUSTER_TOPIC_TO_NAME: dict[str, str] = {
@@ -602,66 +664,68 @@ THRUSTER_TOPIC_TO_NAME: dict[str, str] = {
 }
 
 
-def parse_thruster_message(line: str) -> ThrusterMessage:
+def parse_thruster_message_v1(line: str) -> ThrusterMessageV1:
     """Parser function for thruster messages."""
 
-    pattern = re.compile(THRUSTER_REGEX, re.VERBOSE)
+    pattern = re.compile(THRUSTER_V1_REGEX, re.VERBOSE)
     match = pattern.match(line)
 
     if not match:
-        raise ValueError(f"failed to parse message line: {line}")
+        raise MessageParseError(f"failed to parse message line: {line}")
 
-    header = ThrusterMessage.header_type(
-        topic=str(match["topic"]),
-        timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
-    )
-
-    body = ThrusterMessage.body_type(
-        label=THRUSTER_TOPIC_TO_NAME[header.topic],
-        rpm=float(match["rpm"]),
-        current=float(match["current"]),
-        voltage=float(match["voltage"]),
-        temperature=float(match["temperature"]),
-    )
-
-    return ThrusterMessage(header, body)
+    try:
+        return ThrusterMessageV1(
+            header=MessageHeader(
+                topic=match["topic"],
+                timestamp=_unix_epoch_to_datetime(float(match["timestamp"])),
+            ),
+            payload=ThrusterMessagePayloadV1(
+                label=THRUSTER_TOPIC_TO_NAME[match["topic"]],
+                rpm=match["rpm"],
+                current=match["current"],
+                voltage=match["voltage"],
+                temperature=match["temperature"],
+            ),
+        )
+    except ValidationError as error:
+        raise MessageParseError(
+            f"failed to parse message line: {line}"
+        ) from error
 
 
 MESSAGE_PARSERS: list[MessageParser] = [
-    parse_message_header,
-    parse_image_message,
-    parse_seabird_ctd_message,
-    parse_aanderaa_ctd_message,
-    parse_ecopuck_message,
-    parse_parosci_pressure_message,
-    parse_teledyne_dvl_message,
-    parse_lq_modem_message,
-    parse_evologics_modem_message,
-    parse_micron_sonar_message,
-    parse_obstacle_avoidance_sonar_message,
-    parse_gps_gsv_message,
-    parse_gps_rmc_message,
-    parse_battery_message,
-    parse_thruster_message,
+    parse_image_message_v1,
+    parse_seabird_ctd_message_v1,
+    parse_aanderaa_ctd_message_v1,
+    parse_ecopuck_message_v1,
+    parse_parosci_pressure_message_v1,
+    parse_teledyne_dvl_message_v1,
+    parse_lq_modem_message_v1,
+    parse_evologics_modem_message_v1,
+    parse_micron_sonar_message_v1,
+    parse_obstacle_avoidance_sonar_message_v1,
+    parse_gps_gsv_message_v1,
+    parse_gps_rmc_message_v1,
+    parse_battery_message_v1,
+    parse_thruster_message_v1,
 ]
 
 
 MESSAGE_TYPE_TO_PARSER: dict[type, MessageParser] = {
-    MessageHeader: parse_message_header,
-    ImageCaptureMessage: parse_image_message,
-    SeabirdCTDMessage: parse_seabird_ctd_message,
-    AanderaaCTDMessage: parse_aanderaa_ctd_message,
-    EcopuckMessage: parse_ecopuck_message,
-    ParosciPressureMessage: parse_parosci_pressure_message,
-    TeledyneDVLMessage: parse_teledyne_dvl_message,
-    TrackLinkModemMessage: parse_lq_modem_message,
-    EvologicsModemMessage: parse_evologics_modem_message,
-    MicronSonarMessage: parse_micron_sonar_message,
-    OASonarMessage: parse_obstacle_avoidance_sonar_message,
-    GpsGsvMessage: parse_gps_gsv_message,
-    GpsRmcMessage: parse_gps_rmc_message,
-    BatteryMessage: parse_battery_message,
-    ThrusterMessage: parse_thruster_message,
+    ImageCaptureMessageV1: parse_image_message_v1,
+    SeabirdCTDMessageV1: parse_seabird_ctd_message_v1,
+    AanderaaCTDMessageV1: parse_aanderaa_ctd_message_v1,
+    EcopuckMessageV1: parse_ecopuck_message_v1,
+    ParosciPressureMessageV1: parse_parosci_pressure_message_v1,
+    TeledyneDVLMessageV1: parse_teledyne_dvl_message_v1,
+    TrackLinkModemMessageV1: parse_lq_modem_message_v1,
+    EvologicsModemMessageV1: parse_evologics_modem_message_v1,
+    MicronSonarMessageV1: parse_micron_sonar_message_v1,
+    OASonarMessageV1: parse_obstacle_avoidance_sonar_message_v1,
+    GpsGsvMessageV1: parse_gps_gsv_message_v1,
+    GpsRmcMessageV1: parse_gps_rmc_message_v1,
+    BatteryMessageV1: parse_battery_message_v1,
+    ThrusterMessageV1: parse_thruster_message_v1,
 }
 
 
