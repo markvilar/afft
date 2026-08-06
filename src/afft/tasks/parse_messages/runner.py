@@ -61,7 +61,10 @@ def _parse_messages(
     source_file: Path, config: ParseMessageConfig
 ) -> MessageGroups:
     lines: list[str] = io.read_lines(source_file)
-    return seabed.parse_message_lines(lines, config.message_maps)
+    registry: seabed.MessageParserRegistry = (
+        seabed.build_message_parser_registry(config.message_maps)
+    )
+    return seabed.parse_message_lines(lines, registry)
 
 
 def _build_dataframes(

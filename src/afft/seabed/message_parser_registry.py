@@ -98,11 +98,10 @@ def build_message_parser_registry(
 
 
 def parse_message_lines(
-    lines: list[str], topic_types: dict[str, str]
+    lines: list[str], registry: MessageParserRegistry
 ) -> dict[str, list[Message[Any, Any]]]:
-    """Parses lines as message types in the given protocol."""
+    """Parses lines as message types in the given registry."""
 
-    registry: MessageParserRegistry = build_message_parser_registry(topic_types)
     message_groups: dict[str, list[Message[Any, Any]]] = dict()
     skipped: Counter[str] = Counter()
     failed: Counter[str] = Counter()
