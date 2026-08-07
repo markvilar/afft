@@ -29,9 +29,20 @@ def open_deployment_bundle_reader(
     Returns
     -------
     A context manager yielding a ``DeploymentBundleReader``.
+
+    Raises
+    ------
+    NotImplementedError: If `path`'s suffix is not a supported bundle file
+        format.
     """
-    with _open_hdf_reader(path) as reader:
-        yield cast(DeploymentBundleReader, reader)
+    match path.suffix:
+        case ".h5":
+            with _open_hdf_reader(path) as reader:
+                yield cast(DeploymentBundleReader, reader)
+        case suffix:
+            raise NotImplementedError(
+                f"unsupported bundle file suffix {suffix!r}: {path}"
+            )
 
 
 @contextmanager
@@ -48,6 +59,17 @@ def open_deployment_bundle_writer(
     Returns
     -------
     A context manager yielding a ``DeploymentBundleWriter``.
+
+    Raises
+    ------
+    NotImplementedError: If `path`'s suffix is not a supported bundle file
+        format.
     """
-    with _open_hdf_writer(path) as writer:
-        yield cast(DeploymentBundleWriter, writer)
+    match path.suffix:
+        case ".h5":
+            with _open_hdf_writer(path) as writer:
+                yield cast(DeploymentBundleWriter, writer)
+        case suffix:
+            raise NotImplementedError(
+                f"unsupported bundle file suffix {suffix!r}: {path}"
+            )
