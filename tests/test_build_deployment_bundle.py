@@ -148,15 +148,18 @@ def test_run_builds_a_readable_bundle(tmp_path: Path) -> None:
     assert result.diagnostics.warnings == []
 
     with open_deployment_bundle_reader(command.output_file) as reader:
-        assert reader.deployment.identity().deployment_label == (
+        deployment_identity = reader.read_frame("deployment/identity")
+        assert deployment_identity["deployment_label"].iloc[0] == (
             DEPLOYMENT_LABEL
         )
-        assert reader.platform.identity().platform_label == "AUV Sirius"
-        assert reader.vessel.identity().vessel_name == "RV Linnaeus"
-        assert reader.telemetry.raw.topics() == [
-            ("pressure_parosci", "PAROSCI")
-        ]
-        frame = reader.telemetry.raw.read("pressure_parosci", "PAROSCI")
+        platform_identity = reader.read_frame("platform/identity")
+        assert platform_identity["platform_label"].iloc[0] == "AUV Sirius"
+        vessel_identity = reader.read_frame("vessel/identity")
+        assert vessel_identity["vessel_name"].iloc[0] == "RV Linnaeus"
+
+        key = "telemetry/raw/pressure_parosci/PAROSCI/messages"
+        assert key in reader.list_frames()
+        frame = reader.read_frame(key)
         assert len(frame) == 2
         assert frame["depth"].tolist() == pytest.approx([-0.0514, -0.0523])
 
@@ -239,6 +242,7 @@ def test_cli_builds_a_deployment_bundle(tmp_path: Path) -> None:
 
     assert result.exit_code == 0, result.output
     with open_deployment_bundle_reader(command.output_file) as reader:
-        assert reader.telemetry.raw.topics() == [
-            ("pressure_parosci", "PAROSCI")
-        ]
+        assert (
+            "telemetry/raw/pressure_parosci/PAROSCI/messages"
+            in reader.list_frames()
+        )

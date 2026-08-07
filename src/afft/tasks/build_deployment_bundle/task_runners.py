@@ -13,7 +13,7 @@ from afft.deployment import (
 from afft.seabed import Topic
 from afft.utils.log import logger
 
-from .builders import build_deployment_bundle
+from .section_builders import build_deployment_bundle
 from .task_helpers import (
     build_message_parser_registry,
     load_target_descriptor,
