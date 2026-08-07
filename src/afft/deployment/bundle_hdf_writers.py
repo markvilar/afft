@@ -1,422 +1,107 @@
-"""Concrete `pandas.HDFStore` writers implementing the deployment bundle
-write `Protocol` interfaces defined in `bundle_protocols.py`."""
+"""Concrete `pandas.HDFStore` writer implementing the deployment bundle
+write `Protocol` interface defined in `bundle_protocols.py`."""
 
-from collections.abc import Mapping
 from contextlib import contextmanager
 from dataclasses import dataclass
-from datetime import datetime
 from pathlib import Path
-from typing import Iterator
+from typing import Iterator, Literal
 
 import pandas as pd
 
-from pydantic import BaseModel
-
-from .bundle_types import (
-    DeploymentBundleHeader,
-    DeploymentIdentity,
-    DeploymentProvenance,
-    ProcessedProvenance,
-)
-from .common_types import (
-    DeploymentMetadata,
-    PlatformIdentity,
-    PlatformSensor,
-    SensorCalibration,
-    VesselIdentity,
-    VesselSensor,
-)
-
-# --- dtype normalization and put policy helpers ---
+_CONTENTS_KEY: str = "bundle_contents"
+_RESERVED_KEYS: frozenset[str] = frozenset({_CONTENTS_KEY})
 
 
-def normalize_dtypes(
-    frame: pd.DataFrame, dtypes: Mapping[str, str]
-) -> pd.DataFrame:
+def _coerce_storable_dtypes(frame: pd.DataFrame) -> pd.DataFrame:
     """
-    Cast columns to the HDF5-table-safe dtype set before a `put`/`append`.
+    Cast pandas extension dtypes (``Int64``, ``Float64``, ``boolean``,
+    ``string``) to their plain-numpy equivalents, the dtype set
+    `HDFStore.put(..., format="table")` can store.
+
+    Category and timezone-aware datetime columns are left untouched --
+    those are exactly the extension dtypes PyTables supports natively.
+    Column-specific choices (which columns should be `category` or a
+    UTC timestamp) are the caller's responsibility, made before this is
+    called.
 
     Arguments
     ---------
-    frame: Frame to normalize; not mutated.
-    dtypes: Column name to target dtype string, e.g. ``"category"`` or
-        ``"datetime64[ns, UTC]"``.
+    frame: Frame to coerce; not mutated.
 
     Returns
     -------
-    A copy of `frame` with the named columns cast.
+    A copy of `frame` with any nullable numeric/boolean/string columns
+    cast to plain numpy dtypes.
     """
     frame = frame.copy()
-    for column, dtype in dtypes.items():
-        if pd.api.types.pandas_dtype(dtype) == _DATETIME_UTC_DTYPE:
-            frame[column] = pd.to_datetime(frame[column], utc=True)
-        else:
-            frame[column] = frame[column].astype(dtype)
+    for column in frame.columns:
+        dtype = frame[column].dtype
+        if isinstance(dtype, (pd.CategoricalDtype, pd.DatetimeTZDtype)):
+            continue
+        if isinstance(dtype, pd.StringDtype):
+            frame[column] = frame[column].astype(object)
+        elif isinstance(dtype, pd.api.extensions.ExtensionDtype):
+            frame[column] = frame[column].astype(dtype.numpy_dtype)
     return frame
 
 
-def put_once(
-    store: pd.HDFStore,
-    path: str,
-    frame: pd.DataFrame,
-    *,
-    data_columns: list[str] | None = None,
-) -> None:
-    """
-    `store.put` a table at `path`, raising if a node already exists there.
-
-    Arguments
-    ---------
-    store: Open `HDFStore` handle.
-    path: Node path to write.
-    frame: Table to write.
-    data_columns: Columns to index for `where=` queries.
-
-    Raises
-    ------
-    ValueError: If a node already exists at `path`.
-    """
-    if path in store:
-        raise ValueError(f"{path} already exists")
-    store.put(path, frame, format="table", data_columns=data_columns)
-
-
-def put_replacing(
-    store: pd.HDFStore,
-    path: str,
-    frame: pd.DataFrame,
-    *,
-    data_columns: list[str] | None = None,
-) -> None:
-    """
-    `store.remove` any existing node at `path`, then `store.put` the new
-    frame.
-
-    Arguments
-    ---------
-    store: Open `HDFStore` handle.
-    path: Node path to write.
-    frame: Table to write.
-    data_columns: Columns to index for `where=` queries.
-    """
-    if path in store:
-        store.remove(path)
-    store.put(path, frame, format="table", data_columns=data_columns)
-
-
-# --- dataclass / pydantic model -> table conversion ---
-
-
-def record_to_frame(value: BaseModel) -> pd.DataFrame:
-    """
-    Encode a flat pydantic model as a one-row `DataFrame`.
-
-    Only handles models whose fields are all scalar (`str`, `float`, `int`,
-    `bool`, `datetime`) -- a model with a `list`/`dict` field needs its own
-    row-per-item table instead, see `message_topics_to_frame` and
-    `sensor_calibration_to_frame`. `datetime` fields are detected from the
-    model's own field annotations and normalized to `datetime64[ns, UTC]`,
-    since `HDFStore`'s `format="table"` cannot write a naive/mixed-tz object
-    column.
-
-    Arguments
-    ---------
-    value: Model instance to encode.
-
-    Returns
-    -------
-    A one-row `DataFrame`.
-    """
-    frame = pd.DataFrame([value.model_dump()])
-    for name, field in type(value).model_fields.items():
-        if field.annotation is datetime:
-            frame[name] = pd.to_datetime(frame[name], utc=True)
-    return frame
-
-
-def message_topics_to_frame(topics: list[str]) -> pd.DataFrame:
-    """Encode `CatalogProfileSensor.message_topics` as one row per topic."""
-    return pd.DataFrame({"topic": pd.array(topics, dtype="object")})
-
-
-def sensor_calibration_to_frame(value: SensorCalibration) -> pd.DataFrame:
-    """
-    Encode `SensorCalibration` as one row per parameter, `calibration_type`
-    denormalized onto every row so the whole model still lives at a single
-    path.
-    """
-    names = list(value.parameters.keys())
-    values = list(value.parameters.values())
-    return pd.DataFrame(
-        {
-            "calibration_type": pd.Categorical(
-                [value.calibration_type] * len(names)
-            ),
-            "name": pd.array(names, dtype="object"),
-            "value": pd.array(values, dtype="float64"),
-        }
-    )
-
-
-# --- section writers ---
-
-
-@dataclass
-class HDFDeploymentBundleSectionWriter:
-    """
-    Writes `deployment/*` to an open store.
-
-    Each method is write-once -- it raises if the target node already
-    exists.
-    """
-
-    store: pd.HDFStore
-
-    @property
-    def root_path(self) -> str:
-        return "deployment"
-
-    @property
-    def identity_path(self) -> str:
-        return f"{self.root_path}/identity"
-
-    @property
-    def metadata_path(self) -> str:
-        return f"{self.root_path}/metadata"
-
-    @property
-    def files_path(self) -> str:
-        return f"{self.root_path}/files"
-
-    @property
-    def provenance_path(self) -> str:
-        return f"{self.root_path}/provenance"
-
-    def write_identity(self, value: DeploymentIdentity) -> None:
-        put_once(self.store, self.identity_path, record_to_frame(value))
-
-    def write_metadata(self, value: DeploymentMetadata) -> None:
-        put_once(self.store, self.metadata_path, record_to_frame(value))
-
-    def write_files(self, frame: pd.DataFrame) -> None:
-        frame = normalize_dtypes(frame, _DEPLOYMENT_FILES_REQUIRED_DTYPES)
-        put_once(self.store, self.files_path, frame, data_columns=["role"])
-
-    def write_provenance(self, value: DeploymentProvenance) -> None:
-        put_once(self.store, self.provenance_path, record_to_frame(value))
-
-
-@dataclass
-class HDFPlatformBundleSectionWriter:
-    """
-    Writes `platform/*` to an open store.
-
-    Each method is write-once -- it raises if the target node already
-    exists. A sensor's optional `identity`/`extrinsics`/`calibration` node,
-    or its `message_topics` node when the list is empty, is simply not
-    written rather than written empty; the reader treats a missing node as
-    `None`/`[]`.
-    """
-
-    store: pd.HDFStore
-
-    @property
-    def root_path(self) -> str:
-        return "platform"
-
-    @property
-    def identity_path(self) -> str:
-        return f"{self.root_path}/identity"
-
-    def sensor_identity_path(self, sensor_key: str) -> str:
-        return f"{self.root_path}/sensors/{sensor_key}/identity"
-
-    def sensor_message_topics_path(self, sensor_key: str) -> str:
-        return f"{self.root_path}/sensors/{sensor_key}/message_topics"
-
-    def sensor_extrinsics_path(self, sensor_key: str) -> str:
-        return f"{self.root_path}/sensors/{sensor_key}/extrinsics"
-
-    def sensor_calibration_path(self, sensor_key: str) -> str:
-        return f"{self.root_path}/sensors/{sensor_key}/calibration"
-
-    def write_identity(self, value: PlatformIdentity) -> None:
-        put_once(self.store, self.identity_path, record_to_frame(value))
-
-    def write_sensors(self, values: list[PlatformSensor]) -> None:
-        for sensor in values:
-            _write_sensor(self, sensor)
-
-
-@dataclass
-class HDFVesselBundleSectionWriter:
-    """
-    Writes `vessel/*` to an open store.
-
-    Each method is write-once -- it raises if the target node already
-    exists. A sensor's optional `identity`/`extrinsics`/`calibration` node,
-    or its `message_topics` node when the list is empty, is simply not
-    written rather than written empty; the reader treats a missing node as
-    `None`/`[]`.
-    """
-
-    store: pd.HDFStore
-
-    @property
-    def root_path(self) -> str:
-        return "vessel"
-
-    @property
-    def identity_path(self) -> str:
-        return f"{self.root_path}/identity"
-
-    def sensor_identity_path(self, sensor_key: str) -> str:
-        return f"{self.root_path}/sensors/{sensor_key}/identity"
-
-    def sensor_message_topics_path(self, sensor_key: str) -> str:
-        return f"{self.root_path}/sensors/{sensor_key}/message_topics"
-
-    def sensor_extrinsics_path(self, sensor_key: str) -> str:
-        return f"{self.root_path}/sensors/{sensor_key}/extrinsics"
-
-    def sensor_calibration_path(self, sensor_key: str) -> str:
-        return f"{self.root_path}/sensors/{sensor_key}/calibration"
-
-    def write_identity(self, value: VesselIdentity) -> None:
-        put_once(self.store, self.identity_path, record_to_frame(value))
-
-    def write_sensors(self, values: list[VesselSensor]) -> None:
-        for sensor in values:
-            _write_sensor(self, sensor)
-
-
-@dataclass
-class HDFRawTelemetryBundleSectionWriter:
-    """
-    Writes `telemetry/raw/*` to an open store.
-
-    Write-once -- it raises if the target node already exists.
-    """
-
-    store: pd.HDFStore
-
-    @property
-    def root_path(self) -> str:
-        return "telemetry/raw"
-
-    def topic_path(self, sensor_key: str, topic: str) -> str:
-        return f"{self.root_path}/{sensor_key}/{topic}/messages"
-
-    def write(self, sensor_key: str, topic: str, frame: pd.DataFrame) -> None:
-        frame = normalize_dtypes(frame, _RAW_TELEMETRY_REQUIRED_DTYPES)
-        put_once(
-            self.store,
-            self.topic_path(sensor_key, topic),
-            frame,
-            data_columns=list(_RAW_TELEMETRY_REQUIRED_DTYPES),
+def _read_contents(store: pd.HDFStore) -> pd.DataFrame:
+    """Read `bundle_contents`, or an empty frame of the right shape if the
+    bundle has no tables yet."""
+    if _CONTENTS_KEY not in store:
+        return pd.DataFrame(
+            {
+                "identifier": pd.array([], dtype="object"),
+                "table_name": pd.array([], dtype="object"),
+            }
         )
+    return store.select(_CONTENTS_KEY)
 
 
-@dataclass
-class HDFProcessedTelemetryBundleSectionWriter:
-    """Writes `telemetry/processed/*` to an open store."""
-
-    store: pd.HDFStore
-
-    @property
-    def root_path(self) -> str:
-        return "telemetry/processed"
-
-    def topic_path(self, sensor_key: str, topic: str) -> str:
-        return f"{self.root_path}/{sensor_key}/{topic}/messages"
-
-    def provenance_path(self, sensor_key: str, topic: str) -> str:
-        return f"{self.root_path}/{sensor_key}/{topic}/provenance"
-
-    def append_messages(
-        self, sensor_key: str, topic: str, frame: pd.DataFrame
-    ) -> None:
-        dtypes = _processed_telemetry_dtypes(frame)
-        frame = normalize_dtypes(frame, dtypes)
-        self.store.append(
-            self.topic_path(sensor_key, topic),
-            frame,
-            format="table",
-            data_columns=list(dtypes),
-        )
-
-    def replace_messages(
-        self, sensor_key: str, topic: str, frame: pd.DataFrame
-    ) -> None:
-        dtypes = _processed_telemetry_dtypes(frame)
-        frame = normalize_dtypes(frame, dtypes)
-        put_replacing(
-            self.store,
-            self.topic_path(sensor_key, topic),
-            frame,
-            data_columns=list(dtypes),
-        )
-
-    def write_provenance(
-        self, sensor_key: str, topic: str, value: ProcessedProvenance
-    ) -> None:
-        put_replacing(
-            self.store,
-            self.provenance_path(sensor_key, topic),
-            record_to_frame(value),
-        )
-
-
-@dataclass
-class HDFTelemetryBundleSectionWriter:
-    """Composes the raw and processed telemetry writers."""
-
-    raw: HDFRawTelemetryBundleSectionWriter
-    processed: HDFProcessedTelemetryBundleSectionWriter
-
-
-@dataclass
-class HDFMetoceanBundleSectionWriter:
-    """
-    Writes `metocean/*` to an open store.
-
-    Write-once -- it raises if the target node already exists.
-    """
-
-    store: pd.HDFStore
-
-    @property
-    def root_path(self) -> str:
-        return "metocean"
-
-    def variable_path(self, provider: str, variable: str) -> str:
-        return f"{self.root_path}/{provider}/{variable}"
-
-    def write(self, provider: str, variable: str, frame: pd.DataFrame) -> None:
-        put_once(self.store, self.variable_path(provider, variable), frame)
-
-
-# --- top-level writer ---
+def _append_contents_row(store: pd.HDFStore, key: str, table_name: str) -> None:
+    """Add one `(identifier, table_name)` row to `bundle_contents`,
+    creating the manifest table if this is the bundle's first frame."""
+    contents = _read_contents(store)
+    row = pd.DataFrame({"identifier": [key], "table_name": [table_name]})
+    updated = pd.concat([contents, row], ignore_index=True)
+    if _CONTENTS_KEY in store:
+        store.remove(_CONTENTS_KEY)
+    store.put(_CONTENTS_KEY, updated, format="table")
 
 
 @dataclass
 class HDFDeploymentBundleWriter:
-    """Concrete `DeploymentBundleWriter` backed by a `pandas.HDFStore`
-    opened in write/append mode."""
+    """Concrete `DeploymentBundleWriter` backed by an open `pandas.HDFStore`."""
 
     store: pd.HDFStore
-    deployment: HDFDeploymentBundleSectionWriter
-    platform: HDFPlatformBundleSectionWriter
-    vessel: HDFVesselBundleSectionWriter
-    telemetry: HDFTelemetryBundleSectionWriter
-    metocean: HDFMetoceanBundleSectionWriter
 
-    @property
-    def header_path(self) -> str:
-        return _HEADER_PATH
+    def has_frame(self, key: str) -> bool:
+        if key in _RESERVED_KEYS:
+            return False
+        return key in _read_contents(self.store)["identifier"].values
 
-    def write_header(self, value: DeploymentBundleHeader) -> None:
-        put_once(self.store, self.header_path, record_to_frame(value))
+    def write_frame(
+        self,
+        key: str,
+        frame: pd.DataFrame,
+        *,
+        if_exists: Literal["fail", "replace"] = "fail",
+    ) -> None:
+        if key in _RESERVED_KEYS:
+            raise ValueError(f"{key!r} is reserved and managed automatically")
+
+        exists = self.has_frame(key)
+        if exists and if_exists == "fail":
+            raise ValueError(f"frame already exists at key: {key!r}")
+
+        table_name = key  # HDF: table_name == key verbatim
+        frame = _coerce_storable_dtypes(frame)
+        if exists:
+            self.store.remove(table_name)
+        self.store.put(table_name, frame, format="table")
+
+        if not exists:
+            _append_contents_row(self.store, key, table_name)
 
 
 @contextmanager
@@ -425,82 +110,4 @@ def open_deployment_bundle_writer(
 ) -> Iterator[HDFDeploymentBundleWriter]:
     """Open an HDF5 deployment bundle for writing."""
     with pd.HDFStore(str(path), mode="a") as store:
-        yield HDFDeploymentBundleWriter(
-            store=store,
-            deployment=HDFDeploymentBundleSectionWriter(store),
-            platform=HDFPlatformBundleSectionWriter(store),
-            vessel=HDFVesselBundleSectionWriter(store),
-            telemetry=HDFTelemetryBundleSectionWriter(
-                raw=HDFRawTelemetryBundleSectionWriter(store),
-                processed=HDFProcessedTelemetryBundleSectionWriter(store),
-            ),
-            metocean=HDFMetoceanBundleSectionWriter(store),
-        )
-
-
-# --- private helpers ---
-
-_HEADER_PATH: str = "bundle"
-
-_DATETIME_UTC_DTYPE: pd.DatetimeTZDtype = pd.DatetimeTZDtype(
-    unit="ns", tz="UTC"
-)
-
-_RAW_TELEMETRY_REQUIRED_DTYPES: dict[str, str] = {
-    "timestamp": str(_DATETIME_UTC_DTYPE),
-    "sensor_key": "category",
-    "message_topic": "category",
-}
-
-_PROCESSED_TELEMETRY_REQUIRED_DTYPES: dict[str, str] = {
-    "timestamp": str(_DATETIME_UTC_DTYPE),
-    "message_topic": "category",
-}
-
-_DEPLOYMENT_FILES_REQUIRED_DTYPES: dict[str, str] = {
-    "role": "category",
-    "path": "object",
-}
-
-
-def _processed_telemetry_dtypes(frame: pd.DataFrame) -> dict[str, str]:
-    """Required processed-telemetry dtypes, including `sensor_key` only
-    when the frame carries that column -- it's required only for a table
-    with one producing sensor."""
-    dtypes = dict(_PROCESSED_TELEMETRY_REQUIRED_DTYPES)
-    if "sensor_key" in frame.columns:
-        dtypes["sensor_key"] = "category"
-    return dtypes
-
-
-def _write_sensor(
-    writer: "HDFPlatformBundleSectionWriter | HDFVesselBundleSectionWriter",
-    sensor: PlatformSensor | VesselSensor,
-) -> None:
-    """Write a sensor's identity/message_topics/extrinsics/calibration
-    nodes, skipping any field that is `None`/empty."""
-    if sensor.identity is not None:
-        put_once(
-            writer.store,
-            writer.sensor_identity_path(sensor.key),
-            record_to_frame(sensor.identity),
-        )
-    if sensor.message_topics:
-        put_once(
-            writer.store,
-            writer.sensor_message_topics_path(sensor.key),
-            message_topics_to_frame(sensor.message_topics),
-        )
-    if sensor.extrinsics is not None:
-        put_once(
-            writer.store,
-            writer.sensor_extrinsics_path(sensor.key),
-            record_to_frame(sensor.extrinsics),
-        )
-    if sensor.calibration is not None:
-        put_once(
-            writer.store,
-            writer.sensor_calibration_path(sensor.key),
-            sensor_calibration_to_frame(sensor.calibration),
-            data_columns=["calibration_type"],
-        )
+        yield HDFDeploymentBundleWriter(store=store)
