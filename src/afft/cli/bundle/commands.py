@@ -49,6 +49,12 @@ def bundle_group(context: click.Context) -> None:
     help="path to write the deployment bundle to",
 )
 @click.option(
+    "--overwrite",
+    is_flag=True,
+    default=False,
+    help="overwrite the output file if it already exists",
+)
+@click.option(
     "--verbose",
     is_flag=True,
     default=False,
@@ -60,6 +66,7 @@ def build(
     data_dir: str,
     config_file: str,
     output_file: str,
+    overwrite: bool,
     verbose: bool,
 ) -> None:
     """Build a deployment bundle from a descriptor and its raw message logs."""
@@ -69,5 +76,6 @@ def build(
         data_dir,
         config_file,
         output_file,
+        overwrite,
         verbose,
     )

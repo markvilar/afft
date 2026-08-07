@@ -128,7 +128,8 @@ def validate_build_deployment_bundle_input(
     FileNotFoundError: If ``data_dir`` or the output directory does not
         exist, or if no raw message logs are found.
     ValueError: If ``data_dir``'s name does not match the deployment label,
-        the descriptor is unenriched, or the output file already exists.
+        the descriptor is unenriched, or the output file already exists and
+        ``command.overwrite`` is not set.
     """
     if not command.data_dir.is_dir():
         raise FileNotFoundError(
@@ -161,7 +162,11 @@ def validate_build_deployment_bundle_input(
             f"output directory does not exist: {command.output_file.parent}"
         )
     if command.output_file.exists():
-        raise ValueError(f"output file already exists: {command.output_file}")
+        if not command.overwrite:
+            raise ValueError(
+                f"output file already exists: {command.output_file}"
+            )
+        command.output_file.unlink()
 
     return files
 

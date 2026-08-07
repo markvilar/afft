@@ -33,6 +33,7 @@ class BuildDeploymentBundleCommand:
     config_file: Path to the shared task config TOML file
         (``config/default.toml``).
     output_file: Path to write the deployment bundle to.
+    overwrite: Overwrite ``output_file`` if it already exists.
     verbose: Log diagnostics warnings after the run completes.
     """
 
@@ -41,6 +42,7 @@ class BuildDeploymentBundleCommand:
     data_dir: Path
     config_file: Path
     output_file: Path
+    overwrite: bool = False
     verbose: bool = False
 
 
