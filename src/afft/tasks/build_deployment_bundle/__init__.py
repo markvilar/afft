@@ -1,12 +1,13 @@
 """Task for building a deployment bundle from a descriptor and raw message
 logs."""
 
-from .builders import (
-    BUILDER_VERSION as BUILDER_VERSION,
-    SCHEMA_VERSION as SCHEMA_VERSION,
+from .frame_builders import (
+    build_deployment_files_frame as build_deployment_files_frame,
+    build_raw_telemetry_frame as build_raw_telemetry_frame,
+)
+from .section_builders import (
     build_deployment_bundle as build_deployment_bundle,
     build_deployment_section as build_deployment_section,
-    build_files_frame as build_files_frame,
     build_platform_section as build_platform_section,
     build_raw_telemetry_section as build_raw_telemetry_section,
     build_vessel_section as build_vessel_section,
