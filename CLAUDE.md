@@ -135,6 +135,13 @@ class LinearModel:
     bias: float
 ```
 
+## Branching Strategy
+
+- `main` and `dev` are the long-lived branches. `main` reflects released code; releases are marked with git tags on `main` rather than `release/*` branches.
+- `feature/*` — new or updated features. Branch off `dev`, merge back into `dev`.
+- `patch/*` — patches and hotfixes. Branch off `dev`, merge back into `dev`.
+- All `feature/*` and `patch/*` branches must be merged into `dev` before their changes can reach `main`.
+
 ## Conventions
 
 - Never reference Claude in commits, pull requests, source code, or documentation. This includes `Co-Authored-By` trailers, body text, or any other attribution to Claude or Anthropic.
