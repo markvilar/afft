@@ -15,6 +15,7 @@ def dispatch_build_deployment_bundle(
     data_dir: str | Path,
     config_file: str | Path,
     output_file: str | Path,
+    overwrite: bool = False,
     verbose: bool = False,
 ) -> None:
     """Build a deployment bundle from a descriptor and its raw message logs."""
@@ -24,6 +25,7 @@ def dispatch_build_deployment_bundle(
         data_dir=Path(data_dir),
         config_file=Path(config_file),
         output_file=Path(output_file),
+        overwrite=overwrite,
         verbose=verbose,
     )
     config = read_build_deployment_bundle_config(command.config_file)
