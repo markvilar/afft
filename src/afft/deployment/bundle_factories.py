@@ -14,26 +14,6 @@ from .bundle_hdf_writers import (
 )
 from .bundle_protocols import DeploymentBundleReader, DeploymentBundleWriter
 
-_SUPPORTED_SUFFIXES: frozenset[str] = frozenset({".h5"})
-
-
-def _check_suffix(path: Path) -> None:
-    """
-    Raise if `path`'s suffix is not a supported bundle file format.
-
-    Arguments
-    ---------
-    path: Path to the deployment bundle file.
-
-    Raises
-    ------
-    ValueError: If `path`'s suffix is not supported.
-    """
-    if path.suffix not in _SUPPORTED_SUFFIXES:
-        raise ValueError(
-            f"unsupported bundle file suffix {path.suffix!r}: {path}"
-        )
-
 
 @contextmanager
 def open_deployment_bundle_reader(
@@ -49,10 +29,20 @@ def open_deployment_bundle_reader(
     Returns
     -------
     A context manager yielding a ``DeploymentBundleReader``.
+
+    Raises
+    ------
+    NotImplementedError: If `path`'s suffix is not a supported bundle file
+        format.
     """
-    _check_suffix(path)
-    with _open_hdf_reader(path) as reader:
-        yield cast(DeploymentBundleReader, reader)
+    match path.suffix:
+        case ".h5":
+            with _open_hdf_reader(path) as reader:
+                yield cast(DeploymentBundleReader, reader)
+        case suffix:
+            raise NotImplementedError(
+                f"unsupported bundle file suffix {suffix!r}: {path}"
+            )
 
 
 @contextmanager
@@ -69,7 +59,17 @@ def open_deployment_bundle_writer(
     Returns
     -------
     A context manager yielding a ``DeploymentBundleWriter``.
+
+    Raises
+    ------
+    NotImplementedError: If `path`'s suffix is not a supported bundle file
+        format.
     """
-    _check_suffix(path)
-    with _open_hdf_writer(path) as writer:
-        yield cast(DeploymentBundleWriter, writer)
+    match path.suffix:
+        case ".h5":
+            with _open_hdf_writer(path) as writer:
+                yield cast(DeploymentBundleWriter, writer)
+        case suffix:
+            raise NotImplementedError(
+                f"unsupported bundle file suffix {suffix!r}: {path}"
+            )
