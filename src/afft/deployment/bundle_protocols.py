@@ -54,3 +54,15 @@ class DeploymentBundleWriter(Protocol):
         is overwritten.
         """
         ...
+
+
+class DeploymentBundleIO(
+    DeploymentBundleReader, DeploymentBundleWriter, Protocol
+):
+    """
+    Read and write interface for a single deployment bundle.
+
+    The union of the read and write interfaces, for consumers that read back
+    what they have written and so need both to refer to the same bundle. A
+    consumer needing only one of the two should depend on that one.
+    """
