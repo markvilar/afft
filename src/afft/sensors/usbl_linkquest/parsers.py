@@ -1,6 +1,5 @@
 """Parser for the LinkQuest TrackLink USBL raw log format."""
 
-import dataclasses
 import re
 
 from datetime import datetime, timezone
@@ -10,7 +9,7 @@ import pandas as pd
 
 from afft.utils.log import logger
 
-from .types import TrackLinkFixEntry, TrackLinkRawEntry
+from .types import TrackLinkFixLogEntry, TrackLinkRawLogEntry
 
 
 _FIX_RE: re.Pattern[str] = re.compile(
@@ -43,19 +42,19 @@ def parse_fix_entries(path: Path) -> pd.DataFrame:
     ship_heading, ship_roll, ship_pitch, target_bearing_angle,
     target_slant_range.
     """
-    entries: list[TrackLinkFixEntry] = []
+    entries: list[TrackLinkFixLogEntry] = []
 
     with open(path) as file:
         for line in file:
             if not line.startswith("USBL_FIX:"):
                 continue
-            entry: TrackLinkFixEntry | None = _parse_fix_line(line)
+            entry: TrackLinkFixLogEntry | None = _parse_fix_line(line)
             if entry is None:
                 continue
             entries.append(entry)
 
     dataframe: pd.DataFrame = pd.DataFrame(
-        [dataclasses.asdict(entry) for entry in entries]
+        [entry.model_dump() for entry in entries]
     )
     if not dataframe.empty:
         dataframe["timestamp"] = dataframe["unix_timestamp"].apply(_unix_to_iso)
@@ -74,18 +73,18 @@ def parse_raw_entries(path: Path) -> pd.DataFrame:
     DataFrame with columns: unix_timestamp, flag1, flag2, target_x,
     target_y, target_z.
     """
-    entries: list[TrackLinkRawEntry] = []
+    entries: list[TrackLinkRawLogEntry] = []
 
     with open(path) as file:
         for line in file:
             if not line.startswith("USBL_RAW:"):
                 continue
-            entry: TrackLinkRawEntry | None = _parse_raw_line(line)
+            entry: TrackLinkRawLogEntry | None = _parse_raw_line(line)
             if entry is None:
                 continue
             entries.append(entry)
 
-    return pd.DataFrame([dataclasses.asdict(entry) for entry in entries])
+    return pd.DataFrame([entry.model_dump() for entry in entries])
 
 
 def parse_novatel_entries(path: Path) -> pd.DataFrame:
@@ -216,12 +215,12 @@ def parse_tracklink_log(path: Path) -> pd.DataFrame:
     )
 
 
-def _parse_fix_line(line: str) -> TrackLinkFixEntry | None:
-    """Parse a single USBL_FIX line into a TrackLinkFixEntry."""
+def _parse_fix_line(line: str) -> TrackLinkFixLogEntry | None:
+    """Parse a single USBL_FIX line into a TrackLinkFixLogEntry."""
     match: re.Match[str] | None = _FIX_RE.match(line)
     if match is None:
         return None
-    return TrackLinkFixEntry(
+    return TrackLinkFixLogEntry(
         unix_timestamp=float(match["timestamp"]),
         ship_latitude=float(match["ship_latitude"]),
         ship_longitude=float(match["ship_longitude"]),
@@ -233,13 +232,13 @@ def _parse_fix_line(line: str) -> TrackLinkFixEntry | None:
     )
 
 
-def _parse_raw_line(line: str) -> TrackLinkRawEntry | None:
-    """Parse a single USBL_RAW line into a TrackLinkRawEntry."""
+def _parse_raw_line(line: str) -> TrackLinkRawLogEntry | None:
+    """Parse a single USBL_RAW line into a TrackLinkRawLogEntry."""
     match: re.Match[str] | None = _RAW_RE.match(line)
     if match is None:
         return None
     flag1_str: str | None = match["flag1"]
-    return TrackLinkRawEntry(
+    return TrackLinkRawLogEntry(
         unix_timestamp=float(match["timestamp"]),
         flag1=int(flag1_str) if flag1_str is not None else None,
         flag2=int(match["flag2"]),

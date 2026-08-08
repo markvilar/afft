@@ -1,10 +1,11 @@
 """Configuration types for ACFR stereo camera processing."""
 
-from dataclasses import dataclass
+from pydantic import BaseModel, ConfigDict
 
 
-@dataclass(slots=True, frozen=True)
-class PairStereoImagesConfig:
+class PairStereoImagesConfig(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
     left_suffix: str = "LC16"
     right_suffix: str = "RM16"
     label_col: str = "label"
