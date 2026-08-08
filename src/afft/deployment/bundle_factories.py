@@ -6,13 +6,50 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import cast
 
+from .bundle_hdf_io import (
+    open_deployment_bundle as _open_hdf_io,
+)
 from .bundle_hdf_readers import (
     open_deployment_bundle_reader as _open_hdf_reader,
 )
 from .bundle_hdf_writers import (
     open_deployment_bundle_writer as _open_hdf_writer,
 )
-from .bundle_protocols import DeploymentBundleReader, DeploymentBundleWriter
+from .bundle_protocols import (
+    DeploymentBundleIO,
+    DeploymentBundleReader,
+    DeploymentBundleWriter,
+)
+
+
+@contextmanager
+def open_deployment_bundle(
+    path: Path,
+) -> Iterator[DeploymentBundleIO]:
+    """
+    Open a deployment bundle for reading and writing.
+
+    Arguments
+    ---------
+    path: Path to the deployment bundle file.
+
+    Returns
+    -------
+    A context manager yielding a ``DeploymentBundleIO``.
+
+    Raises
+    ------
+    NotImplementedError: If `path`'s suffix is not a supported bundle file
+        format.
+    """
+    match path.suffix:
+        case ".h5":
+            with _open_hdf_io(path) as bundle:
+                yield cast(DeploymentBundleIO, bundle)
+        case suffix:
+            raise NotImplementedError(
+                f"unsupported bundle file suffix {suffix!r}: {path}"
+            )
 
 
 @contextmanager

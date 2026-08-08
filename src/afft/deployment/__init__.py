@@ -21,10 +21,12 @@ from .bundle_types import (
     ProcessedProvenance as ProcessedProvenance,
 )
 from .bundle_protocols import (
+    DeploymentBundleIO as DeploymentBundleIO,
     DeploymentBundleReader as DeploymentBundleReader,
     DeploymentBundleWriter as DeploymentBundleWriter,
 )
 from .bundle_factories import (
+    open_deployment_bundle as open_deployment_bundle,
     open_deployment_bundle_reader as open_deployment_bundle_reader,
     open_deployment_bundle_writer as open_deployment_bundle_writer,
 )

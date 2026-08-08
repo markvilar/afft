@@ -1,5 +1,5 @@
-"""Concrete `pandas.HDFStore` writer implementing the deployment bundle
-write `Protocol` interface defined in `bundle_protocols.py`."""
+"""Concrete `pandas.HDFStore` bundle implementing the deployment bundle
+read-write `Protocol` interface defined in `bundle_protocols.py`."""
 
 from contextlib import contextmanager
 from dataclasses import dataclass
@@ -13,19 +13,32 @@ from .bundle_hdf_common import (
     append_contents_row,
     coerce_storable_dtypes,
     read_contents,
+    resolve_table_name,
 )
 
 
 @dataclass
-class HDFDeploymentBundleWriter:
-    """Concrete `DeploymentBundleWriter` backed by an open `pandas.HDFStore`."""
+class HDFDeploymentBundleIO:
+    """Concrete `DeploymentBundleIO` backed by an open `pandas.HDFStore`."""
 
     store: pd.HDFStore
+
+    def list_frames(self) -> list[str]:
+        return list(self.contents()["identifier"])
 
     def has_frame(self, key: str) -> bool:
         if key in RESERVED_KEYS:
             return False
-        return key in read_contents(self.store)["identifier"].values
+        return key in self.list_frames()
+
+    def read_frame(self, key: str) -> pd.DataFrame:
+        if key in RESERVED_KEYS:
+            raise KeyError(f"{key!r} is reserved; use contents() instead")
+        table_name = resolve_table_name(self.store, key)
+        return self.store.select(table_name)
+
+    def contents(self) -> pd.DataFrame:
+        return read_contents(self.store)
 
     def write_frame(
         self,
@@ -52,9 +65,7 @@ class HDFDeploymentBundleWriter:
 
 
 @contextmanager
-def open_deployment_bundle_writer(
-    path: Path,
-) -> Iterator[HDFDeploymentBundleWriter]:
-    """Open an HDF5 deployment bundle for writing."""
+def open_deployment_bundle(path: Path) -> Iterator[HDFDeploymentBundleIO]:
+    """Open an HDF5 deployment bundle for reading and writing."""
     with pd.HDFStore(str(path), mode="a") as store:
-        yield HDFDeploymentBundleWriter(store=store)
+        yield HDFDeploymentBundleIO(store=store)
