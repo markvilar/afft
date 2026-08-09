@@ -19,7 +19,7 @@ from afft.sensors.pressure_parosci import (
     estimate_pressure_uncertainty,
 )
 
-from .registry import register_processor
+from .processor_registry import register_processor
 
 
 @register_processor("pair_stereo_images", config_type=PairStereoImagesConfig)

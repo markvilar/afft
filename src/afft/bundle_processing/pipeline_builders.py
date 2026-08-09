@@ -2,8 +2,8 @@
 
 from pydantic import ValidationError
 
-from .registry import PipelineProcessorRegistry, default_registry
-from .types import Pipeline, PipelineConfig, PipelineStep
+from .pipeline_types import Pipeline, PipelineConfig, PipelineStep
+from .processor_registry import PipelineProcessorRegistry, default_registry
 
 
 def build_pipeline(

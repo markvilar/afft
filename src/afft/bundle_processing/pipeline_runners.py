@@ -1,41 +1,13 @@
 """Execution of a resolved pipeline against a deployment bundle."""
 
-from collections.abc import Set
-
 from afft.deployment import DeploymentBundleIO, DeploymentBundleReader
 from afft.utils.log import logger
 
-from .types import Pipeline
+from .pipeline_types import Pipeline
 
 
 class PipelineStepError(RuntimeError):
     """Raised when a pipeline step fails, naming the step that failed."""
-
-
-def validate_pipeline(pipeline: Pipeline, available: Set[str]) -> None:
-    """
-    Check that every step's inputs are available when that step runs.
-
-    Arguments
-    ---------
-    pipeline: The resolved steps, in run order.
-    available: Keys present before the first step -- the input bundle's.
-
-    Raises
-    ------
-    ValueError: If a step names an input key that no earlier step produces
-        and the input bundle does not hold.
-    """
-    produced: set[str] = set(available)
-    for index, step in enumerate(pipeline):
-        for name, key in step.inputs.items():
-            if key not in produced:
-                raise ValueError(
-                    f"step {index} ({step.processor_key}) reads {name}="
-                    f"{key!r}, which the input bundle does not hold and no "
-                    f"earlier step produces"
-                )
-        produced.add(step.output)
 
 
 def run_pipeline(
