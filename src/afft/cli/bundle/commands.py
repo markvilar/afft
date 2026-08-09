@@ -4,6 +4,7 @@ import click
 
 from .actions import (
     dispatch_build_deployment_bundle,
+    dispatch_list_deployment_bundle,
     dispatch_process_deployment_bundle,
 )
 
@@ -82,6 +83,25 @@ def build(
         overwrite,
         verbose,
     )
+
+
+@bundle_group.command("list")
+@click.option(
+    "--input",
+    "input_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the deployment bundle to list",
+)
+@click.option(
+    "--dtypes",
+    is_flag=True,
+    default=False,
+    help="also list each frame's recorded column dtypes",
+)
+def list_contents(input_file: str, dtypes: bool) -> None:
+    """List the frames a deployment bundle holds."""
+    dispatch_list_deployment_bundle(input_file, dtypes)
 
 
 @bundle_group.command()
