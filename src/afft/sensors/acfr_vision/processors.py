@@ -58,7 +58,7 @@ def pair_stereo_images(
             "exposure_logged": "left_exposure_logged",
             "exposure": "left_exposure",
         }
-    ).drop(columns=["topic"], errors="ignore")
+    )
 
     right = right.rename(
         columns={
@@ -69,7 +69,7 @@ def pair_stereo_images(
             "exposure_logged": "right_exposure_logged",
             "exposure": "right_exposure",
         }
-    ).drop(columns=["topic"], errors="ignore")
+    )
 
     # Match on trigger time — both cameras receive the same trigger signal.
     result_frame: pd.DataFrame = pd.merge_asof(
