@@ -86,6 +86,8 @@ def test_default_registry_holds_every_shipped_processor() -> None:
         "estimate_dvl_uncertainty",
         "estimate_pressure_uncertainty",
         "pair_stereo_images",
+        "process_evologics_usbl",
+        "process_tracklink_usbl_from_messages",
         "rename_columns",
         "select_columns",
     ]

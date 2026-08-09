@@ -47,3 +47,21 @@ config.velocity_z_uncertainty = 0.003
 config.roll_uncertainty       = 0.50
 config.pitch_uncertainty      = 0.50
 config.heading_uncertainty    = 2.00
+
+# USBL steps are optional: no deployment carries both transceivers, and the
+# earlier ones carry neither. Omit inputs.extrinsics for a deployment whose
+# readings were already corrected for the transceiver mounting.
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "process_tracklink_usbl_from_messages"
+output            = "telemetry/processed/usbl_linkquest_transponder/LQMODEM/messages"
+inputs.usbl       = "telemetry/raw/usbl_linkquest_transponder/LQMODEM/messages"
+inputs.pressure   = "telemetry/raw/pressure_parosci/PAROSCI/messages"
+inputs.extrinsics = "vessel/sensors/usbl_linkquest_transceiver/extrinsics"
+optional          = true
+
+# [[afft.tasks.process_deployment_bundle.pipeline.steps]]
+# processor         = "process_evologics_usbl"
+# output            = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+# inputs.usbl       = "telemetry/raw/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+# inputs.extrinsics = "vessel/sensors/usbl_evologics_transceiver/extrinsics"
+# optional          = true

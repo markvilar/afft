@@ -21,9 +21,13 @@ _RFU_TO_FRD: NDArray[np.float64] = np.array(
 
 def process_evologics_usbl(
     usbl: pd.DataFrame,
+    extrinsics: EvologicsTransceiverExtrinsics | None = None,
     config: EvologicsProcessingConfig = EvologicsProcessingConfig(),
 ) -> pd.DataFrame:
-    """Convert Evologics USBL data to the unified USBL output schema.
+    """Convert Evologics USBL data to the USBL output schema.
+
+    The schema is a core shared with the other USBL sensors, plus the
+    sensor-specific `evologics_accuracy`.
 
     Applies the USBL-Frame → Vessel-Frame transformation to target_x/y/z,
     derives geometric quantities, assigns deployment-calibrated uncertainty
@@ -43,7 +47,8 @@ def process_evologics_usbl(
           target_horizontal_range, target_inclination_angle,
           horizontal_position_std, depth_position_std, evologics_accuracy,
           usbl_extrinsics_locx, usbl_extrinsics_locy, usbl_extrinsics_locz,
-          usbl_extrinsics_rotx, usbl_extrinsics_roty, usbl_extrinsics_rotz.
+          usbl_extrinsics_rotx, usbl_extrinsics_roty, usbl_extrinsics_rotz,
+          usbl_extrinsics_applied, usbl_extrinsics_rotation_units.
     Removes: accuracy (renamed to evologics_accuracy).
 
     target_depth, target_latitude, and target_longitude are the modem-reported
@@ -51,14 +56,22 @@ def process_evologics_usbl(
     derived from the ship position, ship attitude, and transceiver extrinsics
     via the NED → geodetic chain (pymap3d.ned2geodetic).
 
+    Extrinsics rotations are recorded in the output in degrees, so that every
+    angle in the resulting table shares one unit, with
+    `usbl_extrinsics_rotation_units` stating it explicitly.
+
     Arguments
     ---------
     usbl: Parsed Evologics USBL DataFrame with USBL-Frame target_x/y/z.
-    config: Processing configuration with optional extrinsics and uncertainty values.
+    extrinsics: Transceiver extrinsics in the ship body frame. When None, no
+        extrinsics correction is applied -- only the USBL-Frame flip -- and
+        `usbl_extrinsics_applied` is False. Omit it for deployments whose
+        readings were already corrected upstream.
+    config: Processing configuration with uncertainty values.
 
     Returns
     -------
-    DataFrame conforming to the unified USBL output schema.
+    DataFrame conforming to the USBL output schema.
     """
     result: pd.DataFrame = usbl.copy()
 
@@ -78,11 +91,9 @@ def process_evologics_usbl(
         np.arcsin(np.clip(depth_rel / slant_range, -1.0, 1.0))
     )
 
-    extrinsics: EvologicsTransceiverExtrinsics = (
-        config.extrinsics
-        if config.extrinsics is not None
-        else EvologicsTransceiverExtrinsics()
-    )
+    extrinsics_applied: bool = extrinsics is not None
+    if extrinsics is None:
+        extrinsics = EvologicsTransceiverExtrinsics()
 
     # Apply frame flip (USBL-Frame → intermediate aligned with vessel axes).
     target_flipped: NDArray[np.float64] = (_RFU_TO_FRD @ target_xyz_usbl.T).T
@@ -155,9 +166,11 @@ def process_evologics_usbl(
     result["usbl_extrinsics_locx"] = extrinsics.locx
     result["usbl_extrinsics_locy"] = extrinsics.locy
     result["usbl_extrinsics_locz"] = extrinsics.locz
-    result["usbl_extrinsics_rotx"] = extrinsics.rotx
-    result["usbl_extrinsics_roty"] = extrinsics.roty
-    result["usbl_extrinsics_rotz"] = extrinsics.rotz
+    result["usbl_extrinsics_rotx"] = np.degrees(extrinsics.rotx)
+    result["usbl_extrinsics_roty"] = np.degrees(extrinsics.roty)
+    result["usbl_extrinsics_rotz"] = np.degrees(extrinsics.rotz)
+    result["usbl_extrinsics_applied"] = extrinsics_applied
+    result["usbl_extrinsics_rotation_units"] = "degrees"
     result = result.rename(columns={"accuracy": "evologics_accuracy"})
 
     return result

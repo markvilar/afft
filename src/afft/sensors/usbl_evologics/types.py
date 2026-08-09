@@ -61,14 +61,11 @@ class EvologicsProcessingConfig(BaseModel):
 
     Attributes
     ----------
-    extrinsics: Transceiver extrinsics in the ship body frame. When None,
-        only the USBL-Frame flip is applied (no rotation or translation).
     horizontal_position_std: 1σ horizontal position uncertainty in metres.
     depth_position_std: 1σ depth uncertainty in metres.
     """
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    extrinsics: EvologicsTransceiverExtrinsics | None = None
     horizontal_position_std: float = 15.8
     depth_position_std: float = 5.0

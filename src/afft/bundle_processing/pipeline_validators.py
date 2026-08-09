@@ -15,13 +15,20 @@ def validate_pipeline(pipeline: Pipeline, available: Set[str]) -> None:
     pipeline: The resolved steps, in run order.
     available: Keys present before the first step -- the input bundle's.
 
+    An optional step is exempt: a missing input means the deployment does not
+    carry that sensor, which the runner skips rather than fails. Its output is
+    still counted as produced, since whether it runs is not known until then.
+
     Raises
     ------
-    ValueError: If a step names an input key that no earlier step produces
-        and the input bundle does not hold.
+    ValueError: If a required step names an input key that no earlier step
+        produces and the input bundle does not hold.
     """
     produced: set[str] = set(available)
     for index, step in enumerate(pipeline):
+        if step.optional:
+            produced.add(step.output)
+            continue
         for name, key in step.inputs.items():
             if key not in produced:
                 raise ValueError(

@@ -56,6 +56,7 @@ def build_pipeline(
                 config=step_config_model,
                 inputs=dict(step_config.inputs),
                 output=step_config.output,
+                optional=step_config.optional,
             )
         )
 
