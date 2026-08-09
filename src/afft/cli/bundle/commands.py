@@ -2,7 +2,10 @@
 
 import click
 
-from .actions import dispatch_build_deployment_bundle
+from .actions import (
+    dispatch_build_deployment_bundle,
+    dispatch_process_deployment_bundle,
+)
 
 
 @click.group()
@@ -74,6 +77,57 @@ def build(
         descriptor_file,
         deployment_label,
         data_dir,
+        config_file,
+        output_file,
+        overwrite,
+        verbose,
+    )
+
+
+@bundle_group.command()
+@click.option(
+    "--input",
+    "input_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the deployment bundle to process",
+)
+@click.option(
+    "--config",
+    "config_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the shared task config TOML file",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="path to write the processed deployment bundle to",
+)
+@click.option(
+    "--overwrite",
+    is_flag=True,
+    default=False,
+    help="overwrite the output file if it already exists",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="log each step's output key as it is written",
+)
+def process(
+    input_file: str,
+    config_file: str,
+    output_file: str,
+    overwrite: bool,
+    verbose: bool,
+) -> None:
+    """Run the configured processing pipeline over a deployment bundle."""
+    dispatch_process_deployment_bundle(
+        input_file,
         config_file,
         output_file,
         overwrite,

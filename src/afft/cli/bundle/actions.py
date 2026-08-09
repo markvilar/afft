@@ -7,6 +7,10 @@ from afft.tasks.build_deployment_bundle import (
     read_build_deployment_bundle_config,
     run_build_deployment_bundle,
 )
+from afft.tasks.process_deployment_bundle import (
+    ProcessDeploymentBundleCommand,
+    run_process_deployment_bundle,
+)
 
 
 def dispatch_build_deployment_bundle(
@@ -30,3 +34,21 @@ def dispatch_build_deployment_bundle(
     )
     config = read_build_deployment_bundle_config(command.config_file)
     run_build_deployment_bundle(command, config)
+
+
+def dispatch_process_deployment_bundle(
+    input_file: str | Path,
+    config_file: str | Path,
+    output_file: str | Path,
+    overwrite: bool = False,
+    verbose: bool = False,
+) -> None:
+    """Run the configured processing pipeline over a deployment bundle."""
+    command = ProcessDeploymentBundleCommand(
+        input_file=input_file,
+        config_file=config_file,
+        output_file=output_file,
+        overwrite=overwrite,
+        verbose=verbose,
+    )
+    run_process_deployment_bundle(command)
