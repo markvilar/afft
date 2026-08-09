@@ -29,12 +29,24 @@ class StereoPairingResult:
     frame: One row per paired trigger.
     left_total: Left images seen before matching.
     right_total: Right images seen before matching.
-    left_unmatched: Left images dropped for having no right counterpart.
-    right_unmatched: Right images dropped for having no left counterpart.
+    left_unmatched: Left images dropped for having no right counterpart,
+        carrying the left frame's columns.
+    right_unmatched: Right images dropped for having no left counterpart,
+        carrying the right frame's columns.
     """
 
     frame: pd.DataFrame
     left_total: int
     right_total: int
-    left_unmatched: int
-    right_unmatched: int
+    left_unmatched: pd.DataFrame
+    right_unmatched: pd.DataFrame
+
+    @property
+    def n_left_unmatched(self) -> int:
+        """Number of left images dropped for having no right counterpart."""
+        return len(self.left_unmatched)
+
+    @property
+    def n_right_unmatched(self) -> int:
+        """Number of right images dropped for having no left counterpart."""
+        return len(self.right_unmatched)

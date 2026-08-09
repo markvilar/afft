@@ -81,8 +81,16 @@ def pair_stereo_images(
         direction="nearest",
     )
 
-    n_left_unmatched: int = int(result_frame["right_label"].isna().sum())
-    if n_left_unmatched:
+    # Take the unmatched left images from the input frame rather than the
+    # merge result, whose right columns hold nothing but the fill NaN.
+    unmatched_left_labels: pd.Series = result_frame.loc[
+        result_frame["right_label"].isna(), "left_label"
+    ]
+    left_unmatched: pd.DataFrame = left[
+        left["left_label"].isin(unmatched_left_labels)
+    ].reset_index(drop=True)
+
+    if len(left_unmatched):
         result_frame = result_frame.dropna(subset=["right_label"]).reset_index(
             drop=True
         )
@@ -115,10 +123,10 @@ def pair_stereo_images(
     )
 
     # The merge is a left join, so right images that matched nothing never
-    # entered the frame. Account for them against the input right images.
-    n_right_unmatched: int = len(right) - int(
-        result_frame["right_label"].nunique()
-    )
+    # entered the frame. Recover them from the input right images.
+    right_unmatched: pd.DataFrame = right[
+        ~right["right_label"].isin(result_frame["right_label"])
+    ].reset_index(drop=True)
 
     result_frame["timestamp"] = result_frame["left_timestamp"]
 
@@ -144,6 +152,6 @@ def pair_stereo_images(
         frame=result_frame,
         left_total=len(left),
         right_total=len(right),
-        left_unmatched=n_left_unmatched,
-        right_unmatched=n_right_unmatched,
+        left_unmatched=left_unmatched,
+        right_unmatched=right_unmatched,
     )

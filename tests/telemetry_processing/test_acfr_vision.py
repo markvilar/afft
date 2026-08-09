@@ -175,9 +175,10 @@ def test_unmatched_right_is_dropped_and_counted() -> None:
 
     assert "PR_003_RM16" not in set(result.frame["right_label"])
     assert len(result.frame) == 2
-    assert result.right_unmatched == 1
+    assert result.n_right_unmatched == 1
     assert result.right_total == 3
-    assert result.left_unmatched == 0
+    assert set(result.right_unmatched["right_label"]) == {"PR_003_RM16"}
+    assert result.n_left_unmatched == 0
 
 
 def test_unmatched_left_is_counted() -> None:
@@ -191,16 +192,44 @@ def test_unmatched_left_is_counted() -> None:
     ]
     result = pair_stereo_images(_df(rows))
 
-    assert result.left_unmatched == 1
+    assert result.n_left_unmatched == 1
     assert result.left_total == 3
-    assert result.right_unmatched == 0
+    assert set(result.left_unmatched["left_label"]) == {"PR_003_LC16"}
+    assert result.n_right_unmatched == 0
+
+
+def test_unmatched_frames_carry_the_side_columns() -> None:
+    # The discarded images keep their renamed columns, so they identify
+    # themselves without being joined back to the input.
+    rows = BASE_ROWS + [
+        _make_row(
+            "PR_003_RM16",
+            "PR_003_RM16.pgm",
+            "2010-04-21 02:28:30.000+00:00",
+            "2010-04-21 02:28:30.010",
+        ),
+    ]
+    result = pair_stereo_images(_df(rows))
+    unmatched = result.right_unmatched
+
+    assert {
+        "right_label",
+        "right_filename",
+        "right_timestamp",
+        "right_received_at",
+    } <= set(unmatched.columns)
+    assert unmatched["right_filename"].iloc[0] == "PR_003_RM16.pgm"
+    assert (
+        unmatched["right_timestamp"].dtype
+        == result.frame["right_timestamp"].dtype
+    )
 
 
 def test_fully_paired_reports_no_discards() -> None:
     result = pair_stereo_images(_df(BASE_ROWS))
 
-    assert result.left_unmatched == 0
-    assert result.right_unmatched == 0
+    assert result.n_left_unmatched == 0
+    assert result.n_right_unmatched == 0
     assert result.left_total == 2
     assert result.right_total == 2
 
