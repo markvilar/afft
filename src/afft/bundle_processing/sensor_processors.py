@@ -7,7 +7,8 @@ from collections.abc import Mapping
 import pandas as pd
 
 from afft.sensors.acfr_vision import (
-    PairStereoImagesConfig,
+    StereoPairingConfig,
+    StereoPairingResult,
     pair_stereo_images,
 )
 from afft.sensors.dvl_teledyne import (
@@ -22,13 +23,14 @@ from afft.sensors.pressure_parosci import (
 from .processor_registry import register_processor
 
 
-@register_processor("pair_stereo_images", config_type=PairStereoImagesConfig)
+@register_processor("pair_stereo_images", config_type=StereoPairingConfig)
 def step_pair_stereo_images(
     frames: Mapping[str, pd.DataFrame],
-    config: PairStereoImagesConfig,
+    config: StereoPairingConfig,
 ) -> pd.DataFrame:
     """Pair left/right stereo captures into one frame per trigger."""
-    return pair_stereo_images(frames["df"], config)
+    result: StereoPairingResult = pair_stereo_images(frames["df"], config)
+    return result.frame
 
 
 @register_processor(
