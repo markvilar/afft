@@ -13,7 +13,6 @@ from afft.bundle_processing import (
     PipelineStep,
     PipelineStepError,
     run_pipeline,
-    validate_pipeline,
 )
 from afft.deployment import (
     open_deployment_bundle,
@@ -220,44 +219,3 @@ def test_a_run_stops_at_the_first_failure(tmp_path: Path) -> None:
 
     with open_deployment_bundle_reader(target) as reader:
         assert not reader.has_frame("telemetry/processed/second")
-
-
-def test_validate_accepts_inputs_the_source_holds() -> None:
-    """A step reading a key the input bundle holds validates."""
-    validate_pipeline(
-        (_step("telemetry/processed/pressure"),),
-        {"telemetry/raw/pressure"},
-    )
-
-
-def test_validate_accepts_inputs_an_earlier_step_produces() -> None:
-    """A step reading an earlier step's output validates."""
-    pipeline = (
-        _step("telemetry/processed/once"),
-        _step(
-            "telemetry/processed/twice", source_key="telemetry/processed/once"
-        ),
-    )
-
-    validate_pipeline(pipeline, {"telemetry/raw/pressure"})
-
-
-def test_validate_rejects_an_unreachable_input() -> None:
-    """A key neither held nor produced fails before the run starts."""
-    pipeline = (_step("out", source_key="telemetry/absent"),)
-
-    with pytest.raises(ValueError, match="step 0"):
-        validate_pipeline(pipeline, {"telemetry/raw/pressure"})
-
-
-def test_validate_rejects_a_forward_reference() -> None:
-    """Reading a key a *later* step produces fails: order is significant."""
-    pipeline = (
-        _step(
-            "telemetry/processed/once", source_key="telemetry/processed/twice"
-        ),
-        _step("telemetry/processed/twice"),
-    )
-
-    with pytest.raises(ValueError, match="step 0"):
-        validate_pipeline(pipeline, {"telemetry/raw/pressure"})

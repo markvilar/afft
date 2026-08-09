@@ -7,7 +7,7 @@ import pandas as pd
 
 from pydantic import BaseModel, ConfigDict
 
-from .registry import register_processor
+from .processor_registry import register_processor
 
 
 class RenameColumnsConfig(BaseModel):

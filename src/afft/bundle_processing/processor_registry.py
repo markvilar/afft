@@ -5,7 +5,7 @@ from typing import Callable
 
 from pydantic import BaseModel
 
-from .types import PipelineProcessor
+from .pipeline_types import PipelineProcessor
 
 
 @dataclass(slots=True, frozen=True)
