@@ -8,12 +8,12 @@ from typing import Iterator, Literal
 
 import pandas as pd
 
+from .bundle_common import RESERVED_KEYS, encode_frame_dtypes
 from .bundle_hdf_common import (
-    RESERVED_KEYS,
-    append_contents_row,
     coerce_storable_dtypes,
     read_contents,
     resolve_table_name,
+    upsert_contents_row,
 )
 
 
@@ -55,13 +55,18 @@ class HDFDeploymentBundleIO:
             raise ValueError(f"frame already exists at key: {key!r}")
 
         table_name = key  # HDF: table_name == key verbatim
+
+        # Record the frame's own dtypes, not the ones it is about to be
+        # coerced into -- the coercion is a storage limitation, and what it
+        # discards is unrecoverable once the frame is written.
+        dtypes = encode_frame_dtypes(frame)
+
         frame = coerce_storable_dtypes(frame)
         if exists:
             self.store.remove(table_name)
         self.store.put(table_name, frame, format="table")
 
-        if not exists:
-            append_contents_row(self.store, key, table_name)
+        upsert_contents_row(self.store, key, table_name, dtypes)
 
 
 @contextmanager

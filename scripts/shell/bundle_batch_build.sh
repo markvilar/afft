@@ -1,13 +1,17 @@
 #!/usr/bin/bash
 
+# Exit on the first failing command, on any unset variable, and on a failure
+# anywhere in a pipeline rather than only in its last command.
+set -euo pipefail
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 DESCRIPTOR_FILE="${REPO_ROOT}/data/deployment_descriptors_v1_subset_enriched.toml"
 CONFIG_FILE="${REPO_ROOT}/config/default.toml"
 
-DEPLOYMENT_DATA_DIR="/data/exos_01/acfr_deployments_v1_subset_fixed"
-OUTPUT_DIR="/data/exos_01/acfr_deployment_bundles_v1_subset"
+DEPLOYMENT_DATA_DIR="${HOME}/data/acfr_deployments_v1_subset_fixed"
+OUTPUT_DIR="${HOME}/data/acfr_deployment_bundles_v1_subset"
 
 DEPLOYMENTS=(
   "qdch0ftq_20100428_020202"

@@ -3,8 +3,7 @@ and read-write implementations."""
 
 import pandas as pd
 
-CONTENTS_KEY: str = "bundle_contents"
-RESERVED_KEYS: frozenset[str] = frozenset({CONTENTS_KEY})
+from .bundle_common import CONTENTS_KEY, empty_contents
 
 
 def coerce_storable_dtypes(frame: pd.DataFrame) -> pd.DataFrame:
@@ -44,12 +43,7 @@ def read_contents(store: pd.HDFStore) -> pd.DataFrame:
     """Read `bundle_contents`, or an empty frame of the right shape if the
     bundle has no tables yet."""
     if CONTENTS_KEY not in store:
-        return pd.DataFrame(
-            {
-                "identifier": pd.array([], dtype="object"),
-                "table_name": pd.array([], dtype="object"),
-            }
-        )
+        return empty_contents()
     return store.select(CONTENTS_KEY)
 
 
@@ -68,12 +62,41 @@ def resolve_table_name(store: pd.HDFStore, key: str) -> str:
     return str(matches.iloc[0])
 
 
-def append_contents_row(store: pd.HDFStore, key: str, table_name: str) -> None:
-    """Add one `(identifier, table_name)` row to `bundle_contents`,
-    creating the manifest table if this is the bundle's first frame."""
+def upsert_contents_row(
+    store: pd.HDFStore, key: str, table_name: str, dtypes: str
+) -> None:
+    """
+    Write the `bundle_contents` row for `key`, creating the manifest table if
+    this is the bundle's first frame.
+
+    The row is replaced in place if `key` is already registered, so a frame
+    rewritten with a different schema does not leave the manifest describing
+    the previous one, and a replacement does not reorder the manifest.
+
+    Arguments
+    ---------
+    store: Open store to write the manifest into.
+    key: The frame's identifier.
+    table_name: The frame's backend-specific table name.
+    dtypes: The frame's dtypes, encoded by `encode_frame_dtypes`.
+    """
     contents = read_contents(store)
-    row = pd.DataFrame({"identifier": [key], "table_name": [table_name]})
-    updated = pd.concat([contents, row], ignore_index=True)
+    existing = contents.index[contents["identifier"] == key]
+    if len(existing):
+        updated = contents.copy()
+        updated.loc[existing[0], ["table_name", "dtypes"]] = [
+            table_name,
+            dtypes,
+        ]
+    else:
+        row = pd.DataFrame(
+            {
+                "identifier": [key],
+                "table_name": [table_name],
+                "dtypes": [dtypes],
+            }
+        )
+        updated = pd.concat([contents, row], ignore_index=True)
     if CONTENTS_KEY in store:
         store.remove(CONTENTS_KEY)
     store.put(CONTENTS_KEY, updated, format="table")

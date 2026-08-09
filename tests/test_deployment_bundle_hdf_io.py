@@ -1,5 +1,7 @@
 """Round-trip tests for the pandas.HDFStore deployment bundle implementation."""
 
+import json
+
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -129,6 +131,68 @@ def test_contents_manifest_tracks_identifier_and_table_name(
             "bundle",
             "deployment/identity",
         ]
+
+
+def test_contents_manifest_records_pre_coercion_dtypes(
+    tmp_path: Path,
+) -> None:
+    """The manifest records the dtypes the frame was written with, not the
+    plain-numpy ones `coerce_storable_dtypes` reduces them to."""
+    path = tmp_path / "bundle.h5"
+    frame = pd.DataFrame(
+        {
+            "count": pd.array([1], dtype="Int64"),
+            "flag": pd.array([True], dtype="boolean"),
+            "label": pd.array(["a"], dtype="string"),
+        }
+    )
+
+    with open_deployment_bundle_writer(path) as writer:
+        writer.write_frame("bundle", frame)
+
+    with open_deployment_bundle_reader(path) as reader:
+        recorded = json.loads(reader.contents()["dtypes"].iloc[0])
+        assert recorded == {
+            "count": "Int64",
+            "flag": "boolean",
+            "label": "string",
+        }
+        # The frame itself still reads back coerced -- the HDF backend
+        # records what it discarded without undoing it.
+        assert reader.read_frame("bundle")["count"].dtype == "int64"
+
+
+def test_replacing_a_frame_updates_its_recorded_dtypes(
+    tmp_path: Path,
+) -> None:
+    """A frame rewritten with a different schema leaves no stale manifest
+    entry describing the previous one."""
+    path = tmp_path / "bundle.h5"
+    original = pd.DataFrame({"count": pd.array([1], dtype="Int64")})
+    replacement = pd.DataFrame({"label": pd.array(["a"], dtype="string")})
+
+    with open_deployment_bundle_writer(path) as writer:
+        writer.write_frame("bundle", original)
+        writer.write_frame("bundle", replacement, if_exists="replace")
+
+    with open_deployment_bundle_reader(path) as reader:
+        contents = reader.contents()
+        assert len(contents) == 1
+        assert json.loads(contents["dtypes"].iloc[0]) == {"label": "string"}
+
+
+def test_replacing_a_frame_preserves_manifest_order(tmp_path: Path) -> None:
+    """Replacing a frame updates its row in place rather than moving it to
+    the end of the manifest."""
+    path = tmp_path / "bundle.h5"
+
+    with open_deployment_bundle_writer(path) as writer:
+        writer.write_frame("first", _frame())
+        writer.write_frame("second", _frame())
+        writer.write_frame("first", _frame(), if_exists="replace")
+
+    with open_deployment_bundle_reader(path) as reader:
+        assert reader.list_frames() == ["first", "second"]
 
 
 def test_write_frame_coerces_extension_dtypes(tmp_path: Path) -> None:
