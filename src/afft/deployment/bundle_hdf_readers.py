@@ -8,8 +8,8 @@ from typing import Iterator
 
 import pandas as pd
 
+from .bundle_common import RESERVED_KEYS
 from .bundle_hdf_common import (
-    RESERVED_KEYS,
     read_contents,
     resolve_table_name,
 )
