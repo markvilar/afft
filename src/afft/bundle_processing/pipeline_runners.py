@@ -14,6 +14,7 @@ def run_pipeline(
     pipeline: Pipeline,
     source: DeploymentBundleReader,
     target: DeploymentBundleIO,
+    verbose: bool = False,
 ) -> None:
     """
     Seed `target` from `source`, then run each step against `target`.
@@ -24,6 +25,7 @@ def run_pipeline(
     source: Bundle the run starts from; read only, never written.
     target: Bundle the run produces; both the destination of every step and
         the source of every step's inputs.
+    verbose: Log each step's output key as it is written.
 
     Raises
     ------
@@ -47,6 +49,11 @@ def run_pipeline(
                     "replace" if target.has_frame(step.output) else "fail"
                 ),
             )
+            if verbose:
+                logger.info(
+                    f"pipeline step {index} ({step.processor_key}) wrote "
+                    f"{step.output}"
+                )
         except Exception as error:
             logger.error(
                 f"pipeline step {index} ({step.processor_key}) failed: {error}"
