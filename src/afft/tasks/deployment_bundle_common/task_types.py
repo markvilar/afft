@@ -27,6 +27,26 @@ class IngestBundleFrameCommand(BaseModel):
     overwrite: bool = False
 
 
+class ExportBundleFrameCommand(BaseModel):
+    """
+    Attributes
+    ----------
+    bundle_file: Path to the deployment bundle to export from. Read only;
+        never written.
+    key: Bundle key to read the frame from.
+    output_file: Path to write the frame to. Its suffix selects the output
+        format.
+    overwrite: Overwrite an existing output file.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    bundle_file: Path
+    key: str
+    output_file: Path
+    overwrite: bool = False
+
+
 class IngestBundleFrameResult(BaseModel):
     """
     Attributes
@@ -40,6 +60,24 @@ class IngestBundleFrameResult(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     bundle_file: Path
+    key: str
+    rows: int
+    columns: tuple[str, ...]
+
+
+class ExportBundleFrameResult(BaseModel):
+    """
+    Attributes
+    ----------
+    output_file: Path the frame was written to.
+    key: Bundle key the frame was read from.
+    rows: Number of rows written.
+    columns: Column names written, in frame order.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    output_file: Path
     key: str
     rows: int
     columns: tuple[str, ...]
