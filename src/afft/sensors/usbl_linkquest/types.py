@@ -2,17 +2,15 @@
 
 import numpy as np
 
-from dataclasses import dataclass, field
-
 from numpy.typing import NDArray
+from pydantic import BaseModel, ConfigDict
 from scipy.spatial.transform import (
     RigidTransform,
     Rotation,
 )
 
 
-@dataclass(slots=True, frozen=True)
-class TrackLinkFixEntry:
+class TrackLinkFixLogEntry(BaseModel):
     """
     Parsed USBL_FIX entry from a TrackLink log file.
 
@@ -29,6 +27,8 @@ class TrackLinkFixEntry:
     target_slant_range: Slant range to target in metres.
     """
 
+    model_config = ConfigDict(frozen=True)
+
     unix_timestamp: float
     ship_latitude: float
     ship_longitude: float
@@ -39,8 +39,7 @@ class TrackLinkFixEntry:
     target_slant_range: float
 
 
-@dataclass(slots=True, frozen=True)
-class TrackLinkRawEntry:
+class TrackLinkRawLogEntry(BaseModel):
     """
     Parsed USBL_RAW entry from a TrackLink log file.
 
@@ -59,6 +58,8 @@ class TrackLinkRawEntry:
     target_z: Target offset in metres along the down direction (positive down).
     """
 
+    model_config = ConfigDict(frozen=True)
+
     unix_timestamp: float
     flag1: int | None
     flag2: int
@@ -67,8 +68,7 @@ class TrackLinkRawEntry:
     target_z: float
 
 
-@dataclass(slots=True, frozen=True)
-class TrackLinkTransceiverExtrinsics:
+class TrackLinkTransceiverExtrinsics(BaseModel):
     """
     Rigid-body extrinsics of the USBL transceiver in the ship body frame.
 
@@ -85,6 +85,8 @@ class TrackLinkTransceiverExtrinsics:
     roty: Pitch in radians (positive: bow up).
     rotz: Yaw in radians (positive clockwise viewed from above).
     """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     locx: float = 0.0
     locy: float = 0.0
@@ -111,17 +113,15 @@ class TrackLinkTransceiverExtrinsics:
         )
 
 
-@dataclass(slots=True, frozen=True)
-class TrackLinkResolvePositionFromMessagesConfig:
+class TrackLinkResolvePositionFromMessagesConfig(BaseModel):
     """
     Configuration for the USBL position resolution step from AUV messages.
 
     The raw bearing is always treated as an azimuth in the transceiver body
     frame (0 = transceiver forward, clockwise). The full ZYX attitude chain
-    (transceiver → ship body → NED) is applied on every call. When no
-    extrinsics are provided a zero-offset, zero-rotation transceiver is
-    assumed (bearing is then relative to the ship bow, and ship heading is
-    applied via the rotation chain).
+    (transceiver → ship body → NED) is applied on every call. Extrinsics are
+    passed to the processor rather than configured here, since they are a
+    property of the deployment.
 
     Attributes
     ----------
@@ -135,9 +135,9 @@ class TrackLinkResolvePositionFromMessagesConfig:
     ship_pitch_col: Name of the ship pitch column (degrees).
     depth_col: Name of the depth column in the pressure DataFrame.
     max_time_gap_seconds: Maximum allowed gap between USBL and pressure windows.
-    extrinsics: Transceiver extrinsics relative to the ship body frame. Defaults
-        to zero offset and zero rotation when not provided.
     """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     timestamp_col: str = "timestamp"
     bearing_col: str = "target_bearing_angle"
@@ -149,18 +149,16 @@ class TrackLinkResolvePositionFromMessagesConfig:
     ship_pitch_col: str = "ship_pitch"
     depth_col: str = "depth"
     max_time_gap_seconds: float = 60.0
-    extrinsics: TrackLinkTransceiverExtrinsics | None = None
 
 
-@dataclass(slots=True, frozen=True)
-class TrackLinkResolvePositionFromLogsConfig:
+class TrackLinkResolvePositionFromLogsConfig(BaseModel):
     """
     Configuration for the USBL position resolution step from log entries.
 
     Target XYZ in the sensor frame is taken directly from the log entries.
     The full ZYX attitude chain (transceiver → ship body → NED) is applied
-    on every call. When no extrinsics are provided a zero-offset,
-    zero-rotation transceiver is assumed.
+    on every call. Extrinsics are passed to the processor rather than
+    configured here, since they are a property of the deployment.
 
     Attributes
     ----------
@@ -175,9 +173,9 @@ class TrackLinkResolvePositionFromLogsConfig:
     ship_heading_col: Name of the ship heading column (degrees, clockwise from N).
     ship_roll_col: Name of the ship roll column (degrees).
     ship_pitch_col: Name of the ship pitch column (degrees).
-    extrinsics: Transceiver extrinsics relative to the ship body frame. Defaults
-        to zero offset and zero rotation when not provided.
     """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     timestamp_col: str = "timestamp"
     target_x_col: str = "target_x"
@@ -190,11 +188,9 @@ class TrackLinkResolvePositionFromLogsConfig:
     ship_heading_col: str = "ship_heading"
     ship_roll_col: str = "ship_roll"
     ship_pitch_col: str = "ship_pitch"
-    extrinsics: TrackLinkTransceiverExtrinsics | None = None
 
 
-@dataclass(slots=True, frozen=True)
-class TrackLinkUncertaintyConfig:
+class TrackLinkUncertaintyConfig(BaseModel):
     """
     Deployment-calibrated uncertainty values for TrackLink USBL processing.
 
@@ -204,12 +200,13 @@ class TrackLinkUncertaintyConfig:
     depth_position_std: 1σ depth uncertainty in metres.
     """
 
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
     horizontal_position_std: float = 15.8
     depth_position_std: float = 5.0
 
 
-@dataclass(slots=True, frozen=True)
-class TrackLinkProcessingFromMessagesConfig:
+class TrackLinkProcessingFromMessagesConfig(BaseModel):
     """
     Combined configuration for the TrackLink USBL processing pipeline from AUV messages.
 
@@ -219,16 +216,15 @@ class TrackLinkProcessingFromMessagesConfig:
     uncertainty: Configuration for uncertainty estimation.
     """
 
-    resolve: TrackLinkResolvePositionFromMessagesConfig = field(
-        default_factory=TrackLinkResolvePositionFromMessagesConfig
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    resolve: TrackLinkResolvePositionFromMessagesConfig = (
+        TrackLinkResolvePositionFromMessagesConfig()
     )
-    uncertainty: TrackLinkUncertaintyConfig = field(
-        default_factory=TrackLinkUncertaintyConfig
-    )
+    uncertainty: TrackLinkUncertaintyConfig = TrackLinkUncertaintyConfig()
 
 
-@dataclass(slots=True, frozen=True)
-class TrackLinkProcessingFromLogsConfig:
+class TrackLinkProcessingFromLogsConfig(BaseModel):
     """
     Combined configuration for the TrackLink USBL processing pipeline from log entries.
 
@@ -238,9 +234,9 @@ class TrackLinkProcessingFromLogsConfig:
     uncertainty: Configuration for uncertainty estimation.
     """
 
-    resolve: TrackLinkResolvePositionFromLogsConfig = field(
-        default_factory=TrackLinkResolvePositionFromLogsConfig
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
+    resolve: TrackLinkResolvePositionFromLogsConfig = (
+        TrackLinkResolvePositionFromLogsConfig()
     )
-    uncertainty: TrackLinkUncertaintyConfig = field(
-        default_factory=TrackLinkUncertaintyConfig
-    )
+    uncertainty: TrackLinkUncertaintyConfig = TrackLinkUncertaintyConfig()

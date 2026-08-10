@@ -1,5 +1,4 @@
 [afft.tasks.build_deployment_bundle.message_map]
-
 VIS = "ImageCaptureMessageV1"
 SEABIRD = "SeabirdCTDMessageV1"
 AANDERAA_4319 = "AanderaaCTDMessageV1"
@@ -20,3 +19,49 @@ MICRON = "MicronSonarMessageV1"
 MICRON_RETURNS = "MicronSonarMessageV1"
 GPS_GSV = "GpsGsvMessageV1"
 GPS_RMC = "GpsRmcMessageV1"
+
+# Processing pipeline for deployment bundles.
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor            = "pair_stereo_images"
+output               = "telemetry/processed/camera_avt_prosilica/VIS/stereo_image_pairs"
+inputs.df            = "telemetry/raw/camera_avt_prosilica/VIS/messages"
+config.left_suffix   = "LC16"
+config.right_suffix  = "RM16"
+config.max_offset_ms = 300.0
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor               = "estimate_pressure_uncertainty"
+output                  = "telemetry/processed/pressure_parosci/PAROSCI/messages"
+inputs.df               = "telemetry/raw/pressure_parosci/PAROSCI/messages"
+config.base_uncertainty = 0.1
+config.depth_scale      = 0.0
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor                     = "estimate_dvl_uncertainty"
+output                        = "telemetry/processed/dvl_teledyne_navigator/RDI/messages"
+inputs.df                     = "telemetry/raw/dvl_teledyne_navigator/RDI/messages"
+config.velocity_x_uncertainty = 0.003
+config.velocity_y_uncertainty = 0.003
+config.velocity_z_uncertainty = 0.003
+config.roll_uncertainty       = 0.50
+config.pitch_uncertainty      = 0.50
+config.heading_uncertainty    = 2.00
+
+# USBL steps are optional: no deployment carries both transceivers, and the
+# earlier ones carry neither. Omit inputs.extrinsics for a deployment whose
+# readings were already corrected for the transceiver mounting.
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "process_tracklink_usbl_from_messages"
+output            = "telemetry/processed/usbl_linkquest_transponder/LQMODEM/messages"
+inputs.usbl       = "telemetry/raw/usbl_linkquest_transponder/LQMODEM/messages"
+inputs.pressure   = "telemetry/raw/pressure_parosci/PAROSCI/messages"
+inputs.extrinsics = "vessel/sensors/usbl_linkquest_transceiver/extrinsics"
+optional          = true
+
+# [[afft.tasks.process_deployment_bundle.pipeline.steps]]
+# processor         = "process_evologics_usbl"
+# output            = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+# inputs.usbl       = "telemetry/raw/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+# inputs.extrinsics = "vessel/sensors/usbl_evologics_transceiver/extrinsics"
+# optional          = true

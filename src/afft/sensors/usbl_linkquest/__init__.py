@@ -11,8 +11,8 @@ from .processors import (
 )
 
 from .types import (
-    TrackLinkFixEntry as TrackLinkFixEntry,
-    TrackLinkRawEntry as TrackLinkRawEntry,
+    TrackLinkFixLogEntry as TrackLinkFixLogEntry,
+    TrackLinkRawLogEntry as TrackLinkRawLogEntry,
     TrackLinkProcessingFromLogsConfig as TrackLinkProcessingFromLogsConfig,
     TrackLinkProcessingFromMessagesConfig as TrackLinkProcessingFromMessagesConfig,
     TrackLinkResolvePositionFromLogsConfig as TrackLinkResolvePositionFromLogsConfig,

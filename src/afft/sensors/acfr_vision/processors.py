@@ -2,26 +2,13 @@
 
 import pandas as pd
 
-from afft.utils.log import logger
-
-from .types import PairStereoImagesConfig
-
-
-def _to_float_seconds(series: pd.Series) -> pd.Series:
-    """Normalise a timestamp series to float seconds since epoch.
-
-    Handles both float Unix-second columns and ISO datetime strings.
-    """
-    numeric: pd.Series = pd.to_numeric(series, errors="coerce")
-    if numeric.notna().all():
-        return numeric
-    return pd.to_datetime(series).astype("int64") / 1e9
+from .types import StereoPairingConfig, StereoPairingResult
 
 
 def pair_stereo_images(
     df: pd.DataFrame,
-    config: PairStereoImagesConfig = PairStereoImagesConfig(),
-) -> pd.DataFrame:
+    config: StereoPairingConfig = StereoPairingConfig(),
+) -> StereoPairingResult:
     """Pair left and right stereo image captures into single rows per trigger.
 
     Steps:
@@ -29,7 +16,13 @@ def pair_stereo_images(
     2. Split into left (left_suffix) and right (right_suffix) groups.
     3. Nearest trigger-time join: each left image is matched to the closest
        right image within max_offset_ms.
-    4. Drop unmatched rows; warn if > 20% are unmatched.
+    4. Drop unmatched images on both sides.
+
+    The trigger column must be datetime64; the caller is responsible for
+    decoding whatever the source stores into datetime before calling.
+
+    The discard counts are returned rather than logged, leaving it to the
+    caller to decide how they are reported.
 
     Output timestamps:
       timestamp / left_timestamp / right_timestamp  — trigger time (capture time)
@@ -65,7 +58,7 @@ def pair_stereo_images(
             "exposure_logged": "left_exposure_logged",
             "exposure": "left_exposure",
         }
-    ).drop(columns=["topic"], errors="ignore")
+    )
 
     right = right.rename(
         columns={
@@ -76,45 +69,52 @@ def pair_stereo_images(
             "exposure_logged": "right_exposure_logged",
             "exposure": "right_exposure",
         }
-    ).drop(columns=["topic"], errors="ignore")
+    )
 
     # Match on trigger time — both cameras receive the same trigger signal.
-    tolerance_s: float = config.max_offset_ms / 1000.0
-    left["_ts"] = _to_float_seconds(left["left_timestamp"])
-    right["_ts"] = _to_float_seconds(right["right_timestamp"])
-
-    paired: pd.DataFrame = pd.merge_asof(
-        left.sort_values("_ts"),
-        right.sort_values("_ts"),
-        on="_ts",
-        tolerance=tolerance_s,
+    result_frame: pd.DataFrame = pd.merge_asof(
+        left.sort_values("left_timestamp"),
+        right.sort_values("right_timestamp"),
+        left_on="left_timestamp",
+        right_on="right_timestamp",
+        tolerance=pd.Timedelta(milliseconds=config.max_offset_ms),
         direction="nearest",
-    ).drop(columns=["_ts"])
+    )
 
-    n_unmatched: int = int(paired["right_label"].isna().sum())
-    if n_unmatched:
-        logger.info(
-            f"dropped {n_unmatched} left image(s) with no right match "
-            f"within {config.max_offset_ms} ms"
+    # Take the unmatched left images from the input frame rather than the
+    # merge result, whose right columns hold nothing but the fill NaN.
+    unmatched_left_labels: pd.Series = result_frame.loc[
+        result_frame["right_label"].isna(), "left_label"
+    ]
+    left_unmatched: pd.DataFrame = left[
+        left["left_label"].isin(unmatched_left_labels)
+    ].reset_index(drop=True)
+
+    if len(left_unmatched):
+        result_frame = result_frame.dropna(subset=["right_label"]).reset_index(
+            drop=True
         )
-        if n_unmatched / len(paired) > 0.20:
-            logger.warning(
-                f"{n_unmatched}/{len(paired)} left images "
-                f"({100 * n_unmatched / len(paired):.1f}%) "
-                f"had no matching right image within {config.max_offset_ms} ms"
-            )
-        paired = paired.dropna(subset=["right_label"]).reset_index(drop=True)
 
-    if paired.empty:
+    if result_frame.empty:
         raise ValueError("no stereo pairs remain after timestamp matching")
+
+    # Unmatched left rows widen the right columns to hold the fill NaN — bool
+    # to object, int to float. Dropping those rows does not narrow them back,
+    # so restore the dtypes the right frame came in with.
+    result_frame = result_frame.astype(
+        {
+            column: right[column].dtype
+            for column in right
+            if column in result_frame.columns
+        }
+    )
 
     # Keep the closest left image for each right image.
     delta: pd.Series = (
-        _to_float_seconds(paired["left_timestamp"])
-        - _to_float_seconds(paired["right_timestamp"])
+        result_frame["left_timestamp"] - result_frame["right_timestamp"]
     ).abs()
-    paired = (
-        paired.assign(_delta=delta)
+    result_frame = (
+        result_frame.assign(_delta=delta)
         .sort_values("_delta")
         .drop_duplicates(subset=["right_label"], keep="first")
         .drop(columns=["_delta"])
@@ -122,9 +122,15 @@ def pair_stereo_images(
         .reset_index(drop=True)
     )
 
-    paired["timestamp"] = paired["left_timestamp"]
+    # The merge is a left join, so right images that matched nothing never
+    # entered the frame. Recover them from the input right images.
+    right_unmatched: pd.DataFrame = right[
+        ~right["right_label"].isin(result_frame["right_label"])
+    ].reset_index(drop=True)
 
-    return paired[
+    result_frame["timestamp"] = result_frame["left_timestamp"]
+
+    result_frame = result_frame[
         [
             "timestamp",
             "left_label",
@@ -141,3 +147,11 @@ def pair_stereo_images(
             "right_exposure",
         ]
     ].reset_index(drop=True)
+
+    return StereoPairingResult(
+        frame=result_frame,
+        left_total=len(left),
+        right_total=len(right),
+        left_unmatched=left_unmatched,
+        right_unmatched=right_unmatched,
+    )
