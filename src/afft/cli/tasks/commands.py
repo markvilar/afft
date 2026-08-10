@@ -9,8 +9,8 @@ import click
 from afft.tasks.collect_squidle_media import DeploymentMatchPolicy
 
 from .actions import (
-    dispatch_clip_tables,
-    dispatch_collect_squidle_media,
+    invoke_clip_tables,
+    invoke_collect_squidle_media,
 )
 
 _TIMESTAMP_FORMAT = "%Y%m%d_%H%M%S"
@@ -88,7 +88,7 @@ def clip_tables(
     timestamp_format: str,
 ) -> None:
     """Clip CSV files in SOURCE_DIR to [START, END] and write to OUTPUT_DIR."""
-    dispatch_clip_tables(
+    invoke_clip_tables(
         source_dir,
         output_dir,
         start,
@@ -162,7 +162,7 @@ def collect_squidle_media(
     verbose: bool,
 ) -> None:
     """Fetch Squidle+ media for all deployments in the ACFR deployments file."""
-    dispatch_collect_squidle_media(
+    invoke_collect_squidle_media(
         deployments_file,
         output_dir,
         DeploymentMatchPolicy(match_policy),

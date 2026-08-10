@@ -26,7 +26,7 @@ from afft.sensors.usbl_linkquest.types import (
 from afft.utils.log import logger
 
 
-def dispatch_parse_tracklink_log(
+def invoke_parse_tracklink_log(
     source_file: str | Path,
     output_file: str | Path,
 ) -> None:
@@ -41,7 +41,7 @@ def dispatch_parse_tracklink_log(
     logger.info(f"wrote {len(result)} rows → {output_path}")
 
 
-def dispatch_process_tracklink_usbl_from_messages(
+def invoke_process_tracklink_usbl_from_messages(
     usbl_file: str | Path,
     pressure_file: str | Path,
     output_file: str | Path,
@@ -98,7 +98,7 @@ def dispatch_process_tracklink_usbl_from_messages(
     logger.info(f"wrote {len(result)} rows → {output_path}")
 
 
-def dispatch_process_tracklink_usbl_from_logs(
+def invoke_process_tracklink_usbl_from_logs(
     usbl_file: str | Path,
     output_file: str | Path,
     deployment_configs: str | Path,
@@ -157,7 +157,7 @@ def dispatch_process_tracklink_usbl_from_logs(
     logger.info(f"wrote {len(result)} rows → {output_path}")
 
 
-def dispatch_process_evologics_usbl(
+def invoke_process_evologics_usbl(
     usbl_file: str | Path,
     output_file: str | Path,
     deployment_configs: str | Path,

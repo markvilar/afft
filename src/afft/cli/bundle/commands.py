@@ -3,11 +3,11 @@
 import click
 
 from .actions import (
-    dispatch_build_deployment_bundle,
-    dispatch_export_bundle_frame,
-    dispatch_ingest_bundle_frame,
-    dispatch_list_deployment_bundle,
-    dispatch_process_deployment_bundle,
+    invoke_build_deployment_bundle,
+    invoke_export_bundle_frame,
+    invoke_ingest_bundle_frame,
+    invoke_list_deployment_bundle,
+    invoke_process_deployment_bundle,
 )
 
 
@@ -76,7 +76,7 @@ def build(
     verbose: bool,
 ) -> None:
     """Build a deployment bundle from a descriptor and its raw message logs."""
-    dispatch_build_deployment_bundle(
+    invoke_build_deployment_bundle(
         descriptor_file,
         deployment_label,
         data_dir,
@@ -103,7 +103,7 @@ def build(
 )
 def list_contents(input_file: str, dtypes: bool) -> None:
     """List the frames a deployment bundle holds."""
-    dispatch_list_deployment_bundle(input_file, dtypes)
+    invoke_list_deployment_bundle(input_file, dtypes)
 
 
 @bundle_group.command()
@@ -148,7 +148,7 @@ def process(
     verbose: bool,
 ) -> None:
     """Run the configured processing pipeline over a deployment bundle."""
-    dispatch_process_deployment_bundle(
+    invoke_process_deployment_bundle(
         input_file,
         config_file,
         output_file,
@@ -197,7 +197,7 @@ def ingest_frame(
     overwrite: bool,
 ) -> None:
     """Ingest a frame from a file into an existing deployment bundle."""
-    dispatch_ingest_bundle_frame(
+    invoke_ingest_bundle_frame(
         bundle_file,
         key,
         input_file,
@@ -239,7 +239,7 @@ def export_frame(
     overwrite: bool,
 ) -> None:
     """Export a single frame from a deployment bundle to a file."""
-    dispatch_export_bundle_frame(
+    invoke_export_bundle_frame(
         bundle_file,
         key,
         output_file,

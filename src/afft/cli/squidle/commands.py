@@ -5,12 +5,12 @@ import click
 from pathlib import Path
 
 from .actions import (
-    dispatch_collect_campaign,
-    dispatch_collect_deployment,
-    dispatch_collect_deployments,
-    dispatch_list_campaigns,
-    dispatch_list_deployments,
-    dispatch_list_platforms,
+    invoke_collect_campaign,
+    invoke_collect_deployment,
+    invoke_collect_deployments,
+    invoke_list_campaigns,
+    invoke_list_deployments,
+    invoke_list_platforms,
 )
 
 
@@ -30,7 +30,7 @@ def squidle_group(context: click.Context) -> None:
 )
 def list_platforms(name: str | None) -> None:
     """List Squidle+ platforms."""
-    dispatch_list_platforms(name)
+    invoke_list_platforms(name)
 
 
 @squidle_group.command()
@@ -42,7 +42,7 @@ def list_platforms(name: str | None) -> None:
 )
 def list_campaigns(name: str | None) -> None:
     """List Squidle+ campaigns."""
-    dispatch_list_campaigns(name)
+    invoke_list_campaigns(name)
 
 
 @squidle_group.command()
@@ -61,7 +61,7 @@ def list_campaigns(name: str | None) -> None:
 )
 def list_deployments(campaign_id: int | None, name: str | None) -> None:
     """List Squidle+ deployments."""
-    dispatch_list_deployments(campaign_id, name)
+    invoke_list_deployments(campaign_id, name)
 
 
 @squidle_group.command()
@@ -81,7 +81,7 @@ def list_deployments(campaign_id: int | None, name: str | None) -> None:
 )
 def collect_deployment(deployment_id: int, output_file: str) -> None:
     """Fetch media for a single Squidle+ deployment and write to CSV."""
-    dispatch_collect_deployment(deployment_id, Path(output_file))
+    invoke_collect_deployment(deployment_id, Path(output_file))
 
 
 @squidle_group.command()
@@ -102,7 +102,7 @@ def collect_deployment(deployment_id: int, output_file: str) -> None:
 def collect_deployments(deployment_ids: str, output_dir: str) -> None:
     """Fetch media for multiple Squidle+ deployments and write one CSV each."""
     ids: list[int] = [int(i.strip()) for i in deployment_ids.split(",")]
-    dispatch_collect_deployments(ids, Path(output_dir))
+    invoke_collect_deployments(ids, Path(output_dir))
 
 
 @squidle_group.command()
@@ -122,4 +122,4 @@ def collect_deployments(deployment_ids: str, output_dir: str) -> None:
 )
 def collect_campaign(campaign_id: int, output_dir: str) -> None:
     """Fetch media for all deployments in a Squidle+ campaign."""
-    dispatch_collect_campaign(campaign_id, Path(output_dir))
+    invoke_collect_campaign(campaign_id, Path(output_dir))

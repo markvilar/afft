@@ -27,7 +27,7 @@ from afft.tasks.process_deployment_bundle import (
 )
 
 
-def dispatch_build_deployment_bundle(
+def invoke_build_deployment_bundle(
     descriptor_file: str | Path,
     deployment_label: str,
     data_dir: str | Path,
@@ -50,7 +50,7 @@ def dispatch_build_deployment_bundle(
     run_build_deployment_bundle(command, config)
 
 
-def dispatch_list_deployment_bundle(
+def invoke_list_deployment_bundle(
     input_file: str | Path,
     dtypes: bool = False,
 ) -> None:
@@ -82,7 +82,7 @@ def dispatch_list_deployment_bundle(
                 logger.info(f"  {column}: {dtype}")
 
 
-def dispatch_ingest_bundle_frame(
+def invoke_ingest_bundle_frame(
     bundle_file: str | Path,
     key: str,
     input_file: str | Path,
@@ -100,7 +100,7 @@ def dispatch_ingest_bundle_frame(
     run_ingest_bundle_frame(command)
 
 
-def dispatch_export_bundle_frame(
+def invoke_export_bundle_frame(
     bundle_file: str | Path,
     key: str,
     output_file: str | Path,
@@ -116,7 +116,7 @@ def dispatch_export_bundle_frame(
     run_export_bundle_frame(command)
 
 
-def dispatch_process_deployment_bundle(
+def invoke_process_deployment_bundle(
     input_file: str | Path,
     config_file: str | Path,
     output_file: str | Path,

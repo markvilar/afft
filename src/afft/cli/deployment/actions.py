@@ -22,7 +22,7 @@ from afft.tasks.deployment_enrichment import (
 )
 
 
-def dispatch_describe_deployment(
+def invoke_describe_deployment(
     root_dir: str | Path,
     output_file: str | Path,
     deployment_suffix: str = "_deployment_data",
@@ -45,7 +45,7 @@ def dispatch_describe_deployment(
         raise SystemExit(1)
 
 
-def dispatch_scaffold_catalog(
+def invoke_scaffold_catalog(
     input_file: str | Path,
     output_file: str | Path,
     verbose: bool = False,
@@ -61,7 +61,7 @@ def dispatch_scaffold_catalog(
     run_scaffold_catalog(command)
 
 
-def dispatch_enrich_descriptor(
+def invoke_enrich_descriptor(
     input_file: str | Path,
     catalog_file: str | Path,
     output_file: str | Path,
@@ -84,7 +84,7 @@ def dispatch_enrich_descriptor(
     run_enrich_descriptor(command)
 
 
-def dispatch_summarize_descriptor(
+def invoke_summarize_descriptor(
     input_file: str | Path,
     output_file: str | Path | None = None,
     verbose: bool = False,
@@ -103,7 +103,7 @@ def dispatch_summarize_descriptor(
     run_summarize_descriptor(command)
 
 
-def dispatch_summarize_catalog(
+def invoke_summarize_catalog(
     input_file: str | Path,
     verbose: bool = False,
 ) -> None:

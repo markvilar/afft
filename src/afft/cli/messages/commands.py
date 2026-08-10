@@ -4,7 +4,7 @@ CLI commands for processing AUV messages, including parsing from the native AUV 
 
 import click
 
-from .actions import dispatch_parse_messages
+from .actions import invoke_parse_messages
 
 
 @click.group()
@@ -39,6 +39,6 @@ def parse_messages(
     output_dir: str | None = None,
 ) -> None:
     """CLI action for ingesting messages into a destination."""
-    dispatch_parse_messages(
+    invoke_parse_messages(
         source, config, database, host, port, prefix, output_dir
     )

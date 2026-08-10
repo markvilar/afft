@@ -5,10 +5,10 @@ CLI commands for working with databases.
 import click
 
 from .actions import (
-    dispatch_table_export,
-    dispatch_table_ingest,
-    dispatch_table_join,
-    dispatch_table_write,
+    invoke_table_export,
+    invoke_table_ingest,
+    invoke_table_join,
+    invoke_table_write,
 )
 
 
@@ -26,7 +26,7 @@ def database_group(context: click.Context) -> None:
 @click.argument("config_path", type=click.Path(exists=True))
 def table_join(database: str, host: str, port: int, config_path: str) -> None:
     """Join tables in the database."""
-    dispatch_table_join(database, host, port, config_path)
+    invoke_table_join(database, host, port, config_path)
 
 
 @database_group.command()
@@ -49,7 +49,7 @@ def table_export(
     tables: tuple[str, ...],
 ) -> None:
     """Export database tables to CSV files in OUTPUT_DIR."""
-    dispatch_table_export(database, host, port, output_dir, tables)
+    invoke_table_export(database, host, port, output_dir, tables)
 
 
 @database_group.command()
@@ -96,7 +96,7 @@ def table_ingest(
     timestamp_columns: tuple[str, ...],
 ) -> None:
     """Ingest files from SOURCE_DIR as database tables."""
-    dispatch_table_ingest(
+    invoke_table_ingest(
         source_dir,
         database,
         host,
@@ -131,4 +131,4 @@ def table_write(
     overwrite: bool,
 ) -> None:
     """Write a table to a database."""
-    dispatch_table_write(source, database, host, port, name, overwrite)
+    invoke_table_write(source, database, host, port, name, overwrite)

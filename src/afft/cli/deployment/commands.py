@@ -5,11 +5,11 @@ import click
 from afft.deployment import EnrichmentSection
 
 from .actions import (
-    dispatch_describe_deployment,
-    dispatch_enrich_descriptor,
-    dispatch_scaffold_catalog,
-    dispatch_summarize_catalog,
-    dispatch_summarize_descriptor,
+    invoke_describe_deployment,
+    invoke_enrich_descriptor,
+    invoke_scaffold_catalog,
+    invoke_summarize_catalog,
+    invoke_summarize_descriptor,
 )
 
 
@@ -56,7 +56,7 @@ def describe(
     verbose: bool,
 ) -> None:
     """Describe the deployments in an ACFR deployment data directory tree."""
-    dispatch_describe_deployment(
+    invoke_describe_deployment(
         root_dir, output_file, deployment_suffix, verbose
     )
 
@@ -93,7 +93,7 @@ def scaffold_catalog(
     vessel names, sensor vendors and products, and every mounting pose — are
     left empty to be filled in by hand.
     """
-    dispatch_scaffold_catalog(input_file, output_file, verbose)
+    invoke_scaffold_catalog(input_file, output_file, verbose)
 
 
 @deployment_group.command()
@@ -144,7 +144,7 @@ def enrich(
     and vessel identities, sensor identities, and mounting poses. Passing the
     input path as the output enriches the descriptors in place.
     """
-    dispatch_enrich_descriptor(
+    invoke_enrich_descriptor(
         input_file, catalog_file, output_file, section, verbose
     )
 
@@ -180,7 +180,7 @@ def summarize(
     Without an output path, prints per-file aggregates to the terminal. With
     one, writes a detailed per-deployment report as Markdown.
     """
-    dispatch_summarize_descriptor(input_file, output_file, verbose)
+    invoke_summarize_descriptor(input_file, output_file, verbose)
 
 
 @deployment_group.command()
@@ -207,4 +207,4 @@ def summarize_catalog(
     assignment coverage, records nothing references, and the curated fields
     still left empty.
     """
-    dispatch_summarize_catalog(input_file, verbose)
+    invoke_summarize_catalog(input_file, verbose)

@@ -28,7 +28,7 @@ def _create_client() -> SquidleClient:
     return create_client(token.get_secret_value())
 
 
-def dispatch_list_platforms(name: str | None = None) -> None:
+def invoke_list_platforms(name: str | None = None) -> None:
     """Fetch and print platforms, optionally filtered by name."""
     filters: list[dict[str, Any]] = []
     if name:
@@ -54,7 +54,7 @@ def dispatch_list_platforms(name: str | None = None) -> None:
     logger.info("\n" + dataframe.to_string(index=False))
 
 
-def dispatch_collect_deployment(
+def invoke_collect_deployment(
     deployment_id: int,
     output_file: Path,
 ) -> None:
@@ -70,7 +70,7 @@ def dispatch_collect_deployment(
     )
 
 
-def dispatch_collect_deployments(
+def invoke_collect_deployments(
     deployment_ids: list[int],
     output_dir: Path,
 ) -> None:
@@ -91,7 +91,7 @@ def dispatch_collect_deployments(
         )
 
 
-def dispatch_collect_campaign(
+def invoke_collect_campaign(
     campaign_id: int,
     output_dir: Path,
 ) -> None:
@@ -115,7 +115,7 @@ def dispatch_collect_campaign(
         )
 
 
-def dispatch_list_campaigns(name: str | None = None) -> None:
+def invoke_list_campaigns(name: str | None = None) -> None:
     """Fetch and print campaigns, optionally filtered by name."""
     filters: list[dict[str, Any]] = []
     if name:
@@ -143,7 +143,7 @@ def dispatch_list_campaigns(name: str | None = None) -> None:
     logger.info("\n" + dataframe.to_string(index=False))
 
 
-def dispatch_list_deployments(
+def invoke_list_deployments(
     campaign_id: int | None = None,
     name: str | None = None,
 ) -> None:

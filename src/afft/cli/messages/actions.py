@@ -6,7 +6,7 @@ from afft.environment import EnvironmentDatabase, load_environment
 from afft.tasks.parse_messages import ParseMessageCommand, run_parse_messages
 
 
-def dispatch_parse_messages(
+def invoke_parse_messages(
     source: str | Path,
     config: str | Path,
     database: str | None = None,

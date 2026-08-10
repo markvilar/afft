@@ -17,7 +17,7 @@ from afft.tasks.ingest_tables import IngestTablesCommand, run_ingest_tables
 from afft.utils.log import logger
 
 
-def dispatch_table_join(
+def invoke_table_join(
     database: str,
     host: str,
     port: int,
@@ -60,7 +60,7 @@ def dispatch_table_join(
         logger.info(f"Label: {label}, dataframe: {len(dataframe)}")
 
 
-def dispatch_table_export(
+def invoke_table_export(
     database: str,
     host: str,
     port: int,
@@ -110,7 +110,7 @@ def dispatch_table_export(
     progress.stop()
 
 
-def dispatch_table_ingest(
+def invoke_table_ingest(
     source_dir: str | Path,
     database: str,
     host: str,
@@ -135,7 +135,7 @@ def dispatch_table_ingest(
     run_ingest_tables(command, credentials)
 
 
-def dispatch_table_write(
+def invoke_table_write(
     source: str | Path,
     database: str,
     host: str,

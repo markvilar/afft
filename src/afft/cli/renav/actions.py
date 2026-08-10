@@ -35,7 +35,7 @@ from afft.tasks.transform_camera_poses import (
 CAMERA_SENSOR_TYPE: str = "stereo_camera"
 
 
-def dispatch_process_renav(
+def invoke_process_renav(
     input_file: str | Path,
     output_file: str | Path,
 ) -> None:
@@ -47,7 +47,7 @@ def dispatch_process_renav(
     run_process_renav_poses(command)
 
 
-def dispatch_batch_process_renav(
+def invoke_batch_process_renav(
     input_dir: str | Path,
     output_dir: str | Path,
     pattern: str = "*.txt",
@@ -61,7 +61,7 @@ def dispatch_batch_process_renav(
     run_process_renav_poses_batch(command)
 
 
-def dispatch_collect_renav_stereo_poses(
+def invoke_collect_renav_stereo_poses(
     root_dir: str | Path,
     output_dir: str | Path,
     deployment_suffix: str = "_deployment_data",
@@ -79,7 +79,7 @@ def dispatch_collect_renav_stereo_poses(
     run_collect_renav_stereo_poses(command)
 
 
-def dispatch_correct_renav_poses(
+def invoke_correct_renav_poses(
     target_file: str | Path,
     source_file: str | Path,
     output_file: str | Path,
@@ -93,7 +93,7 @@ def dispatch_correct_renav_poses(
     run_correct_renav_camera_poses(command)
 
 
-def dispatch_batch_correct_renav_poses(
+def invoke_batch_correct_renav_poses(
     target_dir: str | Path,
     source_dir: str | Path,
     output_dir: str | Path,
@@ -111,7 +111,7 @@ def dispatch_batch_correct_renav_poses(
     run_correct_renav_camera_poses_batch(command)
 
 
-def dispatch_transform_camera_poses(
+def invoke_transform_camera_poses(
     input_file: str | Path,
     output_file: str | Path,
     descriptor_file: str | Path,
@@ -128,7 +128,7 @@ def dispatch_transform_camera_poses(
     run_transform_camera_poses(command, extrinsics)
 
 
-def dispatch_transform_camera_poses_batch(
+def invoke_transform_camera_poses_batch(
     input_dir: str | Path,
     output_dir: str | Path,
     descriptor_file: str | Path,
