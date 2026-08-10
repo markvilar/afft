@@ -141,7 +141,7 @@ def step_correct_pressure_for_sea_level(
     """Subtract the interpolated tide from a pressure frame's depth, with
     the convention `corrected_depth = depth - sea_level`."""
     return correct_pressure_for_sea_level(
-        frames["df"], frames["sea_level"], config
+        frames["pressure"], frames["sea_level"], config
     )
 
 

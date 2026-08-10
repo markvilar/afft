@@ -148,10 +148,10 @@ def test_an_extrinsics_frame_missing_a_field_is_rejected() -> None:
 
 
 def test_sea_level_step_maps_its_two_inputs() -> None:
-    """The wrapper's only job is routing `df` and `sea_level` to the
+    """The wrapper's only job is routing `pressure` and `sea_level` to the
     correction, so a swapped mapping is what this guards against."""
     frames = {
-        "df": pd.DataFrame(
+        "pressure": pd.DataFrame(
             {
                 "timestamp": pd.to_datetime(["2010-04-28T00:00:00Z"], utc=True),
                 "depth": [10.0],

@@ -43,7 +43,7 @@ config.depth_scale      = 0.0
 [[afft.tasks.process_deployment_bundle.pipeline.steps]]
 processor              = "correct_pressure_for_sea_level"
 output                 = "telemetry/processed/pressure_parosci/depth_sealevel_corrected"
-inputs.df              = "telemetry/intermediate/pressure_parosci/depth_with_uncertainty"
+inputs.pressure        = "telemetry/intermediate/pressure_parosci/depth_with_uncertainty"
 inputs.sea_level       = "metocean/worldtides/sealevel"
 config.max_gap_seconds = 3600.0
 optional               = true
