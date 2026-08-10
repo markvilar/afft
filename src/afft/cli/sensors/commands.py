@@ -2,10 +2,10 @@
 
 import click
 
-from .actions import dispatch_parse_tracklink_log
-from .actions import dispatch_process_evologics_usbl
-from .actions import dispatch_process_tracklink_usbl_from_logs
-from .actions import dispatch_process_tracklink_usbl_from_messages
+from .actions import invoke_parse_tracklink_log
+from .actions import invoke_process_evologics_usbl
+from .actions import invoke_process_tracklink_usbl_from_logs
+from .actions import invoke_process_tracklink_usbl_from_messages
 
 
 @click.group()
@@ -35,7 +35,7 @@ def parse_tracklink_log(
     output_file: str,
 ) -> None:
     """Parse a merged TrackLink USBL log file into a CSV of fixes."""
-    dispatch_parse_tracklink_log(source_file, output_file)
+    invoke_parse_tracklink_log(source_file, output_file)
 
 
 @sensors_group.command()
@@ -90,7 +90,7 @@ def process_tracklink_usbl_from_messages(
     ignore_extrinsics: bool,
 ) -> None:
     """Resolve positions and estimate uncertainty from TrackLink AUV messages."""
-    dispatch_process_tracklink_usbl_from_messages(
+    invoke_process_tracklink_usbl_from_messages(
         usbl_file,
         pressure_file,
         output_file,
@@ -144,7 +144,7 @@ def process_tracklink_usbl_from_logs(
     ignore_extrinsics: bool,
 ) -> None:
     """Resolve positions and estimate uncertainty from TrackLink USBL log entries."""
-    dispatch_process_tracklink_usbl_from_logs(
+    invoke_process_tracklink_usbl_from_logs(
         usbl_file,
         output_file,
         deployment_configs,
@@ -197,7 +197,7 @@ def process_evologics_usbl(
     ignore_extrinsics: bool,
 ) -> None:
     """Convert Evologics USBL data to the USBL output schema."""
-    dispatch_process_evologics_usbl(
+    invoke_process_evologics_usbl(
         usbl_file,
         output_file,
         deployment_configs,

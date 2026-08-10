@@ -13,7 +13,7 @@ from afft.tasks.collect_squidle_media import (
 )
 
 
-def dispatch_clip_tables(
+def invoke_clip_tables(
     source_dir: str | Path,
     output_dir: str | Path,
     start: datetime,
@@ -35,7 +35,7 @@ def dispatch_clip_tables(
     run_clip_tables(command)
 
 
-def dispatch_collect_squidle_media(
+def invoke_collect_squidle_media(
     deployments_file: str | Path,
     output_dir: str | Path,
     match_policy: DeploymentMatchPolicy = DeploymentMatchPolicy.BY_NAME,
@@ -44,7 +44,7 @@ def dispatch_collect_squidle_media(
     download_images: bool = False,
     verbose: bool = False,
 ) -> None:
-    """Dispatch the collect Squidle+ media task."""
+    """Invoke the collect Squidle+ media task."""
     token = load_environment().tokens.squidle
     if token is None:
         raise ValueError(

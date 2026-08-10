@@ -3,13 +3,13 @@
 import click
 
 from .actions import (
-    dispatch_batch_correct_renav_poses,
-    dispatch_batch_process_renav,
-    dispatch_collect_renav_stereo_poses,
-    dispatch_correct_renav_poses,
-    dispatch_process_renav,
-    dispatch_transform_camera_poses,
-    dispatch_transform_camera_poses_batch,
+    invoke_batch_correct_renav_poses,
+    invoke_batch_process_renav,
+    invoke_collect_renav_stereo_poses,
+    invoke_correct_renav_poses,
+    invoke_process_renav,
+    invoke_transform_camera_poses,
+    invoke_transform_camera_poses_batch,
 )
 
 
@@ -37,7 +37,7 @@ def renav_group(context: click.Context) -> None:
 )
 def process_poses(input_file: str, output_file: str) -> None:
     """Process a Renav stereo pose estimate file and write to CSV."""
-    dispatch_process_renav(input_file, output_file)
+    invoke_process_renav(input_file, output_file)
 
 
 @renav_group.command()
@@ -64,7 +64,7 @@ def process_poses(input_file: str, output_file: str) -> None:
 )
 def batch_process_poses(input_dir: str, output_dir: str, pattern: str) -> None:
     """Batch process Renav stereo pose estimate files in a directory."""
-    dispatch_batch_process_renav(input_dir, output_dir, pattern)
+    invoke_batch_process_renav(input_dir, output_dir, pattern)
 
 
 @renav_group.command()
@@ -113,7 +113,7 @@ def collect_stereo_poses(
     tiebreak_margin: float,
 ) -> None:
     """Collect and relabel Renav stereo pose estimate files by deployment."""
-    dispatch_collect_renav_stereo_poses(
+    invoke_collect_renav_stereo_poses(
         root_dir,
         output_dir,
         deployment_suffix,
@@ -150,7 +150,7 @@ def correct_poses(
     output_file: str,
 ) -> None:
     """Correct Renav camera poses with source camera pose latitude/longitude."""
-    dispatch_correct_renav_poses(target_file, source_file, output_file)
+    invoke_correct_renav_poses(target_file, source_file, output_file)
 
 
 @renav_group.command()
@@ -189,7 +189,7 @@ def transform_poses(
     deployment_label: str,
 ) -> None:
     """Transform camera poses to vehicle reference-point poses using stereo extrinsics."""
-    dispatch_transform_camera_poses(
+    invoke_transform_camera_poses(
         input_file, output_file, descriptor_file, deployment_label
     )
 
@@ -240,7 +240,7 @@ def batch_transform_poses(
     output_suffix: str,
 ) -> None:
     """Batch-transform camera poses to vehicle reference-point poses."""
-    dispatch_transform_camera_poses_batch(
+    invoke_transform_camera_poses_batch(
         input_dir, output_dir, descriptor_file, input_suffix, output_suffix
     )
 
@@ -291,7 +291,7 @@ def batch_correct_poses(
     source_suffix: str,
 ) -> None:
     """Batch-correct Renav camera poses with source camera pose latitude/longitude."""
-    dispatch_batch_correct_renav_poses(
+    invoke_batch_correct_renav_poses(
         target_dir,
         source_dir,
         output_dir,
