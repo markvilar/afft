@@ -4,10 +4,13 @@ covering what the wrappers add rather than the processors they call."""
 import pandas as pd
 import pytest
 
+from afft.bundle_processing import default_registry
 from afft.bundle_processing.sensor_processors import (
+    step_correct_pressure_for_sea_level,
     step_process_evologics_usbl,
     step_process_tracklink_usbl,
 )
+from afft.sensors.pressure_parosci import SeaLevelCorrectionConfig
 from afft.sensors.usbl_evologics import EvologicsProcessingConfig
 from afft.sensors.usbl_linkquest import TrackLinkProcessingFromMessagesConfig
 
@@ -142,3 +145,33 @@ def test_an_extrinsics_frame_missing_a_field_is_rejected() -> None:
 
     with pytest.raises(ValueError, match="does not match"):
         step_process_evologics_usbl(frames, EvologicsProcessingConfig())
+
+
+def test_sea_level_step_maps_its_two_inputs() -> None:
+    """The wrapper's only job is routing `pressure` and `sea_level` to the
+    correction, so a swapped mapping is what this guards against."""
+    frames = {
+        "pressure": pd.DataFrame(
+            {
+                "timestamp": pd.to_datetime(["2010-04-28T00:00:00Z"], utc=True),
+                "depth": [10.0],
+            }
+        ),
+        "sea_level": pd.DataFrame(
+            {
+                "datetime": pd.to_datetime(["2010-04-28T00:00:00Z"], utc=True),
+                "sea_level": [0.5],
+            }
+        ),
+    }
+
+    result = step_correct_pressure_for_sea_level(
+        frames, SeaLevelCorrectionConfig()
+    )
+
+    assert result["corrected_depth"].iloc[0] == 9.5
+
+
+def test_sea_level_step_is_registered() -> None:
+    registered = default_registry().get("correct_pressure_for_sea_level")
+    assert registered.config_type is SeaLevelCorrectionConfig

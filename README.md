@@ -68,7 +68,6 @@ PG_PASSWORD=YOUR_POSTGRES_PASSWORD
 | Command | Description |
 |---|---|
 | `afft tasks clip-tables SOURCE_DIR OUTPUT_DIR --start YYYYMMDD_HHmmSS --end YYYYMMDD_HHmmSS` | Clip CSV files to a time interval |
-| `afft tasks correct-pressure-tide READING_FILE SEALEVEL_FILE OUTPUT_FILE` | Tide-correct pressure sensor depth readings |
 
 Run any command with `--help` to see its full options.
 

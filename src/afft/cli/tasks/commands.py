@@ -11,7 +11,6 @@ from afft.tasks.collect_squidle_media import DeploymentMatchPolicy
 from .actions import (
     dispatch_clip_tables,
     dispatch_collect_squidle_media,
-    dispatch_correct_pressure_tide,
 )
 
 _TIMESTAMP_FORMAT = "%Y%m%d_%H%M%S"
@@ -97,28 +96,6 @@ def clip_tables(
         pattern,
         timestamp_column,
         timestamp_format,
-    )
-
-
-@task_group.command()
-@click.argument("reading_file", type=click.Path(exists=True))
-@click.argument("sealevel_file", type=click.Path(exists=True))
-@click.argument("output_file", type=click.Path())
-@click.option(
-    "--verbose", is_flag=True, default=False, help="enable debug logging"
-)
-def correct_pressure_tide(
-    reading_file: str,
-    sealevel_file: str,
-    output_file: str,
-    verbose: bool,
-) -> None:
-    """Tide-correct pressure sensor depth readings."""
-    dispatch_correct_pressure_tide(
-        reading_file,
-        sealevel_file,
-        output_file,
-        verbose,
     )
 
 

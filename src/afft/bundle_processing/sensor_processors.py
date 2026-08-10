@@ -20,6 +20,8 @@ from afft.sensors.dvl_teledyne import (
 )
 from afft.sensors.pressure_parosci import (
     PressureUncertaintyConfig,
+    SeaLevelCorrectionConfig,
+    correct_pressure_for_sea_level,
     estimate_pressure_uncertainty,
 )
 from afft.sensors.usbl_evologics import (
@@ -127,6 +129,20 @@ def step_estimate_pressure_uncertainty(
 ) -> pd.DataFrame:
     """Add a `depth_uncertainty` column to a pressure frame."""
     return estimate_pressure_uncertainty(frames["df"], config)
+
+
+@register_processor(
+    "correct_pressure_for_sea_level", config_type=SeaLevelCorrectionConfig
+)
+def step_correct_pressure_for_sea_level(
+    frames: Mapping[str, pd.DataFrame],
+    config: SeaLevelCorrectionConfig,
+) -> pd.DataFrame:
+    """Subtract the interpolated tide from a pressure frame's depth, with
+    the convention `corrected_depth = depth - sea_level`."""
+    return correct_pressure_for_sea_level(
+        frames["pressure"], frames["sea_level"], config
+    )
 
 
 @register_processor(

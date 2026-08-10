@@ -32,10 +32,21 @@ config.max_offset_ms = 300.0
 
 [[afft.tasks.process_deployment_bundle.pipeline.steps]]
 processor               = "estimate_pressure_uncertainty"
-output                  = "telemetry/processed/pressure_parosci/PAROSCI/messages"
+output                  = "telemetry/intermediate/pressure_parosci/depth_with_uncertainty"
 inputs.df               = "telemetry/raw/pressure_parosci/PAROSCI/messages"
 config.base_uncertainty = 0.1
 config.depth_scale      = 0.0
+
+# Optional: skipped for a bundle whose sea level frame was never ingested,
+# which leaves the processed key absent rather than claiming a correction
+# that did not happen.
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor              = "correct_pressure_for_sea_level"
+output                 = "telemetry/processed/pressure_parosci/depth_sealevel_corrected"
+inputs.pressure        = "telemetry/intermediate/pressure_parosci/depth_with_uncertainty"
+inputs.sea_level       = "metocean/worldtides/sealevel"
+config.max_gap_seconds = 3600.0
+optional               = true
 
 [[afft.tasks.process_deployment_bundle.pipeline.steps]]
 processor                     = "estimate_dvl_uncertainty"
@@ -59,9 +70,9 @@ inputs.pressure   = "telemetry/raw/pressure_parosci/PAROSCI/messages"
 inputs.extrinsics = "vessel/sensors/usbl_linkquest_transceiver/extrinsics"
 optional          = true
 
-# [[afft.tasks.process_deployment_bundle.pipeline.steps]]
-# processor         = "process_evologics_usbl"
-# output            = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
-# inputs.usbl       = "telemetry/raw/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
-# inputs.extrinsics = "vessel/sensors/usbl_evologics_transceiver/extrinsics"
-# optional          = true
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "process_evologics_usbl"
+output            = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+inputs.usbl       = "telemetry/raw/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+inputs.extrinsics = "vessel/sensors/usbl_evologics_transceiver/extrinsics"
+optional          = true
