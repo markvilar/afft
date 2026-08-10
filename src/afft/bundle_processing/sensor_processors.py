@@ -144,7 +144,7 @@ def step_estimate_dvl_uncertainty(
     "process_tracklink_usbl_from_messages",
     config_type=TrackLinkProcessingFromMessagesConfig,
 )
-def step_process_tracklink_usbl_from_messages(
+def step_process_tracklink_usbl(
     frames: Mapping[str, pd.DataFrame],
     config: TrackLinkProcessingFromMessagesConfig,
 ) -> pd.DataFrame:

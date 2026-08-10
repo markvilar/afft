@@ -6,7 +6,7 @@ import pytest
 
 from afft.bundle_processing.sensor_processors import (
     step_process_evologics_usbl,
-    step_process_tracklink_usbl_from_messages,
+    step_process_tracklink_usbl,
 )
 from afft.sensors.usbl_evologics import EvologicsProcessingConfig
 from afft.sensors.usbl_linkquest import TrackLinkProcessingFromMessagesConfig
@@ -96,7 +96,7 @@ def test_omitting_the_extrinsics_input_disables_the_correction() -> None:
 def test_extrinsics_frame_is_applied_to_the_tracklink_step() -> None:
     frames = _tracklink_frames() | {"extrinsics": _extrinsics_frame()}
 
-    result = step_process_tracklink_usbl_from_messages(
+    result = step_process_tracklink_usbl(
         frames, TrackLinkProcessingFromMessagesConfig()
     )
 
