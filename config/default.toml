@@ -25,7 +25,7 @@ GPS_RMC = "GpsRmcMessageV1"
 [[afft.tasks.process_deployment_bundle.pipeline.steps]]
 processor            = "pair_stereo_images"
 output               = "telemetry/processed/camera_avt_prosilica/VIS/stereo_image_pairs"
-inputs.df            = "telemetry/raw/camera_avt_prosilica/VIS/messages"
+inputs.images        = "telemetry/raw/camera_avt_prosilica/VIS/messages"
 config.left_suffix   = "LC16"
 config.right_suffix  = "RM16"
 config.max_offset_ms = 300.0
@@ -33,7 +33,7 @@ config.max_offset_ms = 300.0
 [[afft.tasks.process_deployment_bundle.pipeline.steps]]
 processor               = "estimate_pressure_uncertainty"
 output                  = "telemetry/intermediate/pressure_parosci/depth_with_uncertainty"
-inputs.df               = "telemetry/raw/pressure_parosci/PAROSCI/messages"
+inputs.pressure         = "telemetry/raw/pressure_parosci/PAROSCI/messages"
 config.base_uncertainty = 0.1
 config.depth_scale      = 0.0
 
@@ -51,7 +51,7 @@ optional               = true
 [[afft.tasks.process_deployment_bundle.pipeline.steps]]
 processor                     = "estimate_dvl_uncertainty"
 output                        = "telemetry/processed/dvl_teledyne_navigator/RDI/messages"
-inputs.df                     = "telemetry/raw/dvl_teledyne_navigator/RDI/messages"
+inputs.dvl                    = "telemetry/raw/dvl_teledyne_navigator/RDI/messages"
 config.velocity_x_uncertainty = 0.003
 config.velocity_y_uncertainty = 0.003
 config.velocity_z_uncertainty = 0.003

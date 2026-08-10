@@ -116,7 +116,7 @@ def step_pair_stereo_images(
     config: StereoPairingConfig,
 ) -> pd.DataFrame:
     """Pair left/right stereo captures into one frame per trigger."""
-    result: StereoPairingResult = pair_stereo_images(frames["df"], config)
+    result: StereoPairingResult = pair_stereo_images(frames["images"], config)
     return result.frame
 
 
@@ -128,7 +128,7 @@ def step_estimate_pressure_uncertainty(
     config: PressureUncertaintyConfig,
 ) -> pd.DataFrame:
     """Add a `depth_uncertainty` column to a pressure frame."""
-    return estimate_pressure_uncertainty(frames["df"], config)
+    return estimate_pressure_uncertainty(frames["pressure"], config)
 
 
 @register_processor(
@@ -153,7 +153,7 @@ def step_estimate_dvl_uncertainty(
     config: DvlUncertaintyConfig,
 ) -> pd.DataFrame:
     """Add per-axis velocity and attitude uncertainty columns to a DVL frame."""
-    return estimate_dvl_uncertainty(frames["df"], config)
+    return estimate_dvl_uncertainty(frames["dvl"], config)
 
 
 @register_processor(
