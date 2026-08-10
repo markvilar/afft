@@ -4,6 +4,7 @@ import click
 
 from .actions import (
     dispatch_build_deployment_bundle,
+    dispatch_ingest_bundle_frame,
     dispatch_list_deployment_bundle,
     dispatch_process_deployment_bundle,
 )
@@ -152,4 +153,53 @@ def process(
         output_file,
         overwrite,
         verbose,
+    )
+
+
+@bundle_group.command("ingest-frame")
+@click.option(
+    "--bundle",
+    "bundle_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the deployment bundle to ingest into, written in place",
+)
+@click.option(
+    "--key",
+    required=True,
+    help="bundle key to write the frame to",
+)
+@click.option(
+    "--file",
+    "input_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the CSV file holding the frame",
+)
+@click.option(
+    "--datetime-column",
+    "datetime_columns",
+    multiple=True,
+    help="column to parse as a timezone-aware UTC timestamp; repeatable",
+)
+@click.option(
+    "--overwrite",
+    is_flag=True,
+    default=False,
+    help="overwrite an existing frame at the key",
+)
+def ingest_frame(
+    bundle_file: str,
+    key: str,
+    input_file: str,
+    datetime_columns: tuple[str, ...],
+    overwrite: bool,
+) -> None:
+    """Ingest a frame from a file into an existing deployment bundle."""
+    dispatch_ingest_bundle_frame(
+        bundle_file,
+        key,
+        input_file,
+        datetime_columns,
+        overwrite,
     )
