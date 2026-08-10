@@ -14,6 +14,14 @@ DEPLOYMENT_DATA_DIR="/data/exos_01/acfr_deployments_v1_subset_fixed"
 SEALEVEL_DATA_DIR="/data/exos_01/metocean_sea_level_hourly"
 OUTPUT_DIR="/data/exos_01/acfr_deployment_bundles_v1_subset"
 
+SEALEVEL_KEY="metocean/worldtides/sealevel"
+SEALEVEL_DATETIME_COLUMN="datetime"
+
+# The sea level series were fetched once for a fixed span covering every
+# deployment, so the range is a constant of the data rather than something
+# derived per site.
+SEALEVEL_RANGE="20090101_20211231"
+
 DEPLOYMENTS=(
   "qdch0ftq_20100428_020202"
   "qdch0ftq_20110415_020103"
@@ -34,12 +42,30 @@ DEPLOYMENTS=(
   "r7jjskxq_20131022_004934"
 )
 
+# Building overwrites the bundle, so the sea level ingestion has to follow the
+# build of the same deployment rather than run as a second pass over all of
+# them -- a rebuild would otherwise discard a frame ingested earlier.
 for deployment in "${DEPLOYMENTS[@]}"; do
+  bundle_file="${OUTPUT_DIR}/${deployment}_deployment_bundle.sqlite"
+
+  # The sea level series are per site rather than per deployment, so the
+  # deployments sharing a site share a file. The site is the deployment
+  # label's first segment.
+  site="${deployment%%_*}"
+  sealevel_file="${SEALEVEL_DATA_DIR}/${site}_${SEALEVEL_RANGE}_sea_level.csv"
+
   uv run afft bundle build \
     --descriptor-file "${DESCRIPTOR_FILE}" \
     --data-dir "${DEPLOYMENT_DATA_DIR}/${deployment}_deployment_data" \
     --config "${CONFIG_FILE}" \
     --deployment-label "${deployment}" \
-    --output "${OUTPUT_DIR}/${deployment}_deployment_bundle.sqlite" \
+    --output "${bundle_file}" \
+    --overwrite
+
+  uv run afft bundle ingest-frame \
+    --bundle "${bundle_file}" \
+    --key "${SEALEVEL_KEY}" \
+    --file "${sealevel_file}" \
+    --datetime-column "${SEALEVEL_DATETIME_COLUMN}" \
     --overwrite
 done
