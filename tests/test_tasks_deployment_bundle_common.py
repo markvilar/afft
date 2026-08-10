@@ -13,11 +13,11 @@ from afft.deployment import (
     open_deployment_bundle_reader,
 )
 from afft.tasks.deployment_bundle_common import (
-    IngestFrameCommand,
-    IngestFrameResult,
+    IngestBundleFrameCommand,
+    IngestBundleFrameResult,
     read_frame_file,
-    run_ingest_frame,
-    validate_frame_key,
+    run_ingest_bundle_frame,
+    validate_bundle_frame_key,
 )
 
 SEA_LEVEL_CSV: str = (
@@ -49,9 +49,11 @@ def bundle_file(tmp_path: Path) -> Path:
 
 
 def test_valid_frame_keys_are_accepted() -> None:
-    validate_frame_key(SEA_LEVEL_KEY)
-    validate_frame_key("bundle")
-    validate_frame_key("platform/sensors/usbl_linkquest_transceiver/extrinsics")
+    validate_bundle_frame_key(SEA_LEVEL_KEY)
+    validate_bundle_frame_key("bundle")
+    validate_bundle_frame_key(
+        "platform/sensors/usbl_linkquest_transceiver/extrinsics"
+    )
 
 
 @pytest.mark.parametrize(
@@ -67,13 +69,13 @@ def test_valid_frame_keys_are_accepted() -> None:
 )
 def test_structurally_invalid_frame_keys_are_rejected(key: str) -> None:
     with pytest.raises(ValueError):
-        validate_frame_key(key)
+        validate_bundle_frame_key(key)
 
 
 def test_unknown_frame_keys_are_accepted() -> None:
     """Validation is structural only, so an unrecognised key still passes."""
-    validate_frame_key("metocean/worldtide/sealevel")
-    validate_frame_key("not_a_bundle_section/whatever")
+    validate_bundle_frame_key("metocean/worldtide/sealevel")
+    validate_bundle_frame_key("not_a_bundle_section/whatever")
 
 
 def test_datetime_columns_are_parsed_as_utc(source_file: Path) -> None:
@@ -103,8 +105,8 @@ def test_a_datetime_column_not_in_the_file_is_rejected(
 def test_ingested_frame_is_readable_from_the_bundle(
     bundle_file: Path, source_file: Path
 ) -> None:
-    result: IngestFrameResult = run_ingest_frame(
-        IngestFrameCommand(
+    result: IngestBundleFrameResult = run_ingest_bundle_frame(
+        IngestBundleFrameCommand(
             bundle_file=bundle_file,
             key=SEA_LEVEL_KEY,
             input_file=source_file,
@@ -124,8 +126,8 @@ def test_ingested_frame_is_readable_from_the_bundle(
 def test_ingestion_leaves_existing_frames_alone(
     bundle_file: Path, source_file: Path
 ) -> None:
-    run_ingest_frame(
-        IngestFrameCommand(
+    run_ingest_bundle_frame(
+        IngestBundleFrameCommand(
             bundle_file=bundle_file,
             key=SEA_LEVEL_KEY,
             input_file=source_file,
@@ -143,23 +145,23 @@ def test_ingestion_leaves_existing_frames_alone(
 def test_ingesting_over_an_existing_key_is_refused(
     bundle_file: Path, source_file: Path
 ) -> None:
-    command = IngestFrameCommand(
+    command = IngestBundleFrameCommand(
         bundle_file=bundle_file,
         key=SEA_LEVEL_KEY,
         input_file=source_file,
         datetime_columns=("datetime",),
     )
-    run_ingest_frame(command)
+    run_ingest_bundle_frame(command)
 
     with pytest.raises(ValueError, match="already holds a frame"):
-        run_ingest_frame(command)
+        run_ingest_bundle_frame(command)
 
 
 def test_overwrite_replaces_an_existing_frame(
     bundle_file: Path, source_file: Path, tmp_path: Path
 ) -> None:
-    run_ingest_frame(
-        IngestFrameCommand(
+    run_ingest_bundle_frame(
+        IngestBundleFrameCommand(
             bundle_file=bundle_file,
             key=SEA_LEVEL_KEY,
             input_file=source_file,
@@ -169,8 +171,8 @@ def test_overwrite_replaces_an_existing_frame(
 
     replacement: Path = tmp_path / "replacement.csv"
     replacement.write_text("sea_level\n9.0\n")
-    run_ingest_frame(
-        IngestFrameCommand(
+    run_ingest_bundle_frame(
+        IngestBundleFrameCommand(
             bundle_file=bundle_file,
             key=SEA_LEVEL_KEY,
             input_file=replacement,
@@ -188,8 +190,8 @@ def test_a_missing_bundle_is_rejected(
     tmp_path: Path, source_file: Path
 ) -> None:
     with pytest.raises(FileNotFoundError, match="deployment bundle"):
-        run_ingest_frame(
-            IngestFrameCommand(
+        run_ingest_bundle_frame(
+            IngestBundleFrameCommand(
                 bundle_file=tmp_path / "absent.sqlite",
                 key=SEA_LEVEL_KEY,
                 input_file=source_file,
@@ -201,8 +203,8 @@ def test_a_missing_input_file_is_rejected(
     bundle_file: Path, tmp_path: Path
 ) -> None:
     with pytest.raises(FileNotFoundError, match="input file"):
-        run_ingest_frame(
-            IngestFrameCommand(
+        run_ingest_bundle_frame(
+            IngestBundleFrameCommand(
                 bundle_file=bundle_file,
                 key=SEA_LEVEL_KEY,
                 input_file=tmp_path / "absent.csv",
@@ -214,8 +216,8 @@ def test_an_invalid_key_is_rejected_before_the_bundle_is_opened(
     bundle_file: Path, source_file: Path
 ) -> None:
     with pytest.raises(ValueError, match="leading or trailing slash"):
-        run_ingest_frame(
-            IngestFrameCommand(
+        run_ingest_bundle_frame(
+            IngestBundleFrameCommand(
                 bundle_file=bundle_file,
                 key="/metocean/worldtides/sealevel",
                 input_file=source_file,

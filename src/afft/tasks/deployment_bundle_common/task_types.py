@@ -5,7 +5,7 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict
 
 
-class IngestFrameCommand(BaseModel):
+class IngestBundleFrameCommand(BaseModel):
     """
     Attributes
     ----------
@@ -27,7 +27,7 @@ class IngestFrameCommand(BaseModel):
     overwrite: bool = False
 
 
-class IngestFrameResult(BaseModel):
+class IngestBundleFrameResult(BaseModel):
     """
     Attributes
     ----------

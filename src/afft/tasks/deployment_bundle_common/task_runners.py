@@ -7,11 +7,13 @@ import pandas as pd
 from afft.deployment import DeploymentBundleIO, open_deployment_bundle
 from afft.utils.log import logger
 
-from .task_helpers import read_frame_file, validate_ingest_frame_input
-from .task_types import IngestFrameCommand, IngestFrameResult
+from .task_helpers import read_frame_file, validate_ingest_bundle_frame_input
+from .task_types import IngestBundleFrameCommand, IngestBundleFrameResult
 
 
-def run_ingest_frame(command: IngestFrameCommand) -> IngestFrameResult:
+def run_ingest_bundle_frame(
+    command: IngestBundleFrameCommand,
+) -> IngestBundleFrameResult:
     """
     Ingest a frame from a file into an existing deployment bundle.
 
@@ -39,7 +41,7 @@ def run_ingest_frame(command: IngestFrameCommand) -> IngestFrameResult:
         datetime column is not in the input file, or if the key already
         holds a frame and ``overwrite`` is not set.
     """
-    validate_ingest_frame_input(command)
+    validate_ingest_bundle_frame_input(command)
 
     frame: pd.DataFrame = read_frame_file(
         command.input_file, command.datetime_columns
@@ -68,7 +70,7 @@ def run_ingest_frame(command: IngestFrameCommand) -> IngestFrameResult:
 
     logger.info(f"wrote {command.key} to {command.bundle_file}")
 
-    return IngestFrameResult(
+    return IngestBundleFrameResult(
         bundle_file=command.bundle_file,
         key=command.key,
         rows=len(frame),

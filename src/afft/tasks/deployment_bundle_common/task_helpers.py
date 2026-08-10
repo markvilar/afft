@@ -7,14 +7,14 @@ from pathlib import Path
 
 import pandas as pd
 
-from .task_types import IngestFrameCommand
+from .task_types import IngestBundleFrameCommand
 
-type FrameKey = str
+type BundleFrameKey = str
 
 _SEGMENT_PATTERN: re.Pattern[str] = re.compile(r"^[A-Za-z0-9._-]+$")
 
 
-def validate_frame_key(key: FrameKey) -> None:
+def validate_bundle_frame_key(key: BundleFrameKey) -> None:
     """
     Validate a bundle key's structure.
 
@@ -93,7 +93,9 @@ def read_frame_file(
     return frame
 
 
-def validate_ingest_frame_input(command: IngestFrameCommand) -> None:
+def validate_ingest_bundle_frame_input(
+    command: IngestBundleFrameCommand,
+) -> None:
     """
     Validate the task's inputs before any expensive work runs.
 
@@ -106,7 +108,7 @@ def validate_ingest_frame_input(command: IngestFrameCommand) -> None:
     FileNotFoundError: If the bundle or the input file does not exist.
     ValueError: If the frame key is not structurally valid.
     """
-    validate_frame_key(command.key)
+    validate_bundle_frame_key(command.key)
 
     if not command.bundle_file.is_file():
         raise FileNotFoundError(

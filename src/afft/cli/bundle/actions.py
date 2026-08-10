@@ -16,8 +16,8 @@ from afft.tasks.build_deployment_bundle import (
     run_build_deployment_bundle,
 )
 from afft.tasks.deployment_bundle_common import (
-    IngestFrameCommand,
-    run_ingest_frame,
+    IngestBundleFrameCommand,
+    run_ingest_bundle_frame,
 )
 from afft.tasks.process_deployment_bundle import (
     ProcessDeploymentBundleCommand,
@@ -80,7 +80,7 @@ def dispatch_list_deployment_bundle(
                 logger.info(f"  {column}: {dtype}")
 
 
-def dispatch_ingest_frame(
+def dispatch_ingest_bundle_frame(
     bundle_file: str | Path,
     key: str,
     input_file: str | Path,
@@ -88,14 +88,14 @@ def dispatch_ingest_frame(
     overwrite: bool = False,
 ) -> None:
     """Ingest a frame from a file into an existing deployment bundle."""
-    command = IngestFrameCommand(
+    command = IngestBundleFrameCommand(
         bundle_file=Path(bundle_file),
         key=key,
         input_file=Path(input_file),
         datetime_columns=datetime_columns,
         overwrite=overwrite,
     )
-    run_ingest_frame(command)
+    run_ingest_bundle_frame(command)
 
 
 def dispatch_process_deployment_bundle(

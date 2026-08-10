@@ -4,7 +4,7 @@ import click
 
 from .actions import (
     dispatch_build_deployment_bundle,
-    dispatch_ingest_frame,
+    dispatch_ingest_bundle_frame,
     dispatch_list_deployment_bundle,
     dispatch_process_deployment_bundle,
 )
@@ -196,7 +196,7 @@ def ingest_frame(
     overwrite: bool,
 ) -> None:
     """Ingest a frame from a file into an existing deployment bundle."""
-    dispatch_ingest_frame(
+    dispatch_ingest_bundle_frame(
         bundle_file,
         key,
         input_file,
