@@ -1,15 +1,17 @@
 """Supporting functions for the common deployment bundle tasks: key
-validation, frame reading, and input validation."""
+validation, frame reading and writing, and input validation."""
 
 import re
 
+from collections.abc import Callable
 from pathlib import Path
 
 import pandas as pd
 
-from .task_types import IngestBundleFrameCommand
+from .task_types import ExportBundleFrameCommand, IngestBundleFrameCommand
 
 type BundleFrameKey = str
+type FrameWriter = Callable[[pd.DataFrame, Path], None]
 
 _SEGMENT_PATTERN: re.Pattern[str] = re.compile(r"^[A-Za-z0-9._-]+$")
 
@@ -93,6 +95,76 @@ def read_frame_file(
     return frame
 
 
+def write_frame_file(frame: pd.DataFrame, output_file: Path) -> None:
+    """
+    Write a frame to a file, choosing the writer from the file's suffix.
+
+    The index is not written where the writer offers the choice. Bundle
+    frames carry a default ``RangeIndex``, so an index column would be a
+    row number that the reader would then take for data.
+
+    Arguments
+    ---------
+    frame: Frame to write.
+    output_file: Path to write to. Its suffix selects the writer.
+
+    Raises
+    ------
+    ValueError: If the suffix does not name a supported format.
+    """
+    writer: FrameWriter | None = _FRAME_WRITERS.get(output_file.suffix)
+    if writer is None:
+        raise ValueError(
+            f"unsupported output file suffix {output_file.suffix!r}: "
+            f"{output_file}; supported suffixes are "
+            f"{sorted(_FRAME_WRITERS)}"
+        )
+
+    writer(frame, output_file)
+
+
+def validate_export_bundle_frame_input(
+    command: ExportBundleFrameCommand,
+) -> None:
+    """
+    Validate the task's inputs before the bundle is opened.
+
+    Whether the key holds a frame is not checked here -- that needs the
+    bundle open, and the runner reports it against the keys the bundle
+    actually holds.
+
+    Arguments
+    ---------
+    command: Task command.
+
+    Raises
+    ------
+    FileNotFoundError: If the bundle does not exist.
+    FileExistsError: If the output file exists and ``overwrite`` is not set.
+    ValueError: If the frame key is not structurally valid, or if the
+        output file's suffix does not name a supported format.
+    """
+    validate_bundle_frame_key(command.key)
+
+    if command.output_file.suffix not in _FRAME_WRITERS:
+        raise ValueError(
+            f"unsupported output file suffix "
+            f"{command.output_file.suffix!r}: {command.output_file}; "
+            f"supported suffixes are {sorted(_FRAME_WRITERS)}"
+        )
+
+    if not command.bundle_file.is_file():
+        raise FileNotFoundError(
+            f"deployment bundle does not exist: {command.bundle_file}"
+        )
+
+    if command.output_file.exists() and not command.overwrite:
+        raise FileExistsError(
+            f"output file already exists: {command.output_file}: "
+            f"pass overwrite to replace it"
+        )
+
+
 def validate_ingest_bundle_frame_input(
     command: IngestBundleFrameCommand,
 ) -> None:
@@ -119,3 +191,38 @@ def validate_ingest_bundle_frame_input(
         raise FileNotFoundError(
             f"input file does not exist: {command.input_file}"
         )
+
+
+def _write_csv(frame: pd.DataFrame, output_file: Path) -> None:
+    """Write a frame as CSV, with timestamps as ISO8601 in UTC.
+
+    The default timestamp rendering is what ``read_frame_file`` parses back
+    with ``format="ISO8601"``, which is what keeps an exported CSV
+    ingestable.
+    """
+    frame.to_csv(output_file, index=False)
+
+
+def _write_parquet(frame: pd.DataFrame, output_file: Path) -> None:
+    frame.to_parquet(output_file, index=False)
+
+
+def _write_feather(frame: pd.DataFrame, output_file: Path) -> None:
+    frame.to_feather(output_file)
+
+
+def _write_json(frame: pd.DataFrame, output_file: Path) -> None:
+    """Write a frame as a JSON array of row objects.
+
+    ``orient="records"`` drops the index, and ``date_format="iso"`` keeps
+    timestamps readable rather than rendering them as epoch milliseconds.
+    """
+    frame.to_json(output_file, orient="records", date_format="iso")
+
+
+_FRAME_WRITERS: dict[str, FrameWriter] = {
+    ".csv": _write_csv,
+    ".feather": _write_feather,
+    ".json": _write_json,
+    ".parquet": _write_parquet,
+}

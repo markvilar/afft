@@ -16,7 +16,9 @@ from afft.tasks.build_deployment_bundle import (
     run_build_deployment_bundle,
 )
 from afft.tasks.deployment_bundle_common import (
+    ExportBundleFrameCommand,
     IngestBundleFrameCommand,
+    run_export_bundle_frame,
     run_ingest_bundle_frame,
 )
 from afft.tasks.process_deployment_bundle import (
@@ -96,6 +98,22 @@ def dispatch_ingest_bundle_frame(
         overwrite=overwrite,
     )
     run_ingest_bundle_frame(command)
+
+
+def dispatch_export_bundle_frame(
+    bundle_file: str | Path,
+    key: str,
+    output_file: str | Path,
+    overwrite: bool = False,
+) -> None:
+    """Export a single frame from a deployment bundle to a file."""
+    command = ExportBundleFrameCommand(
+        bundle_file=Path(bundle_file),
+        key=key,
+        output_file=Path(output_file),
+        overwrite=overwrite,
+    )
+    run_export_bundle_frame(command)
 
 
 def dispatch_process_deployment_bundle(

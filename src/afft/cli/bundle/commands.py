@@ -4,6 +4,7 @@ import click
 
 from .actions import (
     dispatch_build_deployment_bundle,
+    dispatch_export_bundle_frame,
     dispatch_ingest_bundle_frame,
     dispatch_list_deployment_bundle,
     dispatch_process_deployment_bundle,
@@ -201,5 +202,46 @@ def ingest_frame(
         key,
         input_file,
         datetime_columns,
+        overwrite,
+    )
+
+
+@bundle_group.command("export-frame")
+@click.option(
+    "--bundle",
+    "bundle_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the deployment bundle to export from, never written",
+)
+@click.option(
+    "--key",
+    required=True,
+    help="bundle key to read the frame from",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="path to write the frame to; its suffix selects the format",
+)
+@click.option(
+    "--overwrite",
+    is_flag=True,
+    default=False,
+    help="overwrite the output file if it already exists",
+)
+def export_frame(
+    bundle_file: str,
+    key: str,
+    output_file: str,
+    overwrite: bool,
+) -> None:
+    """Export a single frame from a deployment bundle to a file."""
+    dispatch_export_bundle_frame(
+        bundle_file,
+        key,
+        output_file,
         overwrite,
     )
