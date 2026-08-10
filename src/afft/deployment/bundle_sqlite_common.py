@@ -169,11 +169,14 @@ def read_frame_table(
     for column, dtype in dtypes.items():
         if isinstance(dtype, pd.DatetimeTZDtype):
             # Stored as ISO text with an offset, so parse before casting.
-            frame[column] = pd.to_datetime(frame[column], utc=True).astype(
-                dtype
-            )
+            # `to_sql` drops the fractional-second part when it is zero, so
+            # a column can mix "...41.123456+00:00" and "...41+00:00" --
+            # ISO8601 parsing handles both without a fixed format string.
+            frame[column] = pd.to_datetime(
+                frame[column], utc=True, format="ISO8601"
+            ).astype(dtype)
         elif pd.api.types.is_datetime64_dtype(dtype):
-            frame[column] = pd.to_datetime(frame[column])
+            frame[column] = pd.to_datetime(frame[column], format="ISO8601")
         else:
             frame[column] = frame[column].astype(dtype)
     return frame
