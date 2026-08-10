@@ -119,10 +119,9 @@ class TrackLinkResolvePositionFromMessagesConfig(BaseModel):
 
     The raw bearing is always treated as an azimuth in the transceiver body
     frame (0 = transceiver forward, clockwise). The full ZYX attitude chain
-    (transceiver → ship body → NED) is applied on every call. When no
-    extrinsics are provided a zero-offset, zero-rotation transceiver is
-    assumed (bearing is then relative to the ship bow, and ship heading is
-    applied via the rotation chain).
+    (transceiver → ship body → NED) is applied on every call. Extrinsics are
+    passed to the processor rather than configured here, since they are a
+    property of the deployment.
 
     Attributes
     ----------
@@ -136,8 +135,6 @@ class TrackLinkResolvePositionFromMessagesConfig(BaseModel):
     ship_pitch_col: Name of the ship pitch column (degrees).
     depth_col: Name of the depth column in the pressure DataFrame.
     max_time_gap_seconds: Maximum allowed gap between USBL and pressure windows.
-    extrinsics: Transceiver extrinsics relative to the ship body frame. Defaults
-        to zero offset and zero rotation when not provided.
     """
 
     model_config = ConfigDict(frozen=True, extra="forbid")
@@ -152,7 +149,6 @@ class TrackLinkResolvePositionFromMessagesConfig(BaseModel):
     ship_pitch_col: str = "ship_pitch"
     depth_col: str = "depth"
     max_time_gap_seconds: float = 60.0
-    extrinsics: TrackLinkTransceiverExtrinsics | None = None
 
 
 class TrackLinkResolvePositionFromLogsConfig(BaseModel):
@@ -161,8 +157,8 @@ class TrackLinkResolvePositionFromLogsConfig(BaseModel):
 
     Target XYZ in the sensor frame is taken directly from the log entries.
     The full ZYX attitude chain (transceiver → ship body → NED) is applied
-    on every call. When no extrinsics are provided a zero-offset,
-    zero-rotation transceiver is assumed.
+    on every call. Extrinsics are passed to the processor rather than
+    configured here, since they are a property of the deployment.
 
     Attributes
     ----------
@@ -177,8 +173,6 @@ class TrackLinkResolvePositionFromLogsConfig(BaseModel):
     ship_heading_col: Name of the ship heading column (degrees, clockwise from N).
     ship_roll_col: Name of the ship roll column (degrees).
     ship_pitch_col: Name of the ship pitch column (degrees).
-    extrinsics: Transceiver extrinsics relative to the ship body frame. Defaults
-        to zero offset and zero rotation when not provided.
     """
 
     model_config = ConfigDict(frozen=True, extra="forbid")
@@ -194,7 +188,6 @@ class TrackLinkResolvePositionFromLogsConfig(BaseModel):
     ship_heading_col: str = "ship_heading"
     ship_roll_col: str = "ship_roll"
     ship_pitch_col: str = "ship_pitch"
-    extrinsics: TrackLinkTransceiverExtrinsics | None = None
 
 
 class TrackLinkUncertaintyConfig(BaseModel):

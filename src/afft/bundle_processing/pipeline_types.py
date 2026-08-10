@@ -26,6 +26,8 @@ class PipelineStep:
     config: The processor's config, already constructed as its typed model.
     inputs: Maps each processor argument name to the bundle key supplying it.
     output: Bundle key the resulting frame is written to.
+    optional: Whether the step is skipped when an input key is absent, rather
+        than failing the run.
     """
 
     processor_key: str
@@ -33,6 +35,7 @@ class PipelineStep:
     config: BaseModel
     inputs: Mapping[str, str]
     output: str
+    optional: bool = False
 
 
 type Pipeline = tuple[PipelineStep, ...]
@@ -49,6 +52,9 @@ class PipelineStepConfig(BaseModel):
     inputs: Maps each processor argument name to the bundle key supplying it.
     config: Raw config table, constructed as the processor's config type by
         the builder.
+    optional: Whether the step is skipped when an input key is absent, rather
+        than failing the run. Set it for a step whose sensor is not on every
+        deployment.
     """
 
     model_config = ConfigDict(frozen=True, extra="forbid")
@@ -57,6 +63,7 @@ class PipelineStepConfig(BaseModel):
     output: str
     inputs: dict[str, str]
     config: dict[str, Any] = {}
+    optional: bool = False
 
 
 class PipelineConfig(BaseModel):

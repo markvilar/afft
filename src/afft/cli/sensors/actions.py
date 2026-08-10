@@ -58,8 +58,9 @@ def dispatch_process_tracklink_usbl_from_messages(
         f"{deployment.date}, sensor_keys={list(deployment.sensor_keys)}"
     )
 
+    extrinsics: TrackLinkTransceiverExtrinsics | None
     if ignore_extrinsics:
-        extrinsics = TrackLinkTransceiverExtrinsics()
+        extrinsics = None
         logger.info("USBL transceiver extrinsics: ignored (zero extrinsics)")
     else:
         extrinsics = TrackLinkTransceiverExtrinsics(
@@ -77,9 +78,7 @@ def dispatch_process_tracklink_usbl_from_messages(
             f"rotz={extrinsics.rotz:.4f}) rad"
         )
     config = TrackLinkProcessingFromMessagesConfig(
-        resolve=TrackLinkResolvePositionFromMessagesConfig(
-            extrinsics=extrinsics
-        ),
+        resolve=TrackLinkResolvePositionFromMessagesConfig(),
         uncertainty=TrackLinkUncertaintyConfig(
             horizontal_position_std=deployment.usbl_uncertainty.horizontal_position_std,
             depth_position_std=deployment.usbl_uncertainty.slant_range_std,
@@ -90,7 +89,7 @@ def dispatch_process_tracklink_usbl_from_messages(
     pressure: pd.DataFrame = pd.read_csv(Path(pressure_file))
 
     result: pd.DataFrame = process_tracklink_usbl_from_messages(
-        usbl, pressure, config
+        usbl, pressure, extrinsics, config
     )
 
     output_path: Path = Path(output_file)
@@ -115,8 +114,9 @@ def dispatch_process_tracklink_usbl_from_logs(
         f"{deployment.date}, sensor_keys={list(deployment.sensor_keys)}"
     )
 
+    extrinsics: TrackLinkTransceiverExtrinsics | None
     if ignore_extrinsics:
-        extrinsics = TrackLinkTransceiverExtrinsics()
+        extrinsics = None
         logger.info("USBL transceiver extrinsics: ignored (zero extrinsics)")
     else:
         extrinsics = TrackLinkTransceiverExtrinsics(
@@ -134,7 +134,7 @@ def dispatch_process_tracklink_usbl_from_logs(
             f"rotz={extrinsics.rotz:.4f}) rad"
         )
     config = TrackLinkProcessingFromLogsConfig(
-        resolve=TrackLinkResolvePositionFromLogsConfig(extrinsics=extrinsics),
+        resolve=TrackLinkResolvePositionFromLogsConfig(),
         uncertainty=TrackLinkUncertaintyConfig(
             horizontal_position_std=deployment.usbl_uncertainty.horizontal_position_std,
             depth_position_std=deployment.usbl_uncertainty.slant_range_std,
@@ -144,7 +144,9 @@ def dispatch_process_tracklink_usbl_from_logs(
     usbl: pd.DataFrame = pd.read_csv(Path(usbl_file))
 
     try:
-        result: pd.DataFrame = process_tracklink_usbl_from_logs(usbl, config)
+        result: pd.DataFrame = process_tracklink_usbl_from_logs(
+            usbl, extrinsics, config
+        )
     except ValueError as error:
         logger.error(f"skipping {Path(usbl_file).name}: {error}")
         return
@@ -162,7 +164,7 @@ def dispatch_process_evologics_usbl(
     deployment_label: str,
     ignore_extrinsics: bool = False,
 ) -> None:
-    """Convert Evologics USBL data to the unified USBL output schema."""
+    """Convert Evologics USBL data to the USBL output schema."""
     deployment = load_deployment_config(
         Path(deployment_configs), deployment_label
     )
@@ -171,8 +173,9 @@ def dispatch_process_evologics_usbl(
         f"{deployment.date}, sensor_keys={list(deployment.sensor_keys)}"
     )
 
+    extrinsics: EvologicsTransceiverExtrinsics | None
     if ignore_extrinsics:
-        extrinsics = EvologicsTransceiverExtrinsics()
+        extrinsics = None
         logger.info("USBL transceiver extrinsics: ignored (zero extrinsics)")
     else:
         extrinsics = EvologicsTransceiverExtrinsics(
@@ -191,13 +194,12 @@ def dispatch_process_evologics_usbl(
         )
 
     config = EvologicsProcessingConfig(
-        extrinsics=extrinsics,
         horizontal_position_std=deployment.usbl_uncertainty.horizontal_position_std,
         depth_position_std=deployment.usbl_uncertainty.slant_range_std,
     )
 
     usbl: pd.DataFrame = pd.read_csv(Path(usbl_file))
-    result: pd.DataFrame = process_evologics_usbl(usbl, config)
+    result: pd.DataFrame = process_evologics_usbl(usbl, extrinsics, config)
 
     output_path: Path = Path(output_file)
     output_path.parent.mkdir(parents=True, exist_ok=True)

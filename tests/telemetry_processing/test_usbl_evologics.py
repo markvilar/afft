@@ -2,6 +2,7 @@
 
 import math
 
+import numpy as np
 import pandas as pd
 
 from afft.sensors.usbl_evologics import (
@@ -147,7 +148,7 @@ def test_uncertainty_values() -> None:
         horizontal_position_std=12.5,
         depth_position_std=3.0,
     )
-    result = process_evologics_usbl(_make_df(), config)
+    result = process_evologics_usbl(_make_df(), config=config)
     assert (result["horizontal_position_std"] == 12.5).all()
     assert (result["depth_position_std"] == 3.0).all()
 
@@ -156,14 +157,16 @@ def test_extrinsics_columns_written() -> None:
     extrinsics = EvologicsTransceiverExtrinsics(
         locx=1.0, locy=2.0, locz=3.0, rotx=0.1, roty=0.2, rotz=0.3
     )
-    config = EvologicsProcessingConfig(extrinsics=extrinsics)
-    result = process_evologics_usbl(_make_df(), config)
+    result = process_evologics_usbl(_make_df(), extrinsics)
     assert (result["usbl_extrinsics_locx"] == 1.0).all()
     assert (result["usbl_extrinsics_locy"] == 2.0).all()
     assert (result["usbl_extrinsics_locz"] == 3.0).all()
-    assert (result["usbl_extrinsics_rotx"] == 0.1).all()
-    assert (result["usbl_extrinsics_roty"] == 0.2).all()
-    assert (result["usbl_extrinsics_rotz"] == 0.3).all()
+    # Rotations are recorded in degrees, whatever unit they were supplied in.
+    assert np.allclose(result["usbl_extrinsics_rotx"], math.degrees(0.1))
+    assert np.allclose(result["usbl_extrinsics_roty"], math.degrees(0.2))
+    assert np.allclose(result["usbl_extrinsics_rotz"], math.degrees(0.3))
+    assert (result["usbl_extrinsics_rotation_units"] == "degrees").all()
+    assert result["usbl_extrinsics_applied"].all()
 
 
 def test_extrinsics_columns_zero_when_none() -> None:
@@ -177,6 +180,20 @@ def test_extrinsics_columns_zero_when_none() -> None:
         "usbl_extrinsics_rotz",
     ]:
         assert (result[col] == 0.0).all()
+
+
+def test_extrinsics_applied_false_when_none() -> None:
+    # The zero columns above are ambiguous on their own -- a transceiver
+    # genuinely mounted at the origin writes the same six values.
+    result = process_evologics_usbl(_make_df())
+    assert not result["usbl_extrinsics_applied"].any()
+
+
+def test_extrinsics_applied_true_for_zero_extrinsics() -> None:
+    result = process_evologics_usbl(
+        _make_df(), EvologicsTransceiverExtrinsics()
+    )
+    assert result["usbl_extrinsics_applied"].all()
 
 
 def test_sensor_frame_preserves_usbl_frame_input() -> None:
@@ -195,12 +212,11 @@ def test_extrinsics_translation_applied() -> None:
     # With only translation (no rotation), vessel-frame target = flipped + translation.
     # USBL (x=0, y=1, z=0) → flip → (x=1, y=0, z=0) → + (2, 3, 4) → (3, 3, 4)
     extrinsics = EvologicsTransceiverExtrinsics(locx=2.0, locy=3.0, locz=4.0)
-    config = EvologicsProcessingConfig(extrinsics=extrinsics)
     df = _make_df(rows=1)
     df["target_x"] = 0.0
     df["target_y"] = 1.0
     df["target_z"] = 0.0
-    result = process_evologics_usbl(df, config)
+    result = process_evologics_usbl(df, extrinsics)
     assert math.isclose(result["target_x_vessel"].iloc[0], 3.0, rel_tol=1e-9)
     assert math.isclose(result["target_y_vessel"].iloc[0], 3.0, rel_tol=1e-9)
     assert math.isclose(result["target_z_vessel"].iloc[0], 4.0, rel_tol=1e-9)

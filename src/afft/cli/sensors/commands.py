@@ -196,7 +196,7 @@ def process_evologics_usbl(
     deployment_label: str,
     ignore_extrinsics: bool,
 ) -> None:
-    """Convert Evologics USBL data to the unified USBL output schema."""
+    """Convert Evologics USBL data to the USBL output schema."""
     dispatch_process_evologics_usbl(
         usbl_file,
         output_file,

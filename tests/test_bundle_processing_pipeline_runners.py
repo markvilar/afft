@@ -219,3 +219,59 @@ def test_a_run_stops_at_the_first_failure(tmp_path: Path) -> None:
 
     with open_deployment_bundle_reader(target) as reader:
         assert not reader.has_frame("telemetry/processed/second")
+
+
+def test_an_optional_step_is_skipped_when_an_input_is_absent(
+    tmp_path: Path,
+) -> None:
+    """A step whose sensor is not on the deployment is skipped, not fatal."""
+    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    _source_bundle(source)
+
+    step = PipelineStep(
+        processor_key="scale",
+        processor=_scale,
+        config=_ScaleConfig(),
+        inputs={"df": "telemetry/raw/usbl"},
+        output="telemetry/processed/usbl",
+        optional=True,
+    )
+
+    _run(source, target, (step,))
+
+    with open_deployment_bundle_reader(target) as reader:
+        assert not reader.has_frame("telemetry/processed/usbl")
+
+
+def test_a_required_step_still_fails_when_an_input_is_absent(
+    tmp_path: Path,
+) -> None:
+    """Optionality is opt-in: a missing input is otherwise fatal."""
+    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    _source_bundle(source)
+
+    with pytest.raises(PipelineStepError):
+        _run(source, target, (_step("out", source_key="telemetry/raw/usbl"),))
+
+
+def test_an_optional_step_runs_when_its_inputs_are_present(
+    tmp_path: Path,
+) -> None:
+    """Optional does not mean skipped -- present inputs run normally."""
+    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    _source_bundle(source)
+
+    step = PipelineStep(
+        processor_key="scale",
+        processor=_scale,
+        config=_ScaleConfig(factor=3.0),
+        inputs={"df": "telemetry/raw/pressure"},
+        output="telemetry/processed/pressure",
+        optional=True,
+    )
+
+    _run(source, target, (step,))
+
+    with open_deployment_bundle_reader(target) as reader:
+        frame = reader.read_frame("telemetry/processed/pressure")
+        assert frame["value"].tolist() == [3.0, 6.0]

@@ -24,6 +24,7 @@ _NS_PER_S: float = 1e9
 def resolve_target_position_from_messages(
     usbl: pd.DataFrame,
     pressure: pd.DataFrame,
+    extrinsics: TrackLinkTransceiverExtrinsics | None = None,
     config: TrackLinkResolvePositionFromMessagesConfig = TrackLinkResolvePositionFromMessagesConfig(),
 ) -> pd.DataFrame:
     """Resolve AUV lat/lon from TrackLink USBL bearing, slant range, and depth.
@@ -32,9 +33,13 @@ def resolve_target_position_from_messages(
     The raw bearing is treated as an azimuth in the transceiver body frame
     (0 = transceiver forward, clockwise). The ZYX attitude chain is applied:
     transceiver → ship body (via extrinsics rotation) → NED (via ship attitude).
-    When config.extrinsics is None a zero-offset, zero-rotation transceiver is
+    When `extrinsics` is None a zero-offset, zero-rotation transceiver is
     used, so bearing is relative to the ship bow and heading is applied via the
-    rotation chain.
+    rotation chain, and `usbl_extrinsics_applied` is False.
+
+    Extrinsics rotations are recorded in the output in degrees, so that every
+    angle in the resulting table shares one unit, with
+    `usbl_extrinsics_rotation_units` stating it explicitly.
 
     The transceiver geodetic position is computed by rotating the body-frame
     translation through the ship attitude and calling pymap3d.ned2geodetic.
@@ -46,18 +51,17 @@ def resolve_target_position_from_messages(
                   target_horizontal_range, target_inclination_angle,
                   target_latitude, target_longitude, target_height,
                   usbl_extrinsics_locx, usbl_extrinsics_locy, usbl_extrinsics_locz,
-                  usbl_extrinsics_rotx, usbl_extrinsics_roty, usbl_extrinsics_rotz.
+                  usbl_extrinsics_rotx, usbl_extrinsics_roty, usbl_extrinsics_rotz,
+                  usbl_extrinsics_applied, usbl_extrinsics_rotation_units.
     """
     _validate_time_alignment(usbl, pressure, config)
 
     result: pd.DataFrame = usbl.copy()
     result["target_depth"] = _interpolate_depth(usbl, pressure, config)
 
-    extrinsics: TrackLinkTransceiverExtrinsics = (
-        config.extrinsics
-        if config.extrinsics is not None
-        else TrackLinkTransceiverExtrinsics()
-    )
+    extrinsics_applied: bool = extrinsics is not None
+    if extrinsics is None:
+        extrinsics = TrackLinkTransceiverExtrinsics()
 
     ship_attitudes_ypr: NDArray[np.float64] = np.column_stack(
         [
@@ -154,9 +158,11 @@ def resolve_target_position_from_messages(
     result["usbl_extrinsics_locx"] = extrinsics.locx
     result["usbl_extrinsics_locy"] = extrinsics.locy
     result["usbl_extrinsics_locz"] = extrinsics.locz
-    result["usbl_extrinsics_rotx"] = extrinsics.rotx
-    result["usbl_extrinsics_roty"] = extrinsics.roty
-    result["usbl_extrinsics_rotz"] = extrinsics.rotz
+    result["usbl_extrinsics_rotx"] = np.degrees(extrinsics.rotx)
+    result["usbl_extrinsics_roty"] = np.degrees(extrinsics.roty)
+    result["usbl_extrinsics_rotz"] = np.degrees(extrinsics.rotz)
+    result["usbl_extrinsics_applied"] = extrinsics_applied
+    result["usbl_extrinsics_rotation_units"] = "degrees"
 
     return result
 
@@ -188,6 +194,7 @@ def estimate_usbl_uncertainty(
 def process_tracklink_usbl_from_messages(
     usbl: pd.DataFrame,
     pressure: pd.DataFrame,
+    extrinsics: TrackLinkTransceiverExtrinsics | None = None,
     config: TrackLinkProcessingFromMessagesConfig = TrackLinkProcessingFromMessagesConfig(),
 ) -> pd.DataFrame:
     """Resolve positions and estimate uncertainty from TrackLink AUV messages.
@@ -196,6 +203,9 @@ def process_tracklink_usbl_from_messages(
     ---------
     usbl: TrackLink USBL observations with bearing, range, and ship position.
     pressure: Pressure sensor depth readings to interpolate at USBL timestamps.
+    extrinsics: Transceiver extrinsics in the ship body frame. When None, no
+        extrinsics correction is applied. Omit it for deployments whose
+        readings were already corrected upstream.
     config: Combined configuration for position resolution and uncertainty estimation.
 
     Returns
@@ -203,7 +213,7 @@ def process_tracklink_usbl_from_messages(
     DataFrame with resolved target positions and uncertainty columns.
     """
     result: pd.DataFrame = resolve_target_position_from_messages(
-        usbl, pressure, config.resolve
+        usbl, pressure, extrinsics, config.resolve
     )
     result = estimate_usbl_uncertainty(result, config.uncertainty)
     return result
@@ -211,14 +221,20 @@ def process_tracklink_usbl_from_messages(
 
 def resolve_target_position_from_logs(
     usbl: pd.DataFrame,
+    extrinsics: TrackLinkTransceiverExtrinsics | None = None,
     config: TrackLinkResolvePositionFromLogsConfig = TrackLinkResolvePositionFromLogsConfig(),
 ) -> pd.DataFrame:
     """Resolve AUV lat/lon from TrackLink USBL log entries with target XYZ.
 
     Target XYZ in the sensor frame is taken directly from the log DataFrame.
     The ZYX attitude chain is applied: transceiver → ship body (via extrinsics
-    rotation) → NED (via ship attitude). When config.extrinsics is None a
-    zero-offset, zero-rotation transceiver is assumed.
+    rotation) → NED (via ship attitude). When `extrinsics` is None a
+    zero-offset, zero-rotation transceiver is assumed, and
+    `usbl_extrinsics_applied` is False.
+
+    Extrinsics rotations are recorded in the output in degrees, so that every
+    angle in the resulting table shares one unit, with
+    `usbl_extrinsics_rotation_units` stating it explicitly.
 
     The transceiver geodetic position is computed by rotating the body-frame
     translation through the ship attitude and calling pymap3d.ned2geodetic.
@@ -230,17 +246,16 @@ def resolve_target_position_from_logs(
                   target_horizontal_range, target_inclination_angle,
                   target_latitude, target_longitude, target_height,
                   usbl_extrinsics_locx, usbl_extrinsics_locy, usbl_extrinsics_locz,
-                  usbl_extrinsics_rotx, usbl_extrinsics_roty, usbl_extrinsics_rotz.
+                  usbl_extrinsics_rotx, usbl_extrinsics_roty, usbl_extrinsics_rotz,
+                  usbl_extrinsics_applied, usbl_extrinsics_rotation_units.
     """
     _validate_logs_contain_target_xyz(usbl, config)
 
     result: pd.DataFrame = usbl.copy()
 
-    extrinsics: TrackLinkTransceiverExtrinsics = (
-        config.extrinsics
-        if config.extrinsics is not None
-        else TrackLinkTransceiverExtrinsics()
-    )
+    extrinsics_applied: bool = extrinsics is not None
+    if extrinsics is None:
+        extrinsics = TrackLinkTransceiverExtrinsics()
 
     ship_attitudes_ypr: NDArray[np.float64] = np.column_stack(
         [
@@ -334,15 +349,18 @@ def resolve_target_position_from_logs(
     result["usbl_extrinsics_locx"] = extrinsics.locx
     result["usbl_extrinsics_locy"] = extrinsics.locy
     result["usbl_extrinsics_locz"] = extrinsics.locz
-    result["usbl_extrinsics_rotx"] = extrinsics.rotx
-    result["usbl_extrinsics_roty"] = extrinsics.roty
-    result["usbl_extrinsics_rotz"] = extrinsics.rotz
+    result["usbl_extrinsics_rotx"] = np.degrees(extrinsics.rotx)
+    result["usbl_extrinsics_roty"] = np.degrees(extrinsics.roty)
+    result["usbl_extrinsics_rotz"] = np.degrees(extrinsics.rotz)
+    result["usbl_extrinsics_applied"] = extrinsics_applied
+    result["usbl_extrinsics_rotation_units"] = "degrees"
 
     return result
 
 
 def process_tracklink_usbl_from_logs(
     usbl: pd.DataFrame,
+    extrinsics: TrackLinkTransceiverExtrinsics | None = None,
     config: TrackLinkProcessingFromLogsConfig = TrackLinkProcessingFromLogsConfig(),
 ) -> pd.DataFrame:
     """Resolve positions and estimate uncertainty from TrackLink USBL log entries.
@@ -351,6 +369,9 @@ def process_tracklink_usbl_from_logs(
     ---------
     usbl: Merged TrackLink log DataFrame with ship position, ship attitude,
         and target XYZ in sensor frame.
+    extrinsics: Transceiver extrinsics in the ship body frame. When None, no
+        extrinsics correction is applied. Omit it for deployments whose
+        readings were already corrected upstream.
     config: Combined configuration for position resolution and uncertainty estimation.
 
     Returns
@@ -358,7 +379,7 @@ def process_tracklink_usbl_from_logs(
     DataFrame with resolved target positions and uncertainty columns.
     """
     result: pd.DataFrame = resolve_target_position_from_logs(
-        usbl, config.resolve
+        usbl, extrinsics, config.resolve
     )
     result = estimate_usbl_uncertainty(result, config.uncertainty)
     return result

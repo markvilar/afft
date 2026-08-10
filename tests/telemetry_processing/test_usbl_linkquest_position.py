@@ -2,6 +2,7 @@
 
 import math
 
+import numpy as np
 import pandas as pd
 import pytest
 
@@ -208,7 +209,7 @@ def test_usbl_before_pressure_window_raises() -> None:
         max_time_gap_seconds=60.0
     )
     with pytest.raises(ValueError, match="precedes first pressure reading"):
-        resolve_target_position_from_messages(usbl, pressure, config)
+        resolve_target_position_from_messages(usbl, pressure, config=config)
 
 
 def test_usbl_after_pressure_window_raises() -> None:
@@ -222,7 +223,7 @@ def test_usbl_after_pressure_window_raises() -> None:
         max_time_gap_seconds=60.0
     )
     with pytest.raises(ValueError, match="follows last pressure reading"):
-        resolve_target_position_from_messages(usbl, pressure, config)
+        resolve_target_position_from_messages(usbl, pressure, config=config)
 
 
 def test_usbl_within_time_margin_does_not_raise() -> None:
@@ -235,7 +236,7 @@ def test_usbl_within_time_margin_does_not_raise() -> None:
     config = TrackLinkResolvePositionFromMessagesConfig(
         max_time_gap_seconds=60.0
     )
-    resolve_target_position_from_messages(usbl, pressure, config)
+    resolve_target_position_from_messages(usbl, pressure, config=config)
 
 
 # ---------------------------------------------------------------------------
@@ -250,18 +251,38 @@ def test_extrinsics_columns_written() -> None:
     pressure = _pressure_df(
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [5.0, 5.0]
     )
-    config = TrackLinkResolvePositionFromMessagesConfig(
-        extrinsics=TrackLinkTransceiverExtrinsics(
-            locx=1.0, locy=2.0, locz=3.0, rotx=0.1, roty=0.2, rotz=0.3
-        )
+    extrinsics = TrackLinkTransceiverExtrinsics(
+        locx=1.0, locy=2.0, locz=3.0, rotx=0.1, roty=0.2, rotz=0.3
     )
-    result = resolve_target_position_from_messages(usbl, pressure, config)
+    result = resolve_target_position_from_messages(usbl, pressure, extrinsics)
     assert (result["usbl_extrinsics_locx"] == 1.0).all()
     assert (result["usbl_extrinsics_locy"] == 2.0).all()
     assert (result["usbl_extrinsics_locz"] == 3.0).all()
-    assert (result["usbl_extrinsics_rotx"] == 0.1).all()
-    assert (result["usbl_extrinsics_roty"] == 0.2).all()
-    assert (result["usbl_extrinsics_rotz"] == 0.3).all()
+    # Rotations are recorded in degrees, whatever unit they were supplied in.
+    assert np.allclose(result["usbl_extrinsics_rotx"], math.degrees(0.1))
+    assert np.allclose(result["usbl_extrinsics_roty"], math.degrees(0.2))
+    assert np.allclose(result["usbl_extrinsics_rotz"], math.degrees(0.3))
+    assert (result["usbl_extrinsics_rotation_units"] == "degrees").all()
+    assert result["usbl_extrinsics_applied"].all()
+
+
+def test_extrinsics_applied_distinguishes_none_from_zero() -> None:
+    # Both write six zero columns, so the boolean is the only thing telling
+    # a disabled run apart from a transceiver mounted at the origin.
+    usbl = _usbl_df(
+        [_usbl_row("2010-04-21 02:22:30", 0.0, 0.0, 0.0, 90.0, 100.0)]
+    )
+    pressure = _pressure_df(
+        ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [5.0, 5.0]
+    )
+    without = resolve_target_position_from_messages(usbl, pressure)
+    with_zero = resolve_target_position_from_messages(
+        usbl, pressure, TrackLinkTransceiverExtrinsics()
+    )
+    assert not without["usbl_extrinsics_applied"].any()
+    assert with_zero["usbl_extrinsics_applied"].all()
+    assert (without["usbl_extrinsics_locx"] == 0.0).all()
+    assert (with_zero["usbl_extrinsics_locx"] == 0.0).all()
 
 
 def test_sensor_frame_columns_present_and_unrotated() -> None:
@@ -299,10 +320,8 @@ def test_extrinsics_yaw_rotates_bearing() -> None:
     result_ext = resolve_target_position_from_messages(
         usbl_ext,
         pressure,
-        TrackLinkResolvePositionFromMessagesConfig(
-            extrinsics=TrackLinkTransceiverExtrinsics(
-                locx=0.0, locy=0.0, locz=0.0, rotz=math.radians(90.0)
-            )
+        TrackLinkTransceiverExtrinsics(
+            locx=0.0, locy=0.0, locz=0.0, rotz=math.radians(90.0)
         ),
     )
 
@@ -334,11 +353,7 @@ def test_extrinsics_translation_shifts_origin() -> None:
     result_ext = resolve_target_position_from_messages(
         usbl,
         pressure,
-        TrackLinkResolvePositionFromMessagesConfig(
-            extrinsics=TrackLinkTransceiverExtrinsics(
-                locx=0.0, locy=100.0, locz=0.0
-            )
-        ),
+        TrackLinkTransceiverExtrinsics(locx=0.0, locy=100.0, locz=0.0),
     )
 
     # Target longitude should be ~100 m East of the reference result.
@@ -377,11 +392,9 @@ def test_extrinsics_roll_sensor_z_corrected() -> None:
     pressure = _pressure_df(
         ["2010-04-21 02:22:29", "2010-04-21 02:22:31"], [depth_m, depth_m]
     )
-    config = TrackLinkResolvePositionFromMessagesConfig(
-        extrinsics=TrackLinkTransceiverExtrinsics(rotx=roll_rad)
+    result = resolve_target_position_from_messages(
+        usbl, pressure, TrackLinkTransceiverExtrinsics(rotx=roll_rad)
     )
-
-    result = resolve_target_position_from_messages(usbl, pressure, config)
 
     expected_sensor_z: float = depth_m / math.cos(roll_rad)
     assert math.isclose(
@@ -401,11 +414,7 @@ def test_extrinsics_ship_heading_applied() -> None:
     result = resolve_target_position_from_messages(
         usbl,
         pressure,
-        TrackLinkResolvePositionFromMessagesConfig(
-            extrinsics=TrackLinkTransceiverExtrinsics(
-                locx=0.0, locy=0.0, locz=0.0
-            )
-        ),
+        TrackLinkTransceiverExtrinsics(locx=0.0, locy=0.0, locz=0.0),
     )
 
     # Target 1000 m ahead of an East-heading ship → 1000 m East of GPS.
