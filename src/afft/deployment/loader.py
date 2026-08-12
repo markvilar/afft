@@ -98,7 +98,12 @@ def read_deployment_info(path: Path) -> list[DeploymentInfo]:
             DeploymentInfo.model_validate(
                 {
                     "deployment_label": entry["deployment_label"],
-                    "deployment_datetime": entry["deployment_datetime"],
+                    "deployment_start_datetime": entry[
+                        "deployment_start_datetime"
+                    ],
+                    "deployment_end_datetime": entry.get(
+                        "deployment_end_datetime"
+                    ),
                     "deployment_platform": entry.get("deployment_platform", ""),
                     "metadata": {
                         "acfr_deployment_label": metadata[

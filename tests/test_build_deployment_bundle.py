@@ -3,6 +3,7 @@
 from datetime import datetime, timezone
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
 from click.testing import CliRunner, Result
@@ -10,6 +11,7 @@ from click.testing import CliRunner, Result
 from afft.cli.entrypoint import cli
 from afft.deployment import (
     DeploymentDescriptor,
+    DeploymentIdentity,
     DeploymentMetadata,
     FileDescriptorSection,
     PlatformDescriptorSection,
@@ -25,6 +27,7 @@ from afft.deployment import (
 from afft.tasks.build_deployment_bundle import (
     BuildDeploymentBundleCommand,
     BuildDeploymentBundleConfig,
+    record_to_frame,
     run_build_deployment_bundle,
 )
 
@@ -63,7 +66,9 @@ def _build_descriptor(
     )
     return DeploymentDescriptor(
         deployment_label=label,
-        deployment_datetime=datetime(2010, 4, 28, 2, 2, 2, tzinfo=timezone.utc),
+        deployment_start_datetime=datetime(
+            2010, 4, 28, 2, 2, 2, tzinfo=timezone.utc
+        ),
         metadata=DeploymentMetadata(
             acfr_deployment_label="geebank_16_15m_out",
             acfr_campaign_label="WA201004",
@@ -151,6 +156,16 @@ def test_run_builds_a_readable_bundle(tmp_path: Path) -> None:
         deployment_identity = reader.read_frame("deployment/identity")
         assert deployment_identity["deployment_label"].iloc[0] == (
             DEPLOYMENT_LABEL
+        )
+        # A descriptor without an end still writes the column, as NaT rather
+        # than omitting it, so consumers see one shape either way.
+        assert "deployment_end_datetime" in deployment_identity.columns
+        assert pd.isna(deployment_identity["deployment_end_datetime"].iloc[0])
+        assert deployment_identity["deployment_start_datetime"].dtype == (
+            pd.DatetimeTZDtype(unit="ns", tz="UTC")
+        )
+        assert deployment_identity["deployment_end_datetime"].dtype == (
+            pd.DatetimeTZDtype(unit="ns", tz="UTC")
         )
         platform_identity = reader.read_frame("platform/identity")
         assert platform_identity["platform_label"].iloc[0] == "AUV Sirius"
@@ -246,3 +261,44 @@ def test_cli_builds_a_deployment_bundle(tmp_path: Path) -> None:
             "telemetry/raw/pressure_parosci/PAROSCI/messages"
             in reader.list_frames()
         )
+
+
+def test_record_to_frame_normalizes_an_optional_datetime() -> None:
+    """`datetime | None` is normalized like a plain `datetime`.
+
+    `datetime | None` is not `datetime`, so an identity check on the
+    annotation would leave the column as objects -- the one case
+    `HDFStore`'s `format="table"` cannot write.
+    """
+    frame = record_to_frame(
+        DeploymentIdentity(
+            deployment_label=DEPLOYMENT_LABEL,
+            deployment_start_datetime=datetime(
+                2010, 4, 28, 2, 2, 2, tzinfo=timezone.utc
+            ),
+            deployment_end_datetime=datetime(
+                2010, 4, 28, 3, 2, 2, tzinfo=timezone.utc
+            ),
+        )
+    )
+
+    utc = pd.DatetimeTZDtype(unit="ns", tz="UTC")
+    assert frame["deployment_start_datetime"].dtype == utc
+    assert frame["deployment_end_datetime"].dtype == utc
+
+
+def test_record_to_frame_encodes_an_absent_datetime_as_nat() -> None:
+    """An unrecorded end becomes `NaT` in a UTC column, not an object."""
+    frame = record_to_frame(
+        DeploymentIdentity(
+            deployment_label=DEPLOYMENT_LABEL,
+            deployment_start_datetime=datetime(
+                2010, 4, 28, 2, 2, 2, tzinfo=timezone.utc
+            ),
+        )
+    )
+
+    assert frame["deployment_end_datetime"].dtype == (
+        pd.DatetimeTZDtype(unit="ns", tz="UTC")
+    )
+    assert pd.isna(frame["deployment_end_datetime"].iloc[0])

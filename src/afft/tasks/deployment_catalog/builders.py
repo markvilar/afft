@@ -37,7 +37,7 @@ def map_platform_profile_keys(
     """
     return {
         descriptor.deployment_label: (
-            f"{descriptor.deployment_datetime.year}_"
+            f"{descriptor.deployment_start_datetime.year}_"
             f"{_snake_case(descriptor.system.vehicle_name)}"
         )
         for descriptor in descriptors
@@ -78,12 +78,12 @@ def map_vessel_profile_keys(
 
     campaign_keys: dict[str, str] = {}
     for descriptor in sorted(
-        tracked, key=lambda item: item.deployment_datetime
+        tracked, key=lambda item: item.deployment_start_datetime
     ):
         campaign: str = descriptor.metadata.acfr_campaign_label
         if campaign not in campaign_keys:
             campaign_keys[campaign] = (
-                f"{descriptor.deployment_datetime:%Y%m}_"
+                f"{descriptor.deployment_start_datetime:%Y%m}_"
                 f"{_snake_case(campaign) or 'unknown_campaign'}"
             )
 

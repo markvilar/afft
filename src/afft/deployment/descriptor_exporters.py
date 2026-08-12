@@ -1,10 +1,16 @@
 """Markdown export for deployment descriptor summaries."""
 
+from datetime import datetime
 from pathlib import Path
 
 from .descriptor_summary import DescriptorSummary
 
 type MarkdownLines = list[str]
+
+
+def _format_end(end: datetime | None) -> str:
+    """Render a deployment's end datetime, or note that none was recorded."""
+    return end.isoformat() if end is not None else "not recorded"
 
 
 def format_table(headers: list[str], rows: list[list[str]]) -> MarkdownLines:
@@ -143,7 +149,8 @@ def format_deployments(summary: DescriptorSummary) -> MarkdownLines:
             [
                 f"### {deployment.deployment_label}",
                 "",
-                f"- Datetime: {deployment.deployment_datetime.isoformat()}",
+                f"- Start: {deployment.deployment_start_datetime.isoformat()}",
+                f"- End: {_format_end(deployment.deployment_end_datetime)}",
                 f"- Campaign: {deployment.campaign_label}",
                 f"- Files: {files if files else 'none'}",
                 f"- Topics: {', '.join(deployment.topics) or 'none'}",

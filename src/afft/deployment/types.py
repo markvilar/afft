@@ -1,10 +1,11 @@
 """Data types for AUV deployment configuration and metadata."""
 
 from datetime import datetime
+from typing import Self
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, model_validator
 
-from .common_types import DeploymentMetadata
+from .common_types import DeploymentMetadata, validate_temporal_range
 
 
 class UsblUncertaintyProfile(BaseModel):
@@ -94,7 +95,9 @@ class DeploymentInfo(BaseModel):
     Attributes
     ----------
     deployment_label: Deployment identifier in ``<GEOHASH>_<DATETIME>`` format.
-    deployment_datetime: Deployment datetime.
+    deployment_start_datetime: Start datetime of the deployment.
+    deployment_end_datetime: End datetime of the deployment; ``None`` when the
+        deployment covers its own full temporal range and no end was recorded.
     deployment_platform: Squidle+ platform name for this deployment.
     metadata: Collected deployment metadata.
     """
@@ -102,6 +105,14 @@ class DeploymentInfo(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     deployment_label: str
-    deployment_datetime: datetime
+    deployment_start_datetime: datetime
+    deployment_end_datetime: datetime | None = None
     deployment_platform: str
     metadata: DeploymentMetadata
+
+    @model_validator(mode="after")
+    def _check_temporal_range(self) -> Self:
+        validate_temporal_range(
+            self.deployment_start_datetime, self.deployment_end_datetime
+        )
+        return self

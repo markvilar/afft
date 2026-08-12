@@ -286,7 +286,7 @@ def test_run_writes_descriptor_toml(tmp_path: Path) -> None:
     descriptor = descriptors[0]
     assert descriptor == result.descriptors[0]
     assert descriptor.deployment_label == DEPLOYMENT_LABEL
-    assert descriptor.deployment_datetime.isoformat() == (
+    assert descriptor.deployment_start_datetime.isoformat() == (
         "2017-05-25T23:46:00+00:00"
     )
     assert descriptor.telemetry.topics == ["GPS_RMC", "RDI", "VIS"]

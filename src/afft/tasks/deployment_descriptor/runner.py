@@ -32,7 +32,7 @@ from .types import (
     DescribeDeploymentResult,
 )
 
-type DeploymentDatetimeFinder = Callable[[Path], datetime]
+type DeploymentStartDatetimeFinder = Callable[[Path], datetime]
 type DeploymentFinder = Callable[[Path], list[Path]]
 type DeploymentLabeller = Callable[[Path], str]
 
@@ -86,9 +86,9 @@ def create_deployment_labeller(
     return labeller
 
 
-def create_deployment_datetime_finder(
+def create_deployment_start_datetime_finder(
     command: DescribeDeploymentCommand,
-) -> DeploymentDatetimeFinder:
+) -> DeploymentStartDatetimeFinder:
     """
     Create a strategy that parses the start datetime from a deployment
     directory name.
@@ -121,7 +121,7 @@ def create_deployment_datetime_finder(
 def describe_deployment(
     directory: Path,
     deployment_label: str,
-    deployment_datetime: datetime,
+    deployment_start_datetime: datetime,
     diagnostics: DescribeDeploymentDiagnostics,
 ) -> DeploymentDescriptor:
     """
@@ -139,7 +139,7 @@ def describe_deployment(
     ---------
     directory: Deployment root directory.
     deployment_label: Label of the deployment.
-    deployment_datetime: Start datetime of the deployment.
+    deployment_start_datetime: Start datetime of the deployment.
     diagnostics: Accumulator for non-fatal issues.
 
     Returns
@@ -169,7 +169,7 @@ def describe_deployment(
 
     return DeploymentDescriptor(
         deployment_label=deployment_label,
-        deployment_datetime=deployment_datetime,
+        deployment_start_datetime=deployment_start_datetime,
         metadata=build_deployment_metadata(
             files, deployment_label, diagnostics
         ),
@@ -217,8 +217,8 @@ def run_describe_deployment(
 
     find_deployments: DeploymentFinder = create_deployment_finder(command)
     label_deployment: DeploymentLabeller = create_deployment_labeller(command)
-    find_start_datetime: DeploymentDatetimeFinder = (
-        create_deployment_datetime_finder(command)
+    find_start_datetime: DeploymentStartDatetimeFinder = (
+        create_deployment_start_datetime_finder(command)
     )
 
     deployment_dirs: list[Path] = find_deployments(command.root_dir)

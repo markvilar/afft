@@ -4,6 +4,7 @@ logs."""
 from .frame_builders import (
     build_deployment_files_frame as build_deployment_files_frame,
     build_raw_telemetry_frame as build_raw_telemetry_frame,
+    record_to_frame as record_to_frame,
 )
 from .section_builders import (
     build_deployment_bundle as build_deployment_bundle,

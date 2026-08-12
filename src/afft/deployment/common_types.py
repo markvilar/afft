@@ -1,6 +1,35 @@
 """Data types shared across deployment descriptor and deployment bundle representations."""
 
+from datetime import datetime
+
 from pydantic import BaseModel, ConfigDict, Field
+
+
+def validate_temporal_range(
+    start: datetime,
+    end: datetime | None,
+) -> None:
+    """
+    Validate a deployment's temporal range.
+
+    An absent end is valid: it means the deployment covers its own full
+    temporal range and no end was recorded. A present end must be strictly
+    after the start, since a deployment spanning no time is not a deployment.
+
+    Arguments
+    ---------
+    start: Start datetime of the deployment.
+    end: End datetime of the deployment, or ``None``.
+
+    Raises
+    ------
+    ValueError: If `end` is given and is not strictly after `start`.
+    """
+    if end is not None and end <= start:
+        raise ValueError(
+            f"deployment end datetime must be after its start: "
+            f"{end.isoformat()} <= {start.isoformat()}"
+        )
 
 
 class DeploymentMetadata(BaseModel):
