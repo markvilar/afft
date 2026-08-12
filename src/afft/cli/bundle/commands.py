@@ -1,14 +1,42 @@
 """CLI commands for working with deployment bundles."""
 
+from datetime import datetime
+
 import click
 
 from .actions import (
     invoke_build_deployment_bundle,
+    invoke_clip_deployment_bundle,
     invoke_export_bundle_frame,
     invoke_ingest_bundle_frame,
     invoke_list_deployment_bundle,
     invoke_process_deployment_bundle,
 )
+
+
+class IsoDateTime(click.ParamType[datetime]):
+    """A datetime parsed from ISO8601, rather than from a fixed format list.
+
+    `click.DateTime` matches against a list of formats and none of its
+    defaults carries a UTC offset, so an offset-bearing bound would be
+    rejected. Whether the parsed value is naive is left to the task, which
+    takes a naive bound as UTC.
+    """
+
+    name: str = "iso8601"
+
+    def convert(
+        self,
+        value: object,
+        param: click.Parameter | None,
+        context: click.Context | None,
+    ) -> datetime:
+        if isinstance(value, datetime):
+            return value
+        try:
+            return datetime.fromisoformat(str(value))
+        except ValueError:
+            self.fail(f"{value!r} is not an ISO8601 datetime", param, context)
 
 
 @click.group()
@@ -243,5 +271,78 @@ def export_frame(
         bundle_file,
         key,
         output_file,
+        overwrite,
+    )
+
+
+@bundle_group.command("clip")
+@click.option(
+    "--input",
+    "input_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the deployment bundle to clip, never written",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="path to write the clipped bundle to",
+)
+@click.option(
+    "--start",
+    type=IsoDateTime(),
+    required=True,
+    help="start of the clip window, inclusive; naive values are taken as UTC",
+)
+@click.option(
+    "--end",
+    type=IsoDateTime(),
+    required=True,
+    help="end of the clip window, inclusive; naive values are taken as UTC",
+)
+@click.option(
+    "--label-suffix",
+    required=True,
+    help="suffix joined onto the source deployment label with an underscore",
+)
+@click.option(
+    "--datetime-column",
+    default="timestamp",
+    show_default=True,
+    help="column to clip on; frames without it are copied whole",
+)
+@click.option(
+    "--no-clip",
+    "no_clip_patterns",
+    multiple=True,
+    help="key pattern whose frames are copied whole; repeatable",
+)
+@click.option(
+    "--overwrite",
+    is_flag=True,
+    default=False,
+    help="overwrite the output file if it already exists",
+)
+def clip(
+    input_file: str,
+    output_file: str,
+    start: datetime,
+    end: datetime,
+    label_suffix: str,
+    datetime_column: str,
+    no_clip_patterns: tuple[str, ...],
+    overwrite: bool,
+) -> None:
+    """Clip a deployment bundle's tables to a temporal window."""
+    invoke_clip_deployment_bundle(
+        input_file,
+        output_file,
+        start,
+        end,
+        label_suffix,
+        datetime_column,
+        no_clip_patterns,
         overwrite,
     )

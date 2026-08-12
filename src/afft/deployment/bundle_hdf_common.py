@@ -1,6 +1,8 @@
 """Helpers shared by the `pandas.HDFStore` deployment bundle reader, writer,
 and read-write implementations."""
 
+from typing import Literal
+
 import pandas as pd
 
 from .bundle_common import CONTENTS_KEY, empty_contents
@@ -100,3 +102,26 @@ def upsert_contents_row(
     if CONTENTS_KEY in store:
         store.remove(CONTENTS_KEY)
     store.put(CONTENTS_KEY, updated, format="table")
+
+
+def put_frame(store: pd.HDFStore, table_name: str, frame: pd.DataFrame) -> None:
+    """
+    Write a frame to the store, choosing the layout its row count allows.
+
+    A row-less frame is written as ``"fixed"`` rather than ``"table"``:
+    ``format="table"`` writes nothing at all for one, which would leave a
+    ``bundle_contents`` row pointing at an object the store does not hold --
+    ``has_frame`` would answer yes and ``read_frame`` would then raise. Both
+    layouts read back through ``select``, and the query support ``"table"``
+    buys is meaningless for a frame with no rows to query.
+
+    Arguments
+    ---------
+    store: Open store to write to.
+    table_name: Name to write the frame under.
+    frame: Frame to write, already coerced to storable dtypes.
+    """
+    table_format: Literal["fixed", "table"] = (
+        "fixed" if frame.empty else "table"
+    )
+    store.put(table_name, frame, format=table_format)

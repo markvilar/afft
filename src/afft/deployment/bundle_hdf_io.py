@@ -11,6 +11,7 @@ import pandas as pd
 from .bundle_common import RESERVED_KEYS, encode_frame_dtypes
 from .bundle_hdf_common import (
     coerce_storable_dtypes,
+    put_frame,
     read_contents,
     resolve_table_name,
     upsert_contents_row,
@@ -64,7 +65,7 @@ class HDFDeploymentBundleIO:
         frame = coerce_storable_dtypes(frame)
         if exists:
             self.store.remove(table_name)
-        self.store.put(table_name, frame, format="table")
+        put_frame(self.store, table_name, frame)
 
         upsert_contents_row(self.store, key, table_name, dtypes)
 

@@ -1,5 +1,6 @@
 """Actions for deployment bundle CLI commands."""
 
+from datetime import datetime
 from pathlib import Path
 
 import pandas as pd
@@ -16,8 +17,10 @@ from afft.tasks.build_deployment_bundle import (
     run_build_deployment_bundle,
 )
 from afft.tasks.deployment_bundle_common import (
+    ClipDeploymentBundleCommand,
     ExportBundleFrameCommand,
     IngestBundleFrameCommand,
+    run_clip_deployment_bundle,
     run_export_bundle_frame,
     run_ingest_bundle_frame,
 )
@@ -132,3 +135,27 @@ def invoke_process_deployment_bundle(
         verbose=verbose,
     )
     run_process_deployment_bundle(command)
+
+
+def invoke_clip_deployment_bundle(
+    input_file: str | Path,
+    output_file: str | Path,
+    start: datetime,
+    end: datetime,
+    label_suffix: str,
+    datetime_column: str = "timestamp",
+    no_clip_patterns: tuple[str, ...] = (),
+    overwrite: bool = False,
+) -> None:
+    """Clip a deployment bundle's tables to a temporal window."""
+    command = ClipDeploymentBundleCommand(
+        input_file=Path(input_file),
+        output_file=Path(output_file),
+        start=start,
+        end=end,
+        label_suffix=label_suffix,
+        datetime_column=datetime_column,
+        no_clip_patterns=no_clip_patterns,
+        overwrite=overwrite,
+    )
+    run_clip_deployment_bundle(command)
