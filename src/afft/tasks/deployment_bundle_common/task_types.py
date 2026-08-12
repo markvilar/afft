@@ -1,5 +1,6 @@
 """Data types for the common deployment bundle tasks."""
 
+from datetime import datetime
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
@@ -47,6 +48,51 @@ class ExportBundleFrameCommand(BaseModel):
     overwrite: bool = False
 
 
+class ClipDeploymentBundleCommand(BaseModel):
+    """
+    Attributes
+    ----------
+    input_file: Path to the deployment bundle to clip. Read only; never
+        written.
+    output_file: Path to write the clipped bundle to.
+    start: Start of the clip window, inclusive.
+    end: End of the clip window, inclusive.
+    label_suffix: Appended to the source deployment label, joined with an
+        underscore, to name the clipped deployment.
+    datetime_column: Column to clip on. Frames without it are copied whole.
+    no_clip_patterns: Key patterns whose frames are copied whole even if they
+        carry ``datetime_column``.
+    overwrite: Overwrite an existing output file.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    input_file: Path
+    output_file: Path
+    start: datetime
+    end: datetime
+    label_suffix: str
+    datetime_column: str = "timestamp"
+    no_clip_patterns: tuple[str, ...] = ()
+    overwrite: bool = False
+
+
+class ClippedFrame(BaseModel):
+    """
+    Attributes
+    ----------
+    key: Bundle key of the frame that was clipped.
+    rows_before: Row count in the source frame.
+    rows_after: Row count inside the clip window.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    key: str
+    rows_before: int
+    rows_after: int
+
+
 class IngestBundleFrameResult(BaseModel):
     """
     Attributes
@@ -81,3 +127,28 @@ class ExportBundleFrameResult(BaseModel):
     key: str
     rows: int
     columns: tuple[str, ...]
+
+
+class ClipDeploymentBundleResult(BaseModel):
+    """
+    Attributes
+    ----------
+    input_file: Path to the bundle that was clipped.
+    output_file: Path the clipped bundle was written to.
+    deployment_label: Label of the clipped deployment.
+    clipped_keys: Keys whose frames were clipped, with their row counts before
+        and after.
+    copied_keys: Keys whose frames were copied whole.
+    empty_keys: Keys the window clipped to zero rows. Reported separately
+        rather than read off ``clipped_keys``, since it is the field a caller
+        checks to find out whether the window was wrong.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    input_file: Path
+    output_file: Path
+    deployment_label: str
+    clipped_keys: tuple[ClippedFrame, ...]
+    copied_keys: tuple[str, ...]
+    empty_keys: tuple[str, ...]

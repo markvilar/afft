@@ -1,6 +1,7 @@
 """Supporting functions for the common deployment bundle tasks: key
 validation, frame reading and writing, and input validation."""
 
+import fnmatch
 import re
 
 from collections.abc import Callable
@@ -8,7 +9,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from .task_types import ExportBundleFrameCommand, IngestBundleFrameCommand
+from .task_types import (
+    ClipDeploymentBundleCommand,
+    ExportBundleFrameCommand,
+    IngestBundleFrameCommand,
+)
 
 type BundleFrameKey = str
 type FrameWriter = Callable[[pd.DataFrame, Path], None]
@@ -190,6 +195,117 @@ def validate_ingest_bundle_frame_input(
     if not command.input_file.is_file():
         raise FileNotFoundError(
             f"input file does not exist: {command.input_file}"
+        )
+
+
+def key_matches_no_clip(key: BundleFrameKey, patterns: tuple[str, ...]) -> bool:
+    """
+    Whether a key matches any of the no-clip patterns.
+
+    Patterns are `fnmatch` globs matched against the whole key. ``*`` crosses
+    slash boundaries there, so ``metocean/*`` matches
+    ``metocean/stormglass/wave_height`` as intended.
+
+    Arguments
+    ---------
+    key: Bundle key to test.
+    patterns: Key patterns whose frames are copied whole.
+
+    Returns
+    -------
+    Whether the frame at `key` should keep every row.
+    """
+    return any(fnmatch.fnmatch(key, pattern) for pattern in patterns)
+
+
+def clip_frame_to_window(
+    key: BundleFrameKey,
+    frame: pd.DataFrame,
+    datetime_column: str,
+    start: pd.Timestamp,
+    end: pd.Timestamp,
+) -> pd.DataFrame:
+    """
+    Clip a frame's rows to a closed window on its datetime column.
+
+    The window is ``start <= t <= end``, so a range quoted as covering both
+    of its bounds keeps the rows sitting on them. Consecutive windows sharing
+    a bound therefore both keep the row on it -- cutting a source into
+    adjacent clips duplicates that row rather than partitioning cleanly.
+
+    The result is taken by boolean mask rather than rebuilt, which is what
+    keeps a window matching no rows an empty frame with the source's dtypes
+    intact rather than an empty frame of objects.
+
+    Arguments
+    ---------
+    key: Bundle key the frame was read from, named in any error.
+    frame: Frame to clip; not mutated.
+    datetime_column: Column to clip on.
+    start: Start of the window, inclusive.
+    end: End of the window, inclusive.
+
+    Returns
+    -------
+    The rows of `frame` inside the window.
+
+    Raises
+    ------
+    ValueError: If `datetime_column` is not a datetime column. A frame
+        carrying the name on a non-temporal column cannot be clipped, and
+        copying it whole instead would silently keep rows outside the window.
+    """
+    column: pd.Series = frame[datetime_column]
+    if not pd.api.types.is_datetime64_any_dtype(column):
+        raise ValueError(
+            f"{key}: column {datetime_column!r} is not a datetime column, "
+            f"got {column.dtype}"
+        )
+
+    return frame[(column >= start) & (column <= end)].reset_index(drop=True)
+
+
+def validate_clip_deployment_bundle_input(
+    command: ClipDeploymentBundleCommand,
+) -> None:
+    """
+    Validate the task's inputs before the bundle is opened.
+
+    Arguments
+    ---------
+    command: Task command.
+
+    Raises
+    ------
+    FileNotFoundError: If the input bundle does not exist.
+    ValueError: If the output file is the input file, if it exists and
+        ``overwrite`` is not set, if ``start`` is not before ``end``, or if
+        ``label_suffix`` is empty.
+    """
+    if not command.label_suffix:
+        raise ValueError("label suffix is empty")
+
+    if command.start >= command.end:
+        raise ValueError(
+            f"clip window start must be before its end: "
+            f"{command.start.isoformat()} >= {command.end.isoformat()}"
+        )
+
+    if not command.input_file.is_file():
+        raise FileNotFoundError(
+            f"deployment bundle does not exist: {command.input_file}"
+        )
+
+    if command.output_file == command.input_file:
+        raise ValueError(
+            f"output file is the input bundle: {command.output_file}; "
+            f"a clip is written to a new bundle"
+        )
+
+    if command.output_file.exists() and not command.overwrite:
+        raise ValueError(
+            f"output file already exists: {command.output_file}: "
+            f"pass overwrite to replace it"
         )
 
 

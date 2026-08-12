@@ -66,11 +66,20 @@ class DeploymentProvenance(BaseModel):
     Attributes
     ----------
     deployment_key: Identifier of the deployment the bundle was built from.
+    source_bundle: Path to the bundle this one was cut from; ``None`` for a
+        bundle built from raw message logs rather than derived from another.
+    clip_start_datetime: Start of the window the source bundle was clipped to,
+        inclusive; ``None`` when the bundle is not a clip.
+    clip_end_datetime: End of the window the source bundle was clipped to,
+        inclusive; ``None`` when the bundle is not a clip.
     """
 
     model_config = ConfigDict(frozen=True)
 
     deployment_key: str
+    source_bundle: str | None = None
+    clip_start_datetime: datetime | None = None
+    clip_end_datetime: datetime | None = None
 
 
 class ProcessedProvenance(BaseModel):

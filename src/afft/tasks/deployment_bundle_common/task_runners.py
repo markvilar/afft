@@ -1,5 +1,9 @@
 """Runners for the common deployment bundle tasks."""
 
+import os
+
+from datetime import datetime
+from pathlib import Path
 from typing import Literal
 
 import pandas as pd
@@ -7,23 +11,35 @@ import pandas as pd
 from afft.deployment import (
     DeploymentBundleIO,
     DeploymentBundleReader,
+    DeploymentIdentity,
+    DeploymentProvenance,
     open_deployment_bundle,
     open_deployment_bundle_reader,
 )
+from afft.tasks.build_deployment_bundle import record_to_frame
 from afft.utils.log import logger
 
 from .task_helpers import (
+    clip_frame_to_window,
+    key_matches_no_clip,
     read_frame_file,
+    validate_clip_deployment_bundle_input,
     validate_export_bundle_frame_input,
     validate_ingest_bundle_frame_input,
     write_frame_file,
 )
 from .task_types import (
+    ClipDeploymentBundleCommand,
+    ClipDeploymentBundleResult,
+    ClippedFrame,
     ExportBundleFrameCommand,
     ExportBundleFrameResult,
     IngestBundleFrameCommand,
     IngestBundleFrameResult,
 )
+
+_IDENTITY_KEY: str = "deployment/identity"
+_PROVENANCE_KEY: str = "deployment/provenance"
 
 
 def run_export_bundle_frame(
@@ -153,3 +169,170 @@ def run_ingest_bundle_frame(
         rows=len(frame),
         columns=tuple(frame.columns),
     )
+
+
+def run_clip_deployment_bundle(
+    command: ClipDeploymentBundleCommand,
+) -> ClipDeploymentBundleResult:
+    """
+    Clip a deployment bundle's tables to a temporal window, writing a new
+    bundle.
+
+    The input is opened through the reader interface and is never written, so
+    a clip cannot damage the bundle it reads.
+
+    The window is closed, ``start <= t <= end``. Cutting one source into
+    adjacent windows therefore repeats the row on a shared bound in both
+    clips, so windows meant to partition a deployment have to be stated so
+    they do not touch.
+
+    Every key the source holds is present in the output, including one the
+    window clipped to zero rows. An empty telemetry table is an honest
+    statement that the sensor produced nothing in the window, and keeping the
+    key means a consumer's ``has_frame`` answers the same against both
+    bundles.
+
+    Arguments
+    ---------
+    command: Task command.
+
+    Returns
+    -------
+    The run's result, naming the clipped deployment and what happened to each
+    key.
+
+    Raises
+    ------
+    FileNotFoundError: If the input bundle does not exist.
+    ValueError: If the output file is the input file, if it exists and
+        ``overwrite`` is not set, if ``start`` is not before ``end``, or if
+        ``label_suffix`` is empty.
+    """
+    validate_clip_deployment_bundle_input(command)
+
+    start: pd.Timestamp = _to_utc_timestamp(command.start)
+    end: pd.Timestamp = _to_utc_timestamp(command.end)
+
+    logger.info("-------------------------------------")
+    logger.info("Clip Deployment Bundle")
+    logger.info(f"  input file:  {command.input_file}")
+    logger.info(f"  output file: {command.output_file}")
+    logger.info(f"  window:      [{start.isoformat()}, {end.isoformat()}]")
+    logger.info("-------------------------------------")
+
+    clipped: list[ClippedFrame] = []
+    copied: list[str] = []
+    empty: list[str] = []
+    deployment_label: str
+
+    output_file: Path = command.output_file
+    staged: Path = output_file.with_suffix(".partial" + output_file.suffix)
+    try:
+        reader: DeploymentBundleReader
+        target: DeploymentBundleIO
+        with open_deployment_bundle_reader(command.input_file) as reader:
+            deployment_label = _clipped_deployment_label(
+                reader, command.label_suffix
+            )
+            with open_deployment_bundle(staged) as target:
+                for key in sorted(reader.list_frames()):
+                    if key == _IDENTITY_KEY:
+                        target.write_frame(
+                            key,
+                            record_to_frame(
+                                DeploymentIdentity(
+                                    deployment_label=deployment_label,
+                                    deployment_start_datetime=command.start,
+                                    deployment_end_datetime=command.end,
+                                )
+                            ),
+                            if_exists="fail",
+                        )
+                        copied.append(key)
+                        continue
+
+                    if key == _PROVENANCE_KEY:
+                        target.write_frame(
+                            key,
+                            record_to_frame(
+                                DeploymentProvenance(
+                                    deployment_key=deployment_label,
+                                    source_bundle=str(command.input_file),
+                                    clip_start_datetime=command.start,
+                                    clip_end_datetime=command.end,
+                                )
+                            ),
+                            if_exists="fail",
+                        )
+                        copied.append(key)
+                        continue
+
+                    frame: pd.DataFrame = reader.read_frame(key)
+                    if (
+                        key_matches_no_clip(key, command.no_clip_patterns)
+                        or command.datetime_column not in frame.columns
+                    ):
+                        target.write_frame(key, frame, if_exists="fail")
+                        copied.append(key)
+                        continue
+
+                    result: pd.DataFrame = clip_frame_to_window(
+                        key, frame, command.datetime_column, start, end
+                    )
+                    target.write_frame(key, result, if_exists="fail")
+                    clipped.append(
+                        ClippedFrame(
+                            key=key,
+                            rows_before=len(frame),
+                            rows_after=len(result),
+                        )
+                    )
+                    if result.empty:
+                        empty.append(key)
+                        logger.warning(f"{key}: no rows inside the clip window")
+        os.replace(staged, output_file)
+    except BaseException:
+        staged.unlink(missing_ok=True)
+        raise
+
+    logger.info(f"wrote clipped deployment bundle to {output_file}")
+
+    return ClipDeploymentBundleResult(
+        input_file=command.input_file,
+        output_file=output_file,
+        deployment_label=deployment_label,
+        clipped_keys=tuple(clipped),
+        copied_keys=tuple(copied),
+        empty_keys=tuple(empty),
+    )
+
+
+def _to_utc_timestamp(value: datetime) -> pd.Timestamp:
+    """Coerce a window bound to a UTC timestamp, taking a naive value as UTC.
+
+    Every timestamp in a bundle is ``datetime64[ns, UTC]``, so a naive bound
+    has to be given a zone before it can be compared against one at all.
+    """
+    timestamp: pd.Timestamp = pd.Timestamp(value)
+    if timestamp.tzinfo is None:
+        return timestamp.tz_localize("UTC")
+    return timestamp.tz_convert("UTC")
+
+
+def _clipped_deployment_label(
+    reader: DeploymentBundleReader, label_suffix: str
+) -> str:
+    """Read the source deployment's label and join the suffix onto it.
+
+    Every bundle is written onto the identity field names the descriptor
+    models use, so the label is read unconditionally rather than probed for.
+    """
+    if not reader.has_frame(_IDENTITY_KEY):
+        raise ValueError(
+            f"bundle holds no frame at {_IDENTITY_KEY!r}: "
+            f"a clip needs the source deployment's identity"
+        )
+
+    identity: pd.DataFrame = reader.read_frame(_IDENTITY_KEY)
+    source_label: str = str(identity["deployment_label"].iloc[0])
+    return f"{source_label}_{label_suffix}"
