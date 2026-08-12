@@ -57,7 +57,7 @@ def _build_descriptor() -> DeploymentDescriptor:
     """Builds a descriptor with every curated slot left unfilled."""
     return DeploymentDescriptor(
         deployment_label="qd66hv_20170525_234600",
-        deployment_datetime=datetime(
+        deployment_start_datetime=datetime(
             2017, 5, 25, 23, 46, 0, tzinfo=timezone.utc
         ),
         metadata=DeploymentMetadata(
@@ -100,9 +100,13 @@ def test_descriptor_datetime_is_native_toml_datetime(tmp_path: Path) -> None:
     write_deployment_descriptors(path, [_build_descriptor()])
 
     # Unquoted, so TOML decodes it back to a datetime rather than a string.
-    assert "deployment_datetime = 2017-05-25 23:46:00+00:00" in path.read_text()
+    assert (
+        "deployment_start_datetime = 2017-05-25 23:46:00+00:00"
+        in path.read_text()
+    )
     assert isinstance(
-        read_config(path)["deployments"][0]["deployment_datetime"], datetime
+        read_config(path)["deployments"][0]["deployment_start_datetime"],
+        datetime,
     )
 
 

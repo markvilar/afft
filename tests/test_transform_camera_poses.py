@@ -78,7 +78,9 @@ def _build_descriptor(
     """Builds a descriptor carrying only the fields the extrinsics lookup reads."""
     return DeploymentDescriptor(
         deployment_label=label,
-        deployment_datetime=datetime(2010, 4, 28, 2, 2, 2, tzinfo=timezone.utc),
+        deployment_start_datetime=datetime(
+            2010, 4, 28, 2, 2, 2, tzinfo=timezone.utc
+        ),
         metadata=DeploymentMetadata(
             acfr_deployment_label=label,
             acfr_campaign_label="WA201004",

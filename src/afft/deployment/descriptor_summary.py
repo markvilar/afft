@@ -63,7 +63,9 @@ class DeploymentSummary(BaseModel):
     Attributes
     ----------
     deployment_label: Label of the summarized deployment.
-    deployment_datetime: Deployment datetime.
+    deployment_start_datetime: Start datetime of the deployment.
+    deployment_end_datetime: End datetime of the deployment; ``None`` when the
+        deployment covers its own full temporal range and no end was recorded.
     campaign_label: ACFR campaign the deployment belongs to.
     file_counts: File count per file section name.
     topics: Telemetry topics observed for the deployment.
@@ -75,7 +77,8 @@ class DeploymentSummary(BaseModel):
     model_config = ConfigDict(frozen=True)
 
     deployment_label: str
-    deployment_datetime: datetime
+    deployment_start_datetime: datetime
+    deployment_end_datetime: datetime | None
     campaign_label: str
     file_counts: dict[SectionName, int]
     topics: list[TopicName]
@@ -218,7 +221,8 @@ def _summarize_deployment(
     """Build the per-deployment detail for one descriptor."""
     return DeploymentSummary(
         deployment_label=descriptor.deployment_label,
-        deployment_datetime=descriptor.deployment_datetime,
+        deployment_start_datetime=descriptor.deployment_start_datetime,
+        deployment_end_datetime=descriptor.deployment_end_datetime,
         campaign_label=descriptor.metadata.acfr_campaign_label,
         file_counts={
             section: len(getattr(descriptor.files, section))
@@ -292,10 +296,10 @@ def summarize_descriptors(
         deployment_count=len(descriptors),
         campaign_counts=_sort_counts(campaign_counts),
         earliest_datetime=min(
-            deployment.deployment_datetime for deployment in deployments
+            deployment.deployment_start_datetime for deployment in deployments
         ),
         latest_datetime=max(
-            deployment.deployment_datetime for deployment in deployments
+            deployment.deployment_start_datetime for deployment in deployments
         ),
         extent=GeographicExtent(
             min_latitude=min(latitudes),

@@ -14,10 +14,12 @@ import pandas as pd
 import pytest
 
 from afft.deployment import (
+    DeploymentIdentity,
     open_deployment_bundle,
     open_deployment_bundle_reader,
     open_deployment_bundle_writer,
 )
+from afft.tasks.build_deployment_bundle import record_to_frame
 
 SUFFIXES: tuple[str, ...] = (".h5", ".sqlite")
 
@@ -247,3 +249,48 @@ def test_unsupported_suffix_raises(tmp_path: Path) -> None:
     with pytest.raises(NotImplementedError):
         with open_deployment_bundle(tmp_path / "bundle.parquet"):
             pass
+
+
+@pytest.mark.parametrize(
+    "end",
+    [
+        datetime(2023, 10, 21, 4, 0, 0, tzinfo=timezone.utc),
+        None,
+    ],
+    ids=["clipped", "full-range"],
+)
+def test_deployment_identity_temporal_range_round_trip(
+    bundle_path: Path, end: datetime | None
+) -> None:
+    """A deployment identity's temporal range survives a round trip.
+
+    Covers both a clipped deployment, which records both bounds, and a
+    full-range one, whose absent end is stored as `NaT` in a UTC column
+    rather than as a missing column.
+    """
+    identity = record_to_frame(
+        DeploymentIdentity(
+            deployment_label="qdch0ftq_20231021_030000",
+            deployment_start_datetime=datetime(
+                2023, 10, 21, 3, 0, 0, tzinfo=timezone.utc
+            ),
+            deployment_end_datetime=end,
+        )
+    )
+
+    with open_deployment_bundle_writer(bundle_path) as writer:
+        writer.write_frame("deployment/identity", identity)
+
+    with open_deployment_bundle_reader(bundle_path) as reader:
+        read_back = reader.read_frame("deployment/identity")
+
+    utc = pd.DatetimeTZDtype(unit="ns", tz="UTC")
+    assert read_back["deployment_start_datetime"].dtype == utc
+    assert read_back["deployment_end_datetime"].dtype == utc
+    assert read_back["deployment_start_datetime"].iloc[0] == pd.Timestamp(
+        "2023-10-21 03:00:00", tz="UTC"
+    )
+    if end is None:
+        assert pd.isna(read_back["deployment_end_datetime"].iloc[0])
+    else:
+        assert read_back["deployment_end_datetime"].iloc[0] == pd.Timestamp(end)

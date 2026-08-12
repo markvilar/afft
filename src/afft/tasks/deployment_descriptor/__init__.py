@@ -7,7 +7,7 @@ from .builders import (
     build_telemetry_section as build_telemetry_section,
 )
 from .runner import (
-    create_deployment_datetime_finder as create_deployment_datetime_finder,
+    create_deployment_start_datetime_finder as create_deployment_start_datetime_finder,
     create_deployment_finder as create_deployment_finder,
     create_deployment_labeller as create_deployment_labeller,
     describe_deployment as describe_deployment,

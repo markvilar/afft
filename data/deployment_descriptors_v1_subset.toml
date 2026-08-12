@@ -1,6 +1,6 @@
 [[deployments]]
 deployment_label = "qdch0ftq_20100428_020202"
-deployment_datetime = 2010-04-28 02:02:02+00:00
+deployment_start_datetime = 2010-04-28 02:02:02+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "geebank_16_15m_out"
@@ -97,7 +97,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "qdch0ftq_20110415_020103"
-deployment_datetime = 2011-04-15 02:01:03+00:00
+deployment_start_datetime = 2011-04-15 02:01:03+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "geebank_24_15m_out"
@@ -195,7 +195,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "qdch0ftq_20120430_002423"
-deployment_datetime = 2012-04-30 00:24:23+00:00
+deployment_start_datetime = 2012-04-30 00:24:23+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "geebank_34_15m_out"
@@ -297,7 +297,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "qdch0ftq_20130406_023610"
-deployment_datetime = 2013-04-06 02:36:10+00:00
+deployment_start_datetime = 2013-04-06 02:36:10+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "geebank_03_15m_out"
@@ -395,7 +395,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "qdchdmy1_20110416_005411"
-deployment_datetime = 2011-04-16 00:54:11+00:00
+deployment_start_datetime = 2011-04-16 00:54:11+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "snapperbank_27"
@@ -488,7 +488,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "qdchdmy1_20120501_071203"
-deployment_datetime = 2012-05-01 07:12:03+00:00
+deployment_start_datetime = 2012-05-01 07:12:03+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "snapperbank_37"
@@ -585,7 +585,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "qdchdmy1_20130406_081713"
-deployment_datetime = 2013-04-06 08:17:13+00:00
+deployment_start_datetime = 2013-04-06 08:17:13+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "snapperbank_05"
@@ -681,7 +681,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "qdchdmy1_20170525_234624"
-deployment_datetime = 2017-05-25 23:46:24+00:00
+deployment_start_datetime = 2017-05-25 23:46:24+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "SS11_snapperbank"
@@ -782,7 +782,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "r23685bc_20100605_021022"
-deployment_datetime = 2010-06-05 02:10:22+00:00
+deployment_start_datetime = 2010-06-05 02:10:22+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "lanterns_15_deep"
@@ -877,7 +877,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "r23685bc_20120530_233021"
-deployment_datetime = 2012-05-30 23:30:21+00:00
+deployment_start_datetime = 2012-05-30 23:30:21+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "lanterns_10_deep"
@@ -977,7 +977,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "r23685bc_20140616_225022"
-deployment_datetime = 2014-06-16 22:50:22+00:00
+deployment_start_datetime = 2014-06-16 22:50:22+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "tas_13_lanterns_deep"
@@ -1076,7 +1076,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "r29mrd5h_20090612_225306"
-deployment_datetime = 2009-06-12 22:53:06+00:00
+deployment_start_datetime = 2009-06-12 22:53:06+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "st_helens_07_elephant_rock_deep"
@@ -1168,7 +1168,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "r29mrd5h_20110612_033752"
-deployment_datetime = 2011-06-12 03:37:52+00:00
+deployment_start_datetime = 2011-06-12 03:37:52+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "st_helens_01_elephant_rock_deep_repeat"
@@ -1259,7 +1259,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "r29mrd5h_20130611_002419"
-deployment_datetime = 2013-06-11 00:24:19+00:00
+deployment_start_datetime = 2013-06-11 00:24:19+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "st_helens_13_elephant_rock_deep_repeat"
@@ -1361,7 +1361,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "r7jjskxq_20101023_210332"
-deployment_datetime = 2010-10-23 21:03:32+00:00
+deployment_start_datetime = 2010-10-23 21:03:32+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "hendersonSth_10_shallow_grids"
@@ -1454,7 +1454,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "r7jjskxq_20121013_060425"
-deployment_datetime = 2012-10-13 06:04:25+00:00
+deployment_start_datetime = 2012-10-13 06:04:25+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "hendersonSth_07_shallow_grids"
@@ -1551,7 +1551,7 @@ sensors = []
 
 [[deployments]]
 deployment_label = "r7jjskxq_20131022_004934"
-deployment_datetime = 2013-10-22 00:49:34+00:00
+deployment_start_datetime = 2013-10-22 00:49:34+00:00
 
 [deployments.metadata]
 acfr_deployment_label = "hendersonSth_03_shallow_grids"

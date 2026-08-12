@@ -4,7 +4,8 @@ dtype normalization it needs before it can be passed to `write_frame`."""
 
 from collections.abc import Mapping, Sequence
 from datetime import datetime
-from typing import Any
+from types import NoneType, UnionType
+from typing import Any, get_args, get_origin
 
 import pandas as pd
 
@@ -66,6 +67,10 @@ def record_to_frame(value: BaseModel) -> pd.DataFrame:
     since `HDFStore`'s `format="table"` cannot write a naive/mixed-tz object
     column.
 
+    Optional datetime fields are normalized too, with a `None` becoming
+    `NaT`. The column is written whether or not a value was recorded, so
+    consumers see one shape either way.
+
     Arguments
     ---------
     value: Model instance to encode.
@@ -76,9 +81,23 @@ def record_to_frame(value: BaseModel) -> pd.DataFrame:
     """
     frame = pd.DataFrame([value.model_dump()])
     for name, field in type(value).model_fields.items():
-        if field.annotation is datetime:
+        if _is_datetime_annotation(field.annotation):
             frame[name] = pd.to_datetime(frame[name], utc=True)
     return frame
+
+
+def _is_datetime_annotation(annotation: Any) -> bool:
+    """Whether a field annotation is `datetime` or `datetime | None`.
+
+    The optional case needs unwrapping because `datetime | None` is not
+    `datetime`, so an identity check alone leaves an optional timestamp as an
+    object column -- the one `HDFStore`'s `format="table"` cannot write.
+    """
+    if annotation is datetime:
+        return True
+    if get_origin(annotation) is UnionType:
+        return set(get_args(annotation)) == {datetime, NoneType}
+    return False
 
 
 def message_topics_to_frame(topics: list[str]) -> pd.DataFrame:

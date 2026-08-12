@@ -39,7 +39,8 @@ def build_deployment_section(
         frame_builders.record_to_frame(
             DeploymentIdentity(
                 deployment_label=descriptor.deployment_label,
-                deployment_datetime=descriptor.deployment_datetime,
+                deployment_start_datetime=descriptor.deployment_start_datetime,
+                deployment_end_datetime=descriptor.deployment_end_datetime,
             )
         ),
         if_exists="fail",

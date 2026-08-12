@@ -37,7 +37,7 @@ def _build_descriptor(
     """Builds a descriptor carrying only the fields the scaffolder reads."""
     return DeploymentDescriptor(
         deployment_label=label,
-        deployment_datetime=moment,
+        deployment_start_datetime=moment,
         metadata=DeploymentMetadata(
             acfr_deployment_label=label,
             acfr_campaign_label=campaign,
