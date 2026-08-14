@@ -159,7 +159,7 @@ def test_sea_level_step_maps_its_two_inputs() -> None:
         ),
         "sea_level": pd.DataFrame(
             {
-                "datetime": pd.to_datetime(["2010-04-28T00:00:00Z"], utc=True),
+                "timestamp": pd.to_datetime(["2010-04-28T00:00:00Z"], utc=True),
                 "sea_level": [0.5],
             }
         ),

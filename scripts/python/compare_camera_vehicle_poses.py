@@ -27,7 +27,7 @@ from pyproj import CRS
 
 
 _CAMERA_SUFFIX: str = "_renav_stereo_poses.csv"
-_VEHICLE_SUFFIX: str = "_vehicle_poses.csv"
+_VEHICLE_SUFFIX: str = "_platform_poses.csv"
 
 _CAMERA_COLOR: str = "#1f77b4"
 _VEHICLE_COLOR: str = "#ff7f0e"
