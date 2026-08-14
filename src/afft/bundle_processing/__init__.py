@@ -23,10 +23,15 @@ from .pipeline_runners import (
 # Imported for their registration side effects: a processor in an unimported
 # module is silently absent from the registry rather than an error.
 from . import common_processors as common_processors
+from . import pose_processors as pose_processors
 from . import sensor_processors as sensor_processors
 
 from .common_processors import (
     DropColumnsConfig as DropColumnsConfig,
     RenameColumnsConfig as RenameColumnsConfig,
     SelectColumnsConfig as SelectColumnsConfig,
+)
+from .pose_processors import (
+    ApplySensorExtrinsicsConfig as ApplySensorExtrinsicsConfig,
+    apply_sensor_extrinsics as apply_sensor_extrinsics,
 )
