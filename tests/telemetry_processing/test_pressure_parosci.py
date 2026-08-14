@@ -36,7 +36,7 @@ def _sea_level_frame(
     """A tide frame typed as the WorldTides ingestion stores it."""
     return pd.DataFrame(
         {
-            "datetime": pd.to_datetime(timestamps, utc=True),
+            "timestamp": pd.to_datetime(timestamps, utc=True),
             "sea_level": levels,
         }
     )

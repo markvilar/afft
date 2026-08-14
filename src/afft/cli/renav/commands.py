@@ -228,7 +228,7 @@ def transform_poses(
     "--output-suffix",
     "output_suffix",
     type=str,
-    default="_vehicle_poses.csv",
+    default="_platform_poses.csv",
     show_default=True,
     help="suffix appended to the deployment label to form the output filename",
 )

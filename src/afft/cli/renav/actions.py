@@ -133,7 +133,7 @@ def invoke_transform_camera_poses_batch(
     output_dir: str | Path,
     descriptor_file: str | Path,
     input_suffix: str = "_renav_stereo_poses.csv",
-    output_suffix: str = "_vehicle_poses.csv",
+    output_suffix: str = "_platform_poses.csv",
 ) -> None:
     """Batch-transform camera poses to vehicle reference-point poses."""
     extrinsics: dict[str, CameraVehicleExtrinsics] = (

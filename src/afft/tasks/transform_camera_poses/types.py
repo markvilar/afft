@@ -80,13 +80,13 @@ class TransformCameraPosesBatchCommand:
     input_suffix: Suffix stripped from input filenames to derive the
         deployment label (e.g. ``"_renav_stereo_poses.csv"``).
     output_suffix: Suffix appended to the deployment label to form the
-        output filename (e.g. ``"_vehicle_poses.csv"``).
+        output filename (e.g. ``"_platform_poses.csv"``).
     """
 
     input_dir: Path
     output_dir: Path
     input_suffix: str = "_renav_stereo_poses.csv"
-    output_suffix: str = "_vehicle_poses.csv"
+    output_suffix: str = "_platform_poses.csv"
 
 
 @dataclass(slots=True, frozen=True)

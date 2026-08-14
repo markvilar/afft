@@ -17,5 +17,5 @@ class SeaLevelCorrectionConfig(BaseModel):
     depth_col: str = "depth"
     timestamp_col: str = "timestamp"
     sea_level_col: str = "sea_level"
-    sea_level_timestamp_col: str = "datetime"
+    sea_level_timestamp_col: str = "timestamp"
     max_gap_seconds: float = 3600.0

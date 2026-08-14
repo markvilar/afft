@@ -429,11 +429,11 @@ def test_batch_applies_extrinsics_per_deployment(tmp_path: Path) -> None:
 
     first_north, _ = _displacement(
         pd.read_csv(input_dir / "first_renav_stereo_poses.csv"),
-        pd.read_csv(output_dir / "first_vehicle_poses.csv"),
+        pd.read_csv(output_dir / "first_platform_poses.csv"),
     )
     second_north, _ = _displacement(
         pd.read_csv(input_dir / "second_renav_stereo_poses.csv"),
-        pd.read_csv(output_dir / "second_vehicle_poses.csv"),
+        pd.read_csv(output_dir / "second_platform_poses.csv"),
     )
     assert first_north == pytest.approx(-10.0, abs=1e-6)
     assert second_north == pytest.approx(-20.0, abs=1e-6)
@@ -596,6 +596,6 @@ def test_cli_batch_transform_poses_uses_descriptor_extrinsics(
     assert result.exit_code == 0, result.output
     north, _ = _displacement(
         pd.read_csv(input_dir / "first_renav_stereo_poses.csv"),
-        pd.read_csv(output_dir / "first_vehicle_poses.csv"),
+        pd.read_csv(output_dir / "first_platform_poses.csv"),
     )
     assert north == pytest.approx(-10.0, abs=1e-6)
