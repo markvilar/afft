@@ -6,9 +6,9 @@ import pytest
 
 from afft.bundle_processing import default_registry
 from afft.bundle_processing.pose_processors import (
-    ApplySensorExtrinsicsConfig,
-    apply_sensor_extrinsics,
-    step_apply_sensor_extrinsics,
+    ApplyMountingOffsetConfig,
+    apply_mounting_offset,
+    step_apply_mounting_offset,
 )
 from afft.deployment import SensorExtrinsics
 
@@ -62,12 +62,12 @@ def _displacement(
     return float(north), float(east)
 
 
-def test_apply_sensor_extrinsics_shifts_horizontally() -> None:
+def test_apply_mounting_offset_shifts_horizontally() -> None:
     poses: pd.DataFrame = _pose_frame(heading=0.0)
     extrinsics: SensorExtrinsics = _extrinsics(locx=1.0, locy=0.5)
 
-    shifted: pd.DataFrame = apply_sensor_extrinsics(
-        poses, extrinsics, ApplySensorExtrinsicsConfig()
+    shifted: pd.DataFrame = apply_mounting_offset(
+        poses, extrinsics, ApplyMountingOffsetConfig()
     )
 
     north, east = _displacement(poses, shifted)
@@ -75,12 +75,12 @@ def test_apply_sensor_extrinsics_shifts_horizontally() -> None:
     assert east == pytest.approx(-0.5, abs=1e-3)
 
 
-def test_apply_sensor_extrinsics_shifts_vertically() -> None:
+def test_apply_mounting_offset_shifts_vertically() -> None:
     poses: pd.DataFrame = _pose_frame()
     extrinsics: SensorExtrinsics = _extrinsics(locz=2.0)
 
-    shifted: pd.DataFrame = apply_sensor_extrinsics(
-        poses, extrinsics, ApplySensorExtrinsicsConfig()
+    shifted: pd.DataFrame = apply_mounting_offset(
+        poses, extrinsics, ApplyMountingOffsetConfig()
     )
 
     assert shifted["height"].iloc[0] == pytest.approx(
@@ -88,26 +88,26 @@ def test_apply_sensor_extrinsics_shifts_vertically() -> None:
     )
 
 
-def test_apply_sensor_extrinsics_passes_other_columns_through() -> None:
+def test_apply_mounting_offset_passes_other_columns_through() -> None:
     poses: pd.DataFrame = _pose_frame()
     extrinsics: SensorExtrinsics = _extrinsics(locx=1.0)
 
-    shifted: pd.DataFrame = apply_sensor_extrinsics(
-        poses, extrinsics, ApplySensorExtrinsicsConfig()
+    shifted: pd.DataFrame = apply_mounting_offset(
+        poses, extrinsics, ApplyMountingOffsetConfig()
     )
 
     assert shifted["label"].iloc[0] == "pose-0"
 
 
-def test_apply_sensor_extrinsics_invert_reverses_the_shift() -> None:
+def test_apply_mounting_offset_invert_reverses_the_shift() -> None:
     poses: pd.DataFrame = _pose_frame()
     extrinsics: SensorExtrinsics = _extrinsics(locx=1.0, locy=0.5, locz=2.0)
 
-    forward: pd.DataFrame = apply_sensor_extrinsics(
-        poses, extrinsics, ApplySensorExtrinsicsConfig()
+    forward: pd.DataFrame = apply_mounting_offset(
+        poses, extrinsics, ApplyMountingOffsetConfig()
     )
-    round_tripped: pd.DataFrame = apply_sensor_extrinsics(
-        forward, extrinsics, ApplySensorExtrinsicsConfig(invert=True)
+    round_tripped: pd.DataFrame = apply_mounting_offset(
+        forward, extrinsics, ApplyMountingOffsetConfig(invert=True)
     )
 
     assert round_tripped["latitude"].iloc[0] == pytest.approx(
@@ -121,41 +121,41 @@ def test_apply_sensor_extrinsics_invert_reverses_the_shift() -> None:
     )
 
 
-def test_step_apply_sensor_extrinsics_requires_extrinsics_input() -> None:
+def test_step_apply_mounting_offset_requires_extrinsics_input() -> None:
     frames = {"poses": _pose_frame()}
 
     with pytest.raises(KeyError):
-        step_apply_sensor_extrinsics(frames, ApplySensorExtrinsicsConfig())
+        step_apply_mounting_offset(frames, ApplyMountingOffsetConfig())
 
 
-def test_step_apply_sensor_extrinsics_rejects_multi_row_extrinsics() -> None:
+def test_step_apply_mounting_offset_rejects_multi_row_extrinsics() -> None:
     extrinsics_frame: pd.DataFrame = pd.concat(
         [_extrinsics_frame(_extrinsics(locx=1.0))] * 2, ignore_index=True
     )
     frames = {"poses": _pose_frame(), "extrinsics": extrinsics_frame}
 
     with pytest.raises(ValueError, match="expected exactly 1"):
-        step_apply_sensor_extrinsics(frames, ApplySensorExtrinsicsConfig())
+        step_apply_mounting_offset(frames, ApplyMountingOffsetConfig())
 
 
-def test_step_apply_sensor_extrinsics_matches_direct_call() -> None:
+def test_step_apply_mounting_offset_matches_direct_call() -> None:
     extrinsics: SensorExtrinsics = _extrinsics(locx=1.0, locy=0.5, locz=2.0)
     frames = {
         "poses": _pose_frame(),
         "extrinsics": _extrinsics_frame(extrinsics),
     }
 
-    from_step: pd.DataFrame = step_apply_sensor_extrinsics(
-        frames, ApplySensorExtrinsicsConfig()
+    from_step: pd.DataFrame = step_apply_mounting_offset(
+        frames, ApplyMountingOffsetConfig()
     )
-    direct: pd.DataFrame = apply_sensor_extrinsics(
-        frames["poses"], extrinsics, ApplySensorExtrinsicsConfig()
+    direct: pd.DataFrame = apply_mounting_offset(
+        frames["poses"], extrinsics, ApplyMountingOffsetConfig()
     )
 
     pd.testing.assert_frame_equal(from_step, direct)
 
 
-def test_apply_sensor_extrinsics_is_registered() -> None:
-    registered = default_registry().get("apply_sensor_extrinsics")
-    assert registered.processor is step_apply_sensor_extrinsics
-    assert registered.config_type is ApplySensorExtrinsicsConfig
+def test_apply_mounting_offset_is_registered() -> None:
+    registered = default_registry().get("apply_mounting_offset")
+    assert registered.processor is step_apply_mounting_offset
+    assert registered.config_type is ApplyMountingOffsetConfig
