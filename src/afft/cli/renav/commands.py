@@ -8,8 +8,6 @@ from .actions import (
     invoke_collect_renav_stereo_poses,
     invoke_correct_renav_poses,
     invoke_process_renav,
-    invoke_transform_camera_poses,
-    invoke_transform_camera_poses_batch,
 )
 
 
@@ -151,98 +149,6 @@ def correct_poses(
 ) -> None:
     """Correct Renav camera poses with source camera pose latitude/longitude."""
     invoke_correct_renav_poses(target_file, source_file, output_file)
-
-
-@renav_group.command()
-@click.option(
-    "--input",
-    "input_file",
-    type=click.Path(exists=True, dir_okay=False),
-    required=True,
-    help="camera pose CSV to transform to vehicle reference-point poses",
-)
-@click.option(
-    "--output",
-    "output_file",
-    type=click.Path(dir_okay=False),
-    required=True,
-    help="path to write the vehicle poses as CSV",
-)
-@click.option(
-    "--descriptors",
-    "descriptor_file",
-    type=click.Path(exists=True, dir_okay=False),
-    required=True,
-    help="deployment descriptors TOML file containing camera extrinsics",
-)
-@click.option(
-    "--deployment",
-    "deployment_label",
-    type=str,
-    required=True,
-    help="deployment label to look up in the deployment descriptors file",
-)
-def transform_poses(
-    input_file: str,
-    output_file: str,
-    descriptor_file: str,
-    deployment_label: str,
-) -> None:
-    """Transform camera poses to vehicle reference-point poses using stereo extrinsics."""
-    invoke_transform_camera_poses(
-        input_file, output_file, descriptor_file, deployment_label
-    )
-
-
-@renav_group.command()
-@click.option(
-    "--input-dir",
-    "input_dir",
-    type=click.Path(exists=True, file_okay=False),
-    required=True,
-    help="directory containing camera pose CSV files",
-)
-@click.option(
-    "--output-dir",
-    "output_dir",
-    type=click.Path(exists=True, file_okay=False),
-    required=True,
-    help="directory to write vehicle pose CSV files into",
-)
-@click.option(
-    "--descriptors",
-    "descriptor_file",
-    type=click.Path(exists=True, dir_okay=False),
-    required=True,
-    help="deployment descriptors TOML file containing camera extrinsics",
-)
-@click.option(
-    "--input-suffix",
-    "input_suffix",
-    type=str,
-    default="_renav_stereo_poses.csv",
-    show_default=True,
-    help="suffix stripped from input filenames to derive the deployment label",
-)
-@click.option(
-    "--output-suffix",
-    "output_suffix",
-    type=str,
-    default="_platform_poses.csv",
-    show_default=True,
-    help="suffix appended to the deployment label to form the output filename",
-)
-def batch_transform_poses(
-    input_dir: str,
-    output_dir: str,
-    descriptor_file: str,
-    input_suffix: str,
-    output_suffix: str,
-) -> None:
-    """Batch-transform camera poses to vehicle reference-point poses."""
-    invoke_transform_camera_poses_batch(
-        input_dir, output_dir, descriptor_file, input_suffix, output_suffix
-    )
 
 
 @renav_group.command()
