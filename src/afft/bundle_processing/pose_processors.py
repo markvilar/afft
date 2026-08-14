@@ -19,9 +19,9 @@ from .processor_registry import register_processor
 Model = TypeVar("Model", bound=BaseModel)
 
 
-class ApplySensorExtrinsicsConfig(BaseModel):
+class ApplyMountingOffsetConfig(BaseModel):
     """
-    Column configuration for the apply sensor extrinsics pipeline step.
+    Column configuration for the apply mounting offset pipeline step.
 
     Attributes
     ----------
@@ -55,7 +55,7 @@ def _decode_single_row(
     Decode a one-row frame into `model_type`.
 
     Unlike `sensor_processors._decode_extrinsics`, absence is not a valid
-    outcome here: `apply_sensor_extrinsics` has no uncorrected mode, so a
+    outcome here: `apply_mounting_offset` has no uncorrected mode, so a
     missing or malformed extrinsics frame is always an error.
 
     Arguments
@@ -96,10 +96,10 @@ def _decode_single_row(
         ) from error
 
 
-def apply_sensor_extrinsics(
+def apply_mounting_offset(
     poses: pd.DataFrame,
     extrinsics: SensorExtrinsics,
-    config: ApplySensorExtrinsicsConfig,
+    config: ApplyMountingOffsetConfig,
 ) -> pd.DataFrame:
     """
     Apply a sensor's body-frame extrinsics to shift a geodetic pose frame by
@@ -180,15 +180,15 @@ def apply_sensor_extrinsics(
 
 
 @register_processor(
-    "apply_sensor_extrinsics", config_type=ApplySensorExtrinsicsConfig
+    "apply_mounting_offset", config_type=ApplyMountingOffsetConfig
 )
-def step_apply_sensor_extrinsics(
+def step_apply_mounting_offset(
     frames: Mapping[str, pd.DataFrame],
-    config: ApplySensorExtrinsicsConfig,
+    config: ApplyMountingOffsetConfig,
 ) -> pd.DataFrame:
     """Apply a sensor's body-frame extrinsics to shift a geodetic pose frame
     by the full 3D lever arm, in either direction."""
     extrinsics: SensorExtrinsics = _decode_single_row(
-        frames["extrinsics"], SensorExtrinsics, "apply_sensor_extrinsics"
+        frames["extrinsics"], SensorExtrinsics, "apply_mounting_offset"
     )
-    return apply_sensor_extrinsics(frames["poses"], extrinsics, config)
+    return apply_mounting_offset(frames["poses"], extrinsics, config)

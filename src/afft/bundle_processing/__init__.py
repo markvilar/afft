@@ -32,6 +32,6 @@ from .common_processors import (
     SelectColumnsConfig as SelectColumnsConfig,
 )
 from .pose_processors import (
-    ApplySensorExtrinsicsConfig as ApplySensorExtrinsicsConfig,
-    apply_sensor_extrinsics as apply_sensor_extrinsics,
+    ApplyMountingOffsetConfig as ApplyMountingOffsetConfig,
+    apply_mounting_offset as apply_mounting_offset,
 )
