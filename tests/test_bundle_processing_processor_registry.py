@@ -82,6 +82,7 @@ def test_a_local_registry_does_not_leak_into_the_default_one() -> None:
 def test_default_registry_holds_every_shipped_processor() -> None:
     """Importing the package registers all processors it defines."""
     assert default_registry().names() == [
+        "apply_sensor_extrinsics",
         "correct_pressure_for_sea_level",
         "drop_columns",
         "estimate_dvl_uncertainty",
