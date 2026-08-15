@@ -1,14 +1,24 @@
-"""Task for enriching deployment descriptors from a curated catalog."""
+"""Tasks for enriching deployment descriptors from a catalog or Squidle+."""
 
-from .runner import (
+from .catalog import (
     enrich_descriptors as enrich_descriptors,
-    run_enrich_descriptor as run_enrich_descriptor,
+    run_enrich_catalog as run_enrich_catalog,
+)
+from .squidle import (
+    match_squidle_deployments as match_squidle_deployments,
+    resolve_squidle_deployment as resolve_squidle_deployment,
+    resolve_squidle_identity as resolve_squidle_identity,
+    run_enrich_squidle as run_enrich_squidle,
 )
 from .types import (
-    EnrichDescriptorCommand as EnrichDescriptorCommand,
-    EnrichDescriptorDiagnostics as EnrichDescriptorDiagnostics,
-    EnrichDescriptorResult as EnrichDescriptorResult,
+    DeploymentMatchPolicy as DeploymentMatchPolicy,
+    EnrichCatalogCommand as EnrichCatalogCommand,
+    EnrichCatalogDiagnostics as EnrichCatalogDiagnostics,
+    EnrichCatalogResult as EnrichCatalogResult,
     EnrichmentWarning as EnrichmentWarning,
+    EnrichSquidleCommand as EnrichSquidleCommand,
+    EnrichSquidleDiagnostics as EnrichSquidleDiagnostics,
+    EnrichSquidleResult as EnrichSquidleResult,
 )
 
 __all__ = []

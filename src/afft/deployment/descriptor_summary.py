@@ -212,6 +212,17 @@ def collect_unfilled_fields(
 
     unfilled.extend(_sensor_gaps(descriptor.vessel.sensors, "vessel"))
 
+    squidle = descriptor.squidle
+    unfilled.extend(
+        f"squidle.{field}"
+        for field in (
+            "deployment_id",
+            "campaign_id",
+            "platform_id",
+        )
+        if getattr(squidle, field) is None
+    )
+
     return unfilled
 
 

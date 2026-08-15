@@ -1,7 +1,8 @@
-"""Tests for the deployment descriptor enrichment task and its CLI."""
+"""Tests for the deployment descriptor enrichment tasks and their CLI."""
 
 from datetime import datetime, timezone
 from pathlib import Path
+from typing import Any
 
 import pytest
 
@@ -30,11 +31,14 @@ from afft.deployment import (
     write_deployment_catalog,
     write_deployment_descriptors,
 )
+from afft.squidle import Campaign, Deployment, Platform, SquidleClient
 from afft.tasks.deployment_enrichment import (
-    EnrichDescriptorCommand,
-    EnrichDescriptorDiagnostics,
+    DeploymentMatchPolicy,
+    EnrichCatalogCommand,
+    EnrichCatalogDiagnostics,
     enrich_descriptors,
-    run_enrich_descriptor,
+    match_squidle_deployments,
+    run_enrich_catalog,
 )
 
 PLATFORM_LABEL: str = "qdch0ftq_20100428_020202"
@@ -316,7 +320,7 @@ def test_deployment_without_assignments_keeps_its_empty_slots(
 def test_missing_assignments_are_warned_about_per_section(
     descriptors: list[DeploymentDescriptor], catalog: DeploymentCatalog
 ) -> None:
-    diagnostics = EnrichDescriptorDiagnostics()
+    diagnostics = EnrichCatalogDiagnostics()
 
     enrich_descriptors(descriptors, catalog, diagnostics)
 
@@ -364,7 +368,7 @@ def test_vessel_section_leaves_the_platform_untouched(
 def test_unrequested_section_is_not_warned_about(
     descriptors: list[DeploymentDescriptor], catalog: DeploymentCatalog
 ) -> None:
-    diagnostics = EnrichDescriptorDiagnostics()
+    diagnostics = EnrichCatalogDiagnostics()
 
     enrich_descriptors(
         descriptors, catalog, diagnostics, EnrichmentSection.VESSEL
@@ -378,7 +382,7 @@ def test_unrequested_section_is_not_warned_about(
 def test_topic_mismatches_are_warned_about(
     descriptors: list[DeploymentDescriptor], catalog: DeploymentCatalog
 ) -> None:
-    diagnostics = EnrichDescriptorDiagnostics()
+    diagnostics = EnrichCatalogDiagnostics()
 
     enrich_descriptors(descriptors, catalog, diagnostics)
 
@@ -406,8 +410,8 @@ def test_run_writes_a_readable_descriptors_file(
     input_file, catalog_file = _write_inputs(tmp_path, descriptors)
     output_file = tmp_path / "enriched.toml"
 
-    result = run_enrich_descriptor(
-        EnrichDescriptorCommand(
+    result = run_enrich_catalog(
+        EnrichCatalogCommand(
             input_file=input_file,
             catalog_file=catalog_file,
             output_file=output_file,
@@ -421,15 +425,15 @@ def test_run_enriches_in_place_and_is_idempotent(
     tmp_path: Path, descriptors: list[DeploymentDescriptor]
 ) -> None:
     input_file, catalog_file = _write_inputs(tmp_path, descriptors)
-    command = EnrichDescriptorCommand(
+    command = EnrichCatalogCommand(
         input_file=input_file,
         catalog_file=catalog_file,
         output_file=input_file,
     )
 
-    run_enrich_descriptor(command)
+    run_enrich_catalog(command)
     once = input_file.read_bytes()
-    run_enrich_descriptor(command)
+    run_enrich_catalog(command)
 
     assert input_file.read_bytes() == once
     assert (
@@ -443,8 +447,8 @@ def test_run_rejects_a_missing_catalog(
     input_file, _ = _write_inputs(tmp_path, descriptors)
 
     with pytest.raises(FileNotFoundError, match="catalog file"):
-        run_enrich_descriptor(
-            EnrichDescriptorCommand(
+        run_enrich_catalog(
+            EnrichCatalogCommand(
                 input_file=input_file,
                 catalog_file=tmp_path / "absent.toml",
                 output_file=tmp_path / "enriched.toml",
@@ -456,8 +460,8 @@ def test_run_rejects_an_empty_descriptors_file(tmp_path: Path) -> None:
     input_file, catalog_file = _write_inputs(tmp_path, [])
 
     with pytest.raises(ValueError, match="no deployments"):
-        run_enrich_descriptor(
-            EnrichDescriptorCommand(
+        run_enrich_catalog(
+            EnrichCatalogCommand(
                 input_file=input_file,
                 catalog_file=catalog_file,
                 output_file=tmp_path / "enriched.toml",
@@ -475,7 +479,7 @@ def test_cli_enriches_descriptors(
         cli,
         [
             "deployment",
-            "enrich",
+            "enrich-catalog",
             "--input",
             str(input_file),
             "--catalog",
@@ -503,7 +507,7 @@ def test_cli_enriches_only_the_requested_section(
         cli,
         [
             "deployment",
-            "enrich",
+            "enrich-catalog",
             "--input",
             str(input_file),
             "--catalog",
@@ -519,3 +523,204 @@ def test_cli_enriches_only_the_requested_section(
     enriched = read_deployment_descriptors(output_file)
     assert enriched[0].platform.identity is not None
     assert enriched[0].vessel.identity is None
+
+
+MATCHED_LABEL: str = "qdch0ftq_20100428_020202"
+AMBIGUOUS_LABEL: str = "qd9xyz00_20100503_101010"
+
+
+class _FakeSquidleClient(SquidleClient):
+    """
+    Fake Squidle+ client for tests, backed by in-memory fixtures.
+
+    Skips ``SquidleClient.__init__`` entirely, so no HTTP transport is ever
+    created; only the three methods ``match_squidle_deployments`` calls are
+    overridden.
+    """
+
+    def __init__(
+        self,
+        deployments: list[Deployment],
+        campaigns: dict[int, Campaign],
+        platforms: dict[int, Platform],
+        failing_campaign_ids: frozenset[int] = frozenset(),
+        failing_platform_ids: frozenset[int] = frozenset(),
+    ) -> None:
+        self._deployments = deployments
+        self._campaigns = campaigns
+        self._platforms = platforms
+        self._failing_campaign_ids = failing_campaign_ids
+        self._failing_platform_ids = failing_platform_ids
+        self.campaign_calls: list[int] = []
+        self.platform_calls: list[int] = []
+
+    def fetch_deployments(
+        self, filters: list[dict[str, Any]] | None = None
+    ) -> list[Deployment]:
+        assert filters is not None
+        field: str = filters[0]["name"]
+        value: str = filters[0]["val"]
+        if field == "name":
+            return [d for d in self._deployments if d.name == value]
+        stripped: str = value.strip("%")
+        return [d for d in self._deployments if stripped in d.key]
+
+    def fetch_campaign(self, campaign_id: int) -> Campaign:
+        self.campaign_calls.append(campaign_id)
+        if campaign_id in self._failing_campaign_ids:
+            raise RuntimeError(f"campaign fetch failed: {campaign_id}")
+        return self._campaigns[campaign_id]
+
+    def fetch_platform(self, platform_id: int) -> Platform:
+        self.platform_calls.append(platform_id)
+        if platform_id in self._failing_platform_ids:
+            raise RuntimeError(f"platform fetch failed: {platform_id}")
+        return self._platforms[platform_id]
+
+
+def _build_squidle_deployment(
+    label: str,
+    deployment_id: int,
+    campaign_id: int = 10,
+    platform_id: int = 100,
+    datetime_key: str | None = None,
+) -> Deployment:
+    key_source: str = datetime_key if datetime_key is not None else label
+    return Deployment(
+        id=deployment_id,
+        key=f"r{_squidle_key_suffix(key_source)}_dep{deployment_id}",
+        name=label,
+        campaign_id=campaign_id,
+        campaign_name="Campaign A",
+        platform_id=platform_id,
+        platform_name="AUV Sirius",
+        timestamp_start=None,
+        timestamp_end=None,
+        media_count=0,
+        pose_count=0,
+        is_valid=True,
+    )
+
+
+def _squidle_key_suffix(deployment_label: str) -> str:
+    parts: list[str] = deployment_label.rsplit("_", 2)
+    return f"{parts[-2]}_{parts[-1]}"
+
+
+def test_match_squidle_deployments_fills_the_squidle_section() -> None:
+    descriptor: DeploymentDescriptor = _build_descriptor(MATCHED_LABEL)
+    deployment: Deployment = _build_squidle_deployment(MATCHED_LABEL, 1)
+    client = _FakeSquidleClient(
+        deployments=[deployment],
+        campaigns={10: Campaign(10, "camp-a", "Campaign A", 1, 1)},
+        platforms={100: Platform(100, "plat-sirius", "AUV Sirius")},
+    )
+
+    enriched = match_squidle_deployments([descriptor], client)
+
+    squidle = enriched[0].squidle
+    assert squidle.deployment_id == 1
+    assert squidle.deployment_name == MATCHED_LABEL
+    assert squidle.campaign_key == "camp-a"
+    assert squidle.platform_key == "plat-sirius"
+
+
+def test_no_match_leaves_the_squidle_section_at_defaults() -> None:
+    descriptor: DeploymentDescriptor = _build_descriptor(UNASSIGNED_LABEL)
+    client = _FakeSquidleClient(deployments=[], campaigns={}, platforms={})
+
+    enriched = match_squidle_deployments([descriptor], client)
+
+    assert enriched[0].squidle.deployment_id is None
+
+
+def test_ambiguous_match_is_treated_as_no_match() -> None:
+    descriptor: DeploymentDescriptor = _build_descriptor(AMBIGUOUS_LABEL)
+    client = _FakeSquidleClient(
+        deployments=[
+            _build_squidle_deployment(AMBIGUOUS_LABEL, 1),
+            _build_squidle_deployment(AMBIGUOUS_LABEL, 2),
+        ],
+        campaigns={10: Campaign(10, "camp-a", "Campaign A", 1, 1)},
+        platforms={100: Platform(100, "plat-sirius", "AUV Sirius")},
+    )
+
+    enriched = match_squidle_deployments([descriptor], client)
+
+    assert enriched[0].squidle.deployment_id is None
+
+
+def test_by_key_policy_matches_on_the_embedded_datetime() -> None:
+    descriptor: DeploymentDescriptor = _build_descriptor(MATCHED_LABEL)
+    deployment: Deployment = _build_squidle_deployment(
+        "some other squidle name", 1, datetime_key=MATCHED_LABEL
+    )
+    client = _FakeSquidleClient(
+        deployments=[deployment],
+        campaigns={10: Campaign(10, "camp-a", "Campaign A", 1, 1)},
+        platforms={100: Platform(100, "plat-sirius", "AUV Sirius")},
+    )
+
+    enriched = match_squidle_deployments(
+        [descriptor], client, policy=DeploymentMatchPolicy.BY_KEY
+    )
+
+    assert enriched[0].squidle.deployment_id == 1
+
+
+def test_campaign_lookup_failure_keeps_the_deployment_match() -> None:
+    descriptor: DeploymentDescriptor = _build_descriptor(MATCHED_LABEL)
+    deployment: Deployment = _build_squidle_deployment(MATCHED_LABEL, 1)
+    client = _FakeSquidleClient(
+        deployments=[deployment],
+        campaigns={10: Campaign(10, "camp-a", "Campaign A", 1, 1)},
+        platforms={100: Platform(100, "plat-sirius", "AUV Sirius")},
+        failing_campaign_ids=frozenset({10}),
+    )
+
+    enriched = match_squidle_deployments([descriptor], client)
+
+    squidle = enriched[0].squidle
+    assert squidle.deployment_id == 1
+    assert squidle.campaign_key is None
+    assert squidle.platform_key == "plat-sirius"
+
+
+def test_platform_lookup_failure_keeps_the_deployment_match() -> None:
+    descriptor: DeploymentDescriptor = _build_descriptor(MATCHED_LABEL)
+    deployment: Deployment = _build_squidle_deployment(MATCHED_LABEL, 1)
+    client = _FakeSquidleClient(
+        deployments=[deployment],
+        campaigns={10: Campaign(10, "camp-a", "Campaign A", 1, 1)},
+        platforms={100: Platform(100, "plat-sirius", "AUV Sirius")},
+        failing_platform_ids=frozenset({100}),
+    )
+
+    enriched = match_squidle_deployments([descriptor], client)
+
+    squidle = enriched[0].squidle
+    assert squidle.deployment_id == 1
+    assert squidle.campaign_key == "camp-a"
+    assert squidle.platform_key is None
+
+
+def test_campaign_and_platform_lookups_are_cached_across_deployments() -> None:
+    label_a: str = MATCHED_LABEL
+    label_b: str = UNASSIGNED_LABEL
+    client = _FakeSquidleClient(
+        deployments=[
+            _build_squidle_deployment(label_a, 1),
+            _build_squidle_deployment(label_b, 2),
+        ],
+        campaigns={10: Campaign(10, "camp-a", "Campaign A", 2, 2)},
+        platforms={100: Platform(100, "plat-sirius", "AUV Sirius")},
+    )
+
+    match_squidle_deployments(
+        [_build_descriptor(label_a), _build_descriptor(label_b)],
+        client,
+        max_workers=1,
+    )
+
+    assert client.campaign_calls == [10]
+    assert client.platform_calls == [100]

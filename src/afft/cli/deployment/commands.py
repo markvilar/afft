@@ -3,10 +3,12 @@
 import click
 
 from afft.deployment import EnrichmentSection
+from afft.tasks.deployment_enrichment import DeploymentMatchPolicy
 
 from .actions import (
     invoke_describe_deployment,
-    invoke_enrich_descriptor,
+    invoke_enrich_catalog,
+    invoke_enrich_squidle,
     invoke_scaffold_catalog,
     invoke_summarize_catalog,
     invoke_summarize_descriptor,
@@ -131,7 +133,7 @@ def scaffold_catalog(
     default=False,
     help="log diagnostics warnings after the run completes",
 )
-def enrich(
+def enrich_catalog(
     input_file: str,
     catalog_file: str,
     output_file: str,
@@ -144,8 +146,70 @@ def enrich(
     and vessel identities, sensor identities, and mounting poses. Passing the
     input path as the output enriches the descriptors in place.
     """
-    invoke_enrich_descriptor(
+    invoke_enrich_catalog(
         input_file, catalog_file, output_file, section, verbose
+    )
+
+
+@deployment_group.command()
+@click.option(
+    "--input",
+    "input_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the deployment descriptors TOML file",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="path to write the enriched descriptors as TOML",
+)
+@click.option(
+    "--match-policy",
+    "match_policy",
+    type=click.Choice(
+        [policy.value for policy in DeploymentMatchPolicy],
+        case_sensitive=False,
+    ),
+    default=DeploymentMatchPolicy.BY_NAME.value,
+    show_default=True,
+    help="strategy for matching ACFR deployments to Squidle+ deployments",
+)
+@click.option(
+    "--max-workers",
+    "max_workers",
+    type=int,
+    default=4,
+    show_default=True,
+    help="maximum number of concurrent Squidle+ matching threads",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="log diagnostics warnings after the run completes",
+)
+def enrich_squidle(
+    input_file: str,
+    output_file: str,
+    match_policy: str,
+    max_workers: int,
+    verbose: bool,
+) -> None:
+    """Enrich deployment descriptors from the live Squidle+ API.
+
+    Matches each deployment against Squidle+ by name or key and fills the
+    curated Squidle+ identity section. Passing the input path as the output
+    enriches the descriptors in place.
+    """
+    invoke_enrich_squidle(
+        input_file,
+        output_file,
+        DeploymentMatchPolicy(match_policy),
+        max_workers,
+        verbose,
     )
 
 
