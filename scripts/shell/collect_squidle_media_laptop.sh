@@ -1,15 +1,16 @@
 #!/usr/bin/bash
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONFIG_DIR="$(realpath -m ${SCRIPT_DIR}/../../config)"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
+DESCRIPTOR_FILE="${REPO_ROOT}/data/deployment_descriptors_v1_all_enriched.toml"
 OUTPUT_DIR="${HOME}/data/acfr_squidle_collections"
 
 
 echo "Script dir: ${SCRIPT_DIR}"
-echo "Config dir: ${CONFIG_DIR}"
+echo "Descriptor file: ${DESCRIPTOR_FILE}"
 
 
 uv run afft tasks collect-squidle-media \
-  --deployments-file "${CONFIG_DIR}/acfr_deployments.toml" \
+  --deployments-file "${DESCRIPTOR_FILE}" \
   --output-dir "${OUTPUT_DIR}"

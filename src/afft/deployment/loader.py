@@ -7,7 +7,6 @@ from afft.io.config_io import read_config
 
 from .types import (
     DeploymentConfig,
-    DeploymentInfo,
     TopsideUsblModemConfig,
     UsblUncertaintyProfile,
 )
@@ -74,54 +73,3 @@ def load_deployment_config(
         usbl_uncertainty=usbl_uncertainty,
         sensor_keys=tuple(deployment_entry.get("sensor_keys", [])),
     )
-
-
-def read_deployment_info(path: Path) -> list[DeploymentInfo]:
-    """
-    Read deployment info entries from a deployments TOML file.
-
-    Arguments
-    ---------
-    path: Path to the deployments TOML file.
-
-    Returns
-    -------
-    List of deployment info objects.
-    """
-    raw: dict[str, Any] = read_config(path)
-    deployments: list[DeploymentInfo] = []
-    for entry in raw.get("deployments", []):
-        metadata: dict[str, Any] = entry.get("metadata", {})
-        # Fill defaults for missing / legacy fields so older deployment TOML
-        # files that predate some fields still load, then validate.
-        deployments.append(
-            DeploymentInfo.model_validate(
-                {
-                    "deployment_label": entry["deployment_label"],
-                    "deployment_start_datetime": entry[
-                        "deployment_start_datetime"
-                    ],
-                    "deployment_end_datetime": entry.get(
-                        "deployment_end_datetime"
-                    ),
-                    "deployment_platform": entry.get("deployment_platform", ""),
-                    "metadata": {
-                        "acfr_deployment_label": metadata[
-                            "acfr_deployment_label"
-                        ],
-                        "acfr_campaign_label": metadata["acfr_campaign_label"],
-                        "acfr_platform_label": metadata.get(
-                            "acfr_platform_label", ""
-                        ),
-                        "origin_latitude": metadata.get("origin_latitude", 0.0),
-                        "origin_longitude": metadata.get(
-                            "origin_longitude", 0.0
-                        ),
-                        "magnetic_variation": metadata.get(
-                            "magnetic_variation", 0.0
-                        ),
-                    },
-                }
-            )
-        )
-    return deployments
