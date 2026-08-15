@@ -37,8 +37,8 @@ from afft.tasks.deployment_enrichment import (
     EnrichCatalogCommand,
     EnrichCatalogDiagnostics,
     enrich_descriptors,
+    enrich_descriptors_from_catalog,
     match_squidle_deployments,
-    run_enrich_catalog,
 )
 
 PLATFORM_LABEL: str = "qdch0ftq_20100428_020202"
@@ -410,7 +410,7 @@ def test_run_writes_a_readable_descriptors_file(
     input_file, catalog_file = _write_inputs(tmp_path, descriptors)
     output_file = tmp_path / "enriched.toml"
 
-    result = run_enrich_catalog(
+    result = enrich_descriptors_from_catalog(
         EnrichCatalogCommand(
             input_file=input_file,
             catalog_file=catalog_file,
@@ -431,9 +431,9 @@ def test_run_enriches_in_place_and_is_idempotent(
         output_file=input_file,
     )
 
-    run_enrich_catalog(command)
+    enrich_descriptors_from_catalog(command)
     once = input_file.read_bytes()
-    run_enrich_catalog(command)
+    enrich_descriptors_from_catalog(command)
 
     assert input_file.read_bytes() == once
     assert (
@@ -447,7 +447,7 @@ def test_run_rejects_a_missing_catalog(
     input_file, _ = _write_inputs(tmp_path, descriptors)
 
     with pytest.raises(FileNotFoundError, match="catalog file"):
-        run_enrich_catalog(
+        enrich_descriptors_from_catalog(
             EnrichCatalogCommand(
                 input_file=input_file,
                 catalog_file=tmp_path / "absent.toml",
@@ -460,7 +460,7 @@ def test_run_rejects_an_empty_descriptors_file(tmp_path: Path) -> None:
     input_file, catalog_file = _write_inputs(tmp_path, [])
 
     with pytest.raises(ValueError, match="no deployments"):
-        run_enrich_catalog(
+        enrich_descriptors_from_catalog(
             EnrichCatalogCommand(
                 input_file=input_file,
                 catalog_file=catalog_file,

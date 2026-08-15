@@ -78,7 +78,7 @@ def enrich_descriptors(
     return enriched
 
 
-def run_enrich_catalog(
+def enrich_descriptors_from_catalog(
     command: EnrichCatalogCommand,
 ) -> EnrichCatalogResult:
     """

@@ -262,7 +262,7 @@ def match_squidle_deployments(
     return [results[index] for index in range(len(descriptors))]
 
 
-def run_enrich_squidle(
+def enrich_descriptors_from_squidle(
     command: EnrichSquidleCommand,
     client: SquidleClient,
 ) -> EnrichSquidleResult:
