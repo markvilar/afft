@@ -2,11 +2,10 @@
 
 from pathlib import Path
 
-from afft.deployment import DeploymentInfo, read_deployment_info
+from afft.deployment import DeploymentDescriptor, read_deployment_descriptors
 from afft.squidle import create_client
 from afft.utils.log import logger
 
-from .deployment_matcher import match_deployments
 from .image_downloader import build_download_plan, download_deployment_images
 from .media_retriever import retrieve_deployment_media
 from .report import build_run_report, write_run_report
@@ -14,6 +13,7 @@ from .types import (
     CollectSquidleMediaCommand,
     CollectSquidleMediaConfig,
     DeploymentImagesDownload,
+    DeploymentState,
     DownloadSummary,
     MatchSummary,
     RetrievalSummary,
@@ -43,7 +43,6 @@ def _log_run_header(command: CollectSquidleMediaCommand) -> None:
     logger.info("Collect Squidle+ Media")
     logger.info(f"  deployments file: {command.deployments_file}")
     logger.info(f"  output dir:       {command.output_dir}")
-    logger.info(f"  match policy:     {command.match_policy.value}")
     logger.info(f"  download images:  {command.download_images}")
     logger.info("-------------------------------------")
 
@@ -149,11 +148,17 @@ def run_collect_squidle_media(
     _log_run_header(command)
 
     with create_client(config.squidle_token.get_secret_value()) as client:
-        # Phase 1 — load and match
-        deployment_infos: list[DeploymentInfo] = read_deployment_info(
+        # Phase 1 — load descriptors; matching is pre-resolved on
+        # descriptor.squidle by `deployment enrich-squidle`.
+        descriptors: list[DeploymentDescriptor] = read_deployment_descriptors(
             command.deployments_file
         )
-        state: TaskState = match_deployments(command, client, deployment_infos)
+        state: TaskState = TaskState(
+            deployments=[
+                DeploymentState(deployment_info=descriptor)
+                for descriptor in descriptors
+            ]
+        )
         log_summary(summarize_matching(state))
 
         if command.dry_run:

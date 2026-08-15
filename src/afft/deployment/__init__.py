@@ -94,11 +94,9 @@ from .files import (
 )
 from .loader import (
     load_deployment_config as load_deployment_config,
-    read_deployment_info as read_deployment_info,
 )
 from .types import (
     DeploymentConfig as DeploymentConfig,
-    DeploymentInfo as DeploymentInfo,
     TopsideUsblModemConfig as TopsideUsblModemConfig,
     UsblUncertaintyProfile as UsblUncertaintyProfile,
 )

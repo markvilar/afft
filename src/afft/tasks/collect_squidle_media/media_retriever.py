@@ -10,7 +10,8 @@ import pandas as pd
 from rich.console import Console
 from rich.progress import Progress, TaskID
 
-from afft.squidle import Deployment, SquidleClient
+from afft.deployment import SquidleDescriptorSection
+from afft.squidle import SquidleClient
 
 from .types import CollectSquidleMediaCommand, DeploymentState, TaskState
 
@@ -38,10 +39,11 @@ def fetch_media_items(
     -------
     The (mutated) entry.
     """
-    if entry.squidle_deployment is None:
+    deployment_id: int | None = entry.deployment_info.squidle.deployment_id
+    if deployment_id is None:
         return entry
     try:
-        entry.media = client.fetch_media(entry.squidle_deployment.id)
+        entry.media = client.fetch_media(deployment_id)
     except Exception as error:  # isolate API/export failures per deployment
         entry.error = str(error)
     return entry
@@ -61,22 +63,24 @@ def annotate_media(entry: DeploymentState) -> DeploymentState:
     -------
     The (mutated) entry with ``result`` set.
     """
-    if entry.squidle_deployment is None or entry.media is None:
+    squidle: SquidleDescriptorSection = entry.deployment_info.squidle
+    if squidle.deployment_id is None or entry.media is None:
         return entry
-    deployment: Deployment = entry.squidle_deployment
     metadata = entry.deployment_info.metadata
     result: pd.DataFrame = pd.DataFrame(
         [record.to_dict() for record in entry.media]
     )
     result["acfr_deployment_label"] = metadata.acfr_deployment_label
     result["acfr_campaign_label"] = metadata.acfr_campaign_label
-    result["squidle_deployment_id"] = deployment.id
-    result["squidle_deployment_key"] = deployment.key
-    result["squidle_deployment_name"] = deployment.name
-    result["squidle_campaign_id"] = deployment.campaign_id
-    result["squidle_campaign_name"] = deployment.campaign_name
-    result["squidle_platform_id"] = deployment.platform_id
-    result["squidle_platform_name"] = deployment.platform_name
+    result["squidle_deployment_id"] = squidle.deployment_id
+    result["squidle_deployment_key"] = squidle.deployment_key
+    result["squidle_deployment_name"] = squidle.deployment_name
+    result["squidle_campaign_id"] = squidle.campaign_id
+    result["squidle_campaign_key"] = squidle.campaign_key
+    result["squidle_campaign_name"] = squidle.campaign_name
+    result["squidle_platform_id"] = squidle.platform_id
+    result["squidle_platform_key"] = squidle.platform_key
+    result["squidle_platform_name"] = squidle.platform_name
     entry.result = result
     return entry
 

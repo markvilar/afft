@@ -1,6 +1,5 @@
 """Data types for the collect Squidle+ media task."""
 
-from collections.abc import Callable
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -9,30 +8,8 @@ import pandas as pd
 
 from pydantic import SecretStr
 
-from afft.deployment import DeploymentInfo
-from afft.squidle import Deployment, MediaRecord
-
-
-type DeploymentKeyResolver = Callable[["DeploymentState"], str]
-type DeploymentLookupBuilder = Callable[
-    [list[Deployment]], dict[str, Deployment]
-]
-type DeploymentMatcher = tuple[DeploymentLookupBuilder, DeploymentKeyResolver]
-
-
-class DeploymentMatchPolicy(Enum):
-    """
-    Strategy for matching ACFR deployments to Squidle+ deployments.
-
-    Attributes
-    ----------
-    BY_NAME: Match ``acfr_deployment_label`` against the Squidle+ name.
-    BY_KEY: Match the ``{YYYYMMDD}_{HHMMSS}`` datetime embedded in the ACFR
-        deployment label against the same prefix of the Squidle+ key.
-    """
-
-    BY_NAME = "by_name"
-    BY_KEY = "by_key"
+from afft.deployment import DeploymentDescriptor
+from afft.squidle import MediaRecord
 
 
 @dataclass(slots=True, frozen=True)
@@ -42,9 +19,8 @@ class CollectSquidleMediaCommand:
 
     Attributes
     ----------
-    deployments_file: Path to the ACFR deployments TOML file.
+    deployments_file: Path to the deployment descriptors TOML file.
     output_dir: Directory to write per-deployment CSVs and image subdirs.
-    match_policy: Strategy for matching ACFR to Squidle+ deployments.
     max_workers: Concurrency bound (deployments in phase 2; images per
         deployment in phase 3).
     dry_run: Stop after deployment matching without fetching media.
@@ -54,7 +30,6 @@ class CollectSquidleMediaCommand:
 
     deployments_file: Path
     output_dir: Path
-    match_policy: DeploymentMatchPolicy = DeploymentMatchPolicy.BY_NAME
     max_workers: int = 4
     dry_run: bool = False
     download_images: bool = False
@@ -151,16 +126,16 @@ class DeploymentState:
 
     Attributes
     ----------
-    deployment_info: ACFR deployment entry loaded from TOML. Always present.
-    squidle_deployment: Matched Squidle+ deployment. Set by phase 1.
+    deployment_info: Deployment descriptor loaded from TOML, carrying the
+        curated Squidle+ match resolved by ``deployment enrich-squidle``.
+        Always present.
     media: Media records from Squidle+. Set by phase 2.
     result: Annotated media DataFrame. Set by phase 2.
     error: Retrieval error message if the export failed. Set by phase 2.
     downloads: Per-deployment image downloads. Set by phase 3.
     """
 
-    deployment_info: DeploymentInfo
-    squidle_deployment: Deployment | None = None
+    deployment_info: DeploymentDescriptor
     media: list[MediaRecord] | None = None
     result: pd.DataFrame | None = None
     error: str | None = None
@@ -169,17 +144,17 @@ class DeploymentState:
     @property
     def matched(self) -> bool:
         """True if a Squidle+ deployment has been matched."""
-        return self.squidle_deployment is not None
+        return self.deployment_info.squidle.deployment_id is not None
 
     @property
     def unmatched(self) -> bool:
         """True if no Squidle+ deployment has been matched."""
-        return self.squidle_deployment is None
+        return self.deployment_info.squidle.deployment_id is None
 
     @property
     def failed(self) -> bool:
         """True if matched but media retrieval errored."""
-        return self.squidle_deployment is not None and self.error is not None
+        return self.matched and self.error is not None
 
 
 @dataclass(slots=True)
@@ -286,7 +261,11 @@ class DeploymentReport:
     squidle_deployment_id: Matched Squidle+ deployment id, if any.
     squidle_deployment_key: Matched Squidle+ deployment key, if any.
     squidle_deployment_name: Matched Squidle+ deployment name, if any.
+    squidle_campaign_id: Matched Squidle+ campaign id, if any.
+    squidle_campaign_key: Matched Squidle+ campaign key, if any.
     squidle_campaign_name: Matched Squidle+ campaign name, if any.
+    squidle_platform_id: Matched Squidle+ platform id, if any.
+    squidle_platform_key: Matched Squidle+ platform key, if any.
     squidle_platform_name: Matched Squidle+ platform name, if any.
     media_records_file: Exported CSV path, if written.
     media_record_count: Number of media records retrieved.
@@ -300,7 +279,11 @@ class DeploymentReport:
     squidle_deployment_id: int | None
     squidle_deployment_key: str | None
     squidle_deployment_name: str | None
+    squidle_campaign_id: int | None
+    squidle_campaign_key: str | None
     squidle_campaign_name: str | None
+    squidle_platform_id: int | None
+    squidle_platform_key: str | None
     squidle_platform_name: str | None
     media_records_file: str | None
     media_record_count: int

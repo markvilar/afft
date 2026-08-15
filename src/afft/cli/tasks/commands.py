@@ -4,8 +4,6 @@ CLI commands for invoking data processing tasks.
 
 import click
 
-from afft.tasks.collect_squidle_media import DeploymentMatchPolicy
-
 from .actions import invoke_collect_squidle_media
 
 
@@ -22,7 +20,7 @@ def task_group(context: click.Context) -> None:
     "deployments_file",
     type=click.Path(exists=True, dir_okay=False),
     required=True,
-    help="path to the ACFR deployments TOML file",
+    help="path to the deployment descriptors TOML file",
 )
 @click.option(
     "--output-dir",
@@ -30,16 +28,6 @@ def task_group(context: click.Context) -> None:
     type=click.Path(exists=True, file_okay=False),
     required=True,
     help="directory to write one CSV per deployment",
-)
-@click.option(
-    "--match-policy",
-    "match_policy",
-    type=click.Choice(
-        [p.value for p in DeploymentMatchPolicy], case_sensitive=False
-    ),
-    default=DeploymentMatchPolicy.BY_NAME.value,
-    show_default=True,
-    help="strategy for matching ACFR deployments to Squidle+ deployments",
 )
 @click.option(
     "--max-workers",
@@ -72,17 +60,15 @@ def task_group(context: click.Context) -> None:
 def collect_squidle_media(
     deployments_file: str,
     output_dir: str,
-    match_policy: str,
     max_workers: int,
     dry_run: bool,
     download_images: bool,
     verbose: bool,
 ) -> None:
-    """Fetch Squidle+ media for all deployments in the ACFR deployments file."""
+    """Fetch Squidle+ media for all deployments in the deployment descriptors file."""
     invoke_collect_squidle_media(
         deployments_file,
         output_dir,
-        DeploymentMatchPolicy(match_policy),
         max_workers,
         dry_run,
         download_images,

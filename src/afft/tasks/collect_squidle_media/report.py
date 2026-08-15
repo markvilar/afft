@@ -5,7 +5,7 @@ import msgspec
 from pathlib import Path
 from typing import Any
 
-from afft.squidle import Deployment
+from afft.deployment import SquidleDescriptorSection
 
 from .types import (
     CollectSquidleMediaCommand,
@@ -49,7 +49,7 @@ def _build_deployment_report(
 ) -> DeploymentReport:
     """Build the report for a single deployment from its state."""
     metadata = entry.deployment_info.metadata
-    deployment: Deployment | None = entry.squidle_deployment
+    squidle: SquidleDescriptorSection = entry.deployment_info.squidle
     label: str = entry.deployment_info.deployment_label
     media_records_file: str | None = (
         str(command.output_dir / f"{label}_media_records.csv")
@@ -65,11 +65,15 @@ def _build_deployment_report(
         acfr_deployment_label=metadata.acfr_deployment_label,
         acfr_campaign_label=metadata.acfr_campaign_label,
         matched=entry.matched,
-        squidle_deployment_id=deployment.id if deployment else None,
-        squidle_deployment_key=deployment.key if deployment else None,
-        squidle_deployment_name=deployment.name if deployment else None,
-        squidle_campaign_name=deployment.campaign_name if deployment else None,
-        squidle_platform_name=deployment.platform_name if deployment else None,
+        squidle_deployment_id=squidle.deployment_id,
+        squidle_deployment_key=squidle.deployment_key,
+        squidle_deployment_name=squidle.deployment_name,
+        squidle_campaign_id=squidle.campaign_id,
+        squidle_campaign_key=squidle.campaign_key,
+        squidle_campaign_name=squidle.campaign_name,
+        squidle_platform_id=squidle.platform_id,
+        squidle_platform_key=squidle.platform_key,
+        squidle_platform_name=squidle.platform_name,
         media_records_file=media_records_file,
         media_record_count=len(entry.media) if entry.media else 0,
         retrieval_error=entry.error,
@@ -108,7 +112,11 @@ def _deployment_to_dict(report: DeploymentReport) -> dict[str, Any]:
         "squidle_deployment_id": report.squidle_deployment_id,
         "squidle_deployment_key": report.squidle_deployment_key,
         "squidle_deployment_name": report.squidle_deployment_name,
+        "squidle_campaign_id": report.squidle_campaign_id,
+        "squidle_campaign_key": report.squidle_campaign_key,
         "squidle_campaign_name": report.squidle_campaign_name,
+        "squidle_platform_id": report.squidle_platform_id,
+        "squidle_platform_key": report.squidle_platform_key,
         "squidle_platform_name": report.squidle_platform_name,
         "media_records_file": report.media_records_file,
         "media_record_count": report.media_record_count,

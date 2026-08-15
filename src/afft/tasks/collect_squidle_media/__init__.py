@@ -4,7 +4,6 @@ from .runner import run_collect_squidle_media as run_collect_squidle_media
 from .types import (
     CollectSquidleMediaCommand as CollectSquidleMediaCommand,
     CollectSquidleMediaConfig as CollectSquidleMediaConfig,
-    DeploymentMatchPolicy as DeploymentMatchPolicy,
 )
 
 __all__ = []
