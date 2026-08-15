@@ -61,42 +61,60 @@ def parse_tracklink_log(
     help="Destination CSV path for the processed output.",
 )
 @click.option(
-    "--deployment-configs",
-    "deployment_configs",
+    "--descriptor-file",
+    "descriptor_file",
     type=click.Path(exists=True, dir_okay=False),
     required=True,
-    help="TOML file containing ship sensor configurations and deployment mappings.",
+    help="Path to the deployment descriptors TOML file.",
 )
 @click.option(
-    "--deployment",
+    "--deployment-label",
     "deployment_label",
     type=str,
     required=True,
-    help="Deployment label to look up in the ship sensor configurations file.",
+    help="Deployment label to select from --descriptor-file.",
 )
 @click.option(
     "--ignore-extrinsics",
     "ignore_extrinsics",
     is_flag=True,
     default=False,
-    help="Use zero extrinsics instead of the calibrated values from the deployment config.",
+    help="Use zero extrinsics instead of the calibrated values from the descriptor.",
+)
+@click.option(
+    "--horizontal-position-std",
+    "horizontal_position_std",
+    type=float,
+    default=None,
+    help="Override the 1σ horizontal position uncertainty in metres.",
+)
+@click.option(
+    "--depth-position-std",
+    "depth_position_std",
+    type=float,
+    default=None,
+    help="Override the 1σ depth position uncertainty in metres.",
 )
 def process_tracklink_usbl_from_messages(
     usbl_file: str,
     pressure_file: str,
     output_file: str,
-    deployment_configs: str,
+    descriptor_file: str,
     deployment_label: str,
     ignore_extrinsics: bool,
+    horizontal_position_std: float | None,
+    depth_position_std: float | None,
 ) -> None:
     """Resolve positions and estimate uncertainty from TrackLink AUV messages."""
     invoke_process_tracklink_usbl_from_messages(
         usbl_file,
         pressure_file,
         output_file,
-        deployment_configs,
+        descriptor_file,
         deployment_label,
         ignore_extrinsics=ignore_extrinsics,
+        horizontal_position_std=horizontal_position_std,
+        depth_position_std=depth_position_std,
     )
 
 
@@ -116,40 +134,58 @@ def process_tracklink_usbl_from_messages(
     help="Destination CSV path for the processed output.",
 )
 @click.option(
-    "--deployment-configs",
-    "deployment_configs",
+    "--descriptor-file",
+    "descriptor_file",
     type=click.Path(exists=True, dir_okay=False),
     required=True,
-    help="TOML file containing ship sensor configurations and deployment mappings.",
+    help="Path to the deployment descriptors TOML file.",
 )
 @click.option(
-    "--deployment",
+    "--deployment-label",
     "deployment_label",
     type=str,
     required=True,
-    help="Deployment label to look up in the ship sensor configurations file.",
+    help="Deployment label to select from --descriptor-file.",
 )
 @click.option(
     "--ignore-extrinsics",
     "ignore_extrinsics",
     is_flag=True,
     default=False,
-    help="Use zero extrinsics instead of the calibrated values from the deployment config.",
+    help="Use zero extrinsics instead of the calibrated values from the descriptor.",
+)
+@click.option(
+    "--horizontal-position-std",
+    "horizontal_position_std",
+    type=float,
+    default=None,
+    help="Override the 1σ horizontal position uncertainty in metres.",
+)
+@click.option(
+    "--depth-position-std",
+    "depth_position_std",
+    type=float,
+    default=None,
+    help="Override the 1σ depth position uncertainty in metres.",
 )
 def process_tracklink_usbl_from_logs(
     usbl_file: str,
     output_file: str,
-    deployment_configs: str,
+    descriptor_file: str,
     deployment_label: str,
     ignore_extrinsics: bool,
+    horizontal_position_std: float | None,
+    depth_position_std: float | None,
 ) -> None:
     """Resolve positions and estimate uncertainty from TrackLink USBL log entries."""
     invoke_process_tracklink_usbl_from_logs(
         usbl_file,
         output_file,
-        deployment_configs,
+        descriptor_file,
         deployment_label,
         ignore_extrinsics=ignore_extrinsics,
+        horizontal_position_std=horizontal_position_std,
+        depth_position_std=depth_position_std,
     )
 
 
@@ -169,38 +205,56 @@ def process_tracklink_usbl_from_logs(
     help="Destination CSV path for the processed output.",
 )
 @click.option(
-    "--deployment-configs",
-    "deployment_configs",
+    "--descriptor-file",
+    "descriptor_file",
     type=click.Path(exists=True, dir_okay=False),
     required=True,
-    help="TOML file containing ship sensor configurations and deployment mappings.",
+    help="Path to the deployment descriptors TOML file.",
 )
 @click.option(
-    "--deployment",
+    "--deployment-label",
     "deployment_label",
     type=str,
     required=True,
-    help="Deployment label to look up in the ship sensor configurations file.",
+    help="Deployment label to select from --descriptor-file.",
 )
 @click.option(
     "--ignore-extrinsics",
     "ignore_extrinsics",
     is_flag=True,
     default=False,
-    help="Use zero extrinsics instead of the calibrated values from the deployment config.",
+    help="Use zero extrinsics instead of the calibrated values from the descriptor.",
+)
+@click.option(
+    "--horizontal-position-std",
+    "horizontal_position_std",
+    type=float,
+    default=None,
+    help="Override the 1σ horizontal position uncertainty in metres.",
+)
+@click.option(
+    "--depth-position-std",
+    "depth_position_std",
+    type=float,
+    default=None,
+    help="Override the 1σ depth position uncertainty in metres.",
 )
 def process_evologics_usbl(
     usbl_file: str,
     output_file: str,
-    deployment_configs: str,
+    descriptor_file: str,
     deployment_label: str,
     ignore_extrinsics: bool,
+    horizontal_position_std: float | None,
+    depth_position_std: float | None,
 ) -> None:
     """Convert Evologics USBL data to the USBL output schema."""
     invoke_process_evologics_usbl(
         usbl_file,
         output_file,
-        deployment_configs,
+        descriptor_file,
         deployment_label,
         ignore_extrinsics=ignore_extrinsics,
+        horizontal_position_std=horizontal_position_std,
+        depth_position_std=depth_position_std,
     )

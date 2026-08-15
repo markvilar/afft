@@ -92,11 +92,3 @@ from .files import (
     DeploymentFiles as DeploymentFiles,
     collect_deployment_files as collect_deployment_files,
 )
-from .loader import (
-    load_deployment_config as load_deployment_config,
-)
-from .types import (
-    DeploymentConfig as DeploymentConfig,
-    TopsideUsblModemConfig as TopsideUsblModemConfig,
-    UsblUncertaintyProfile as UsblUncertaintyProfile,
-)
