@@ -20,7 +20,7 @@ from .types import (
 )
 
 
-def enrich_descriptors(
+def enrich_descriptors_from_catalog(
     descriptors: list[DeploymentDescriptor],
     catalog: DeploymentCatalog,
     diagnostics: EnrichCatalogDiagnostics,
@@ -78,7 +78,7 @@ def enrich_descriptors(
     return enriched
 
 
-def enrich_descriptors_from_catalog(
+def run_enrich_descriptors_from_catalog(
     command: EnrichCatalogCommand,
 ) -> EnrichCatalogResult:
     """
@@ -125,7 +125,7 @@ def enrich_descriptors_from_catalog(
     logger.info(f"enriching {len(descriptors)} deployment(s)")
 
     diagnostics = EnrichCatalogDiagnostics()
-    enriched: list[DeploymentDescriptor] = enrich_descriptors(
+    enriched: list[DeploymentDescriptor] = enrich_descriptors_from_catalog(
         descriptors, catalog, diagnostics, command.section
     )
 

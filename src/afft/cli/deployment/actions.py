@@ -22,8 +22,8 @@ from afft.tasks.deployment_enrichment import (
     DeploymentMatchPolicy,
     EnrichCatalogCommand,
     EnrichSquidleCommand,
-    enrich_descriptors_from_catalog,
-    enrich_descriptors_from_squidle,
+    run_enrich_descriptors_from_catalog,
+    run_enrich_descriptors_from_squidle,
 )
 
 
@@ -86,7 +86,7 @@ def invoke_enrich_catalog(
         section=EnrichmentSection(section),
         verbose=verbose,
     )
-    enrich_descriptors_from_catalog(command)
+    run_enrich_descriptors_from_catalog(command)
 
 
 def invoke_enrich_squidle(
@@ -116,7 +116,7 @@ def invoke_enrich_squidle(
         verbose=verbose,
     )
     with create_client(token.get_secret_value()) as client:
-        enrich_descriptors_from_squidle(command, client)
+        run_enrich_descriptors_from_squidle(command, client)
 
 
 def invoke_summarize_descriptor(
