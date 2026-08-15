@@ -18,6 +18,7 @@ from afft.deployment import (
     PlatformSensor,
     SensorExtrinsics,
     SensorIdentity,
+    SquidleDescriptorSection,
     SystemDescriptorSection,
     TelemetryDescriptorSection,
     VesselDescriptorSection,
@@ -61,6 +62,7 @@ def _build_descriptor(
     platform_label: str = "auv-sirius",
     platform: PlatformDescriptorSection | None = None,
     vessel: VesselDescriptorSection | None = None,
+    squidle: SquidleDescriptorSection | None = None,
 ) -> DeploymentDescriptor:
     """Builds a descriptor carrying only the fields the summarizer reads."""
     return DeploymentDescriptor(
@@ -87,6 +89,7 @@ def _build_descriptor(
             logged_streams=["RAW"],
         ),
         vessel=vessel if vessel else _enriched_vessel(),
+        squidle=squidle if squidle else _enriched_squidle(),
     )
 
 
@@ -110,6 +113,21 @@ def _enriched_vessel() -> VesselDescriptorSection:
     """Builds a fully enriched vessel section."""
     return VesselDescriptorSection(
         identity=VesselIdentity(vessel_name="RV Linnaeus"), sensors=[]
+    )
+
+
+def _enriched_squidle() -> SquidleDescriptorSection:
+    """Builds a fully enriched Squidle+ section."""
+    return SquidleDescriptorSection(
+        deployment_id=1,
+        deployment_key="r20100428_020202_dep1",
+        deployment_name="dep1",
+        campaign_id=10,
+        campaign_key="camp-a",
+        campaign_name="Campaign A",
+        platform_id=100,
+        platform_key="plat-sirius",
+        platform_name="AUV Sirius",
     )
 
 
