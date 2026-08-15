@@ -1,7 +1,6 @@
 """Actions for database CLI commands."""
 
 from pathlib import Path
-from typing import Any
 
 import pandas as pd
 import polars as pl
@@ -9,55 +8,8 @@ import sqlalchemy as sqla
 from rich.progress import Progress
 
 import afft.database as db
-import afft.io as io
-import afft.tasks.database_tasks as dbtasks
 
 from afft.environment import EnvironmentDatabase, load_environment
-from afft.tasks.ingest_tables import IngestTablesCommand, run_ingest_tables
-from afft.utils.log import logger
-
-
-def invoke_table_join(
-    database: str,
-    host: str,
-    port: int,
-    config_path: str | Path,
-) -> None:
-    """Load join configs and execute each join against the database."""
-    config: dict[str, Any] = io.read_config(Path(config_path))
-    tasks = config.get("tasks")
-    if tasks is None:
-        raise ValueError("missing 'tasks' key in config")
-    task_configs: list[dbtasks.JoinTableConfig] = [
-        dbtasks.JoinTableConfig(**task) for task in tasks
-    ]
-
-    credentials: EnvironmentDatabase = load_environment().database
-    engine: db.Engine | str = db.create_engine(
-        database=database,
-        host=host,
-        port=port,
-        username=credentials.username.get_secret_value(),
-        password=credentials.password.get_secret_value(),
-    )
-
-    assert isinstance(engine, db.Engine), (
-        f"error when creating database engine: {engine}"
-    )
-
-    results: dict[str, pl.DataFrame] = {
-        config.label: dbtasks.join_database_tables(
-            engine,
-            queries=config.queries,
-            selections=config.selections,
-            base=config.join["base"],
-            join_on=config.join["field"],
-        )
-        for config in task_configs
-    }
-
-    for label, dataframe in results.items():
-        logger.info(f"Label: {label}, dataframe: {len(dataframe)}")
 
 
 def invoke_table_export(
@@ -108,31 +60,6 @@ def invoke_table_export(
         df.to_csv(dest, index=False)
         progress.advance(task)
     progress.stop()
-
-
-def invoke_table_ingest(
-    source_dir: str | Path,
-    database: str,
-    host: str,
-    port: int,
-    pattern: str = "*.csv",
-    overwrite: bool = False,
-    verbose: bool = False,
-    timestamp_columns: tuple[str, ...] = ("timestamp",),
-) -> None:
-    """Ingest all files matching pattern in source_dir as database tables."""
-    command = IngestTablesCommand(
-        source_dir=Path(source_dir),
-        database=database,
-        host=host,
-        port=port,
-        pattern=pattern,
-        overwrite=overwrite,
-        verbose=verbose,
-        timestamp_columns=timestamp_columns,
-    )
-    credentials: EnvironmentDatabase = load_environment().database
-    run_ingest_tables(command, credentials)
 
 
 def invoke_table_write(
