@@ -57,6 +57,7 @@ from .descriptor_types import (
     DeploymentDescriptor as DeploymentDescriptor,
     FileDescriptorSection as FileDescriptorSection,
     PlatformDescriptorSection as PlatformDescriptorSection,
+    SquidleDescriptorSection as SquidleDescriptorSection,
     SystemDescriptorSection as SystemDescriptorSection,
     TelemetryDescriptorSection as TelemetryDescriptorSection,
     VesselDescriptorSection as VesselDescriptorSection,

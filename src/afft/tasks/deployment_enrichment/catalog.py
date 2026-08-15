@@ -1,4 +1,4 @@
-"""Runner for the enrich descriptor task."""
+"""Runner for the enrich catalog task."""
 
 from afft.deployment import (
     DeploymentCatalog,
@@ -14,16 +14,16 @@ from afft.deployment import (
 from afft.utils.log import logger
 
 from .types import (
-    EnrichDescriptorCommand,
-    EnrichDescriptorDiagnostics,
-    EnrichDescriptorResult,
+    EnrichCatalogCommand,
+    EnrichCatalogDiagnostics,
+    EnrichCatalogResult,
 )
 
 
-def enrich_descriptors(
+def enrich_descriptors_from_catalog(
     descriptors: list[DeploymentDescriptor],
     catalog: DeploymentCatalog,
-    diagnostics: EnrichDescriptorDiagnostics,
+    diagnostics: EnrichCatalogDiagnostics,
     section: EnrichmentSection = EnrichmentSection.ALL,
 ) -> list[DeploymentDescriptor]:
     """
@@ -78,9 +78,9 @@ def enrich_descriptors(
     return enriched
 
 
-def run_enrich_descriptor(
-    command: EnrichDescriptorCommand,
-) -> EnrichDescriptorResult:
+def run_enrich_descriptors_from_catalog(
+    command: EnrichCatalogCommand,
+) -> EnrichCatalogResult:
     """
     Enrich a descriptors file from a catalog file and write it back to TOML.
 
@@ -124,8 +124,8 @@ def run_enrich_descriptor(
 
     logger.info(f"enriching {len(descriptors)} deployment(s)")
 
-    diagnostics = EnrichDescriptorDiagnostics()
-    enriched: list[DeploymentDescriptor] = enrich_descriptors(
+    diagnostics = EnrichCatalogDiagnostics()
+    enriched: list[DeploymentDescriptor] = enrich_descriptors_from_catalog(
         descriptors, catalog, diagnostics, command.section
     )
 
@@ -138,4 +138,4 @@ def run_enrich_descriptor(
         for warning in diagnostics.warnings:
             logger.warning(f"{warning.deployment_label}: {warning.message}")
 
-    return EnrichDescriptorResult(descriptors=enriched, diagnostics=diagnostics)
+    return EnrichCatalogResult(descriptors=enriched, diagnostics=diagnostics)

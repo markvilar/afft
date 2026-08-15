@@ -3,6 +3,8 @@
 from pathlib import Path
 
 from afft.deployment import EnrichmentSection
+from afft.environment import load_environment
+from afft.squidle import create_client
 from afft.tasks.deployment_catalog import (
     ScaffoldCatalogCommand,
     SummarizeCatalogCommand,
@@ -17,8 +19,11 @@ from afft.tasks.deployment_descriptor import (
     run_summarize_descriptor,
 )
 from afft.tasks.deployment_enrichment import (
-    EnrichDescriptorCommand,
-    run_enrich_descriptor,
+    DeploymentMatchPolicy,
+    EnrichCatalogCommand,
+    EnrichSquidleCommand,
+    run_enrich_descriptors_from_catalog,
+    run_enrich_descriptors_from_squidle,
 )
 
 
@@ -61,7 +66,7 @@ def invoke_scaffold_catalog(
     run_scaffold_catalog(command)
 
 
-def invoke_enrich_descriptor(
+def invoke_enrich_descriptors_from_catalog(
     input_file: str | Path,
     catalog_file: str | Path,
     output_file: str | Path,
@@ -74,14 +79,44 @@ def invoke_enrich_descriptor(
     Exits zero whatever the diagnostics hold: a deployment the catalog assigns
     no profile keeps its unfilled slots rather than failing the run.
     """
-    command = EnrichDescriptorCommand(
+    command = EnrichCatalogCommand(
         input_file=Path(input_file),
         catalog_file=Path(catalog_file),
         output_file=Path(output_file),
         section=EnrichmentSection(section),
         verbose=verbose,
     )
-    run_enrich_descriptor(command)
+    run_enrich_descriptors_from_catalog(command)
+
+
+def invoke_enrich_descriptors_from_squidle(
+    input_file: str | Path,
+    output_file: str | Path,
+    match_policy: DeploymentMatchPolicy = DeploymentMatchPolicy.BY_NAME,
+    max_workers: int = 4,
+    verbose: bool = False,
+) -> None:
+    """
+    Enrich deployment descriptors from the live Squidle+ API.
+
+    Exits zero whatever the diagnostics hold: a deployment with no or an
+    ambiguous Squidle+ match keeps its unfilled slots rather than failing the
+    run.
+    """
+    token = load_environment().tokens.squidle
+    if token is None:
+        raise ValueError(
+            "missing Squidle API token: set SQUIDLE_API_TOKEN in .env"
+        )
+    command = EnrichSquidleCommand(
+        input_file=Path(input_file),
+        output_file=Path(output_file),
+        match_policy=match_policy,
+        max_workers=max_workers,
+        verbose=verbose,
+    )
+    with create_client(token.get_secret_value()) as client:
+        run_enrich_descriptors_from_squidle(command, client)
 
 
 def invoke_summarize_descriptor(

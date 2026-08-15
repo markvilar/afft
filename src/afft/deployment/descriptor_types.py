@@ -85,6 +85,43 @@ class SystemDescriptorSection(BaseModel):
     sensors: list[str] = Field(default_factory=list)
 
 
+class SquidleDescriptorSection(BaseModel):
+    """
+    Curated Squidle+ identity for the deployment, filled by
+    ``deployment enrich-squidle``.
+
+    Every field is ``None`` until a match is resolved; ``deployment_id``/
+    ``deployment_key``/``deployment_name`` can be filled even when the
+    campaign/platform follow-up lookups fail. Field names follow Squidle+'s
+    own vocabulary (``name``/``key``) rather than ACFR's ``_label``
+    convention used elsewhere on the descriptor.
+
+    Attributes
+    ----------
+    deployment_id: Squidle+ deployment id.
+    deployment_key: Squidle+ deployment key.
+    deployment_name: Squidle+ deployment name.
+    campaign_id: Squidle+ campaign id.
+    campaign_key: Squidle+ campaign key.
+    campaign_name: Squidle+ campaign name.
+    platform_id: Squidle+ platform id.
+    platform_key: Squidle+ platform key.
+    platform_name: Squidle+ platform name.
+    """
+
+    model_config = ConfigDict(frozen=True)
+
+    deployment_id: int | None = None
+    deployment_key: str | None = None
+    deployment_name: str | None = None
+    campaign_id: int | None = None
+    campaign_key: str | None = None
+    campaign_name: str | None = None
+    platform_id: int | None = None
+    platform_key: str | None = None
+    platform_name: str | None = None
+
+
 class FileDescriptorSection(BaseModel):
     """
     Flat inventory of a deployment's files, keyed by role.
@@ -151,6 +188,8 @@ class DeploymentDescriptor(BaseModel):
         labels.
     vessel: The support vessel's curated identity and its sensor roster; empty
         until enrichment fills it.
+    squidle: Curated Squidle+ identity; empty until ``deployment
+        enrich-squidle`` fills it.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -167,6 +206,9 @@ class DeploymentDescriptor(BaseModel):
 
     vessel: VesselDescriptorSection = Field(
         default_factory=VesselDescriptorSection
+    )
+    squidle: SquidleDescriptorSection = Field(
+        default_factory=SquidleDescriptorSection
     )
 
     @model_validator(mode="after")
