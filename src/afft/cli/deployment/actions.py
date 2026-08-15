@@ -66,7 +66,7 @@ def invoke_scaffold_catalog(
     run_scaffold_catalog(command)
 
 
-def invoke_enrich_catalog(
+def invoke_enrich_descriptors_from_catalog(
     input_file: str | Path,
     catalog_file: str | Path,
     output_file: str | Path,
@@ -89,7 +89,7 @@ def invoke_enrich_catalog(
     run_enrich_descriptors_from_catalog(command)
 
 
-def invoke_enrich_squidle(
+def invoke_enrich_descriptors_from_squidle(
     input_file: str | Path,
     output_file: str | Path,
     match_policy: DeploymentMatchPolicy = DeploymentMatchPolicy.BY_NAME,

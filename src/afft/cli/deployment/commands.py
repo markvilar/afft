@@ -7,8 +7,8 @@ from afft.tasks.deployment_enrichment import DeploymentMatchPolicy
 
 from .actions import (
     invoke_describe_deployment,
-    invoke_enrich_catalog,
-    invoke_enrich_squidle,
+    invoke_enrich_descriptors_from_catalog,
+    invoke_enrich_descriptors_from_squidle,
     invoke_scaffold_catalog,
     invoke_summarize_catalog,
     invoke_summarize_descriptor,
@@ -146,7 +146,7 @@ def enrich_catalog(
     and vessel identities, sensor identities, and mounting poses. Passing the
     input path as the output enriches the descriptors in place.
     """
-    invoke_enrich_catalog(
+    invoke_enrich_descriptors_from_catalog(
         input_file, catalog_file, output_file, section, verbose
     )
 
@@ -204,7 +204,7 @@ def enrich_squidle(
     curated Squidle+ identity section. Passing the input path as the output
     enriches the descriptors in place.
     """
-    invoke_enrich_squidle(
+    invoke_enrich_descriptors_from_squidle(
         input_file,
         output_file,
         DeploymentMatchPolicy(match_policy),
