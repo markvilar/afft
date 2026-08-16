@@ -5,12 +5,15 @@ from collections.abc import Mapping
 from dataclasses import dataclass
 from typing import Any, Callable
 
+import geopandas as gpd
 import pandas as pd
 
 from pydantic import BaseModel, ConfigDict
 
+type PipelineFrame = pd.DataFrame | gpd.GeoDataFrame
+
 type PipelineProcessor = Callable[
-    [Mapping[str, pd.DataFrame], Any], pd.DataFrame
+    [Mapping[str, PipelineFrame], Any], PipelineFrame
 ]
 
 

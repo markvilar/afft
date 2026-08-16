@@ -4,6 +4,7 @@
 from collections.abc import Mapping
 from typing import TypeVar
 
+import geopandas as gpd
 import numpy as np
 import pandas as pd
 import pymap3d
@@ -25,9 +26,6 @@ class ApplyMountingOffsetConfig(BaseModel):
 
     Attributes
     ----------
-    latitude_column: Latitude column in the pose frame.
-    longitude_column: Longitude column in the pose frame.
-    height_column: Height column in the pose frame, in metres, positive up.
     heading_column: Heading column in degrees, clockwise from North.
     pitch_column: Pitch column in degrees.
     roll_column: Roll column in degrees.
@@ -37,9 +35,6 @@ class ApplyMountingOffsetConfig(BaseModel):
 
     model_config = ConfigDict(frozen=True, extra="forbid")
 
-    latitude_column: str = "latitude"
-    longitude_column: str = "longitude"
-    height_column: str = "height"
     heading_column: str = "heading"
     pitch_column: str = "pitch"
     roll_column: str = "roll"
@@ -97,30 +92,31 @@ def _decode_single_row(
 
 
 def apply_mounting_offset(
-    poses: pd.DataFrame,
+    poses: gpd.GeoDataFrame,
     extrinsics: SensorExtrinsics,
     config: ApplyMountingOffsetConfig,
-) -> pd.DataFrame:
+) -> gpd.GeoDataFrame:
     """
     Apply a sensor's body-frame extrinsics to shift a geodetic pose frame by
     the full 3D lever arm.
 
-    Reads latitude, longitude, height, and attitude from `poses`, offsets the
+    Reads longitude, latitude, height, and attitude from `poses`, offsets the
     position by the extrinsics translation rotated into the local NED frame
-    by the pose's attitude, and writes the shifted latitude, longitude, and
-    height back. All other columns are passed through unchanged.
+    by the pose's attitude, and writes the shifted position back to the
+    geometry column. All other columns are passed through unchanged.
 
     Arguments
     ---------
-    poses: Pose frame in the sensor's reference frame (or the body's
-        reference frame, when `config.invert` is set).
+    poses: Pose geoframe in the sensor's reference frame (or the body's
+        reference frame, when `config.invert` is set). Position is a 3D
+        `Point(longitude, latitude, height)`.
     extrinsics: The sensor's mounting pose in the body frame.
     config: Column configuration and transform direction.
 
     Returns
     -------
-    Pose frame shifted to the body reference frame (or the reverse, when
-    `config.invert` is set).
+    Pose geoframe shifted to the body reference frame (or the reverse, when
+    `config.invert` is set), with the same CRS as `poses`.
     """
     headings: NDArray[np.float64] = poses[config.heading_column].to_numpy(
         dtype=np.float64
@@ -150,13 +146,13 @@ def apply_mounting_offset(
     )
     delta_ned: NDArray[np.float64] = rotation.apply(offset)
 
-    source_latitude: NDArray[np.float64] = poses[
-        config.latitude_column
-    ].to_numpy(dtype=np.float64)
-    source_longitude: NDArray[np.float64] = poses[
-        config.longitude_column
-    ].to_numpy(dtype=np.float64)
-    source_height: NDArray[np.float64] = poses[config.height_column].to_numpy(
+    source_longitude: NDArray[np.float64] = poses.geometry.x.to_numpy(
+        dtype=np.float64
+    )
+    source_latitude: NDArray[np.float64] = poses.geometry.y.to_numpy(
+        dtype=np.float64
+    )
+    source_height: NDArray[np.float64] = poses.geometry.z.to_numpy(
         dtype=np.float64
     )
 
@@ -172,10 +168,10 @@ def apply_mounting_offset(
         source_height,
     )
 
-    shifted: pd.DataFrame = poses.copy()
-    shifted[config.latitude_column] = target_latitude
-    shifted[config.longitude_column] = target_longitude
-    shifted[config.height_column] = target_up
+    shifted: gpd.GeoDataFrame = poses.copy()
+    shifted["geometry"] = gpd.points_from_xy(
+        target_longitude, target_latitude, target_up, crs=poses.crs
+    )
     return shifted
 
 
@@ -183,9 +179,9 @@ def apply_mounting_offset(
     "apply_mounting_offset", config_type=ApplyMountingOffsetConfig
 )
 def step_apply_mounting_offset(
-    frames: Mapping[str, pd.DataFrame],
+    frames: Mapping[str, pd.DataFrame | gpd.GeoDataFrame],
     config: ApplyMountingOffsetConfig,
-) -> pd.DataFrame:
+) -> gpd.GeoDataFrame:
     """Apply a sensor's body-frame extrinsics to shift a geodetic pose frame
     by the full 3D lever arm, in either direction."""
     extrinsics: SensorExtrinsics = _decode_single_row(

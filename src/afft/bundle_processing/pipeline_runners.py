@@ -1,9 +1,11 @@
 """Execution of a resolved pipeline against a deployment bundle."""
 
+import geopandas as gpd
+
 from afft.deployment import DeploymentBundleIO, DeploymentBundleReader
 from afft.utils.log import logger
 
-from .pipeline_types import Pipeline
+from .pipeline_types import Pipeline, PipelineFrame
 
 
 class PipelineStepError(RuntimeError):
@@ -36,8 +38,10 @@ def run_pipeline(
     PipelineStepError: If a step fails, naming the step and chaining the
         original error as its cause.
     """
-    for key in source.list_frames():
-        target.write_frame(key, source.read_frame(key))
+    for key, seed_frame in source.iter_frames():
+        target.write_frame(key, seed_frame)
+    for key, seed_geoframe in source.iter_geoframes():
+        target.write_geoframe(key, seed_geoframe)
 
     for index, step in enumerate(pipeline):
         missing: str | None = next(
@@ -52,12 +56,22 @@ def run_pipeline(
             continue
 
         try:
-            frames = {
-                name: target.read_frame(key)
+            step_geoframe_keys = set(target.list_geoframes())
+            frames: dict[str, PipelineFrame] = {
+                name: (
+                    target.read_geoframe(key)
+                    if key in step_geoframe_keys
+                    else target.read_frame(key)
+                )
                 for name, key in step.inputs.items()
             }
-            frame = step.processor(frames, step.config)
-            target.write_frame(
+            frame: PipelineFrame = step.processor(frames, step.config)
+            write_output = (
+                target.write_geoframe
+                if isinstance(frame, gpd.GeoDataFrame)
+                else target.write_frame
+            )
+            write_output(
                 step.output,
                 frame,
                 if_exists=(

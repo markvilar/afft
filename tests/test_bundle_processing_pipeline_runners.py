@@ -3,8 +3,10 @@
 from collections.abc import Mapping
 from pathlib import Path
 
+import geopandas as gpd
 import pandas as pd
 import pytest
+from shapely.geometry import Point
 
 from pydantic import BaseModel, ConfigDict
 
@@ -38,6 +40,22 @@ def _fail(
     frames: Mapping[str, pd.DataFrame], config: _ScaleConfig
 ) -> pd.DataFrame:
     raise RuntimeError("processor exploded")
+
+
+def _geoframe() -> gpd.GeoDataFrame:
+    return gpd.GeoDataFrame(
+        {"value": [1.0, 2.0]},
+        geometry=[Point(0, 0), Point(1, 1)],
+        crs="EPSG:4326",
+    )
+
+
+def _shift_geoframe(
+    frames: Mapping[str, gpd.GeoDataFrame], config: _ScaleConfig
+) -> gpd.GeoDataFrame:
+    frame: gpd.GeoDataFrame = frames["geo"].copy()
+    frame["geometry"] = frame.geometry.translate(xoff=config.factor)
+    return frame
 
 
 def _step(
@@ -275,3 +293,80 @@ def test_an_optional_step_runs_when_its_inputs_are_present(
     with open_deployment_bundle_reader(target) as reader:
         frame = reader.read_frame("telemetry/processed/pressure")
         assert frame["value"].tolist() == [3.0, 6.0]
+
+
+def test_seeding_writes_geoframes_through_write_geoframe(
+    tmp_path: Path,
+) -> None:
+    """A geoframe key in the source seeds into the target as a geoframe."""
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
+    _source_bundle(source)
+    with open_deployment_bundle(source) as bundle:
+        bundle.write_geoframe(
+            "trajectory/renav_priors/camera_poses", _geoframe()
+        )
+
+    _run(source, target, ())
+
+    with open_deployment_bundle_reader(target) as reader:
+        assert reader.list_geoframes() == [
+            "trajectory/renav_priors/camera_poses"
+        ]
+        geoframe = reader.read_geoframe("trajectory/renav_priors/camera_poses")
+        assert isinstance(geoframe, gpd.GeoDataFrame)
+        assert geoframe.crs == _geoframe().crs
+
+
+def test_a_step_reads_a_geoframe_input_as_a_geoframe(tmp_path: Path) -> None:
+    """A step whose input key is a geoframe receives a `GeoDataFrame`."""
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
+    _source_bundle(source)
+    with open_deployment_bundle(source) as bundle:
+        bundle.write_geoframe(
+            "trajectory/renav_priors/camera_poses", _geoframe()
+        )
+
+    step = PipelineStep(
+        processor_key="shift",
+        processor=_shift_geoframe,
+        config=_ScaleConfig(factor=1.0),
+        inputs={"geo": "trajectory/renav_priors/camera_poses"},
+        output="trajectory/processed/camera_poses",
+    )
+    _run(source, target, (step,))
+
+    with open_deployment_bundle_reader(target) as reader:
+        assert sorted(reader.list_geoframes()) == sorted(
+            [
+                "trajectory/renav_priors/camera_poses",
+                "trajectory/processed/camera_poses",
+            ]
+        )
+        shifted = reader.read_geoframe("trajectory/processed/camera_poses")
+        assert shifted.geometry.x.tolist() == [1.0, 2.0]
+
+
+def test_a_step_producing_a_geoframe_is_written_via_write_geoframe(
+    tmp_path: Path,
+) -> None:
+    """A processor returning a `GeoDataFrame` is routed to `write_geoframe`,
+    regardless of whether its inputs were geoframes."""
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
+    _source_bundle(source)
+    with open_deployment_bundle(source) as bundle:
+        bundle.write_geoframe(
+            "trajectory/renav_priors/camera_poses", _geoframe()
+        )
+
+    step = PipelineStep(
+        processor_key="shift",
+        processor=_shift_geoframe,
+        config=_ScaleConfig(factor=2.0),
+        inputs={"geo": "trajectory/renav_priors/camera_poses"},
+        output="trajectory/processed/camera_poses",
+    )
+    _run(source, target, (step,))
+
+    with open_deployment_bundle_reader(target) as reader:
+        assert "trajectory/processed/camera_poses" in reader.list_geoframes()
+        assert "trajectory/processed/camera_poses" not in reader.list_frames()
