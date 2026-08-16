@@ -6,6 +6,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Literal
 
+import geopandas as gpd
 import pandas as pd
 
 from afft.deployment import (
@@ -21,12 +22,15 @@ from afft.utils.log import logger
 
 from .task_helpers import (
     clip_frame_to_window,
+    is_geoframe_suffix,
     key_matches_no_clip,
     read_frame_file,
+    read_geoframe_file,
     validate_clip_deployment_bundle_input,
     validate_export_bundle_frame_input,
     validate_ingest_bundle_frame_input,
     write_frame_file,
+    write_geoframe_file,
 )
 from .task_types import (
     ClipDeploymentBundleCommand,
@@ -69,8 +73,9 @@ def run_export_bundle_frame(
     FileNotFoundError: If the bundle does not exist.
     FileExistsError: If the output file exists and ``overwrite`` is not set.
     ValueError: If the frame key is not structurally valid, if the output
-        file's suffix does not name a supported format, or if the bundle
-        holds no frame at the key.
+        file's suffix does not name a supported format, if the bundle holds
+        no frame at the key, or if the key holds a geoframe and the output
+        file's suffix does not name a geodata format.
     """
     validate_export_bundle_frame_input(command)
 
@@ -81,26 +86,42 @@ def run_export_bundle_frame(
                 f"bundle holds no frame at {command.key!r}: "
                 f"{command.bundle_file} holds {sorted(reader.list_frames())}"
             )
-        frame: pd.DataFrame = reader.read_frame(command.key)
+        is_geoframe: bool = reader.is_geoframe(command.key)
+        if is_geoframe and not is_geoframe_suffix(command.output_file.suffix):
+            raise ValueError(
+                f"{command.key!r} holds a geoframe, which cannot be "
+                f"exported to {command.output_file.suffix!r}: "
+                f"{command.output_file}"
+            )
+
+        if is_geoframe:
+            geoframe: gpd.GeoDataFrame = reader.read_geoframe(command.key)
+            rows, columns = len(geoframe), tuple(geoframe.columns)
+        else:
+            frame: pd.DataFrame = reader.read_frame(command.key)
+            rows, columns = len(frame), tuple(frame.columns)
 
     logger.info("-------------------------------------")
     logger.info("Export Frame")
     logger.info(f"  bundle file: {command.bundle_file}")
     logger.info(f"  key:         {command.key}")
     logger.info(f"  output file: {command.output_file}")
-    logger.info(f"  rows:        {len(frame)}")
+    logger.info(f"  rows:        {rows}")
     logger.info("-------------------------------------")
 
     command.output_file.parent.mkdir(parents=True, exist_ok=True)
-    write_frame_file(frame, command.output_file)
+    if is_geoframe:
+        write_geoframe_file(geoframe, command.output_file)
+    else:
+        write_frame_file(frame, command.output_file)
 
     logger.info(f"wrote {command.key} to {command.output_file}")
 
     return ExportBundleFrameResult(
         output_file=command.output_file,
         key=command.key,
-        rows=len(frame),
-        columns=tuple(frame.columns),
+        rows=rows,
+        columns=columns,
     )
 
 
@@ -136,16 +157,22 @@ def run_ingest_bundle_frame(
     """
     validate_ingest_bundle_frame_input(command)
 
-    frame: pd.DataFrame = read_frame_file(
-        command.input_file, command.datetime_columns
-    )
+    is_geoframe: bool = is_geoframe_suffix(command.input_file.suffix)
+    geoframe: gpd.GeoDataFrame
+    frame: pd.DataFrame
+    if is_geoframe:
+        geoframe = read_geoframe_file(command.input_file)
+        rows, columns = len(geoframe), tuple(geoframe.columns)
+    else:
+        frame = read_frame_file(command.input_file, command.datetime_columns)
+        rows, columns = len(frame), tuple(frame.columns)
 
     logger.info("-------------------------------------")
     logger.info("Ingest Frame")
     logger.info(f"  bundle file: {command.bundle_file}")
     logger.info(f"  input file:  {command.input_file}")
     logger.info(f"  key:         {command.key}")
-    logger.info(f"  rows:        {len(frame)}")
+    logger.info(f"  rows:        {rows}")
     logger.info("-------------------------------------")
 
     if_exists: Literal["fail", "replace"] = (
@@ -159,15 +186,18 @@ def run_ingest_bundle_frame(
                 f"bundle already holds a frame at {command.key!r}: "
                 f"pass overwrite to replace it"
             )
-        bundle.write_frame(command.key, frame, if_exists=if_exists)
+        if is_geoframe:
+            bundle.write_geoframe(command.key, geoframe, if_exists=if_exists)
+        else:
+            bundle.write_frame(command.key, frame, if_exists=if_exists)
 
     logger.info(f"wrote {command.key} to {command.bundle_file}")
 
     return IngestBundleFrameResult(
         bundle_file=command.bundle_file,
         key=command.key,
-        rows=len(frame),
-        columns=tuple(frame.columns),
+        rows=rows,
+        columns=columns,
     )
 
 

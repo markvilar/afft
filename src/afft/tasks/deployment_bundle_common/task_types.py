@@ -13,9 +13,13 @@ class IngestBundleFrameCommand(BaseModel):
     bundle_file: Path to the deployment bundle to ingest into. Written in
         place; it must already exist.
     key: Bundle key to write the frame to.
-    input_file: Path to the CSV file holding the frame.
+    input_file: Path to the file holding the frame. A ``.geojson`` or
+        ``.gpkg`` suffix is read as a geoframe and written with
+        ``write_geoframe``; any other suffix is read as CSV and written
+        with ``write_frame``.
     datetime_columns: Columns to parse as timezone-aware UTC timestamps.
-        Every other column keeps the dtype ``read_csv`` inferred.
+        Every other column keeps the dtype ``read_csv`` inferred. Ignored
+        for a geoframe input file.
     overwrite: Overwrite an existing frame at ``key``.
     """
 
@@ -36,7 +40,8 @@ class ExportBundleFrameCommand(BaseModel):
         never written.
     key: Bundle key to read the frame from.
     output_file: Path to write the frame to. Its suffix selects the output
-        format.
+        format. A frame at ``key`` that carries a geometry column can only
+        be written to a ``.geojson`` or ``.gpkg`` suffix.
     overwrite: Overwrite an existing output file.
     """
 
