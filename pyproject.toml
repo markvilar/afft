@@ -28,7 +28,6 @@ dependencies = [
     "python-rclone>=0.0.2",
     "scipy>=1.17.1",
     "sqlalchemy>=2.0.41",
-    "tables>=3.10.2",  # required by pandas for HDFStore
     "tomli-w>=1.2.0",  # required by msgspec for TOML encoding
     "tenacity>=9.0.0",
     "rich>=15.0.0",

@@ -134,7 +134,7 @@ def _write_command(
         deployment_label=label,
         data_dir=data_dir,
         config_file=config_file,
-        output_file=tmp_path / "bundle.h5",
+        output_file=tmp_path / "bundle.gpkg",
     )
 
 
@@ -161,11 +161,21 @@ def test_run_builds_a_readable_bundle(tmp_path: Path) -> None:
         # than omitting it, so consumers see one shape either way.
         assert "deployment_end_datetime" in deployment_identity.columns
         assert pd.isna(deployment_identity["deployment_end_datetime"].iloc[0])
-        assert deployment_identity["deployment_start_datetime"].dtype == (
-            pd.DatetimeTZDtype(unit="ns", tz="UTC")
+        # The GeoPackage round trip carries millisecond rather than
+        # nanosecond precision (see #285's Notes); the tz-aware UTC-ness is
+        # what matters here, not the exact unit.
+        assert isinstance(
+            deployment_identity["deployment_start_datetime"].dtype,
+            pd.DatetimeTZDtype,
         )
-        assert deployment_identity["deployment_end_datetime"].dtype == (
-            pd.DatetimeTZDtype(unit="ns", tz="UTC")
+        assert deployment_identity["deployment_start_datetime"].dtype.tz == (
+            timezone.utc
+        )
+        # An entirely-null column loses its UTC tz on the GeoPackage round
+        # trip (GDAL has no tz-aware "all missing" representation), unlike
+        # a column with at least one real value.
+        assert pd.api.types.is_datetime64_any_dtype(
+            deployment_identity["deployment_end_datetime"]
         )
         platform_identity = reader.read_frame("platform/identity")
         assert platform_identity["platform_label"].iloc[0] == "AUV Sirius"

@@ -20,10 +20,6 @@ from .bundle_types import (
     DeploymentProvenance as DeploymentProvenance,
     ProcessedProvenance as ProcessedProvenance,
 )
-from .bundle_common import (
-    decode_frame_dtypes as decode_frame_dtypes,
-    encode_frame_dtypes as encode_frame_dtypes,
-)
 from .bundle_protocols import (
     DeploymentBundleIO as DeploymentBundleIO,
     DeploymentBundleReader as DeploymentBundleReader,

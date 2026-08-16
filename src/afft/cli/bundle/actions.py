@@ -6,7 +6,6 @@ from pathlib import Path
 import pandas as pd
 
 from afft.deployment import (
-    decode_frame_dtypes,
     open_deployment_bundle_reader,
 )
 from afft.utils.log import logger
@@ -58,31 +57,30 @@ def invoke_list_deployment_bundle(
     dtypes: bool = False,
 ) -> None:
     """
-    List the frames a deployment bundle holds, as recorded in its
-    `bundle_contents` manifest.
+    List the frames a deployment bundle holds.
 
     Arguments
     ---------
     input_file: Path to the deployment bundle to list.
-    dtypes: Also log each frame's recorded column dtypes.
+    dtypes: Also log each frame's column dtypes.
     """
     input_file = Path(input_file)
     with open_deployment_bundle_reader(input_file) as reader:
         contents: pd.DataFrame = reader.contents()
 
-    logger.info("-------------------------------------")
-    logger.info("Deployment Bundle Contents")
-    logger.info(f"  input file: {input_file}")
-    logger.info(f"  frames:     {len(contents)}")
-    logger.info("-------------------------------------")
+        logger.info("-------------------------------------")
+        logger.info("Deployment Bundle Contents")
+        logger.info(f"  input file: {input_file}")
+        logger.info(f"  frames:     {len(contents)}")
+        logger.info("-------------------------------------")
 
-    for row in contents.itertuples(index=False):
-        logger.info(f"{row.identifier}")
-        if row.table_name != row.identifier:
-            logger.info(f"  table: {row.table_name}")
-        if dtypes:
-            for column, dtype in decode_frame_dtypes(row.dtypes).items():
-                logger.info(f"  {column}: {dtype}")
+        for identifier in contents["identifier"]:
+            logger.info(f"{identifier}")
+            if dtypes:
+                for column, dtype in reader.read_frame(
+                    identifier
+                ).dtypes.items():
+                    logger.info(f"  {column}: {dtype}")
 
 
 def invoke_ingest_bundle_frame(
