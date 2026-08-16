@@ -27,7 +27,7 @@ class DeploymentBundleReader(Protocol):
         ...
 
     def contents(self) -> pd.DataFrame:
-        """Read the bundle's `bundle_contents` manifest table directly."""
+        """Read the bundle's manifest of frame identifiers."""
         ...
 
 
@@ -46,12 +46,15 @@ class DeploymentBundleWriter(Protocol):
         if_exists: Literal["fail", "replace"] = "fail",
     ) -> None:
         """
-        Write `frame` to the bundle at `key`, creating or updating its
-        `bundle_contents` entry.
+        Write `frame` to the bundle at `key`.
 
-        Raises if `key` already exists and `if_exists="fail"` (the
-        default). With `if_exists="replace"`, any existing frame at `key`
-        is overwritten.
+        With `if_exists="replace"`, any existing frame at `key` is
+        overwritten.
+
+        Raises
+        ------
+        ValueError: If `key` already exists and `if_exists="fail"` (the
+            default).
         """
         ...
 

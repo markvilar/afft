@@ -62,9 +62,9 @@ def _command(
     tmp_path: Path, body: str, **overrides: Any
 ) -> ProcessDeploymentBundleCommand:
     arguments: dict[str, Any] = {
-        "input_file": _input_bundle(tmp_path / "in.h5"),
+        "input_file": _input_bundle(tmp_path / "in.gpkg"),
         "config_file": _config_file(tmp_path, body),
-        "output_file": tmp_path / "out.h5",
+        "output_file": tmp_path / "out.gpkg",
     }
     arguments.update(overrides)
     return ProcessDeploymentBundleCommand(**arguments)
@@ -81,7 +81,7 @@ def test_writes_the_processed_bundle(tmp_path: Path) -> None:
     result = run_process_deployment_bundle(command)
 
     assert isinstance(result, ProcessDeploymentBundleResult)
-    with open_deployment_bundle_reader(tmp_path / "out.h5") as reader:
+    with open_deployment_bundle_reader(tmp_path / "out.gpkg") as reader:
         frame = reader.read_frame("telemetry/processed/pressure/messages")
     assert frame["pressure"].tolist() == [1.0, 2.0]
 
@@ -101,7 +101,7 @@ def test_a_successful_run_leaves_no_staged_file(tmp_path: Path) -> None:
 
     run_process_deployment_bundle(command)
 
-    assert not _staged(tmp_path / "out.h5").exists()
+    assert not _staged(tmp_path / "out.gpkg").exists()
 
 
 def test_a_failed_step_leaves_neither_output_nor_staged_file(
@@ -113,8 +113,8 @@ def test_a_failed_step_leaves_neither_output_nor_staged_file(
     with pytest.raises(PipelineStepError):
         run_process_deployment_bundle(command)
 
-    assert not (tmp_path / "out.h5").exists()
-    assert not _staged(tmp_path / "out.h5").exists()
+    assert not (tmp_path / "out.gpkg").exists()
+    assert not _staged(tmp_path / "out.gpkg").exists()
 
 
 def test_a_failed_run_leaves_the_input_untouched(tmp_path: Path) -> None:
@@ -124,7 +124,7 @@ def test_a_failed_run_leaves_the_input_untouched(tmp_path: Path) -> None:
     with pytest.raises(PipelineStepError):
         run_process_deployment_bundle(command)
 
-    with open_deployment_bundle_reader(tmp_path / "in.h5") as reader:
+    with open_deployment_bundle_reader(tmp_path / "in.gpkg") as reader:
         assert reader.read_frame("telemetry/raw/pressure/messages")[
             "value"
         ].tolist() == [1.0, 2.0]
@@ -139,8 +139,8 @@ def test_an_unreachable_input_key_fails_before_the_run(
     with pytest.raises(ValueError, match="step 0"):
         run_process_deployment_bundle(command)
 
-    assert not (tmp_path / "out.h5").exists()
-    assert not _staged(tmp_path / "out.h5").exists()
+    assert not (tmp_path / "out.gpkg").exists()
+    assert not _staged(tmp_path / "out.gpkg").exists()
 
 
 def test_rejects_an_output_that_resolves_to_the_input(
@@ -150,7 +150,7 @@ def test_rejects_an_output_that_resolves_to_the_input(
     command = _command(
         tmp_path,
         RENAME_STEP,
-        output_file=tmp_path / "sub" / ".." / "in.h5",
+        output_file=tmp_path / "sub" / ".." / "in.gpkg",
     )
     (tmp_path / "sub").mkdir()
 
@@ -162,23 +162,23 @@ def test_rejects_an_existing_output_without_overwrite(
     tmp_path: Path,
 ) -> None:
     """An existing output is an error unless `overwrite` is set."""
-    (tmp_path / "out.h5").write_text("existing")
+    (tmp_path / "out.gpkg").write_text("existing")
     command = _command(tmp_path, RENAME_STEP)
 
     with pytest.raises(ValueError, match="already exists"):
         run_process_deployment_bundle(command)
 
-    assert (tmp_path / "out.h5").read_text() == "existing"
+    assert (tmp_path / "out.gpkg").read_text() == "existing"
 
 
 def test_overwrite_replaces_an_existing_output(tmp_path: Path) -> None:
     """With `overwrite`, the existing output is replaced by the run's."""
-    (tmp_path / "out.h5").write_text("existing")
+    (tmp_path / "out.gpkg").write_text("existing")
     command = _command(tmp_path, RENAME_STEP, overwrite=True)
 
     run_process_deployment_bundle(command)
 
-    with open_deployment_bundle_reader(tmp_path / "out.h5") as reader:
+    with open_deployment_bundle_reader(tmp_path / "out.gpkg") as reader:
         assert reader.has_frame("telemetry/processed/pressure/messages")
 
 

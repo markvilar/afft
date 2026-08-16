@@ -75,7 +75,7 @@ def _run(source: Path, target: Path, pipeline: Pipeline) -> None:
 
 def test_seeds_every_input_key_into_the_target(tmp_path: Path) -> None:
     """The output holds every key the input held, even with no steps."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     _run(source, target, ())
@@ -91,7 +91,7 @@ def test_writes_a_processed_frame_alongside_the_seeded_ones(
     tmp_path: Path,
 ) -> None:
     """A step's output is added without disturbing the inherited keys."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     _run(source, target, (_step("telemetry/processed/pressure"),))
@@ -105,7 +105,7 @@ def test_writes_a_processed_frame_alongside_the_seeded_ones(
 
 def test_a_step_reads_an_earlier_steps_output(tmp_path: Path) -> None:
     """Steps chain: a later step consumes what an earlier one produced."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     pipeline = (
@@ -124,7 +124,7 @@ def test_a_step_reads_an_earlier_steps_output(tmp_path: Path) -> None:
 
 def test_a_step_may_overwrite_an_inherited_key(tmp_path: Path) -> None:
     """Overwriting a key the input supplied is supported, not an error."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     _run(source, target, (_step("telemetry/raw/pressure"),))
@@ -137,7 +137,7 @@ def test_a_step_may_overwrite_an_inherited_key(tmp_path: Path) -> None:
 
 def test_a_step_reads_an_earlier_steps_overwrite(tmp_path: Path) -> None:
     """A later step sees the overwritten value, not the original."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     pipeline = (
@@ -154,7 +154,7 @@ def test_a_step_reads_an_earlier_steps_overwrite(tmp_path: Path) -> None:
 
 def test_the_source_bundle_is_left_untouched(tmp_path: Path) -> None:
     """A run that overwrites a key changes the target only."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     _run(source, target, (_step("telemetry/raw/pressure"),))
@@ -167,7 +167,7 @@ def test_the_source_bundle_is_left_untouched(tmp_path: Path) -> None:
 
 def test_a_failing_step_raises_naming_the_step(tmp_path: Path) -> None:
     """The wrapped error names the step index and processor."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     pipeline = (
@@ -181,7 +181,7 @@ def test_a_failing_step_raises_naming_the_step(tmp_path: Path) -> None:
 
 def test_a_failing_step_chains_the_original_error(tmp_path: Path) -> None:
     """The original exception survives as the cause."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     pipeline = (_step("telemetry/processed/x", processor_key="boom"),)
@@ -195,7 +195,7 @@ def test_a_failing_step_chains_the_original_error(tmp_path: Path) -> None:
 
 def test_a_missing_input_key_fails_as_that_step(tmp_path: Path) -> None:
     """A step naming an absent bundle key fails as that step, not opaquely."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     pipeline = (_step("telemetry/processed/x", source_key="telemetry/absent"),)
@@ -206,7 +206,7 @@ def test_a_missing_input_key_fails_as_that_step(tmp_path: Path) -> None:
 
 def test_a_run_stops_at_the_first_failure(tmp_path: Path) -> None:
     """Fail-fast: no step after a failing one runs."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     pipeline = (
@@ -225,7 +225,7 @@ def test_an_optional_step_is_skipped_when_an_input_is_absent(
     tmp_path: Path,
 ) -> None:
     """A step whose sensor is not on the deployment is skipped, not fatal."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     step = PipelineStep(
@@ -247,7 +247,7 @@ def test_a_required_step_still_fails_when_an_input_is_absent(
     tmp_path: Path,
 ) -> None:
     """Optionality is opt-in: a missing input is otherwise fatal."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     with pytest.raises(PipelineStepError):
@@ -258,7 +258,7 @@ def test_an_optional_step_runs_when_its_inputs_are_present(
     tmp_path: Path,
 ) -> None:
     """Optional does not mean skipped -- present inputs run normally."""
-    source, target = tmp_path / "in.h5", tmp_path / "out.h5"
+    source, target = tmp_path / "in.gpkg", tmp_path / "out.gpkg"
     _source_bundle(source)
 
     step = PipelineStep(

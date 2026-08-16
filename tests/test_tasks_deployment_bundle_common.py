@@ -49,7 +49,7 @@ def source_file(tmp_path: Path) -> Path:
 @pytest.fixture
 def bundle_file(tmp_path: Path) -> Path:
     """An existing bundle holding one unrelated frame."""
-    path: Path = tmp_path / "deployment_bundle.sqlite"
+    path: Path = tmp_path / "deployment_bundle.gpkg"
     with open_deployment_bundle(path) as bundle:
         bundle.write_frame(
             "telemetry/raw/pressure/messages", pd.DataFrame({"value": [1.0]})
@@ -215,7 +215,7 @@ def test_a_missing_bundle_is_rejected(
     with pytest.raises(FileNotFoundError, match="deployment bundle"):
         run_ingest_bundle_frame(
             IngestBundleFrameCommand(
-                bundle_file=tmp_path / "absent.sqlite",
+                bundle_file=tmp_path / "absent.gpkg",
                 key=SEA_LEVEL_KEY,
                 input_file=source_file,
             )
@@ -281,7 +281,7 @@ def test_cli_ingest_frame_exits_non_zero_on_a_missing_bundle(
             "bundle",
             "ingest-frame",
             "--bundle",
-            str(tmp_path / "absent.sqlite"),
+            str(tmp_path / "absent.gpkg"),
             "--key",
             SEA_LEVEL_KEY,
             "--file",
@@ -499,7 +499,7 @@ def test_cli_export_frame_exits_non_zero_on_a_missing_bundle(
             "bundle",
             "export-frame",
             "--bundle",
-            str(tmp_path / "absent.sqlite"),
+            str(tmp_path / "absent.gpkg"),
             "--key",
             SEA_LEVEL_KEY,
             "--output",
@@ -574,7 +574,7 @@ def _clip_source_bundle(path: Path) -> Path:
 
 @pytest.fixture
 def clip_source_file(tmp_path: Path) -> Path:
-    return _clip_source_bundle(tmp_path / "full_grid.sqlite")
+    return _clip_source_bundle(tmp_path / "full_grid.gpkg")
 
 
 def _clip_command(
@@ -605,7 +605,7 @@ def test_clip_keeps_only_the_rows_inside_the_window(
 ) -> None:
     """The window is closed: a row at `start` and a row at `end` are both in,
     and the rows outside on either side are not."""
-    output_file = tmp_path / "dense_grid.sqlite"
+    output_file = tmp_path / "dense_grid.gpkg"
 
     run_clip_deployment_bundle(_clip_command(clip_source_file, output_file))
 
@@ -620,7 +620,7 @@ def test_clip_copies_frames_without_the_datetime_column(
 ) -> None:
     """A frame with no time axis is copied whole, without the task needing to
     know the key exists."""
-    output_file = tmp_path / "dense_grid.sqlite"
+    output_file = tmp_path / "dense_grid.gpkg"
 
     result = run_clip_deployment_bundle(
         _clip_command(clip_source_file, output_file)
@@ -641,7 +641,7 @@ def test_clip_keeps_every_row_of_a_no_clip_frame(
 ) -> None:
     """A metocean series carries `timestamp` but is sampled far coarser than
     telemetry, so a dense-grid window would leave nothing to interpolate."""
-    output_file = tmp_path / "dense_grid.sqlite"
+    output_file = tmp_path / "dense_grid.gpkg"
 
     result = run_clip_deployment_bundle(
         _clip_command(
@@ -663,7 +663,7 @@ def test_clip_copies_a_frame_whose_time_column_is_named_otherwise(
 ) -> None:
     """Rule 2 keys off the column, so naming another one leaves the telemetry
     frame copied whole rather than clipped on a column it does not carry."""
-    output_file = tmp_path / "dense_grid.sqlite"
+    output_file = tmp_path / "dense_grid.gpkg"
 
     result = run_clip_deployment_bundle(
         _clip_command(
@@ -682,7 +682,7 @@ def test_clip_rewrites_the_deployment_identity(
     clip_source_file: Path, tmp_path: Path
 ) -> None:
     """The clipped bundle is a new deployment and says so."""
-    output_file = tmp_path / "dense_grid.sqlite"
+    output_file = tmp_path / "dense_grid.gpkg"
 
     result = run_clip_deployment_bundle(
         _clip_command(clip_source_file, output_file)
@@ -706,7 +706,7 @@ def test_clip_records_its_source_and_window_in_provenance(
 ) -> None:
     """A dense-grid bundle traces back to its full-grid parent without
     external bookkeeping."""
-    output_file = tmp_path / "dense_grid.sqlite"
+    output_file = tmp_path / "dense_grid.gpkg"
 
     run_clip_deployment_bundle(_clip_command(clip_source_file, output_file))
 
@@ -722,14 +722,13 @@ def test_clip_records_its_source_and_window_in_provenance(
     )
 
 
-@pytest.mark.parametrize("suffix", [".h5", ".sqlite"])
 def test_clip_writes_an_empty_frame_when_the_window_matches_nothing(
-    tmp_path: Path, suffix: str
+    tmp_path: Path,
 ) -> None:
     """Every key in the source is present in the clip, so a consumer's
-    `has_frame` answers the same against both."""
-    clip_source_file = _clip_source_bundle(tmp_path / f"full_grid{suffix}")
-    output_file = tmp_path / f"dense_grid{suffix}"
+    `has_frame` answers the same as for any populated key."""
+    clip_source_file = _clip_source_bundle(tmp_path / "full_grid.gpkg")
+    output_file = tmp_path / "dense_grid.gpkg"
 
     result = run_clip_deployment_bundle(
         _clip_command(
@@ -757,7 +756,7 @@ def test_clip_leaves_the_source_bundle_unchanged(
     before = clip_source_file.read_bytes()
 
     run_clip_deployment_bundle(
-        _clip_command(clip_source_file, tmp_path / "dense_grid.sqlite")
+        _clip_command(clip_source_file, tmp_path / "dense_grid.gpkg")
     )
 
     assert clip_source_file.read_bytes() == before
@@ -769,8 +768,8 @@ def test_clip_repeats_the_row_on_a_shared_bound(
     """Adjacent closed windows both keep the row on the bound they share, so
     cutting a source into touching windows does not partition it."""
     key = "telemetry/raw/depth/PAROSCI/messages"
-    first = tmp_path / "first.sqlite"
-    second = tmp_path / "second.sqlite"
+    first = tmp_path / "first.gpkg"
+    second = tmp_path / "second.gpkg"
 
     run_clip_deployment_bundle(
         _clip_command(
@@ -807,7 +806,7 @@ def test_clip_rejects_a_start_not_before_its_end(
         run_clip_deployment_bundle(
             _clip_command(
                 clip_source_file,
-                tmp_path / "dense_grid.sqlite",
+                tmp_path / "dense_grid.gpkg",
                 start="2023-11-07T05:40:00Z",
                 end="2023-11-07T05:10:00Z",
             )
@@ -821,7 +820,7 @@ def test_clip_rejects_an_empty_label_suffix(
         run_clip_deployment_bundle(
             _clip_command(
                 clip_source_file,
-                tmp_path / "dense_grid.sqlite",
+                tmp_path / "dense_grid.gpkg",
                 label_suffix="",
             )
         )
@@ -830,7 +829,7 @@ def test_clip_rejects_an_empty_label_suffix(
 def test_clip_rejects_an_existing_output_without_overwrite(
     clip_source_file: Path, tmp_path: Path
 ) -> None:
-    output_file = tmp_path / "dense_grid.sqlite"
+    output_file = tmp_path / "dense_grid.gpkg"
     output_file.write_bytes(b"")
 
     with pytest.raises(ValueError, match="already exists"):
@@ -848,7 +847,7 @@ def test_clip_leaves_no_output_when_it_fails(
     clip_source_file: Path, tmp_path: Path
 ) -> None:
     """A clip that fails halfway leaves no bundle rather than a partial one."""
-    output_file = tmp_path / "dense_grid.sqlite"
+    output_file = tmp_path / "dense_grid.gpkg"
 
     with pytest.raises(ValueError, match="not a datetime column"):
         run_clip_deployment_bundle(
@@ -861,12 +860,9 @@ def test_clip_leaves_no_output_when_it_fails(
     assert list(tmp_path.glob("*.partial*")) == []
 
 
-@pytest.mark.parametrize("suffix", [".h5", ".sqlite"])
-def test_clip_round_trips_through_both_backends(
-    tmp_path: Path, suffix: str
-) -> None:
-    source_file = _clip_source_bundle(tmp_path / f"full_grid{suffix}")
-    output_file = tmp_path / f"dense_grid{suffix}"
+def test_clip_round_trips_values(tmp_path: Path) -> None:
+    source_file = _clip_source_bundle(tmp_path / "full_grid.gpkg")
+    output_file = tmp_path / "dense_grid.gpkg"
 
     run_clip_deployment_bundle(_clip_command(source_file, output_file))
 
@@ -879,7 +875,7 @@ def test_clip_round_trips_through_both_backends(
 def test_cli_clips_a_deployment_bundle(
     clip_source_file: Path, tmp_path: Path
 ) -> None:
-    output_file = tmp_path / "dense_grid.sqlite"
+    output_file = tmp_path / "dense_grid.gpkg"
 
     result: Result = CliRunner().invoke(
         cli,
