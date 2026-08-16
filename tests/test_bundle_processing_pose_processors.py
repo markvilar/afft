@@ -1,8 +1,10 @@
 """Tests for the generic pose-frame extrinsics processor."""
 
+import geopandas as gpd
 import pandas as pd
 import pymap3d
 import pytest
+from shapely.geometry import Point
 
 from afft.bundle_processing import default_registry
 from afft.bundle_processing.pose_processors import (
@@ -17,17 +19,16 @@ _ORIGIN_LONGITUDE: float = 115.459240
 _ORIGIN_HEIGHT: float = 10.0
 
 
-def _pose_frame(heading: float = 0.0) -> pd.DataFrame:
-    return pd.DataFrame(
+def _pose_frame(heading: float = 0.0) -> gpd.GeoDataFrame:
+    return gpd.GeoDataFrame(
         {
-            "latitude": [_ORIGIN_LATITUDE],
-            "longitude": [_ORIGIN_LONGITUDE],
-            "height": [_ORIGIN_HEIGHT],
             "heading": [heading],
             "pitch": [0.0],
             "roll": [0.0],
             "label": ["pose-0"],
-        }
+        },
+        geometry=[Point(_ORIGIN_LONGITUDE, _ORIGIN_LATITUDE, _ORIGIN_HEIGHT)],
+        crs="EPSG:4326",
     )
 
 
@@ -46,27 +47,27 @@ def _extrinsics_frame(extrinsics: SensorExtrinsics) -> pd.DataFrame:
 
 
 def _displacement(
-    source: pd.DataFrame, target: pd.DataFrame
+    source: gpd.GeoDataFrame, target: gpd.GeoDataFrame
 ) -> tuple[float, float]:
     """North and east displacement from `source` to `target`, in metres."""
     north: float
     east: float
     north, east, _ = pymap3d.geodetic2ned(
-        target["latitude"].iloc[0],
-        target["longitude"].iloc[0],
+        target.geometry.y.iloc[0],
+        target.geometry.x.iloc[0],
         0.0,
-        source["latitude"].iloc[0],
-        source["longitude"].iloc[0],
+        source.geometry.y.iloc[0],
+        source.geometry.x.iloc[0],
         0.0,
     )
     return float(north), float(east)
 
 
 def test_apply_mounting_offset_shifts_horizontally() -> None:
-    poses: pd.DataFrame = _pose_frame(heading=0.0)
+    poses: gpd.GeoDataFrame = _pose_frame(heading=0.0)
     extrinsics: SensorExtrinsics = _extrinsics(locx=1.0, locy=0.5)
 
-    shifted: pd.DataFrame = apply_mounting_offset(
+    shifted: gpd.GeoDataFrame = apply_mounting_offset(
         poses, extrinsics, ApplyMountingOffsetConfig()
     )
 
@@ -76,23 +77,34 @@ def test_apply_mounting_offset_shifts_horizontally() -> None:
 
 
 def test_apply_mounting_offset_shifts_vertically() -> None:
-    poses: pd.DataFrame = _pose_frame()
+    poses: gpd.GeoDataFrame = _pose_frame()
     extrinsics: SensorExtrinsics = _extrinsics(locz=2.0)
 
-    shifted: pd.DataFrame = apply_mounting_offset(
+    shifted: gpd.GeoDataFrame = apply_mounting_offset(
         poses, extrinsics, ApplyMountingOffsetConfig()
     )
 
-    assert shifted["height"].iloc[0] == pytest.approx(
+    assert shifted.geometry.z.iloc[0] == pytest.approx(
         _ORIGIN_HEIGHT + 2.0, abs=1e-6
     )
 
 
-def test_apply_mounting_offset_passes_other_columns_through() -> None:
-    poses: pd.DataFrame = _pose_frame()
+def test_apply_mounting_offset_preserves_crs() -> None:
+    poses: gpd.GeoDataFrame = _pose_frame()
     extrinsics: SensorExtrinsics = _extrinsics(locx=1.0)
 
-    shifted: pd.DataFrame = apply_mounting_offset(
+    shifted: gpd.GeoDataFrame = apply_mounting_offset(
+        poses, extrinsics, ApplyMountingOffsetConfig()
+    )
+
+    assert shifted.crs == poses.crs
+
+
+def test_apply_mounting_offset_passes_other_columns_through() -> None:
+    poses: gpd.GeoDataFrame = _pose_frame()
+    extrinsics: SensorExtrinsics = _extrinsics(locx=1.0)
+
+    shifted: gpd.GeoDataFrame = apply_mounting_offset(
         poses, extrinsics, ApplyMountingOffsetConfig()
     )
 
@@ -100,24 +112,24 @@ def test_apply_mounting_offset_passes_other_columns_through() -> None:
 
 
 def test_apply_mounting_offset_invert_reverses_the_shift() -> None:
-    poses: pd.DataFrame = _pose_frame()
+    poses: gpd.GeoDataFrame = _pose_frame()
     extrinsics: SensorExtrinsics = _extrinsics(locx=1.0, locy=0.5, locz=2.0)
 
-    forward: pd.DataFrame = apply_mounting_offset(
+    forward: gpd.GeoDataFrame = apply_mounting_offset(
         poses, extrinsics, ApplyMountingOffsetConfig()
     )
-    round_tripped: pd.DataFrame = apply_mounting_offset(
+    round_tripped: gpd.GeoDataFrame = apply_mounting_offset(
         forward, extrinsics, ApplyMountingOffsetConfig(invert=True)
     )
 
-    assert round_tripped["latitude"].iloc[0] == pytest.approx(
-        poses["latitude"].iloc[0], abs=1e-9
+    assert round_tripped.geometry.y.iloc[0] == pytest.approx(
+        poses.geometry.y.iloc[0], abs=1e-9
     )
-    assert round_tripped["longitude"].iloc[0] == pytest.approx(
-        poses["longitude"].iloc[0], abs=1e-9
+    assert round_tripped.geometry.x.iloc[0] == pytest.approx(
+        poses.geometry.x.iloc[0], abs=1e-9
     )
-    assert round_tripped["height"].iloc[0] == pytest.approx(
-        poses["height"].iloc[0], abs=1e-6
+    assert round_tripped.geometry.z.iloc[0] == pytest.approx(
+        poses.geometry.z.iloc[0], abs=1e-6
     )
 
 
@@ -145,14 +157,15 @@ def test_step_apply_mounting_offset_matches_direct_call() -> None:
         "extrinsics": _extrinsics_frame(extrinsics),
     }
 
-    from_step: pd.DataFrame = step_apply_mounting_offset(
+    from_step: gpd.GeoDataFrame = step_apply_mounting_offset(
         frames, ApplyMountingOffsetConfig()
     )
-    direct: pd.DataFrame = apply_mounting_offset(
+    direct: gpd.GeoDataFrame = apply_mounting_offset(
         frames["poses"], extrinsics, ApplyMountingOffsetConfig()
     )
 
-    pd.testing.assert_frame_equal(from_step, direct)
+    assert from_step.equals(direct)
+    assert from_step.crs == direct.crs
 
 
 def test_apply_mounting_offset_is_registered() -> None:
