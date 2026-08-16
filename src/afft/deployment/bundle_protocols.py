@@ -1,6 +1,6 @@
 """Storage-agnostic read and write interfaces for a deployment bundle."""
 
-from typing import Literal, Protocol
+from typing import Iterator, Literal, Protocol
 
 import geopandas as gpd
 import pandas as pd
@@ -10,7 +10,13 @@ class DeploymentBundleReader(Protocol):
     """Read interface for a deployment bundle."""
 
     def list_frames(self) -> list[str]:
-        """List the keys of every frame the bundle holds."""
+        """List the keys of every plain (non-spatial) frame the bundle
+        holds. Disjoint from `list_geoframes`."""
+        ...
+
+    def list_geoframes(self) -> list[str]:
+        """List the keys of every geoframe the bundle holds. Disjoint from
+        `list_frames`."""
         ...
 
     def has_frame(self, key: str) -> bool:
@@ -46,6 +52,16 @@ class DeploymentBundleReader(Protocol):
         KeyError: If no frame exists at `key`.
         TypeError: If the frame at `key` has no geometry column.
         """
+        ...
+
+    def iter_frames(self) -> Iterator[tuple[str, pd.DataFrame]]:
+        """Iterate over every plain frame the bundle holds, as `(key,
+        frame)` pairs."""
+        ...
+
+    def iter_geoframes(self) -> Iterator[tuple[str, gpd.GeoDataFrame]]:
+        """Iterate over every geoframe the bundle holds, as `(key,
+        geoframe)` pairs."""
         ...
 
     def contents(self) -> pd.DataFrame:
@@ -111,3 +127,21 @@ class DeploymentBundleIO(
     what they have written and so need both to refer to the same bundle. A
     consumer needing only one of the two should depend on that one.
     """
+
+
+def iter_frames(
+    reader: DeploymentBundleReader,
+) -> Iterator[tuple[str, pd.DataFrame]]:
+    """Back `DeploymentBundleReader.iter_frames` from `list_frames` and
+    `read_frame` alone, so backends need not reimplement it."""
+    for key in reader.list_frames():
+        yield key, reader.read_frame(key)
+
+
+def iter_geoframes(
+    reader: DeploymentBundleReader,
+) -> Iterator[tuple[str, gpd.GeoDataFrame]]:
+    """Back `DeploymentBundleReader.iter_geoframes` from `list_geoframes`
+    and `read_geoframe` alone, so backends need not reimplement it."""
+    for key in reader.list_geoframes():
+        yield key, reader.read_geoframe(key)

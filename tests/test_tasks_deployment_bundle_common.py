@@ -656,11 +656,13 @@ def test_an_exported_geojson_can_be_ingested_back(
 
 CLIP_LABEL: str = "u4rmk_20231107_043022"
 
+CLIP_POSE_KEY: str = "trajectory/renav_priors/camera_poses"
+
 
 def _clip_source_bundle(path: Path) -> Path:
     """A bundle shaped like a full-grid deployment: identity, provenance, a
-    telemetry frame on `timestamp`, a coarse metocean series, and two frames
-    with no time axis at all."""
+    telemetry frame on `timestamp`, a coarse metocean series, two frames
+    with no time axis at all, and a pose geoframe on `timestamp`."""
     timestamps = pd.to_datetime(
         [
             "2023-11-07T05:00:00Z",
@@ -672,6 +674,17 @@ def _clip_source_bundle(path: Path) -> Path:
         utc=True,
     )
     with open_deployment_bundle(path) as bundle:
+        bundle.write_geoframe(
+            CLIP_POSE_KEY,
+            gpd.GeoDataFrame(
+                {"timestamp": timestamps},
+                geometry=gpd.points_from_xy(
+                    [115.46, 115.47, 115.48, 115.49, 115.50],
+                    [-32.03, -32.04, -32.05, -32.06, -32.07],
+                ),
+                crs="EPSG:4326",
+            ),
+        )
         bundle.write_frame(
             "deployment/identity",
             record_to_frame(
@@ -757,6 +770,23 @@ def test_clip_keeps_only_the_rows_inside_the_window(
         frame = reader.read_frame("telemetry/raw/depth/PAROSCI/messages")
 
     assert frame["depth"].tolist() == [2.0, 3.0, 4.0]
+
+
+def test_clip_keeps_only_the_rows_inside_the_window_for_a_geoframe(
+    clip_source_file: Path, tmp_path: Path
+) -> None:
+    """A pose geoframe is clipped the same way as a plain frame, and reads
+    back as a geoframe with its CRS intact."""
+    output_file = tmp_path / "dense_grid.gpkg"
+
+    run_clip_deployment_bundle(_clip_command(clip_source_file, output_file))
+
+    with open_deployment_bundle_reader(output_file) as reader:
+        assert reader.is_geoframe(CLIP_POSE_KEY)
+        frame: gpd.GeoDataFrame = reader.read_geoframe(CLIP_POSE_KEY)
+
+    assert frame.crs == "EPSG:4326"
+    assert frame.geometry.x.tolist() == [115.47, 115.48, 115.49]
 
 
 def test_clip_copies_frames_without_the_datetime_column(
@@ -891,6 +921,34 @@ def test_clip_writes_an_empty_frame_when_the_window_matches_nothing(
 
     assert frame.empty
     assert list(frame.columns) == ["timestamp", "depth"]
+
+
+def test_clip_writes_an_empty_geoframe_when_the_window_matches_nothing(
+    tmp_path: Path,
+) -> None:
+    """A geoframe clipped to zero rows is still present in the output, with
+    its geometry column and CRS intact -- `write_geoframe`'s validation,
+    which rejects an entirely-empty geometry, does not apply here."""
+    clip_source_file = _clip_source_bundle(tmp_path / "full_grid.gpkg")
+    output_file = tmp_path / "dense_grid.gpkg"
+
+    result = run_clip_deployment_bundle(
+        _clip_command(
+            clip_source_file,
+            output_file,
+            start="2023-11-07T12:00:00Z",
+            end="2023-11-07T13:00:00Z",
+        )
+    )
+
+    assert CLIP_POSE_KEY in result.empty_keys
+    with open_deployment_bundle_reader(output_file) as reader:
+        assert reader.has_frame(CLIP_POSE_KEY)
+        assert reader.is_geoframe(CLIP_POSE_KEY)
+        frame: gpd.GeoDataFrame = reader.read_geoframe(CLIP_POSE_KEY)
+
+    assert frame.empty
+    assert frame.crs == "EPSG:4326"
 
 
 def test_clip_leaves_the_source_bundle_unchanged(

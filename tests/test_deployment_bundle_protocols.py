@@ -1,6 +1,6 @@
 """Conformance tests for the deployment bundle protocols."""
 
-from typing import Literal
+from typing import Iterator, Literal
 
 import geopandas as gpd
 import pandas as pd
@@ -20,7 +20,18 @@ class InMemoryBundle:
         self._frames: dict[str, pd.DataFrame] = {}
 
     def list_frames(self) -> list[str]:
-        return sorted(self._frames)
+        return sorted(
+            key
+            for key, frame in self._frames.items()
+            if not isinstance(frame, gpd.GeoDataFrame)
+        )
+
+    def list_geoframes(self) -> list[str]:
+        return sorted(
+            key
+            for key, frame in self._frames.items()
+            if isinstance(frame, gpd.GeoDataFrame)
+        )
 
     def has_frame(self, key: str) -> bool:
         return key in self._frames
@@ -39,8 +50,16 @@ class InMemoryBundle:
             raise TypeError(f"frame at {key!r} has no geometry column")
         return frame
 
+    def iter_frames(self) -> Iterator[tuple[str, pd.DataFrame]]:
+        for key in self.list_frames():
+            yield key, self.read_frame(key)
+
+    def iter_geoframes(self) -> Iterator[tuple[str, gpd.GeoDataFrame]]:
+        for key in self.list_geoframes():
+            yield key, self.read_geoframe(key)
+
     def contents(self) -> pd.DataFrame:
-        return pd.DataFrame({"key": self.list_frames()})
+        return pd.DataFrame({"key": sorted(self._frames)})
 
     def write_frame(
         self,

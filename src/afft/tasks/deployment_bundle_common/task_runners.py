@@ -84,7 +84,8 @@ def run_export_bundle_frame(
         if not reader.has_frame(command.key):
             raise ValueError(
                 f"bundle holds no frame at {command.key!r}: "
-                f"{command.bundle_file} holds {sorted(reader.list_frames())}"
+                f"{command.bundle_file} holds "
+                f"{sorted(set(reader.list_frames()) | set(reader.list_geoframes()))}"
             )
         is_geoframe: bool = reader.is_geoframe(command.key)
         if is_geoframe and not is_geoframe_suffix(command.output_file.suffix):
@@ -201,6 +202,74 @@ def run_ingest_bundle_frame(
     )
 
 
+def _clip_or_copy(
+    key: str,
+    frame: pd.DataFrame,
+    target: DeploymentBundleIO,
+    no_clip_patterns: tuple[str, ...],
+    datetime_column: str,
+    start: pd.Timestamp,
+    end: pd.Timestamp,
+    copied: list[str],
+    clipped: list[ClippedFrame],
+    empty: list[str],
+) -> None:
+    """
+    Clip `frame` to the window, or copy it whole, and write the result to
+    `target`, recording what happened into `copied`/`clipped`/`empty`.
+
+    A frame matching a no-clip pattern, or lacking `datetime_column`, is
+    copied whole. Otherwise it is clipped via `clip_frame_to_window`.
+
+    A geoframe clipped to zero rows is written through `write_frame` rather
+    than `write_geoframe`: `write_geoframe`'s validation rejects a frame
+    whose geometry is entirely empty, which a zero-row result always is, and
+    this task's contract keeps every source key in the output even when a
+    window clips it to nothing. `write_frame` round-trips an empty
+    `GeoDataFrame`'s geometry column and CRS the same as `write_geoframe`
+    would, so nothing is lost by skipping the validation.
+
+    Arguments
+    ---------
+    key: Bundle key `frame` was read from.
+    frame: Frame to clip or copy; not mutated.
+    target: Bundle the result is written to.
+    no_clip_patterns: Key patterns whose frames are copied whole.
+    datetime_column: Column to clip on.
+    start: Start of the window, inclusive.
+    end: End of the window, inclusive.
+    copied: Appended with `key` if it is copied whole.
+    clipped: Appended with a `ClippedFrame` if it is clipped.
+    empty: Appended with `key` if the clipped result holds no rows.
+    """
+    is_geoframe: bool = isinstance(frame, gpd.GeoDataFrame)
+
+    if (
+        key_matches_no_clip(key, no_clip_patterns)
+        or datetime_column not in frame.columns
+    ):
+        if is_geoframe:
+            target.write_geoframe(key, frame, if_exists="fail")
+        else:
+            target.write_frame(key, frame, if_exists="fail")
+        copied.append(key)
+        return
+
+    result: pd.DataFrame = clip_frame_to_window(
+        key, frame, datetime_column, start, end
+    )
+    if is_geoframe and not result.empty:
+        target.write_geoframe(key, result, if_exists="fail")
+    else:
+        target.write_frame(key, result, if_exists="fail")
+    clipped.append(
+        ClippedFrame(key=key, rows_before=len(frame), rows_after=len(result))
+    )
+    if result.empty:
+        empty.append(key)
+        logger.warning(f"{key}: no rows inside the clip window")
+
+
 def run_clip_deployment_bundle(
     command: ClipDeploymentBundleCommand,
 ) -> ClipDeploymentBundleResult:
@@ -297,29 +366,32 @@ def run_clip_deployment_bundle(
                         copied.append(key)
                         continue
 
-                    frame: pd.DataFrame = reader.read_frame(key)
-                    if (
-                        key_matches_no_clip(key, command.no_clip_patterns)
-                        or command.datetime_column not in frame.columns
-                    ):
-                        target.write_frame(key, frame, if_exists="fail")
-                        copied.append(key)
-                        continue
+                    _clip_or_copy(
+                        key,
+                        reader.read_frame(key),
+                        target,
+                        command.no_clip_patterns,
+                        command.datetime_column,
+                        start,
+                        end,
+                        copied,
+                        clipped,
+                        empty,
+                    )
 
-                    result: pd.DataFrame = clip_frame_to_window(
-                        key, frame, command.datetime_column, start, end
+                for key in sorted(reader.list_geoframes()):
+                    _clip_or_copy(
+                        key,
+                        reader.read_geoframe(key),
+                        target,
+                        command.no_clip_patterns,
+                        command.datetime_column,
+                        start,
+                        end,
+                        copied,
+                        clipped,
+                        empty,
                     )
-                    target.write_frame(key, result, if_exists="fail")
-                    clipped.append(
-                        ClippedFrame(
-                            key=key,
-                            rows_before=len(frame),
-                            rows_after=len(result),
-                        )
-                    )
-                    if result.empty:
-                        empty.append(key)
-                        logger.warning(f"{key}: no rows inside the clip window")
         os.replace(staged, output_file)
     except BaseException:
         staged.unlink(missing_ok=True)

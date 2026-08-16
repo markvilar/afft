@@ -51,6 +51,16 @@ def read_frame_table(path: Path, layer: str) -> pd.DataFrame | gpd.GeoDataFrame:
     return gpd.read_file(path, layer=layer)
 
 
+def list_frames(contents: pd.DataFrame) -> list[str]:
+    """List the identifiers of `contents`' plain (non-spatial) rows."""
+    return list(contents.loc[contents["geometry_type"].isna(), "identifier"])
+
+
+def list_geoframes(contents: pd.DataFrame) -> list[str]:
+    """List the identifiers of `contents`' geospatial rows."""
+    return list(contents.loc[contents["geometry_type"].notna(), "identifier"])
+
+
 def geometry_type(contents: pd.DataFrame, key: str) -> str | None:
     """
     Look up `key`'s `geometry_type` in a `read_contents` frame.
