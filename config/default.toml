@@ -76,3 +76,18 @@ output            = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FI
 inputs.usbl       = "telemetry/raw/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
 inputs.extrinsics = "vessel/sensors/usbl_evologics_transceiver/extrinsics"
 optional          = true
+
+# Derive platform poses from camera poses: extrinsics is the camera's
+# position in the platform frame, so the default (non-inverted) direction --
+# sensor pose -> platform pose -- is what is wanted here.
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "apply_mounting_offset"
+output            = "trajectory/renav_priors/platform_poses"
+inputs.poses      = "trajectory/renav_priors/stereo_camera_poses"
+inputs.extrinsics = "platform/sensors/camera_avt_prosilica/extrinsics"
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "apply_mounting_offset"
+output            = "trajectory/metashape_registered/platform_poses"
+inputs.poses      = "trajectory/metashape_registered/stereo_camera_poses"
+inputs.extrinsics = "platform/sensors/camera_avt_prosilica/extrinsics"
