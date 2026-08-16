@@ -168,11 +168,11 @@ def apply_mounting_offset(
         source_height,
     )
 
-    shifted: gpd.GeoDataFrame = poses.copy()
-    shifted["geometry"] = gpd.points_from_xy(
+    result: gpd.GeoDataFrame = poses.copy()
+    result["geometry"] = gpd.points_from_xy(
         target_longitude, target_latitude, target_up, crs=poses.crs
     )
-    return shifted
+    return result
 
 
 @register_processor(

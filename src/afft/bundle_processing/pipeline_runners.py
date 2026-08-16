@@ -1,5 +1,7 @@
 """Execution of a resolved pipeline against a deployment bundle."""
 
+from typing import Literal
+
 import geopandas as gpd
 
 from afft.deployment import DeploymentBundleIO, DeploymentBundleReader
@@ -66,18 +68,16 @@ def run_pipeline(
                 for name, key in step.inputs.items()
             }
             frame: PipelineFrame = step.processor(frames, step.config)
-            write_output = (
-                target.write_geoframe
-                if isinstance(frame, gpd.GeoDataFrame)
-                else target.write_frame
+            if_exists: Literal["fail", "replace"] = (
+                "replace" if target.has_frame(step.output) else "fail"
             )
-            write_output(
-                step.output,
-                frame,
-                if_exists=(
-                    "replace" if target.has_frame(step.output) else "fail"
-                ),
-            )
+            match frame:
+                case gpd.GeoDataFrame():
+                    target.write_geoframe(
+                        step.output, frame, if_exists=if_exists
+                    )
+                case _:
+                    target.write_frame(step.output, frame, if_exists=if_exists)
             if verbose:
                 logger.info(
                     f"pipeline step {index} ({step.processor_key}) wrote "
