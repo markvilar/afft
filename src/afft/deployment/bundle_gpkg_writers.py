@@ -6,9 +6,14 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Iterator, Literal
 
+import geopandas as gpd
 import pandas as pd
 
-from .bundle_gpkg_common import layer_exists, write_frame_table
+from .bundle_gpkg_common import (
+    layer_exists,
+    validate_geoframe,
+    write_frame_table,
+)
 
 
 @dataclass
@@ -30,6 +35,16 @@ class GeoPackageDeploymentBundleWriter:
         if self.has_frame(key) and if_exists == "fail":
             raise ValueError(f"frame already exists at key: {key!r}")
         write_frame_table(self.path, key, frame)
+
+    def write_geoframe(
+        self,
+        key: str,
+        frame: gpd.GeoDataFrame,
+        *,
+        if_exists: Literal["fail", "replace"] = "fail",
+    ) -> None:
+        validate_geoframe(frame)
+        self.write_frame(key, frame, if_exists=if_exists)
 
 
 @contextmanager

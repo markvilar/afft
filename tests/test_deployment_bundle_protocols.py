@@ -2,6 +2,7 @@
 
 from typing import Literal
 
+import geopandas as gpd
 import pandas as pd
 import pytest
 
@@ -29,6 +30,15 @@ class InMemoryBundle:
             raise KeyError(key)
         return self._frames[key]
 
+    def is_geoframe(self, key: str) -> bool:
+        return isinstance(self.read_frame(key), gpd.GeoDataFrame)
+
+    def read_geoframe(self, key: str) -> gpd.GeoDataFrame:
+        frame = self.read_frame(key)
+        if not isinstance(frame, gpd.GeoDataFrame):
+            raise TypeError(f"frame at {key!r} has no geometry column")
+        return frame
+
     def contents(self) -> pd.DataFrame:
         return pd.DataFrame({"key": self.list_frames()})
 
@@ -42,6 +52,17 @@ class InMemoryBundle:
         if key in self._frames and if_exists == "fail":
             raise ValueError(f"frame already exists at {key!r}")
         self._frames[key] = frame
+
+    def write_geoframe(
+        self,
+        key: str,
+        frame: gpd.GeoDataFrame,
+        *,
+        if_exists: Literal["fail", "replace"] = "fail",
+    ) -> None:
+        if not isinstance(frame, gpd.GeoDataFrame):
+            raise TypeError(f"frame is not a GeoDataFrame: {type(frame)}")
+        self.write_frame(key, frame, if_exists=if_exists)
 
 
 def copy_frame(bundle: DeploymentBundleIO, source: str, target: str) -> None:
