@@ -12,14 +12,15 @@ CONFIG_FILE="${REPO_ROOT}/config/default.toml"
 
 DEPLOYMENT_DATA_DIR="${HOME}/data/acfr_deployments_v1_subset_fixed"
 SEALEVEL_DATA_DIR="${HOME}/data/metocean_sea_level_hourly"
-RENAV_PRIOR_TRAJECTORY_DATA_DIR="${HOME}/data/acfr_sirius_poses_v1_renav_priors"
+CAMERA_POSE_DATA_DIR="${HOME}/data/acfr_camera_poses_v1_renav_corrected"
+METASHAPE_CAMERA_POSE_DATA_DIR="${HOME}/data/acfr_deployment_stereo_camera_poses_v1"
 OUTPUT_DIR="${HOME}/data/acfr_deployment_bundles_v1_subset"
 
 SEALEVEL_KEY="metocean/worldtides/sealevel"
 SEALEVEL_DATETIME_COLUMN="timestamp"
 
-RENAV_PRIOR_TRAJECTORY_KEY="trajectory/renav_prior/platform_poses"
-RENAV_PRIOR_TRAJECTORY_DATETIME_COLUMN="timestamp"
+CAMERA_POSE_KEY="trajectory/renav_priors/stereo_camera_poses"
+METASHAPE_CAMERA_POSE_KEY="trajectory/metashape_registered/stereo_camera_poses"
 
 # Sea level file per deployment. The series are per site rather than per
 # deployment, so the deployments sharing a site share a file.
@@ -43,25 +44,46 @@ declare -A SEALEVEL_FILES=(
   ["r7jjskxq_20131022_004934"]="r7jjskxq_20090101_20211231_sea_level.csv"
 )
 
-# Renav prior trajectory file per deployment.
-declare -A RENAV_PRIOR_TRAJECTORY_FILES=(
-  ["qdch0ftq_20100428_020202"]="qdch0ftq_20100428_020202_platform_poses.csv"
-  ["qdch0ftq_20110415_020103"]="qdch0ftq_20110415_020103_platform_poses.csv"
-  ["qdch0ftq_20120430_002423"]="qdch0ftq_20120430_002423_platform_poses.csv"
-  ["qdch0ftq_20130406_023610"]="qdch0ftq_20130406_023610_platform_poses.csv"
-  ["qdchdmy1_20110416_005411"]="qdchdmy1_20110416_005411_platform_poses.csv"
-  ["qdchdmy1_20120501_071203"]="qdchdmy1_20120501_071203_platform_poses.csv"
-  ["qdchdmy1_20130406_081713"]="qdchdmy1_20130406_081713_platform_poses.csv"
-  ["qdchdmy1_20170525_234624"]="qdchdmy1_20170525_234624_platform_poses.csv"
-  ["r23685bc_20100605_021022"]="r23685bc_20100605_021022_platform_poses.csv"
-  ["r23685bc_20120530_233021"]="r23685bc_20120530_233021_platform_poses.csv"
-  ["r23685bc_20140616_225022"]="r23685bc_20140616_225022_platform_poses.csv"
-  ["r29mrd5h_20090612_225306"]="r29mrd5h_20090612_225306_platform_poses.csv"
-  ["r29mrd5h_20110612_033752"]="r29mrd5h_20110612_033752_platform_poses.csv"
-  ["r29mrd5h_20130611_002419"]="r29mrd5h_20130611_002419_platform_poses.csv"
-  ["r7jjskxq_20101023_210332"]="r7jjskxq_20101023_210332_platform_poses.csv"
-  ["r7jjskxq_20121013_060425"]="r7jjskxq_20121013_060425_platform_poses.csv"
-  ["r7jjskxq_20131022_004934"]="r7jjskxq_20131022_004934_platform_poses.csv"
+# Camera pose file per deployment.
+declare -A CAMERA_POSE_FILES=(
+  ["qdch0ftq_20100428_020202"]="qdch0ftq_20100428_020202_stereo_camera_poses_renav.geojson"
+  ["qdch0ftq_20110415_020103"]="qdch0ftq_20110415_020103_stereo_camera_poses_renav.geojson"
+  ["qdch0ftq_20120430_002423"]="qdch0ftq_20120430_002423_stereo_camera_poses_renav.geojson"
+  ["qdch0ftq_20130406_023610"]="qdch0ftq_20130406_023610_stereo_camera_poses_renav.geojson"
+  ["qdchdmy1_20110416_005411"]="qdchdmy1_20110416_005411_stereo_camera_poses_renav.geojson"
+  ["qdchdmy1_20120501_071203"]="qdchdmy1_20120501_071203_stereo_camera_poses_renav.geojson"
+  ["qdchdmy1_20130406_081713"]="qdchdmy1_20130406_081713_stereo_camera_poses_renav.geojson"
+  ["qdchdmy1_20170525_234624"]="qdchdmy1_20170525_234624_stereo_camera_poses_renav.geojson"
+  ["r23685bc_20100605_021022"]="r23685bc_20100605_021022_stereo_camera_poses_renav.geojson"
+  ["r23685bc_20120530_233021"]="r23685bc_20120530_233021_stereo_camera_poses_renav.geojson"
+  ["r23685bc_20140616_225022"]="r23685bc_20140616_225022_stereo_camera_poses_renav.geojson"
+  ["r29mrd5h_20090612_225306"]="r29mrd5h_20090612_225306_stereo_camera_poses_renav.geojson"
+  ["r29mrd5h_20110612_033752"]="r29mrd5h_20110612_033752_stereo_camera_poses_renav.geojson"
+  ["r29mrd5h_20130611_002419"]="r29mrd5h_20130611_002419_stereo_camera_poses_renav.geojson"
+  ["r7jjskxq_20101023_210332"]="r7jjskxq_20101023_210332_stereo_camera_poses_renav.geojson"
+  ["r7jjskxq_20121013_060425"]="r7jjskxq_20121013_060425_stereo_camera_poses_renav.geojson"
+  ["r7jjskxq_20131022_004934"]="r7jjskxq_20131022_004934_stereo_camera_poses_renav.geojson"
+)
+
+# Metashape-registered stereo camera pose file per deployment.
+declare -A METASHAPE_CAMERA_POSE_FILES=(
+  ["qdch0ftq_20100428_020202"]="auv_sirius_qdch0ftq_20100428_020202_stereo_camera_poses.geojson"
+  ["qdch0ftq_20110415_020103"]="auv_sirius_qdch0ftq_20110415_020103_stereo_camera_poses.geojson"
+  ["qdch0ftq_20120430_002423"]="auv_sirius_qdch0ftq_20120430_002423_stereo_camera_poses.geojson"
+  ["qdch0ftq_20130406_023610"]="auv_sirius_qdch0ftq_20130406_023610_stereo_camera_poses.geojson"
+  ["qdchdmy1_20110416_005411"]="auv_sirius_qdchdmy1_20110416_005411_stereo_camera_poses.geojson"
+  ["qdchdmy1_20120501_071203"]="auv_sirius_qdchdmy1_20120501_071203_stereo_camera_poses.geojson"
+  ["qdchdmy1_20130406_081713"]="auv_sirius_qdchdmy1_20130406_081713_stereo_camera_poses.geojson"
+  ["qdchdmy1_20170525_234624"]="auv_sirius_qdchdmy1_20170525_234624_stereo_camera_poses.geojson"
+  ["r23685bc_20100605_021022"]="auv_sirius_r23685bc_20100605_021022_stereo_camera_poses.geojson"
+  ["r23685bc_20120530_233021"]="auv_sirius_r23685bc_20120530_233021_stereo_camera_poses.geojson"
+  ["r23685bc_20140616_225022"]="auv_sirius_r23685bc_20140616_225022_stereo_camera_poses.geojson"
+  ["r29mrd5h_20090612_225306"]="auv_sirius_r29mrd5h_20090612_225306_stereo_camera_poses.geojson"
+  ["r29mrd5h_20110612_033752"]="auv_sirius_r29mrd5h_20110612_033752_stereo_camera_poses.geojson"
+  ["r29mrd5h_20130611_002419"]="auv_sirius_r29mrd5h_20130611_002419_stereo_camera_poses.geojson"
+  ["r7jjskxq_20101023_210332"]="auv_sirius_r7jjskxq_20101023_210332_stereo_camera_poses.geojson"
+  ["r7jjskxq_20121013_060425"]="auv_sirius_r7jjskxq_20121013_060425_stereo_camera_poses.geojson"
+  ["r7jjskxq_20131022_004934"]="auv_sirius_r7jjskxq_20131022_004934_stereo_camera_poses.geojson"
 )
 
 # Building overwrites the bundle, so the sea level ingestion has to follow the
@@ -71,9 +93,10 @@ declare -A RENAV_PRIOR_TRAJECTORY_FILES=(
 # Associative arrays iterate in hash order, so sort the keys to keep runs
 # reproducible and their logs comparable.
 for deployment in $(printf "%s\n" "${!SEALEVEL_FILES[@]}" | sort); do
-  bundle_file="${OUTPUT_DIR}/${deployment}_deployment_bundle.sqlite"
+  bundle_file="${OUTPUT_DIR}/${deployment}_deployment_bundle.gpkg"
   sealevel_file="${SEALEVEL_DATA_DIR}/${SEALEVEL_FILES[${deployment}]}"
-  renav_prior_trajectory_file="${RENAV_PRIOR_TRAJECTORY_DATA_DIR}/${RENAV_PRIOR_TRAJECTORY_FILES[${deployment}]}"
+  camera_pose_file="${CAMERA_POSE_DATA_DIR}/${CAMERA_POSE_FILES[${deployment}]}"
+  metashape_camera_pose_file="${METASHAPE_CAMERA_POSE_DATA_DIR}/${METASHAPE_CAMERA_POSE_FILES[${deployment}]}"
 
   uv run afft bundle build \
     --descriptor-file "${DESCRIPTOR_FILE}" \
@@ -92,8 +115,13 @@ for deployment in $(printf "%s\n" "${!SEALEVEL_FILES[@]}" | sort); do
 
   uv run afft bundle ingest-frame \
     --bundle "${bundle_file}" \
-    --key "${RENAV_PRIOR_TRAJECTORY_KEY}" \
-    --file "${renav_prior_trajectory_file}" \
-    --datetime-column "${RENAV_PRIOR_TRAJECTORY_DATETIME_COLUMN}" \
+    --key "${CAMERA_POSE_KEY}" \
+    --file "${camera_pose_file}" \
+    --overwrite
+
+  uv run afft bundle ingest-frame \
+    --bundle "${bundle_file}" \
+    --key "${METASHAPE_CAMERA_POSE_KEY}" \
+    --file "${metashape_camera_pose_file}" \
     --overwrite
 done
