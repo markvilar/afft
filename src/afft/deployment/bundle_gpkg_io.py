@@ -49,7 +49,7 @@ class GeoPackageDeploymentBundleIO:
 
 
 @contextmanager
-def open_deployment_bundle(
+def open_gpkg_deployment_bundle_io(
     path: Path,
 ) -> Iterator[GeoPackageDeploymentBundleIO]:
     """Open a GeoPackage deployment bundle for reading and writing, creating

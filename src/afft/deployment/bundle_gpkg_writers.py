@@ -33,7 +33,7 @@ class GeoPackageDeploymentBundleWriter:
 
 
 @contextmanager
-def open_deployment_bundle_writer(
+def open_gpkg_deployment_bundle_writer(
     path: Path,
 ) -> Iterator[GeoPackageDeploymentBundleWriter]:
     """Open a GeoPackage deployment bundle for writing, creating it if

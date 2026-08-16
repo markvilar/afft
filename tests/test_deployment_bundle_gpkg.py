@@ -13,9 +13,13 @@ import geopandas as gpd
 import pandas as pd
 import pytest
 
-from afft.deployment.bundle_gpkg_io import open_deployment_bundle
-from afft.deployment.bundle_gpkg_readers import open_deployment_bundle_reader
-from afft.deployment.bundle_gpkg_writers import open_deployment_bundle_writer
+from afft.deployment.bundle_gpkg_io import open_gpkg_deployment_bundle_io
+from afft.deployment.bundle_gpkg_readers import (
+    open_gpkg_deployment_bundle_reader,
+)
+from afft.deployment.bundle_gpkg_writers import (
+    open_gpkg_deployment_bundle_writer,
+)
 
 
 def _frame() -> pd.DataFrame:
@@ -34,10 +38,10 @@ def test_values_round_trip_faithfully(tmp_path: Path) -> None:
     path = tmp_path / "bundle.gpkg"
     frame = _frame()
 
-    with open_deployment_bundle_writer(path) as writer:
+    with open_gpkg_deployment_bundle_writer(path) as writer:
         writer.write_frame("telemetry/raw/example/TOPIC", frame)
 
-    with open_deployment_bundle_reader(path) as reader:
+    with open_gpkg_deployment_bundle_reader(path) as reader:
         read_back = reader.read_frame("telemetry/raw/example/TOPIC")
 
     assert read_back["count"].tolist() == [1, 2]
@@ -52,10 +56,10 @@ def test_non_spatial_frame_reads_back_as_a_plain_dataframe(
     and reads back as a plain `DataFrame` rather than a `GeoDataFrame`."""
     path = tmp_path / "bundle.gpkg"
 
-    with open_deployment_bundle_writer(path) as writer:
+    with open_gpkg_deployment_bundle_writer(path) as writer:
         writer.write_frame("frame", _frame())
 
-    with open_deployment_bundle_reader(path) as reader:
+    with open_gpkg_deployment_bundle_reader(path) as reader:
         read_back = reader.read_frame("frame")
 
     assert not isinstance(read_back, gpd.GeoDataFrame)
@@ -66,10 +70,10 @@ def test_index_is_not_stored(tmp_path: Path) -> None:
     path = tmp_path / "bundle.gpkg"
     frame = _frame()
 
-    with open_deployment_bundle_writer(path) as writer:
+    with open_gpkg_deployment_bundle_writer(path) as writer:
         writer.write_frame("frame", frame)
 
-    with open_deployment_bundle_reader(path) as reader:
+    with open_gpkg_deployment_bundle_reader(path) as reader:
         read_back = reader.read_frame("frame")
 
     assert list(read_back.columns) == list(frame.columns)
@@ -83,7 +87,7 @@ def test_layer_names_keep_the_frame_identifier_verbatim(
     path = tmp_path / "bundle.gpkg"
     key = "telemetry/raw/dvl_teledyne_navigator/RDI/messages"
 
-    with open_deployment_bundle_writer(path) as writer:
+    with open_gpkg_deployment_bundle_writer(path) as writer:
         writer.write_frame(key, _frame())
 
     assert key in gpd.list_layers(path)["name"].values
@@ -95,7 +99,7 @@ def test_reader_refuses_a_nonexistent_bundle(tmp_path: Path) -> None:
     path = tmp_path / "missing.gpkg"
 
     with pytest.raises(FileNotFoundError):
-        with open_deployment_bundle_reader(path):
+        with open_gpkg_deployment_bundle_reader(path):
             pass
 
     assert not path.exists()
@@ -105,7 +109,7 @@ def test_writer_creates_the_bundle_if_absent(tmp_path: Path) -> None:
     """The writer creates the file on first write."""
     path = tmp_path / "bundle.gpkg"
 
-    with open_deployment_bundle_writer(path) as writer:
+    with open_gpkg_deployment_bundle_writer(path) as writer:
         writer.write_frame("frame", _frame())
 
     assert path.exists()
@@ -117,7 +121,7 @@ def test_read_write_handle_round_trips_values(tmp_path: Path) -> None:
     path = tmp_path / "bundle.gpkg"
     frame = _frame()
 
-    with open_deployment_bundle(path) as bundle:
+    with open_gpkg_deployment_bundle_io(path) as bundle:
         bundle.write_frame("frame", frame)
         read_back = bundle.read_frame("frame")
 

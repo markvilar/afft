@@ -37,7 +37,7 @@ class GeoPackageDeploymentBundleReader:
 
 
 @contextmanager
-def open_deployment_bundle_reader(
+def open_gpkg_deployment_bundle_reader(
     path: Path,
 ) -> Iterator[GeoPackageDeploymentBundleReader]:
     """

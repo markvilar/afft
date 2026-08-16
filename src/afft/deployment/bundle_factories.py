@@ -6,15 +6,9 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import cast
 
-from .bundle_gpkg_io import (
-    open_deployment_bundle as _open_gpkg_io,
-)
-from .bundle_gpkg_readers import (
-    open_deployment_bundle_reader as _open_gpkg_reader,
-)
-from .bundle_gpkg_writers import (
-    open_deployment_bundle_writer as _open_gpkg_writer,
-)
+from .bundle_gpkg_io import open_gpkg_deployment_bundle_io
+from .bundle_gpkg_readers import open_gpkg_deployment_bundle_reader
+from .bundle_gpkg_writers import open_gpkg_deployment_bundle_writer
 from .bundle_protocols import (
     DeploymentBundleIO,
     DeploymentBundleReader,
@@ -44,7 +38,7 @@ def open_deployment_bundle(
     """
     match path.suffix:
         case ".gpkg":
-            with _open_gpkg_io(path) as bundle:
+            with open_gpkg_deployment_bundle_io(path) as bundle:
                 yield cast(DeploymentBundleIO, bundle)
         case suffix:
             raise NotImplementedError(
@@ -74,7 +68,7 @@ def open_deployment_bundle_reader(
     """
     match path.suffix:
         case ".gpkg":
-            with _open_gpkg_reader(path) as reader:
+            with open_gpkg_deployment_bundle_reader(path) as reader:
                 yield cast(DeploymentBundleReader, reader)
         case suffix:
             raise NotImplementedError(
@@ -104,7 +98,7 @@ def open_deployment_bundle_writer(
     """
     match path.suffix:
         case ".gpkg":
-            with _open_gpkg_writer(path) as writer:
+            with open_gpkg_deployment_bundle_writer(path) as writer:
                 yield cast(DeploymentBundleWriter, writer)
         case suffix:
             raise NotImplementedError(
