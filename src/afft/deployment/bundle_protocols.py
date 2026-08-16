@@ -127,21 +127,3 @@ class DeploymentBundleIO(
     what they have written and so need both to refer to the same bundle. A
     consumer needing only one of the two should depend on that one.
     """
-
-
-def iter_frames(
-    reader: DeploymentBundleReader,
-) -> Iterator[tuple[str, pd.DataFrame]]:
-    """Back `DeploymentBundleReader.iter_frames` from `list_frames` and
-    `read_frame` alone, so backends need not reimplement it."""
-    for key in reader.list_frames():
-        yield key, reader.read_frame(key)
-
-
-def iter_geoframes(
-    reader: DeploymentBundleReader,
-) -> Iterator[tuple[str, gpd.GeoDataFrame]]:
-    """Back `DeploymentBundleReader.iter_geoframes` from `list_geoframes`
-    and `read_geoframe` alone, so backends need not reimplement it."""
-    for key in reader.list_geoframes():
-        yield key, reader.read_geoframe(key)

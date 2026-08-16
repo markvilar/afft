@@ -19,10 +19,6 @@ from .bundle_gpkg_common import (
     validate_geoframe,
     write_frame_table,
 )
-from .bundle_protocols import (
-    iter_frames,
-    iter_geoframes,
-)
 
 
 @dataclass
@@ -55,10 +51,12 @@ class GeoPackageDeploymentBundleIO:
         return frame
 
     def iter_frames(self) -> Iterator[tuple[str, pd.DataFrame]]:
-        return iter_frames(self)
+        for key in self.list_frames():
+            yield key, self.read_frame(key)
 
     def iter_geoframes(self) -> Iterator[tuple[str, gpd.GeoDataFrame]]:
-        return iter_geoframes(self)
+        for key in self.list_geoframes():
+            yield key, self.read_geoframe(key)
 
     def contents(self) -> pd.DataFrame:
         return read_contents(self.path)
