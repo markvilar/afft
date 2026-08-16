@@ -151,3 +151,46 @@ def test_write_geoframe_fails_on_existing_key_by_default(
         writer.write_geoframe("geo", _geoframe())
         with pytest.raises(ValueError):
             writer.write_geoframe("geo", _geoframe())
+
+
+def test_list_frames_and_list_geoframes_partition_the_bundle(
+    bundle_path: Path,
+) -> None:
+    """`list_frames` and `list_geoframes` are disjoint and, together, cover
+    every key the bundle holds."""
+    with open_deployment_bundle_writer(bundle_path) as writer:
+        writer.write_geoframe("geo", _geoframe())
+        writer.write_frame("plain", _frame())
+
+    with open_deployment_bundle_reader(bundle_path) as reader:
+        assert reader.list_frames() == ["plain"]
+        assert reader.list_geoframes() == ["geo"]
+        assert set(reader.list_frames()) & set(reader.list_geoframes()) == set()
+        assert set(reader.list_frames()) | set(reader.list_geoframes()) == set(
+            reader.contents()["identifier"]
+        )
+
+
+def test_iter_frames_yields_only_plain_frames(bundle_path: Path) -> None:
+    with open_deployment_bundle_writer(bundle_path) as writer:
+        writer.write_geoframe("geo", _geoframe())
+        writer.write_frame("plain", _frame())
+
+    with open_deployment_bundle_reader(bundle_path) as reader:
+        pairs = list(reader.iter_frames())
+
+    assert [key for key, _ in pairs] == ["plain"]
+    assert pairs[0][1]["value"].tolist() == [1.0]
+
+
+def test_iter_geoframes_yields_only_geoframes(bundle_path: Path) -> None:
+    with open_deployment_bundle_writer(bundle_path) as writer:
+        writer.write_geoframe("geo", _geoframe())
+        writer.write_frame("plain", _frame())
+
+    with open_deployment_bundle_reader(bundle_path) as reader:
+        pairs = list(reader.iter_geoframes())
+
+    assert [key for key, _ in pairs] == ["geo"]
+    assert isinstance(pairs[0][1], gpd.GeoDataFrame)
+    assert pairs[0][1].crs == _geoframe().crs

@@ -12,6 +12,8 @@ import pandas as pd
 from .bundle_gpkg_common import (
     geometry_type,
     layer_exists,
+    list_frames,
+    list_geoframes,
     read_contents,
     read_frame_table,
 )
@@ -24,7 +26,10 @@ class GeoPackageDeploymentBundleReader:
     path: Path
 
     def list_frames(self) -> list[str]:
-        return list(self.contents()["identifier"])
+        return list_frames(self.contents())
+
+    def list_geoframes(self) -> list[str]:
+        return list_geoframes(self.contents())
 
     def has_frame(self, key: str) -> bool:
         return layer_exists(self.path, key)
@@ -42,6 +47,14 @@ class GeoPackageDeploymentBundleReader:
         if not isinstance(frame, gpd.GeoDataFrame):
             raise TypeError(f"frame at {key!r} has no geometry column")
         return frame
+
+    def iter_frames(self) -> Iterator[tuple[str, pd.DataFrame]]:
+        for key in self.list_frames():
+            yield key, self.read_frame(key)
+
+    def iter_geoframes(self) -> Iterator[tuple[str, gpd.GeoDataFrame]]:
+        for key in self.list_geoframes():
+            yield key, self.read_geoframe(key)
 
     def contents(self) -> pd.DataFrame:
         return read_contents(self.path)

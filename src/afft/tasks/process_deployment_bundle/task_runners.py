@@ -73,7 +73,10 @@ def run_process_deployment_bundle(
         reader: DeploymentBundleReader
         target: DeploymentBundleIO
         with open_deployment_bundle_reader(command.input_file) as reader:
-            validate_pipeline(pipeline, set(reader.list_frames()))
+            validate_pipeline(
+                pipeline,
+                set(reader.list_frames()) | set(reader.list_geoframes()),
+            )
             with open_deployment_bundle(staged) as target:
                 run_pipeline(pipeline, reader, target, verbose=command.verbose)
         os.replace(staged, output_file)
