@@ -7,6 +7,7 @@ import re
 from collections.abc import Callable
 from pathlib import Path
 
+import geopandas as gpd
 import pandas as pd
 
 from .task_types import (
@@ -17,8 +18,11 @@ from .task_types import (
 
 type BundleFrameKey = str
 type FrameWriter = Callable[[pd.DataFrame, Path], None]
+type GeoFrameWriter = Callable[[gpd.GeoDataFrame, Path], None]
 
 _SEGMENT_PATTERN: re.Pattern[str] = re.compile(r"^[A-Za-z0-9._-]+$")
+
+_GEOFRAME_SUFFIXES: frozenset[str] = frozenset({".geojson", ".gpkg"})
 
 
 def validate_bundle_frame_key(key: BundleFrameKey) -> None:
@@ -100,6 +104,30 @@ def read_frame_file(
     return frame
 
 
+def is_geoframe_suffix(suffix: str) -> bool:
+    """Whether `suffix` names a geodata file format."""
+    return suffix in _GEOFRAME_SUFFIXES
+
+
+def read_geoframe_file(input_file: Path) -> gpd.GeoDataFrame:
+    """
+    Read a geodata file into a geoframe.
+
+    The source CRS is passed through as-is -- no reprojection, no
+    validation against a specific CRS. `write_geoframe` is the one place
+    that enforces a CRS must be set at all.
+
+    Arguments
+    ---------
+    input_file: Path to the geodata file.
+
+    Returns
+    -------
+    The geoframe, with its geometry column and CRS as read from the file.
+    """
+    return gpd.read_file(input_file)
+
+
 def write_frame_file(frame: pd.DataFrame, output_file: Path) -> None:
     """
     Write a frame to a file, choosing the writer from the file's suffix.
@@ -128,6 +156,30 @@ def write_frame_file(frame: pd.DataFrame, output_file: Path) -> None:
     writer(frame, output_file)
 
 
+def write_geoframe_file(frame: gpd.GeoDataFrame, output_file: Path) -> None:
+    """
+    Write a geoframe to a geodata file, choosing the driver from the file's
+    suffix.
+
+    Arguments
+    ---------
+    frame: Geoframe to write.
+    output_file: Path to write to. Its suffix selects the driver.
+
+    Raises
+    ------
+    ValueError: If the suffix does not name a supported geodata format.
+    """
+    if not is_geoframe_suffix(output_file.suffix):
+        raise ValueError(
+            f"unsupported geodata output file suffix "
+            f"{output_file.suffix!r}: {output_file}; supported suffixes "
+            f"are {sorted(_GEOFRAME_SUFFIXES)}"
+        )
+
+    frame.to_file(output_file)
+
+
 def validate_export_bundle_frame_input(
     command: ExportBundleFrameCommand,
 ) -> None:
@@ -151,11 +203,15 @@ def validate_export_bundle_frame_input(
     """
     validate_bundle_frame_key(command.key)
 
-    if command.output_file.suffix not in _FRAME_WRITERS:
+    if (
+        command.output_file.suffix not in _FRAME_WRITERS
+        and not is_geoframe_suffix(command.output_file.suffix)
+    ):
         raise ValueError(
             f"unsupported output file suffix "
             f"{command.output_file.suffix!r}: {command.output_file}; "
-            f"supported suffixes are {sorted(_FRAME_WRITERS)}"
+            f"supported suffixes are "
+            f"{sorted(set(_FRAME_WRITERS) | _GEOFRAME_SUFFIXES)}"
         )
 
     if not command.bundle_file.is_file():

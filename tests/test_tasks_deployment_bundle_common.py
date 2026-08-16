@@ -3,6 +3,7 @@
 from datetime import datetime, timezone
 from pathlib import Path
 
+import geopandas as gpd
 import pandas as pd
 import pytest
 
@@ -508,6 +509,149 @@ def test_cli_export_frame_exits_non_zero_on_a_missing_bundle(
     )
 
     assert result.exit_code != 0
+
+
+POSE_KEY: str = "camera/poses"
+
+
+def _pose_geoframe() -> gpd.GeoDataFrame:
+    return gpd.GeoDataFrame(
+        {"label": ["a", "b"]},
+        geometry=gpd.points_from_xy([115.46, 115.47], [-32.03, -32.04]),
+        crs="EPSG:4326",
+    )
+
+
+@pytest.fixture
+def geoframe_source_file(tmp_path: Path) -> Path:
+    """A GeoJSON file shaped like a converted camera pose CSV."""
+    path: Path = tmp_path / "poses.geojson"
+    _pose_geoframe().to_file(path)
+    return path
+
+
+@pytest.fixture
+def geoframe_bundle_file(bundle_file: Path) -> Path:
+    """A bundle holding the pose geoframe, as ingest writes it."""
+    with open_deployment_bundle(bundle_file) as bundle:
+        bundle.write_geoframe(POSE_KEY, _pose_geoframe())
+    return bundle_file
+
+
+def test_a_geojson_input_file_is_ingested_as_a_geoframe(
+    bundle_file: Path, geoframe_source_file: Path
+) -> None:
+    result: IngestBundleFrameResult = run_ingest_bundle_frame(
+        IngestBundleFrameCommand(
+            bundle_file=bundle_file,
+            key=POSE_KEY,
+            input_file=geoframe_source_file,
+        )
+    )
+
+    assert result.rows == 2
+    assert "geometry" in result.columns
+    with open_deployment_bundle_reader(bundle_file) as reader:
+        assert reader.is_geoframe(POSE_KEY)
+        frame: gpd.GeoDataFrame = reader.read_geoframe(POSE_KEY)
+
+    assert frame.crs is not None
+    assert frame.crs.to_epsg() == 4326
+    assert frame["label"].to_list() == ["a", "b"]
+
+
+def test_a_gpkg_input_file_is_ingested_as_a_geoframe(
+    bundle_file: Path, tmp_path: Path
+) -> None:
+    input_file: Path = tmp_path / "poses.gpkg"
+    _pose_geoframe().to_file(input_file)
+
+    run_ingest_bundle_frame(
+        IngestBundleFrameCommand(
+            bundle_file=bundle_file,
+            key=POSE_KEY,
+            input_file=input_file,
+        )
+    )
+
+    with open_deployment_bundle_reader(bundle_file) as reader:
+        assert reader.is_geoframe(POSE_KEY)
+
+
+def test_a_geoframe_is_exported_to_geojson(
+    geoframe_bundle_file: Path, tmp_path: Path
+) -> None:
+    output_file: Path = tmp_path / "exported.geojson"
+
+    result: ExportBundleFrameResult = run_export_bundle_frame(
+        ExportBundleFrameCommand(
+            bundle_file=geoframe_bundle_file,
+            key=POSE_KEY,
+            output_file=output_file,
+        )
+    )
+
+    assert result.rows == 2
+    frame: gpd.GeoDataFrame = gpd.read_file(output_file)
+    assert frame.crs.to_epsg() == 4326
+    assert frame["label"].to_list() == ["a", "b"]
+
+
+def test_a_geoframe_is_exported_to_gpkg(
+    geoframe_bundle_file: Path, tmp_path: Path
+) -> None:
+    output_file: Path = tmp_path / "exported.gpkg"
+
+    run_export_bundle_frame(
+        ExportBundleFrameCommand(
+            bundle_file=geoframe_bundle_file,
+            key=POSE_KEY,
+            output_file=output_file,
+        )
+    )
+
+    frame: gpd.GeoDataFrame = gpd.read_file(output_file)
+    assert frame["label"].to_list() == ["a", "b"]
+
+
+def test_exporting_a_geoframe_to_a_plain_suffix_is_rejected(
+    geoframe_bundle_file: Path, tmp_path: Path
+) -> None:
+    with pytest.raises(ValueError, match="cannot be exported"):
+        run_export_bundle_frame(
+            ExportBundleFrameCommand(
+                bundle_file=geoframe_bundle_file,
+                key=POSE_KEY,
+                output_file=tmp_path / "exported.csv",
+            )
+        )
+
+
+def test_an_exported_geojson_can_be_ingested_back(
+    geoframe_bundle_file: Path, tmp_path: Path
+) -> None:
+    output_file: Path = tmp_path / "exported.geojson"
+    run_export_bundle_frame(
+        ExportBundleFrameCommand(
+            bundle_file=geoframe_bundle_file,
+            key=POSE_KEY,
+            output_file=output_file,
+        )
+    )
+
+    run_ingest_bundle_frame(
+        IngestBundleFrameCommand(
+            bundle_file=geoframe_bundle_file,
+            key=POSE_KEY,
+            input_file=output_file,
+            overwrite=True,
+        )
+    )
+
+    with open_deployment_bundle_reader(geoframe_bundle_file) as reader:
+        frame: gpd.GeoDataFrame = reader.read_geoframe(POSE_KEY)
+
+    assert frame["label"].to_list() == ["a", "b"]
 
 
 CLIP_LABEL: str = "u4rmk_20231107_043022"
