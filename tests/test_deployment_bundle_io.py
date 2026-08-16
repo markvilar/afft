@@ -115,6 +115,22 @@ def test_contents_manifest_tracks_identifier(bundle_path: Path) -> None:
         ]
 
 
+def test_contents_manifest_records_the_geometry_type(bundle_path: Path) -> None:
+    """`contents()`'s `geometry_type` column is `None` for a non-spatial
+    frame and set for a geospatial one."""
+    with open_deployment_bundle_writer(bundle_path) as writer:
+        writer.write_frame("bundle", _frame())
+
+    with open_deployment_bundle_reader(bundle_path) as reader:
+        contents = reader.contents()
+        assert (
+            contents.loc[
+                contents["identifier"] == "bundle", "geometry_type"
+            ].iloc[0]
+            is None
+        )
+
+
 def test_reads_back_a_frame_written_through_the_same_handle(
     bundle_path: Path,
 ) -> None:

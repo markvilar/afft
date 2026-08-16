@@ -21,13 +21,13 @@ def read_contents(path: Path) -> pd.DataFrame:
 
     `gpd.list_layers` raises for a nonexistent file rather than returning an
     empty result, so a bundle that has not been written to yet is handled
-    explicitly here.
+    explicitly here. `geometry_type` is `None` for a non-spatial layer, and
+    the geometry type name (`"Point"`, `"LineString"`, etc.) for a spatial
+    one -- this is what `is_geoframe` checks against.
     """
     if not path.exists():
-        return pd.DataFrame(columns=["identifier"])
-    return gpd.list_layers(path)[["name"]].rename(
-        columns={"name": "identifier"}
-    )
+        return pd.DataFrame(columns=["identifier", "geometry_type"])
+    return gpd.list_layers(path).rename(columns={"name": "identifier"})
 
 
 def write_frame_table(
@@ -49,3 +49,41 @@ def read_frame_table(path: Path, layer: str) -> pd.DataFrame | gpd.GeoDataFrame:
     """Read the layer `layer` from `path`, as a `GeoDataFrame` if it is
     spatial or a plain `DataFrame` otherwise."""
     return gpd.read_file(path, layer=layer)
+
+
+def geometry_type(contents: pd.DataFrame, key: str) -> str | None:
+    """
+    Look up `key`'s `geometry_type` in a `read_contents` frame.
+
+    Raises
+    ------
+    KeyError: If `key` is not in `contents`.
+    """
+    matches = contents.loc[contents["identifier"] == key, "geometry_type"]
+    if matches.empty:
+        raise KeyError(key)
+    value = matches.iloc[0]
+    return None if value is None else str(value)
+
+
+def validate_geoframe(frame: gpd.GeoDataFrame) -> None:
+    """
+    Validate that `frame` is writable through `write_geoframe`.
+
+    Raises
+    ------
+    TypeError: If `frame` is not a `GeoDataFrame`, or has no active
+        geometry column set.
+    ValueError: If `frame`'s geometry is entirely empty/null, or its CRS
+        is not set.
+    """
+    if not isinstance(frame, gpd.GeoDataFrame):
+        raise TypeError(f"frame is not a GeoDataFrame: {type(frame)}")
+    try:
+        geometry = frame.geometry
+    except AttributeError as error:
+        raise TypeError("frame has no active geometry column set") from error
+    if geometry.is_empty.all() or geometry.isna().all():
+        raise ValueError("frame's geometry is entirely empty or null")
+    if frame.crs is None:
+        raise ValueError("frame's CRS is not set")

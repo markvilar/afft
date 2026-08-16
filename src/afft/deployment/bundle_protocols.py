@@ -2,6 +2,7 @@
 
 from typing import Literal, Protocol
 
+import geopandas as gpd
 import pandas as pd
 
 
@@ -23,6 +24,27 @@ class DeploymentBundleReader(Protocol):
         Raises
         ------
         KeyError: If no frame exists at `key`.
+        """
+        ...
+
+    def is_geoframe(self, key: str) -> bool:
+        """
+        Return whether the frame at `key` carries a geometry column.
+
+        Raises
+        ------
+        KeyError: If no frame exists at `key`.
+        """
+        ...
+
+    def read_geoframe(self, key: str) -> gpd.GeoDataFrame:
+        """
+        Read the geospatial frame stored at `key`.
+
+        Raises
+        ------
+        KeyError: If no frame exists at `key`.
+        TypeError: If the frame at `key` has no geometry column.
         """
         ...
 
@@ -55,6 +77,26 @@ class DeploymentBundleWriter(Protocol):
         ------
         ValueError: If `key` already exists and `if_exists="fail"` (the
             default).
+        """
+        ...
+
+    def write_geoframe(
+        self,
+        key: str,
+        frame: gpd.GeoDataFrame,
+        *,
+        if_exists: Literal["fail", "replace"] = "fail",
+    ) -> None:
+        """
+        Write `frame` to the bundle at `key`, with the same `if_exists`
+        semantics as `write_frame`.
+
+        Raises
+        ------
+        TypeError: If `frame` is not a `GeoDataFrame`, or has no active
+            geometry column set.
+        ValueError: If `frame`'s geometry is entirely empty/null, or its
+            CRS is not set.
         """
         ...
 

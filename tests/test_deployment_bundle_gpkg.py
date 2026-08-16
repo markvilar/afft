@@ -12,6 +12,8 @@ from pathlib import Path
 import geopandas as gpd
 import pandas as pd
 import pytest
+from pyproj import CRS
+from shapely.geometry import Point
 
 from afft.deployment.bundle_gpkg_io import open_gpkg_deployment_bundle_io
 from afft.deployment.bundle_gpkg_readers import (
@@ -127,3 +129,31 @@ def test_read_write_handle_round_trips_values(tmp_path: Path) -> None:
 
     assert read_back["count"].tolist() == frame["count"].tolist()
     assert read_back["label"].tolist() == frame["label"].tolist()
+
+
+def test_a_local_crs_round_trips(tmp_path: Path) -> None:
+    """A geoframe in a local/engineering CRS -- no EPSG code -- writes and
+    reads back like any other CRS. `write_geoframe`'s `crs is not None`
+    requirement does not exclude an AUV's local tangent-plane frame."""
+    local_crs = CRS.from_wkt(
+        'ENGCRS["AUV local frame",'
+        'EDATUM["AUV reference point"],'
+        "CS[Cartesian,2],"
+        'AXIS["x",east,ORDER[1],LENGTHUNIT["metre",1]],'
+        'AXIS["y",north,ORDER[2],LENGTHUNIT["metre",1]]]'
+    )
+    frame = gpd.GeoDataFrame(
+        {"value": [1.0]}, geometry=[Point(10.0, 20.0)], crs=local_crs
+    )
+    path = tmp_path / "bundle.gpkg"
+
+    with open_gpkg_deployment_bundle_writer(path) as writer:
+        writer.write_geoframe("geo", frame)
+
+    with open_gpkg_deployment_bundle_reader(path) as reader:
+        read_back = reader.read_geoframe("geo")
+
+    assert read_back.crs is not None
+    assert read_back.crs.name == "AUV local frame"
+    assert read_back.geometry.iloc[0].x == 10.0
+    assert read_back.geometry.iloc[0].y == 20.0
