@@ -162,7 +162,9 @@ def run_ingest_bundle_frame(
     geoframe: gpd.GeoDataFrame
     frame: pd.DataFrame
     if is_geoframe:
-        geoframe = read_geoframe_file(command.input_file)
+        geoframe = read_geoframe_file(
+            command.input_file, command.datetime_columns
+        )
         rows, columns = len(geoframe), tuple(geoframe.columns)
     else:
         frame = read_frame_file(command.input_file, command.datetime_columns)
