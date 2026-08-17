@@ -56,6 +56,56 @@ inputs.usbl       = "telemetry/raw/usbl_evologics_transponder/EVOLOGICS_FIX/mess
 inputs.extrinsics = "vessel/sensors/usbl_evologics_transceiver/extrinsics"
 optional          = true
 
+# Geoframes built from lat/lon(/height) columns already present in the
+# telemetry/raw and telemetry/processed frames above. All optional, since no
+# deployment carries every sensor.
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor       = "build_geoframe_from_frame"
+output          = "trajectory/gnss_ublox/positions"
+inputs.frame    = "telemetry/raw/gnss_ublox/GPS_RMC/messages"
+config.x_column = "longitude"
+config.y_column = "latitude"
+config.crs      = "EPSG:4326"
+optional        = true
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor       = "build_geoframe_from_frame"
+output          = "trajectory/usbl_linkquest_transponder/target_positions"
+inputs.frame    = "telemetry/processed/usbl_linkquest_transponder/LQMODEM/messages"
+config.x_column = "target_longitude"
+config.y_column = "target_latitude"
+config.z_column = "target_height"
+config.crs      = "EPSG:4326"
+optional        = true
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor       = "build_geoframe_from_frame"
+output          = "trajectory/usbl_linkquest_transponder/ship_positions"
+inputs.frame    = "telemetry/processed/usbl_linkquest_transponder/LQMODEM/messages"
+config.x_column = "ship_longitude"
+config.y_column = "ship_latitude"
+config.crs      = "EPSG:4326"
+optional        = true
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor       = "build_geoframe_from_frame"
+output          = "trajectory/usbl_evologics_transponder/target_positions"
+inputs.frame    = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+config.x_column = "target_longitude"
+config.y_column = "target_latitude"
+config.z_column = "target_height"
+config.crs      = "EPSG:4326"
+optional        = true
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor       = "build_geoframe_from_frame"
+output          = "trajectory/usbl_evologics_transponder/ship_positions"
+inputs.frame    = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+config.x_column = "ship_longitude"
+config.y_column = "ship_latitude"
+config.crs      = "EPSG:4326"
+optional        = true
+
 # Derive platform poses from camera poses: extrinsics is the camera's
 # position in the platform frame, so the default (non-inverted) direction --
 # sensor pose -> platform pose -- is what is wanted here.

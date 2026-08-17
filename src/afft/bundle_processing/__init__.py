@@ -23,6 +23,7 @@ from .pipeline_runners import (
 # Imported for their registration side effects: a processor in an unimported
 # module is silently absent from the registry rather than an error.
 from . import common_processors as common_processors
+from . import geoframe_processors as geoframe_processors
 from . import pose_processors as pose_processors
 from . import sensor_processors as sensor_processors
 
@@ -30,6 +31,10 @@ from .common_processors import (
     DropColumnsConfig as DropColumnsConfig,
     RenameColumnsConfig as RenameColumnsConfig,
     SelectColumnsConfig as SelectColumnsConfig,
+)
+from .geoframe_processors import (
+    BuildGeoframeFromFrameConfig as BuildGeoframeFromFrameConfig,
+    build_geoframe_from_frame as build_geoframe_from_frame,
 )
 from .pose_processors import (
     ApplyMountingOffsetConfig as ApplyMountingOffsetConfig,
