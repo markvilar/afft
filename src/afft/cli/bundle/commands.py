@@ -203,7 +203,7 @@ def process(
     "input_file",
     type=click.Path(exists=True, dir_okay=False),
     required=True,
-    help="path to the CSV file holding the frame",
+    help="path to the CSV or geodata file holding the frame",
 )
 @click.option(
     "--datetime-column",

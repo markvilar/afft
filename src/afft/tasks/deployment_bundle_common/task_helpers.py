@@ -60,6 +60,38 @@ def validate_bundle_frame_key(key: BundleFrameKey) -> None:
             )
 
 
+def _parse_datetime_columns(
+    frame: pd.DataFrame, input_file: Path, datetime_columns: tuple[str, ...]
+) -> None:
+    """
+    Parse `datetime_columns` of `frame` in place as timezone-aware UTC
+    timestamps.
+
+    Arguments
+    ---------
+    frame: Frame to parse columns of, mutated in place.
+    input_file: Path `frame` was read from, named in any error.
+    datetime_columns: Columns to parse as timestamps.
+
+    Raises
+    ------
+    ValueError: If a named datetime column is not in `frame`.
+    """
+    missing: list[str] = [
+        column for column in datetime_columns if column not in frame.columns
+    ]
+    if missing:
+        raise ValueError(
+            f"datetime columns {missing} are not in {input_file}: "
+            f"columns are {list(frame.columns)}"
+        )
+
+    for column in datetime_columns:
+        frame[column] = pd.to_datetime(
+            frame[column], utc=True, format="ISO8601"
+        )
+
+
 def read_frame_file(
     input_file: Path,
     datetime_columns: tuple[str, ...] = (),
@@ -69,8 +101,6 @@ def read_frame_file(
     UTC timestamps.
 
     Columns outside `datetime_columns` keep the dtype ``read_csv`` inferred.
-    The datetime columns are parsed with the same call the bundle readers
-    use, so both paths agree on how ISO text becomes a timestamp.
 
     Arguments
     ---------
@@ -86,21 +116,7 @@ def read_frame_file(
     ValueError: If a named datetime column is not in the file.
     """
     frame: pd.DataFrame = pd.read_csv(input_file)
-
-    missing: list[str] = [
-        column for column in datetime_columns if column not in frame.columns
-    ]
-    if missing:
-        raise ValueError(
-            f"datetime columns {missing} are not in {input_file}: "
-            f"columns are {list(frame.columns)}"
-        )
-
-    for column in datetime_columns:
-        frame[column] = pd.to_datetime(
-            frame[column], utc=True, format="ISO8601"
-        )
-
+    _parse_datetime_columns(frame, input_file, datetime_columns)
     return frame
 
 
@@ -109,23 +125,44 @@ def is_geoframe_suffix(suffix: str) -> bool:
     return suffix in _GEOFRAME_SUFFIXES
 
 
-def read_geoframe_file(input_file: Path) -> gpd.GeoDataFrame:
+def read_geoframe_file(
+    input_file: Path,
+    datetime_columns: tuple[str, ...] = (),
+) -> gpd.GeoDataFrame:
     """
-    Read a geodata file into a geoframe.
+    Read a geodata file into a geoframe, parsing the named columns as
+    timezone-aware UTC timestamps.
 
     The source CRS is passed through as-is -- no reprojection, no
     validation against a specific CRS. `write_geoframe` is the one place
     that enforces a CRS must be set at all.
 
+    ``DATE_AS_STRING`` disables the reader's own datetime auto-detection, so
+    every datetime-like field comes back as its original source text rather
+    than GDAL's parsed representation. GDAL's parser has a rounding bug that
+    corrupts a value with more than millisecond precision (e.g. rounding
+    ``59.999526024`` seconds up to an invalid ``60`` seconds) and silently
+    downgrades the whole column to mangled strings; reading as text and
+    parsing `datetime_columns` with pandas instead sidesteps that entirely.
+    Datetime-like fields outside `datetime_columns` are left as plain text
+    rather than auto-parsed, matching `read_frame_file`'s CSV behaviour.
+
     Arguments
     ---------
     input_file: Path to the geodata file.
+    datetime_columns: Columns to parse as timestamps.
 
     Returns
     -------
     The geoframe, with its geometry column and CRS as read from the file.
+
+    Raises
+    ------
+    ValueError: If a named datetime column is not in the file.
     """
-    return gpd.read_file(input_file)
+    geoframe: gpd.GeoDataFrame = gpd.read_file(input_file, DATE_AS_STRING="YES")
+    _parse_datetime_columns(geoframe, input_file, datetime_columns)
+    return geoframe
 
 
 def write_frame_file(frame: pd.DataFrame, output_file: Path) -> None:
