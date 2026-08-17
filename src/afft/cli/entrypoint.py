@@ -4,6 +4,7 @@ import click
 
 from afft.utils.log import init_logger
 
+from .benthloc.commands import benthloc_group as benthloc_commands
 from .bundle.commands import bundle_group as bundle_commands
 from .database.commands import database_group as database_commands
 from .deployment.commands import deployment_group as deployment_commands
@@ -18,6 +19,7 @@ def cli() -> None:
     pass
 
 
+cli.add_command(benthloc_commands, name="benthloc")
 cli.add_command(bundle_commands, name="bundle")
 cli.add_command(database_commands, name="database")
 cli.add_command(deployment_commands, name="deployment")
