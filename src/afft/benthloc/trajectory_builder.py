@@ -12,7 +12,6 @@ from afft.deployment import (
 from afft.utils.log import logger
 
 from .common_types import ResolvedIdentity, resolve_identity
-from .common_writers import write_feature_collection_file
 from .trajectory_types import (
     BuildTrajectoryIngestionFileCommand,
     BuildTrajectoryIngestionFileResult,
@@ -151,9 +150,7 @@ def run_build_trajectory_ingestion_file(
     logger.info("-------------------------------------")
 
     if not command.dry_run:
-        write_feature_collection_file(
-            output_frame, command.output_file, overwrite=command.overwrite
-        )
+        output_frame.to_file(command.output_file, driver="GeoJSON")
         logger.info(f"wrote trajectory ingestion file to {command.output_file}")
 
     return BuildTrajectoryIngestionFileResult(

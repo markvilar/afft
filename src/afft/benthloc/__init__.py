@@ -12,9 +12,6 @@ from .common_validators import (
     check_timestamps_monotonically_increasing as check_timestamps_monotonically_increasing,
     check_timestamps_tz_aware_utc as check_timestamps_tz_aware_utc,
 )
-from .common_writers import (
-    write_feature_collection_file as write_feature_collection_file,
-)
 from .trajectory_types import (
     BuildTrajectoryIngestionFileCommand as BuildTrajectoryIngestionFileCommand,
     BuildTrajectoryIngestionFileResult as BuildTrajectoryIngestionFileResult,
