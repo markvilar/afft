@@ -97,7 +97,8 @@ def validate_trajectory_geoframe(
 
     Returns
     -------
-    The frame with incomplete rows dropped, and how many were dropped.
+    The frame with incomplete rows dropped and rows sorted by timestamp,
+    and how many rows were dropped.
 
     Raises
     ------
@@ -105,7 +106,8 @@ def validate_trajectory_geoframe(
     ValueError: If no poses remain after dropping incomplete rows, the CRS
         is not EPSG:4326, the geometry is not Point Z, a position is
         outside valid WGS-84 ranges, the timestamp column is not tz-aware
-        UTC, or timestamps are not monotonically increasing.
+        UTC, or timestamps are not monotonically increasing once sorted
+        (i.e. the timestamp column has duplicate values).
     """
     check_required_columns_present(frame, command)
 
@@ -115,6 +117,10 @@ def validate_trajectory_geoframe(
             f"no poses remain at {command.key!r} after dropping rows with "
             f"a null position, attitude, or timestamp"
         )
+
+    cleaned = cleaned.sort_values(command.timestamp_column).reset_index(
+        drop=True
+    )
 
     check_crs_is_wgs84(cleaned)
     check_geometry_is_point_z(cleaned)

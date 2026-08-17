@@ -203,7 +203,9 @@ def test_wrong_crs_raises(tmp_path: Path) -> None:
         run_build_trajectory_ingestion_file(command)
 
 
-def test_non_monotonic_timestamps_raise(tmp_path: Path) -> None:
+def test_out_of_order_timestamps_are_sorted(tmp_path: Path) -> None:
+    """Rows out of timestamp order in the source geoframe are sorted, not
+    rejected."""
     trajectory = _trajectory_geoframe(
         ["2024-01-01T00:00:01Z", "2024-01-01T00:00:00Z"]
     )
@@ -211,8 +213,10 @@ def test_non_monotonic_timestamps_raise(tmp_path: Path) -> None:
 
     command = _command(tmp_path, bundle_file=bundle_file)
 
-    with pytest.raises(ValueError, match="monotonically increasing"):
-        run_build_trajectory_ingestion_file(command)
+    result = run_build_trajectory_ingestion_file(command)
+
+    assert result.pose_count == 2
+    assert result.start_timestamp < result.end_timestamp
 
 
 def test_rows_with_null_attitude_are_dropped_and_reported(
