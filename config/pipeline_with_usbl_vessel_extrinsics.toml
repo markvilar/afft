@@ -111,12 +111,26 @@ optional        = true
 # sensor pose -> platform pose -- is what is wanted here.
 [[afft.tasks.process_deployment_bundle.pipeline.steps]]
 processor         = "apply_mounting_offset"
-output            = "trajectory/renav_priors/platform_poses"
+output            = "trajectory/renav_priors/platform_poses_raw"
 inputs.poses      = "trajectory/renav_priors/stereo_camera_poses"
 inputs.extrinsics = "platform/sensors/camera_avt_prosilica/extrinsics"
 
+# Renamed to match Benthloc's trajectory ingestion schema, which names the
+# heading property "yaw" rather than "heading".
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor        = "rename_columns"
+output           = "trajectory/renav_priors/platform_poses"
+inputs.df        = "trajectory/renav_priors/platform_poses_raw"
+config.columns   = { heading = "yaw" }
+
 [[afft.tasks.process_deployment_bundle.pipeline.steps]]
 processor         = "apply_mounting_offset"
-output            = "trajectory/metashape_registered/platform_poses"
+output            = "trajectory/metashape_registered/platform_poses_raw"
 inputs.poses      = "trajectory/metashape_registered/stereo_camera_poses"
 inputs.extrinsics = "platform/sensors/camera_avt_prosilica/extrinsics"
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor        = "rename_columns"
+output           = "trajectory/metashape_registered/platform_poses"
+inputs.df        = "trajectory/metashape_registered/platform_poses_raw"
+config.columns   = { heading = "yaw" }

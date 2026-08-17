@@ -1,5 +1,6 @@
 """Tests for the sensor-agnostic column processors."""
 
+import geopandas as gpd
 import pandas as pd
 import pytest
 
@@ -31,6 +32,22 @@ def test_rename_columns_renames_the_listed_columns() -> None:
     result = rename_columns({"df": _frame()}, config)
 
     assert list(result.columns) == ["timestamp", "depth_m", "extra"]
+
+
+def test_rename_columns_preserves_geoframe_type_and_crs() -> None:
+    """A geoframe input comes back out as a geoframe, with its CRS intact."""
+    geoframe = gpd.GeoDataFrame(
+        {"heading": [1.0, 2.0]},
+        geometry=gpd.points_from_xy([1.0, 2.0], [3.0, 4.0]),
+        crs="EPSG:4326",
+    )
+    config = RenameColumnsConfig(columns={"heading": "yaw"})
+
+    result = rename_columns({"df": geoframe}, config)
+
+    assert isinstance(result, gpd.GeoDataFrame)
+    assert list(result.columns) == ["yaw", "geometry"]
+    assert result.crs == geoframe.crs
 
 
 def test_select_columns_keeps_the_listed_order() -> None:
