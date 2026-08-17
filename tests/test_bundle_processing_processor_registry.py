@@ -83,6 +83,7 @@ def test_default_registry_holds_every_shipped_processor() -> None:
     """Importing the package registers all processors it defines."""
     assert default_registry().names() == [
         "apply_mounting_offset",
+        "build_geoframe_from_frame",
         "correct_pressure_for_sea_level",
         "drop_columns",
         "estimate_dvl_uncertainty",
