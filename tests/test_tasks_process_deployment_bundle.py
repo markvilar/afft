@@ -16,7 +16,6 @@ from afft.tasks.process_deployment_bundle import (
     ProcessDeploymentBundleResult,
     run_process_deployment_bundle,
 )
-from afft.utils.log import logger
 
 RENAME_STEP: str = """
 [[afft.tasks.process_deployment_bundle.pipeline.steps]]
@@ -182,19 +181,18 @@ def test_overwrite_replaces_an_existing_output(tmp_path: Path) -> None:
         assert reader.has_frame("telemetry/processed/pressure/messages")
 
 
-def test_verbose_logs_each_step_output_key(tmp_path: Path) -> None:
-    """`verbose` reports each step's output key as it is written."""
+def test_verbose_notes_each_step_output_key_in_the_summary(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    """`verbose` reports each step's output key in the summary table."""
     command = _command(tmp_path, RENAME_STEP, verbose=True)
 
-    messages: list[str] = []
-    handler_id: int = logger.add(messages.append, level="INFO")
-    try:
-        run_process_deployment_bundle(command)
-    finally:
-        logger.remove(handler_id)
+    run_process_deployment_bundle(command)
 
-    assert any(
-        "telemetry/processed/pressure/messages" in message
-        and "wrote" in message
-        for message in messages
-    )
+    # The summary table wraps long cells onto extra lines rather than
+    # truncating them, so a column's full value may not sit on one line;
+    # check the pieces are present rather than one contiguous substring.
+    captured = capsys.readouterr()
+    assert "wrote" in captured.out
+    assert "telemetry/processed" in captured.out
+    assert "pressure/messages" in captured.out
