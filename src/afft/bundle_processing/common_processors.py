@@ -3,10 +3,9 @@
 
 from collections.abc import Mapping
 
-import pandas as pd
-
 from pydantic import BaseModel, ConfigDict
 
+from .pipeline_types import PipelineFrame
 from .processor_registry import register_processor
 
 
@@ -54,9 +53,9 @@ class DropColumnsConfig(BaseModel):
 
 @register_processor("rename_columns", config_type=RenameColumnsConfig)
 def rename_columns(
-    frames: Mapping[str, pd.DataFrame],
+    frames: Mapping[str, PipelineFrame],
     config: RenameColumnsConfig,
-) -> pd.DataFrame:
+) -> PipelineFrame:
     """
     Rename columns on a single frame.
 
@@ -82,9 +81,9 @@ def rename_columns(
 
 @register_processor("select_columns", config_type=SelectColumnsConfig)
 def select_columns(
-    frames: Mapping[str, pd.DataFrame],
+    frames: Mapping[str, PipelineFrame],
     config: SelectColumnsConfig,
-) -> pd.DataFrame:
+) -> PipelineFrame:
     """
     Keep only the listed columns of a single frame.
 
@@ -110,9 +109,9 @@ def select_columns(
 
 @register_processor("drop_columns", config_type=DropColumnsConfig)
 def drop_columns(
-    frames: Mapping[str, pd.DataFrame],
+    frames: Mapping[str, PipelineFrame],
     config: DropColumnsConfig,
-) -> pd.DataFrame:
+) -> PipelineFrame:
     """
     Remove the listed columns from a single frame.
 
