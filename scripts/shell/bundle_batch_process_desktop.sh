@@ -7,18 +7,19 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
-CONFIG_FILE="${REPO_ROOT}/config/default.toml"
+CONFIG_FILE_WITH_USBL_EXTRINSICS="${REPO_ROOT}/config/pipeline_with_usbl_vessel_extrinsics.toml"
+CONFIG_FILE_WITHOUT_USBL_EXTRINSICS="${REPO_ROOT}/config/pipeline_without_usbl_vessel_extrinsics.toml"
 
 INPUT_DIR="/data/exos_01/acfr_deployment_bundles_v1_subset"
 OUTPUT_DIR="/data/exos_01/acfr_deployment_bundles_v1_subset_processed"
 
-BUNDLE_FILES=(
+# Verdict per #262, AUV logs (messages) column -- the only column relevant here,
+# since USBL processing only uses the AUV USBL messages, not the USBL logs.
+BUNDLE_FILES_WITH_USBL_EXTRINSICS=(
   "qdch0ftq_20100428_020202_deployment_bundle.gpkg"
   "qdch0ftq_20110415_020103_deployment_bundle.gpkg"
-  "qdch0ftq_20120430_002423_deployment_bundle.gpkg"
   "qdch0ftq_20130406_023610_deployment_bundle.gpkg"
   "qdchdmy1_20110416_005411_deployment_bundle.gpkg"
-  "qdchdmy1_20120501_071203_deployment_bundle.gpkg"
   "qdchdmy1_20130406_081713_deployment_bundle.gpkg"
   "qdchdmy1_20170525_234624_deployment_bundle.gpkg"
   "r23685bc_20100605_021022_deployment_bundle.gpkg"
@@ -32,13 +33,27 @@ BUNDLE_FILES=(
   "r7jjskxq_20131022_004934_deployment_bundle.gpkg"
 )
 
+BUNDLE_FILES_WITHOUT_USBL_EXTRINSICS=(
+  "qdch0ftq_20120430_002423_deployment_bundle.gpkg"
+  "qdchdmy1_20120501_071203_deployment_bundle.gpkg"
+)
+
 mkdir -p "${OUTPUT_DIR}"
 
-for bundle_file in "${BUNDLE_FILES[@]}"; do
+for bundle_file in "${BUNDLE_FILES_WITH_USBL_EXTRINSICS[@]}"; do
   uv run afft bundle process \
     --input "${INPUT_DIR}/${bundle_file}" \
     --output "${OUTPUT_DIR}/${bundle_file}" \
-    --config "${CONFIG_FILE}" \
+    --config "${CONFIG_FILE_WITH_USBL_EXTRINSICS}" \
+    --overwrite \
+    --verbose
+done
+
+for bundle_file in "${BUNDLE_FILES_WITHOUT_USBL_EXTRINSICS[@]}"; do
+  uv run afft bundle process \
+    --input "${INPUT_DIR}/${bundle_file}" \
+    --output "${OUTPUT_DIR}/${bundle_file}" \
+    --config "${CONFIG_FILE_WITHOUT_USBL_EXTRINSICS}" \
     --overwrite \
     --verbose
 done

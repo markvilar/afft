@@ -1,0 +1,72 @@
+# Processing pipeline for deployment bundles whose USBL readings should be
+# corrected for the vessel/topside transceiver mounting (extrinsics).
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor            = "pair_stereo_images"
+output               = "telemetry/processed/camera_avt_prosilica/VIS/stereo_image_pairs"
+inputs.images        = "telemetry/raw/camera_avt_prosilica/VIS/messages"
+config.left_suffix   = "LC16"
+config.right_suffix  = "RM16"
+config.max_offset_ms = 300.0
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor               = "estimate_pressure_uncertainty"
+output                  = "telemetry/intermediate/pressure_parosci/depth_with_uncertainty"
+inputs.pressure         = "telemetry/raw/pressure_parosci/PAROSCI/messages"
+config.base_uncertainty = 0.1
+config.depth_scale      = 0.0
+
+# Optional: skipped for a bundle whose sea level frame was never ingested,
+# which leaves the processed key absent rather than claiming a correction
+# that did not happen.
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor              = "correct_pressure_for_sea_level"
+output                 = "telemetry/processed/pressure_parosci/depth_sealevel_corrected"
+inputs.pressure        = "telemetry/intermediate/pressure_parosci/depth_with_uncertainty"
+inputs.sea_level       = "metocean/worldtides/sealevel"
+config.max_gap_seconds = 3600.0
+optional               = true
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor                     = "estimate_dvl_uncertainty"
+output                        = "telemetry/processed/dvl_teledyne_navigator/RDI/messages"
+inputs.dvl                    = "telemetry/raw/dvl_teledyne_navigator/RDI/messages"
+config.velocity_x_uncertainty = 0.003
+config.velocity_y_uncertainty = 0.003
+config.velocity_z_uncertainty = 0.003
+config.roll_uncertainty       = 0.50
+config.pitch_uncertainty      = 0.50
+config.heading_uncertainty    = 2.00
+
+# USBL steps are optional: no deployment carries both transceivers, and the
+# earlier ones carry neither. inputs.extrinsics is set so the vessel/topside
+# transceiver mounting is applied.
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "process_tracklink_usbl_from_messages"
+output            = "telemetry/processed/usbl_linkquest_transponder/LQMODEM/messages"
+inputs.usbl       = "telemetry/raw/usbl_linkquest_transponder/LQMODEM/messages"
+inputs.pressure   = "telemetry/raw/pressure_parosci/PAROSCI/messages"
+inputs.extrinsics = "vessel/sensors/usbl_linkquest_transceiver/extrinsics"
+optional          = true
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "process_evologics_usbl"
+output            = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+inputs.usbl       = "telemetry/raw/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+inputs.extrinsics = "vessel/sensors/usbl_evologics_transceiver/extrinsics"
+optional          = true
+
+# Derive platform poses from camera poses: extrinsics is the camera's
+# position in the platform frame, so the default (non-inverted) direction --
+# sensor pose -> platform pose -- is what is wanted here.
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "apply_mounting_offset"
+output            = "trajectory/renav_priors/platform_poses"
+inputs.poses      = "trajectory/renav_priors/stereo_camera_poses"
+inputs.extrinsics = "platform/sensors/camera_avt_prosilica/extrinsics"
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "apply_mounting_offset"
+output            = "trajectory/metashape_registered/platform_poses"
+inputs.poses      = "trajectory/metashape_registered/stereo_camera_poses"
+inputs.extrinsics = "platform/sensors/camera_avt_prosilica/extrinsics"
