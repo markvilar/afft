@@ -56,8 +56,8 @@ cd "${REPO_ROOT}"
 for range in "${DENSE_GRID_RANGES[@]}"; do
   IFS="|" read -r deployment_label start_time end_time <<< "${range}"
 
-  input_file="${INPUT_DIR}/${deployment_label}_deployment_bundle.sqlite"
-  output_file="${OUTPUT_DIR}/${deployment_label}_${LABEL_SUFFIX}_deployment_bundle.sqlite"
+  input_file="${INPUT_DIR}/${deployment_label}_deployment_bundle.gpkg"
+  output_file="${OUTPUT_DIR}/${deployment_label}_${LABEL_SUFFIX}_deployment_bundle.gpkg"
 
   uv run afft bundle clip \
     --input "${input_file}" \
