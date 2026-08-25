@@ -1,4 +1,4 @@
-# Afft - AUV File Formatting Tool
+# AUV File Formatting Tool
 
 ![build-ubuntu](https://github.com/markvilar/afft/actions/workflows/build-ubuntu.yml/badge.svg)
 ![license](https://img.shields.io/badge/license-GPLv3-blue.svg)
