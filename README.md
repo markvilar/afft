@@ -1,9 +1,10 @@
 # Afft - AUV File Formatting Tool
 
-![ci](https://github.com/markvilar/raft/actions/workflows/ci.yml/badge.svg)
-![pylint](https://github.com/markvilar/raft/actions/workflows/pylint.yml/badge.svg)
+![build-ubuntu](https://github.com/markvilar/afft/actions/workflows/build-ubuntu.yml/badge.svg)
+![license](https://img.shields.io/badge/license-GPLv3-blue.svg)
+![python](https://img.shields.io/badge/python-3.12%2B-blue.svg)
 
-Raft is a collection of tools for working with data from ACFRs AUVs. The
+Afft is a collection of tools for working with data from ACFRs AUVs. The
 tools consist of creating file queries from metadata, transferring files and 
 directories, and parsing various data files. The repository includes support 
 for the following tools:
