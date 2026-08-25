@@ -22,7 +22,7 @@ from afft.benthloc import (
 
 def _trajectory_geoframe(
     timestamps: list[str],
-    yaw: list[float] | None = None,
+    yaw: list[float | None] | None = None,
 ) -> gpd.GeoDataFrame:
     count = len(timestamps)
     return gpd.GeoDataFrame(
