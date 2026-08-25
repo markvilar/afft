@@ -1,65 +1,17 @@
 """Actions for database CLI commands."""
 
 from pathlib import Path
-from typing import Any
 
 import pandas as pd
-import polars as pl
 import sqlalchemy as sqla
-from tqdm import tqdm
+from rich.progress import Progress
 
 import afft.database as db
-import afft.io as io
-import afft.tasks.database_tasks as dbtasks
-from afft.env import requireenv
 
-from afft.tasks.ingest_tables import IngestTablesCommand, run_ingest_tables
-from afft.utils.log import logger
+from afft.environment import EnvironmentDatabase, load_environment
 
 
-def dispatch_table_join(
-    database: str,
-    host: str,
-    port: int,
-    config_path: str | Path,
-) -> None:
-    """Load join configs and execute each join against the database."""
-    config: dict[str, Any] = io.read_config(Path(config_path))
-    tasks = config.get("tasks")
-    if tasks is None:
-        raise ValueError("missing 'tasks' key in config")
-    task_configs: list[dbtasks.JoinTableConfig] = [
-        dbtasks.JoinTableConfig(**task) for task in tasks
-    ]
-
-    engine: db.Engine | str = db.create_engine(
-        database=database,
-        host=host,
-        port=port,
-        username=requireenv("PG_USERNAME"),
-        password=requireenv("PG_PASSWORD"),
-    )
-
-    assert isinstance(engine, db.Engine), (
-        f"error when creating database engine: {engine}"
-    )
-
-    results: dict[str, pl.DataFrame] = {
-        config.label: dbtasks.join_database_tables(
-            engine,
-            queries=config.queries,
-            selections=config.selections,
-            base=config.join["base"],
-            join_on=config.join["field"],
-        )
-        for config in task_configs
-    }
-
-    for label, dataframe in results.items():
-        logger.info(f"Label: {label}, dataframe: {len(dataframe)}")
-
-
-def dispatch_table_export(
+def invoke_table_export(
     database: str,
     host: str,
     port: int,
@@ -70,12 +22,13 @@ def dispatch_table_export(
 
     Exports all tables when tables is empty, otherwise only the named ones.
     """
+    credentials: EnvironmentDatabase = load_environment().database
     engine: db.Engine | str = db.create_engine(
         database=database,
         host=host,
         port=port,
-        username=requireenv("PG_USERNAME"),
-        password=requireenv("PG_PASSWORD"),
+        username=credentials.username.get_secret_value(),
+        password=credentials.password.get_secret_value(),
     )
 
     assert isinstance(engine, db.Engine), (
@@ -96,39 +49,19 @@ def dispatch_table_export(
         raise ValueError(f"tables not found in database: {unknown}")
 
     width = max(len(t) for t in targets)
-    progress = tqdm(targets, unit="table")
-    for table in progress:
-        progress.set_description(table.ljust(width))
+    progress = Progress()
+    task = progress.add_task("", total=len(targets))
+    progress.start()
+    for table in targets:
+        progress.update(task, description=table.ljust(width))
         df: pd.DataFrame = pd.read_sql_table(table, con=engine)
         dest = output_dir / f"{table}.csv"
         df.to_csv(dest, index=False)
+        progress.advance(task)
+    progress.stop()
 
 
-def dispatch_table_ingest(
-    source_dir: str | Path,
-    database: str,
-    host: str,
-    port: int,
-    pattern: str = "*.csv",
-    overwrite: bool = False,
-    verbose: bool = False,
-    timestamp_columns: tuple[str, ...] = ("timestamp",),
-) -> None:
-    """Ingest all files matching pattern in source_dir as database tables."""
-    command = IngestTablesCommand(
-        source_dir=Path(source_dir),
-        database=database,
-        host=host,
-        port=port,
-        pattern=pattern,
-        overwrite=overwrite,
-        verbose=verbose,
-        timestamp_columns=timestamp_columns,
-    )
-    run_ingest_tables(command)
-
-
-def dispatch_table_write(
+def invoke_table_write(
     source: str | Path,
     database: str,
     host: str,
@@ -142,16 +75,17 @@ def dispatch_table_write(
     if not name:
         name = source.stem
 
-    if_table_exists = "replace" if overwrite else "fail"
+    if_exists = "replace" if overwrite else "fail"
 
-    data_frame: pl.DataFrame = pl.read_csv(source)
+    data_frame: pd.DataFrame = pd.read_csv(source)
 
+    credentials: EnvironmentDatabase = load_environment().database
     engine: db.Engine | str = db.create_engine(
         database=database,
         host=host,
         port=port,
-        username=requireenv("PG_USERNAME"),
-        password=requireenv("PG_PASSWORD"),
+        username=credentials.username.get_secret_value(),
+        password=credentials.password.get_secret_value(),
     )
     assert isinstance(engine, db.Engine), (
         f"error when creating database engine: {engine}"
@@ -160,5 +94,5 @@ def dispatch_table_write(
         engine,
         table=name,
         data=data_frame,
-        if_table_exists=if_table_exists,
+        if_exists=if_exists,
     )

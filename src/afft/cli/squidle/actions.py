@@ -1,0 +1,181 @@
+"""Actions for Squidle+ CLI commands."""
+
+from pathlib import Path
+from typing import Any
+
+import pandas as pd
+
+from afft.environment import load_environment
+from afft.utils.log import logger
+
+from afft.squidle import (
+    Campaign,
+    Deployment,
+    MediaRecord,
+    Platform,
+    SquidleClient,
+    create_client,
+)
+
+
+def _create_client() -> SquidleClient:
+    """Create a Squidle client using the API token from the environment."""
+    token = load_environment().tokens.squidle
+    if token is None:
+        raise ValueError(
+            "missing Squidle API token: set SQUIDLE_API_TOKEN in .env"
+        )
+    return create_client(token.get_secret_value())
+
+
+def invoke_list_platforms(name: str | None = None) -> None:
+    """Fetch and print platforms, optionally filtered by name."""
+    filters: list[dict[str, Any]] = []
+    if name:
+        filters.append({"name": "name", "op": "ilike", "val": f"%{name}%"})
+
+    with _create_client() as client:
+        platforms: list[Platform] = client.fetch_platforms(filters or None)
+
+    if not platforms:
+        logger.info("No platforms found.")
+        return
+
+    dataframe: pd.DataFrame = pd.DataFrame(
+        [
+            {
+                "id": platform.id,
+                "key": platform.key,
+                "name": platform.name,
+            }
+            for platform in platforms
+        ]
+    )
+    logger.info("\n" + dataframe.to_string(index=False))
+
+
+def invoke_collect_deployment(
+    deployment_id: int,
+    output_file: Path,
+) -> None:
+    """Fetch media for a single deployment and write to CSV."""
+    with _create_client() as client:
+        records: list[MediaRecord] = client.fetch_media(deployment_id)
+    dataframe: pd.DataFrame = pd.DataFrame(
+        [record.to_dict() for record in records]
+    )
+    dataframe.to_csv(output_file, index=False)
+    logger.info(
+        f"deployment {deployment_id}: {len(dataframe)} record(s) → {output_file}"
+    )
+
+
+def invoke_collect_deployments(
+    deployment_ids: list[int],
+    output_dir: Path,
+) -> None:
+    """Fetch media for multiple deployments and write one CSV per deployment."""
+    with _create_client() as client:
+        results: dict[int, list[MediaRecord]] = client.fetch_media_batch(
+            deployment_ids
+        )
+    for deployment_id, records in results.items():
+        dataframe: pd.DataFrame = pd.DataFrame(
+            [record.to_dict() for record in records]
+        )
+        output_file: Path = output_dir / f"{deployment_id}_squidle_media.csv"
+        dataframe.to_csv(output_file, index=False)
+        logger.info(
+            f"deployment {deployment_id}: {len(dataframe)} record(s) "
+            f"→ {output_file.name}"
+        )
+
+
+def invoke_collect_campaign(
+    campaign_id: int,
+    output_dir: Path,
+) -> None:
+    """Fetch media for all deployments in a campaign, one CSV per deployment."""
+    with _create_client() as client:
+        results: dict[int, list[MediaRecord]] = client.fetch_campaign_media(
+            campaign_id
+        )
+    for deployment_id, records in results.items():
+        if not records:
+            continue
+        deployment_key: str = records[0].deployment_key or str(deployment_id)
+        dataframe: pd.DataFrame = pd.DataFrame(
+            [record.to_dict() for record in records]
+        )
+        output_file: Path = output_dir / f"{deployment_key}_squidle_media.csv"
+        dataframe.to_csv(output_file, index=False)
+        logger.info(
+            f"deployment {deployment_id}: {len(dataframe)} record(s) "
+            f"→ {output_file.name}"
+        )
+
+
+def invoke_list_campaigns(name: str | None = None) -> None:
+    """Fetch and print campaigns, optionally filtered by name."""
+    filters: list[dict[str, Any]] = []
+    if name:
+        filters.append({"name": "name", "op": "ilike", "val": f"%{name}%"})
+
+    with _create_client() as client:
+        campaigns: list[Campaign] = client.fetch_campaigns(filters or None)
+
+    if not campaigns:
+        logger.info("No campaigns found.")
+        return
+
+    dataframe: pd.DataFrame = pd.DataFrame(
+        [
+            {
+                "id": campaign.id,
+                "key": campaign.key,
+                "name": campaign.name,
+                "deployments": campaign.deployment_count,
+                "media": campaign.media_count,
+            }
+            for campaign in campaigns
+        ]
+    )
+    logger.info("\n" + dataframe.to_string(index=False))
+
+
+def invoke_list_deployments(
+    campaign_id: int | None = None,
+    name: str | None = None,
+) -> None:
+    """Fetch and print deployments, optionally filtered by campaign or name."""
+    filters: list[dict[str, Any]] = []
+    if campaign_id is not None:
+        filters.append({"name": "campaign_id", "op": "eq", "val": campaign_id})
+    if name:
+        filters.append({"name": "name", "op": "ilike", "val": f"%{name}%"})
+
+    with _create_client() as client:
+        deployments: list[Deployment] = client.fetch_deployments(
+            filters or None
+        )
+
+    if not deployments:
+        logger.info("No deployments found.")
+        return
+
+    dataframe: pd.DataFrame = pd.DataFrame(
+        [
+            {
+                "id": deployment.id,
+                "key": deployment.key,
+                "name": deployment.name,
+                "campaign": deployment.campaign_name,
+                "platform": deployment.platform_name,
+                "media": deployment.media_count,
+                "poses": deployment.pose_count,
+                "valid": deployment.is_valid,
+            }
+            for deployment in deployments
+        ]
+    )
+    logger.info("\n" + dataframe.to_string(index=False))

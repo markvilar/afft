@@ -1,0 +1,157 @@
+[afft.tasks.build_deployment_bundle.message_map]
+VIS = "ImageCaptureMessageV1"
+SEABIRD = "SeabirdCTDMessageV1"
+AANDERAA_4319 = "AanderaaCTDMessageV1"
+ECOPUCK = "EcopuckMessageV1"
+PAROSCI = "ParosciPressureMessageV1"
+RDI = "TeledyneDVLMessageV1"
+LQMODEM = "TrackLinkModemMessageV1"
+EVOLOGICS_FIX = "EvologicsModemMessageV1"
+BATT = "BatteryMessageV1"
+BATT0 = "BatteryMessageV1"
+BATT1 = "BatteryMessageV1"
+BATT2 = "BatteryMessageV1"
+THR_PORT = "ThrusterMessageV1"
+THR_STBD = "ThrusterMessageV1"
+THR_VERT = "ThrusterMessageV1"
+OAS = "OASonarMessageV1"
+MICRON = "MicronSonarMessageV1"
+MICRON_RETURNS = "MicronSonarMessageV1"
+GPS_GSV = "GpsGsvMessageV1"
+GPS_RMC = "GpsRmcMessageV1"
+
+# Processing pipeline for deployment bundles.
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor            = "pair_stereo_images"
+output               = "telemetry/processed/camera_avt_prosilica/VIS/stereo_image_pairs"
+inputs.images        = "telemetry/raw/camera_avt_prosilica/VIS/messages"
+config.left_suffix   = "LC16"
+config.right_suffix  = "RM16"
+config.max_offset_ms = 300.0
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor               = "estimate_pressure_uncertainty"
+output                  = "telemetry/intermediate/pressure_parosci/depth_with_uncertainty"
+inputs.pressure         = "telemetry/raw/pressure_parosci/PAROSCI/messages"
+config.base_uncertainty = 0.1
+config.depth_scale      = 0.0
+
+# Optional: skipped for a bundle whose sea level frame was never ingested,
+# which leaves the processed key absent rather than claiming a correction
+# that did not happen.
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor              = "correct_pressure_for_sea_level"
+output                 = "telemetry/processed/pressure_parosci/depth_sealevel_corrected"
+inputs.pressure        = "telemetry/intermediate/pressure_parosci/depth_with_uncertainty"
+inputs.sea_level       = "metocean/worldtides/sealevel"
+config.max_gap_seconds = 3600.0
+optional               = true
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor                     = "estimate_dvl_uncertainty"
+output                        = "telemetry/processed/dvl_teledyne_navigator/RDI/messages"
+inputs.dvl                    = "telemetry/raw/dvl_teledyne_navigator/RDI/messages"
+config.velocity_x_uncertainty = 0.003
+config.velocity_y_uncertainty = 0.003
+config.velocity_z_uncertainty = 0.003
+config.roll_uncertainty       = 0.50
+config.pitch_uncertainty      = 0.50
+config.heading_uncertainty    = 2.00
+
+# USBL steps are optional: no deployment carries both transceivers, and the
+# earlier ones carry neither. Omit inputs.extrinsics for a deployment whose
+# readings were already corrected for the transceiver mounting.
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "process_tracklink_usbl_from_messages"
+output            = "telemetry/processed/usbl_linkquest_transponder/LQMODEM/messages"
+inputs.usbl       = "telemetry/raw/usbl_linkquest_transponder/LQMODEM/messages"
+inputs.pressure   = "telemetry/raw/pressure_parosci/PAROSCI/messages"
+inputs.extrinsics = "vessel/sensors/usbl_linkquest_transceiver/extrinsics"
+optional          = true
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "process_evologics_usbl"
+output            = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+inputs.usbl       = "telemetry/raw/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+inputs.extrinsics = "vessel/sensors/usbl_evologics_transceiver/extrinsics"
+optional          = true
+
+# Geoframes built from lat/lon(/height) columns already present in the
+# telemetry/raw and telemetry/processed frames above. All optional, since no
+# deployment carries every sensor.
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor       = "build_geoframe_from_frame"
+output          = "trajectory/gnss_ublox/positions"
+inputs.frame    = "telemetry/raw/gnss_ublox/GPS_RMC/messages"
+config.x_column = "longitude"
+config.y_column = "latitude"
+config.crs      = "EPSG:4326"
+optional        = true
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor       = "build_geoframe_from_frame"
+output          = "trajectory/usbl_linkquest_transponder/target_positions"
+inputs.frame    = "telemetry/processed/usbl_linkquest_transponder/LQMODEM/messages"
+config.x_column = "target_longitude"
+config.y_column = "target_latitude"
+config.z_column = "target_height"
+config.crs      = "EPSG:4326"
+optional        = true
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor       = "build_geoframe_from_frame"
+output          = "trajectory/usbl_linkquest_transponder/ship_positions"
+inputs.frame    = "telemetry/processed/usbl_linkquest_transponder/LQMODEM/messages"
+config.x_column = "ship_longitude"
+config.y_column = "ship_latitude"
+config.crs      = "EPSG:4326"
+optional        = true
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor       = "build_geoframe_from_frame"
+output          = "trajectory/usbl_evologics_transponder/target_positions"
+inputs.frame    = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+config.x_column = "target_longitude"
+config.y_column = "target_latitude"
+config.z_column = "target_height"
+config.crs      = "EPSG:4326"
+optional        = true
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor       = "build_geoframe_from_frame"
+output          = "trajectory/usbl_evologics_transponder/ship_positions"
+inputs.frame    = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+config.x_column = "ship_longitude"
+config.y_column = "ship_latitude"
+config.crs      = "EPSG:4326"
+optional        = true
+
+# Derive platform poses from camera poses: extrinsics is the camera's
+# position in the platform frame, so the default (non-inverted) direction --
+# sensor pose -> platform pose -- is what is wanted here.
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "apply_mounting_offset"
+output            = "trajectory/renav_priors/platform_poses_raw"
+inputs.poses      = "trajectory/renav_priors/stereo_camera_poses"
+inputs.extrinsics = "platform/sensors/camera_avt_prosilica/extrinsics"
+
+# Renamed to match Benthloc's trajectory ingestion schema, which names the
+# heading property "yaw" rather than "heading".
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor        = "rename_columns"
+output           = "trajectory/renav_priors/platform_poses"
+inputs.df        = "trajectory/renav_priors/platform_poses_raw"
+config.columns   = { heading = "yaw" }
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor         = "apply_mounting_offset"
+output            = "trajectory/metashape_registered/platform_poses_raw"
+inputs.poses      = "trajectory/metashape_registered/stereo_camera_poses"
+inputs.extrinsics = "platform/sensors/camera_avt_prosilica/extrinsics"
+
+[[afft.tasks.process_deployment_bundle.pipeline.steps]]
+processor        = "rename_columns"
+output           = "trajectory/metashape_registered/platform_poses"
+inputs.df        = "trajectory/metashape_registered/platform_poses_raw"
+config.columns   = { heading = "yaw" }

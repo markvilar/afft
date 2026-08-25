@@ -8,54 +8,12 @@ AFFT (AUV File Formatting Tool) is a Python toolbox for working with data files 
 
 ## Commands
 
-```bash
-# Install (development)
-uv sync --all-extras --dev
-
-# Run tests
-uv run pytest
-
-# Run a single test file
-uv run pytest tests/test_logger.py
-
-# Lint
-uv run ruff check .
-
-# Format
-uv run ruff format .
-
-# Type check
-uv run mypy .
-
-# Build
-uv build
-```
-
 All code must pass linting, formatting, type checking, and tests with no errors.
-
-Line length is 80 characters (configured in `pyproject.toml` via ruff).
-
-## Architecture
-
-The main package is at `src/afft/` with these modules:
-
-- **`cli/`** — Click-based CLI. `entrypoint.py` composes two groups: `database_cli.py` (table operations) and `message_cli.py` (message parsing/ingestion).
-- **`sirius/`** — Protocol parsing for Sirius AUV messages. `message_protocol.py` drives parsing; `message_parsers.py` contains concrete parser implementations; `message_interfaces.py` defines the abstract contracts.
-- **`database/`** — PostgreSQL via SQLAlchemy. `engine.py` manages connections; `readers.py` and `writers.py` handle table I/O.
-- **`metocean/`** — External API clients for sea level (WorldTides), solar irradiance, and solar zenith data (Stormglass).
-- **`filesystem/`** — Directory search and file query utilities.
-- **`io/`** — File line I/O and TOML config read/write.
-- **`tasks/`** — Composed task implementations (database joins, renav processing, deployment file transfer).
-- **`utils/`** — Shared helpers: Loguru logging (`log.py`), environment variables (`env.py`), time utilities (`time.py`).
 
 ## Configuration & Environment
 
 - `.env` — PostgreSQL credentials (`PG_USERNAME`, `PG_PASSWORD`) and external API keys (StormGlass, WorldTides).
 - `config/default.toml` — Default runtime configuration.
-
-## Notebooks
-
-`notebooks/` contains Jupyter notebooks demonstrating data workflows, organized into subdirectories by data type.
 
 ## Behavioral Guidelines
 
@@ -177,7 +135,16 @@ class LinearModel:
     bias: float
 ```
 
+## Branching Strategy
+
+- `main` and `dev` are the long-lived branches. `main` reflects released code; releases are marked with git tags on `main` rather than `release/*` branches.
+- `feature/*` — new or updated features. Branch off `dev`, merge back into `dev`.
+- `patch/*` — patches and hotfixes. Branch off `dev`, merge back into `dev`.
+- All `feature/*` and `patch/*` branches must be merged into `dev` before their changes can reach `main`.
+
 ## Conventions
 
 - Never reference Claude in commits, pull requests, source code, or documentation. This includes `Co-Authored-By` trailers, body text, or any other attribution to Claude or Anthropic.
 - Use `` ` `` (backtick) for inline code and code blocks in GitHub issues and pull requests, not `` \` `` (escaped backtick).
+- Never run `git commit` without explicit confirmation from the user in that conversation. An instruction to implement, fix, or finish a task is not itself confirmation to commit — ask, or wait to be asked.
+- Pull request descriptions: a brief `## Summary` section describing what changed, followed by a footer referencing the issue it closes (e.g. `Closes #214`).

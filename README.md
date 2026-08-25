@@ -1,6 +1,8 @@
 # AUV File Formatting Tool
 
-![ci](https://github.com/markvilar/afft/actions/workflows/ubuntu.yml/badge.svg)
+![build-ubuntu](https://github.com/markvilar/afft/actions/workflows/build-ubuntu.yml/badge.svg)
+![license](https://img.shields.io/badge/license-GPLv3-blue.svg)
+![python](https://img.shields.io/badge/python-3.12%2B-blue.svg)
 
 Afft is a collection of tools for working with data from ACFRs AUVs. The
 tools consist of creating file queries from metadata, transferring files and 
@@ -52,22 +54,7 @@ PG_PASSWORD=YOUR_POSTGRES_PASSWORD
 | Command | Description |
 |---|---|
 | `afft database table-export DATABASE HOST PORT OUTPUT_DIR` | Export database tables to CSV files |
-| `afft database table-ingest DATABASE HOST PORT SOURCE_DIR` | Ingest CSV files from a directory as database tables |
-| `afft database table-join DATABASE HOST PORT CONFIG_PATH` | Join tables in the database using a config file |
 | `afft database table-write SOURCE DATABASE HOST PORT` | Write a single CSV file to a database table |
-
-### `afft messages` — Message processing
-
-| Command | Description |
-|---|---|
-| `afft messages parse-messages SOURCE_DIR OUTPUT_DIR` | Parse Sirius AUV message files and write results |
-
-### `afft tasks` — Data processing tasks
-
-| Command | Description |
-|---|---|
-| `afft tasks clip-tables SOURCE_DIR OUTPUT_DIR --start YYYYMMDD_HHmmSS --end YYYYMMDD_HHmmSS` | Clip CSV files to a time interval |
-| `afft tasks correct-pressure-tide READING_FILE SEALEVEL_FILE OUTPUT_FILE` | Tide-correct pressure sensor depth readings |
 
 Run any command with `--help` to see its full options.
 

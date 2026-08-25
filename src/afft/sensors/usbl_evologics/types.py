@@ -2,17 +2,15 @@
 
 import numpy as np
 
-from dataclasses import dataclass
-
 from numpy.typing import NDArray
+from pydantic import BaseModel, ConfigDict
 from scipy.spatial.transform import (
     RigidTransform,
     Rotation,
 )
 
 
-@dataclass(slots=True, frozen=True)
-class EvologicsTransceiverExtrinsics:
+class EvologicsTransceiverExtrinsics(BaseModel):
     """
     Rigid-body extrinsics of the Evologics USBL transceiver in the ship body frame.
 
@@ -29,6 +27,8 @@ class EvologicsTransceiverExtrinsics:
     roty: Pitch in radians (positive: bow up).
     rotz: Yaw in radians (positive clockwise viewed from above).
     """
+
+    model_config = ConfigDict(frozen=True, extra="forbid")
 
     locx: float = 0.0
     locy: float = 0.0
@@ -55,19 +55,17 @@ class EvologicsTransceiverExtrinsics:
         )
 
 
-@dataclass(slots=True, frozen=True)
-class EvologicsProcessingConfig:
+class EvologicsProcessingConfig(BaseModel):
     """
     Configuration for the Evologics USBL processing pipeline.
 
     Attributes
     ----------
-    extrinsics: Transceiver extrinsics in the ship body frame. When None,
-        only the USBL-Frame flip is applied (no rotation or translation).
     horizontal_position_std: 1σ horizontal position uncertainty in metres.
     depth_position_std: 1σ depth uncertainty in metres.
     """
 
-    extrinsics: EvologicsTransceiverExtrinsics | None = None
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
     horizontal_position_std: float = 15.8
     depth_position_std: float = 5.0

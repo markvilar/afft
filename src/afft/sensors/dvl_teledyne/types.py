@@ -1,10 +1,11 @@
 """Configuration types for Teledyne DVL processing."""
 
-from dataclasses import dataclass
+from pydantic import BaseModel, ConfigDict
 
 
-@dataclass(slots=True, frozen=True)
-class DvlUncertaintyConfig:
+class DvlUncertaintyConfig(BaseModel):
+    model_config = ConfigDict(frozen=True, extra="forbid")
+
     # Per-axis velocity uncertainty (m/s). RDI spec: 0.3 cm/s at 1 m/s.
     velocity_x_uncertainty: float = 0.003
     velocity_y_uncertainty: float = 0.003

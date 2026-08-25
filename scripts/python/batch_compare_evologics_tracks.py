@@ -26,6 +26,7 @@ import numpy as np
 import pandas as pd
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
+from numpy.typing import NDArray
 from pyproj import CRS
 
 
@@ -82,7 +83,9 @@ def main(input_dir: Path, output_dir: Path) -> None:
         figure: Figure = _build_figure(
             dataframe_with, dataframe_without, deployment
         )
-        output_path: Path = output_dir / f"{deployment}_evologics_comparison.png"
+        output_path: Path = (
+            output_dir / f"{deployment}_evologics_comparison.png"
+        )
         figure.savefig(output_path, dpi=300, bbox_inches="tight")
         plt.close(figure)
         click.echo(f"  saved -> {output_path}")
@@ -220,7 +223,7 @@ def _plot_track(
     utm_crs: CRS,
     origin: tuple[float, float],
 ) -> None:
-    elapsed: np.ndarray = (
+    elapsed: NDArray[np.float64] = (
         dataframe["timestamp"].astype(np.int64).to_numpy() / 1e9
     )
     elapsed = elapsed - elapsed.min()
@@ -286,8 +289,8 @@ def _plot_z_vessel(axis: Axes, dataframe: pd.DataFrame, title: str) -> None:
         linewidth=0.9,
     )
     axis.invert_yaxis()
-    axis.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))
-    axis.xaxis.set_major_locator(mdates.AutoDateLocator())
+    axis.xaxis.set_major_formatter(mdates.DateFormatter("%H:%M"))  # type: ignore[no-untyped-call]
+    axis.xaxis.set_major_locator(mdates.AutoDateLocator())  # type: ignore[no-untyped-call]
     axis.tick_params(axis="x", labelrotation=30, labelsize=7)
     axis.set_title(title, fontsize=8)
     axis.set_xlabel("Time (UTC)")

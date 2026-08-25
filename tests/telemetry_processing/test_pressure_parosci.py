@@ -1,18 +1,44 @@
-"""Tests for the pressure sensor uncertainty processor."""
+"""Tests for the pressure sensor processors."""
 
 import math
 
 import pandas as pd
+import pytest
 
 from afft.sensors.pressure_parosci import (
     PressureUncertaintyConfig,
+    SeaLevelCorrectionConfig,
+    correct_pressure_for_sea_level,
     estimate_pressure_uncertainty,
 )
+from afft.utils.log import logger
 
 
 def _make_df(depths: list[float]) -> pd.DataFrame:
     return pd.DataFrame(
         {"timestamp": "2010-04-21 02:27:56.000", "depth": depths}
+    )
+
+
+def _pressure_frame(timestamps: list[str], depths: list[float]) -> pd.DataFrame:
+    """A pressure frame typed as the bundle stores it."""
+    return pd.DataFrame(
+        {
+            "timestamp": pd.to_datetime(timestamps, utc=True),
+            "depth": depths,
+        }
+    )
+
+
+def _sea_level_frame(
+    timestamps: list[str], levels: list[float]
+) -> pd.DataFrame:
+    """A tide frame typed as the WorldTides ingestion stores it."""
+    return pd.DataFrame(
+        {
+            "timestamp": pd.to_datetime(timestamps, utc=True),
+            "sea_level": levels,
+        }
     )
 
 
@@ -49,3 +75,114 @@ def test_input_rows_preserved() -> None:
     result = estimate_pressure_uncertainty(df)
     assert len(result) == len(df)
     assert list(result["depth"]) == list(df["depth"])
+
+
+def test_sea_level_columns_added() -> None:
+    result = correct_pressure_for_sea_level(
+        _pressure_frame(["2010-04-28T00:00:00Z"], [10.0]),
+        _sea_level_frame(["2010-04-28T00:00:00Z"], [0.5]),
+    )
+    assert "sea_level" in result.columns
+    assert "corrected_depth" in result.columns
+
+
+def test_sea_level_subtracted_from_depth() -> None:
+    result = correct_pressure_for_sea_level(
+        _pressure_frame(["2010-04-28T00:00:00Z"], [10.0]),
+        _sea_level_frame(["2010-04-28T00:00:00Z"], [0.5]),
+    )
+    assert math.isclose(result["corrected_depth"].iloc[0], 9.5, rel_tol=1e-9)
+
+
+def test_sea_level_interpolated_between_samples() -> None:
+    """A reading halfway between two hourly samples takes their midpoint."""
+    result = correct_pressure_for_sea_level(
+        _pressure_frame(["2010-04-28T00:30:00Z"], [10.0]),
+        _sea_level_frame(
+            ["2010-04-28T00:00:00Z", "2010-04-28T01:00:00Z"], [0.0, 1.0]
+        ),
+    )
+    assert math.isclose(result["sea_level"].iloc[0], 0.5, rel_tol=1e-9)
+
+
+def test_sea_level_clamped_outside_coverage() -> None:
+    """Outside the tide series the endpoint value is held, not extrapolated."""
+    result = correct_pressure_for_sea_level(
+        _pressure_frame(["2010-04-28T05:00:00Z"], [10.0]),
+        _sea_level_frame(
+            ["2010-04-28T00:00:00Z", "2010-04-28T01:00:00Z"], [0.0, 1.0]
+        ),
+    )
+    assert math.isclose(result["sea_level"].iloc[0], 1.0, rel_tol=1e-9)
+
+
+def _capture_warnings(pressure: pd.DataFrame, sea_level: pd.DataFrame) -> str:
+    """Run the correction, returning whatever it logged at WARNING."""
+    messages: list[str] = []
+    handler_id: int = logger.add(messages.append, level="WARNING")
+    try:
+        correct_pressure_for_sea_level(pressure, sea_level)
+    finally:
+        logger.remove(handler_id)
+    return "".join(messages)
+
+
+def test_coverage_gap_warns() -> None:
+    logged = _capture_warnings(
+        _pressure_frame(
+            ["2010-04-28T00:00:00Z", "2010-04-28T09:00:00Z"], [10.0, 11.0]
+        ),
+        _sea_level_frame(["2010-04-28T00:00:00Z"], [0.5]),
+    )
+    assert "1 of 2 pressure readings" in logged
+    assert "largest gap 32400 s" in logged
+    assert "clamped" in logged
+
+
+def test_coverage_within_threshold_does_not_warn() -> None:
+    logged = _capture_warnings(
+        _pressure_frame(["2010-04-28T00:30:00Z"], [10.0]),
+        _sea_level_frame(
+            ["2010-04-28T00:00:00Z", "2010-04-28T01:00:00Z"], [0.0, 1.0]
+        ),
+    )
+    assert logged == ""
+
+
+def test_empty_sea_level_frame_rejected() -> None:
+    with pytest.raises(ValueError, match="no rows"):
+        correct_pressure_for_sea_level(
+            _pressure_frame(["2010-04-28T00:00:00Z"], [10.0]),
+            _sea_level_frame([], []),
+        )
+
+
+def test_column_names_configurable() -> None:
+    pressure = pd.DataFrame(
+        {
+            "time": pd.to_datetime(["2010-04-28T00:00:00Z"], utc=True),
+            "d": [10.0],
+        }
+    )
+    sea_level = pd.DataFrame(
+        {
+            "when": pd.to_datetime(["2010-04-28T00:00:00Z"], utc=True),
+            "level": [0.5],
+        }
+    )
+    config = SeaLevelCorrectionConfig(
+        depth_col="d",
+        timestamp_col="time",
+        sea_level_col="level",
+        sea_level_timestamp_col="when",
+    )
+    result = correct_pressure_for_sea_level(pressure, sea_level, config)
+    assert math.isclose(result["corrected_depth"].iloc[0], 9.5, rel_tol=1e-9)
+
+
+def test_input_frame_not_mutated() -> None:
+    pressure = _pressure_frame(["2010-04-28T00:00:00Z"], [10.0])
+    correct_pressure_for_sea_level(
+        pressure, _sea_level_frame(["2010-04-28T00:00:00Z"], [0.5])
+    )
+    assert "corrected_depth" not in pressure.columns

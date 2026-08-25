@@ -2,28 +2,9 @@
 CLI commands for invoking data processing tasks.
 """
 
-from datetime import datetime
-
 import click
 
-from .actions import (
-    dispatch_clip_tables,
-    dispatch_correct_pressure_tide,
-    dispatch_process_telemetry,
-)
-
-_TIMESTAMP_FORMAT = "%Y%m%d_%H%M%S"
-
-
-def _parse_timestamp(
-    _ctx: click.Context, _param: click.Parameter, value: str
-) -> datetime:
-    try:
-        return datetime.strptime(value, _TIMESTAMP_FORMAT)
-    except ValueError:
-        raise click.BadParameter(
-            f"expected format YYYYMMDD_HHmmSS, got {value!r}"
-        )
+from .actions import invoke_collect_squidle_media
 
 
 @click.group()
@@ -34,113 +15,62 @@ def task_group(context: click.Context) -> None:
 
 
 @task_group.command()
-@click.argument("source_dir", type=click.Path(exists=True, file_okay=False))
-@click.argument("output_dir", type=click.Path(file_okay=False))
 @click.option(
-    "--start",
-    type=str,
-    required=True,
-    callback=_parse_timestamp,
-    is_eager=True,
-    help="start of time interval (YYYYMMDD_HHmmSS, inclusive)",
-)
-@click.option(
-    "--end",
-    type=str,
-    required=True,
-    callback=_parse_timestamp,
-    is_eager=True,
-    help="end of time interval (YYYYMMDD_HHmmSS, inclusive)",
-)
-@click.option(
-    "--pattern",
-    type=str,
-    default="*.csv",
-    show_default=True,
-    help="glob pattern to select files in source_dir",
-)
-@click.option(
-    "--timestamp-column",
-    "timestamp_column",
-    type=str,
-    default="timestamp",
-    show_default=True,
-    help="column to filter on",
-)
-def clip_tables(
-    source_dir: str,
-    output_dir: str,
-    start: datetime,
-    end: datetime,
-    pattern: str,
-    timestamp_column: str,
-) -> None:
-    """Clip CSV files in SOURCE_DIR to [START, END] and write to OUTPUT_DIR."""
-    dispatch_clip_tables(
-        source_dir,
-        output_dir,
-        start,
-        end,
-        pattern,
-        timestamp_column,
-    )
-
-
-@task_group.command()
-@click.argument("source_dir", type=click.Path(exists=True, file_okay=False))
-@click.argument("output_dir", type=click.Path(file_okay=False))
-@click.option(
-    "--config",
-    "config_file",
+    "--deployments-file",
+    "deployments_file",
     type=click.Path(exists=True, dir_okay=False),
     required=True,
-    help="TOML pipeline config file",
+    help="path to the deployment descriptors TOML file",
 )
 @click.option(
-    "--pattern",
-    type=str,
-    default="*.csv",
-    show_default=True,
-    help="glob pattern to select input files in source_dir",
+    "--output-dir",
+    "output_dir",
+    type=click.Path(exists=True, file_okay=False),
+    required=True,
+    help="directory to write one CSV per deployment",
 )
 @click.option(
-    "--group-by",
-    "grouping_strategy",
-    type=click.Choice(["prefix", "suffix"], case_sensitive=False),
-    default="prefix",
+    "--max-workers",
+    "max_workers",
+    type=int,
+    default=4,
     show_default=True,
-    help="how to derive context keys from filenames",
+    help="maximum number of concurrent deployment fetch threads",
 )
-def process_telemetry(
-    source_dir: str,
+@click.option(
+    "--dry-run",
+    "dry_run",
+    is_flag=True,
+    default=False,
+    help="stop after deployment matching without fetching media",
+)
+@click.option(
+    "--download-images",
+    "download_images",
+    is_flag=True,
+    default=False,
+    help="download image files after retrieving media records",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="log skipped deployments after the run completes",
+)
+def collect_squidle_media(
+    deployments_file: str,
     output_dir: str,
-    config_file: str,
-    pattern: str,
-    grouping_strategy: str,
-) -> None:
-    """Run the telemetry processing pipeline on CSV tables in SOURCE_DIR."""
-    dispatch_process_telemetry(
-        source_dir, output_dir, config_file, pattern, grouping_strategy
-    )
-
-
-@task_group.command()
-@click.argument("reading_file", type=click.Path(exists=True))
-@click.argument("sealevel_file", type=click.Path(exists=True))
-@click.argument("output_file", type=click.Path())
-@click.option(
-    "--verbose", is_flag=True, default=False, help="enable debug logging"
-)
-def correct_pressure_tide(
-    reading_file: str,
-    sealevel_file: str,
-    output_file: str,
+    max_workers: int,
+    dry_run: bool,
+    download_images: bool,
     verbose: bool,
 ) -> None:
-    """Tide-correct pressure sensor depth readings."""
-    dispatch_correct_pressure_tide(
-        reading_file,
-        sealevel_file,
-        output_file,
+    """Fetch Squidle+ media for all deployments in the deployment descriptors file."""
+    invoke_collect_squidle_media(
+        deployments_file,
+        output_dir,
+        max_workers,
+        dry_run,
+        download_images,
         verbose,
     )

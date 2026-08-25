@@ -1,0 +1,855 @@
+[[sensor_identities]]
+key = "batt"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "batt0"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "batt1"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "batt2"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "delta_t"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "ecopuck"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "evologics"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "gps"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "gpsd"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "imu"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "lqmodem"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "micron"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "mp_input"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "oas"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "parosci"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "rdi"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "seabird"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "thr_port"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "thr_stbd"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "thr_vert"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[sensor_identities]]
+key = "vis"
+label = ""
+vendor = ""
+product = ""
+type = ""
+
+[[platform_profiles]]
+key = "2009_seabed"
+platform_label = ""
+platform_class = "SEABED"
+platform_operator = ""
+sensors = [
+    { key = "BATT", identity = "batt" },
+    { key = "DELTA_T", identity = "delta_t" },
+    { key = "ECOPUCK", identity = "ecopuck" },
+    { key = "GPS", identity = "gps" },
+    { key = "LQMODEM", identity = "lqmodem" },
+    { key = "MP_INPUT", identity = "mp_input" },
+    { key = "OAS", identity = "oas" },
+    { key = "PAROSCI", identity = "parosci" },
+    { key = "RDI", identity = "rdi" },
+    { key = "SEABIRD", identity = "seabird" },
+    { key = "THR_PORT", identity = "thr_port" },
+    { key = "THR_STBD", identity = "thr_stbd" },
+    { key = "THR_VERT", identity = "thr_vert" },
+    { key = "VIS", identity = "vis" },
+]
+
+[[platform_profiles]]
+key = "2010_seabed"
+platform_label = ""
+platform_class = "SEABED"
+platform_operator = ""
+sensors = [
+    { key = "BATT", identity = "batt" },
+    { key = "DELTA_T", identity = "delta_t" },
+    { key = "ECOPUCK", identity = "ecopuck" },
+    { key = "GPS", identity = "gps" },
+    { key = "LQMODEM", identity = "lqmodem" },
+    { key = "MP_INPUT", identity = "mp_input" },
+    { key = "OAS", identity = "oas" },
+    { key = "PAROSCI", identity = "parosci" },
+    { key = "RDI", identity = "rdi" },
+    { key = "SEABIRD", identity = "seabird" },
+    { key = "THR_PORT", identity = "thr_port" },
+    { key = "THR_STBD", identity = "thr_stbd" },
+    { key = "THR_VERT", identity = "thr_vert" },
+    { key = "VIS", identity = "vis" },
+]
+
+[[platform_profiles]]
+key = "2011_seabed"
+platform_label = ""
+platform_class = "SEABED"
+platform_operator = ""
+sensors = [
+    { key = "BATT", identity = "batt" },
+    { key = "DELTA_T", identity = "delta_t" },
+    { key = "ECOPUCK", identity = "ecopuck" },
+    { key = "GPS", identity = "gps" },
+    { key = "LQMODEM", identity = "lqmodem" },
+    { key = "MP_INPUT", identity = "mp_input" },
+    { key = "OAS", identity = "oas" },
+    { key = "PAROSCI", identity = "parosci" },
+    { key = "RDI", identity = "rdi" },
+    { key = "SEABIRD", identity = "seabird" },
+    { key = "THR_PORT", identity = "thr_port" },
+    { key = "THR_STBD", identity = "thr_stbd" },
+    { key = "THR_VERT", identity = "thr_vert" },
+    { key = "VIS", identity = "vis" },
+]
+
+[[platform_profiles]]
+key = "2012_seabed"
+platform_label = ""
+platform_class = "SEABED"
+platform_operator = ""
+sensors = [
+    { key = "BATT0", identity = "batt0" },
+    { key = "BATT1", identity = "batt1" },
+    { key = "BATT2", identity = "batt2" },
+    { key = "DELTA_T", identity = "delta_t" },
+    { key = "ECOPUCK", identity = "ecopuck" },
+    { key = "GPS", identity = "gps" },
+    { key = "IMU", identity = "imu" },
+    { key = "LQMODEM", identity = "lqmodem" },
+    { key = "MP_INPUT", identity = "mp_input" },
+    { key = "OAS", identity = "oas" },
+    { key = "PAROSCI", identity = "parosci" },
+    { key = "RDI", identity = "rdi" },
+    { key = "SEABIRD", identity = "seabird" },
+    { key = "THR_PORT", identity = "thr_port" },
+    { key = "THR_STBD", identity = "thr_stbd" },
+    { key = "THR_VERT", identity = "thr_vert" },
+    { key = "VIS", identity = "vis" },
+]
+
+[[platform_profiles]]
+key = "2013_seabed"
+platform_label = ""
+platform_class = "SEABED"
+platform_operator = ""
+sensors = [
+    { key = "BATT0", identity = "batt0" },
+    { key = "BATT1", identity = "batt1" },
+    { key = "BATT2", identity = "batt2" },
+    { key = "DELTA_T", identity = "delta_t" },
+    { key = "ECOPUCK", identity = "ecopuck" },
+    { key = "GPS", identity = "gps" },
+    { key = "LQMODEM", identity = "lqmodem" },
+    { key = "MICRON", identity = "micron" },
+    { key = "MP_INPUT", identity = "mp_input" },
+    { key = "OAS", identity = "oas" },
+    { key = "PAROSCI", identity = "parosci" },
+    { key = "RDI", identity = "rdi" },
+    { key = "SEABIRD", identity = "seabird" },
+    { key = "THR_PORT", identity = "thr_port" },
+    { key = "THR_STBD", identity = "thr_stbd" },
+    { key = "THR_VERT", identity = "thr_vert" },
+    { key = "VIS", identity = "vis" },
+]
+
+[[platform_profiles]]
+key = "2014_seabed"
+platform_label = ""
+platform_class = "SEABED"
+platform_operator = ""
+sensors = [
+    { key = "BATT0", identity = "batt0" },
+    { key = "BATT1", identity = "batt1" },
+    { key = "BATT2", identity = "batt2" },
+    { key = "DELTA_T", identity = "delta_t" },
+    { key = "ECOPUCK", identity = "ecopuck" },
+    { key = "GPS", identity = "gps" },
+    { key = "LQMODEM", identity = "lqmodem" },
+    { key = "MICRON", identity = "micron" },
+    { key = "MP_INPUT", identity = "mp_input" },
+    { key = "PAROSCI", identity = "parosci" },
+    { key = "RDI", identity = "rdi" },
+    { key = "SEABIRD", identity = "seabird" },
+    { key = "THR_PORT", identity = "thr_port" },
+    { key = "THR_STBD", identity = "thr_stbd" },
+    { key = "THR_VERT", identity = "thr_vert" },
+    { key = "VIS", identity = "vis" },
+]
+
+[[platform_profiles]]
+key = "2015_seabed"
+platform_label = ""
+platform_class = "SEABED"
+platform_operator = ""
+sensors = [
+    { key = "BATT0", identity = "batt0" },
+    { key = "BATT1", identity = "batt1" },
+    { key = "BATT2", identity = "batt2" },
+    { key = "DELTA_T", identity = "delta_t" },
+    { key = "ECOPUCK", identity = "ecopuck" },
+    { key = "EVOLOGICS", identity = "evologics" },
+    { key = "GPS", identity = "gps" },
+    { key = "MICRON", identity = "micron" },
+    { key = "MP_INPUT", identity = "mp_input" },
+    { key = "PAROSCI", identity = "parosci" },
+    { key = "RDI", identity = "rdi" },
+    { key = "SEABIRD", identity = "seabird" },
+    { key = "THR_PORT", identity = "thr_port" },
+    { key = "THR_STBD", identity = "thr_stbd" },
+    { key = "THR_VERT", identity = "thr_vert" },
+    { key = "VIS", identity = "vis" },
+]
+
+[[platform_profiles]]
+key = "2017_seabed"
+platform_label = ""
+platform_class = "SEABED"
+platform_operator = ""
+sensors = [
+    { key = "BATT0", identity = "batt0" },
+    { key = "BATT1", identity = "batt1" },
+    { key = "BATT2", identity = "batt2" },
+    { key = "DELTA_T", identity = "delta_t" },
+    { key = "ECOPUCK", identity = "ecopuck" },
+    { key = "EVOLOGICS", identity = "evologics" },
+    { key = "GPS", identity = "gps" },
+    { key = "MICRON", identity = "micron" },
+    { key = "MP_INPUT", identity = "mp_input" },
+    { key = "PAROSCI", identity = "parosci" },
+    { key = "RDI", identity = "rdi" },
+    { key = "SEABIRD", identity = "seabird" },
+    { key = "THR_PORT", identity = "thr_port" },
+    { key = "THR_STBD", identity = "thr_stbd" },
+    { key = "THR_VERT", identity = "thr_vert" },
+    { key = "VIS", identity = "vis" },
+]
+
+[[platform_profiles]]
+key = "2021_seabed"
+platform_label = ""
+platform_class = "SEABED"
+platform_operator = ""
+sensors = [
+    { key = "DELTA_T", identity = "delta_t" },
+    { key = "ECOPUCK", identity = "ecopuck" },
+    { key = "EVOLOGICS", identity = "evologics" },
+    { key = "GPSD", identity = "gpsd" },
+    { key = "MICRON", identity = "micron" },
+    { key = "MP_INPUT", identity = "mp_input" },
+    { key = "PAROSCI", identity = "parosci" },
+    { key = "RDI", identity = "rdi" },
+    { key = "THR_PORT", identity = "thr_port" },
+    { key = "THR_STBD", identity = "thr_stbd" },
+    { key = "THR_VERT", identity = "thr_vert" },
+]
+
+[[vessel_profiles]]
+key = "200906_tasmania200906"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201004_wa201004"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201006_tasmania201006"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201010_sequeensland201010"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201104_wa201104"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201106_tasmania201106"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201108_scottreef201108"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201204_wa201204"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201205_tasmania201205"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201210_sequeensland201210"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201304_wa201304"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201306_tasmania201306"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201310_sequeensland201310"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201403_wa201403"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201406_tasmania201406"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201503_scottreef201503"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "201705_wa201705"
+vessel_name = ""
+sensors = []
+
+[[vessel_profiles]]
+key = "202103_wa202103"
+vessel_name = ""
+sensors = []
+
+[[deployment_platforms]]
+deployment_label = "qd61g27j_20100421_022145"
+platform_profile = "2010_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qd61g27j_20110410_011202"
+platform_profile = "2011_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qd61g27j_20120422_043114"
+platform_profile = "2012_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qd61g27j_20130414_013620"
+platform_profile = "2013_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qd61g27j_20170523_040815"
+platform_profile = "2017_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdc5ghs3_20100430_024508"
+platform_profile = "2010_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdc5ghs3_20120501_033336"
+platform_profile = "2012_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdc5ghs3_20130405_103429"
+platform_profile = "2013_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdc5ghs3_20210315_230947"
+platform_profile = "2021_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20100428_020202"
+platform_profile = "2010_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20110415_020103"
+platform_profile = "2011_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20120430_002423"
+platform_profile = "2012_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20130406_023610"
+platform_profile = "2013_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20140327_071251"
+platform_profile = "2014_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20170526_025746"
+platform_profile = "2017_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdch0ftq_20210315_034028"
+platform_profile = "2021_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdchdmy1_20110416_005411"
+platform_profile = "2011_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdchdmy1_20120501_071203"
+platform_profile = "2012_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdchdmy1_20130406_081713"
+platform_profile = "2013_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdchdmy1_20140328_063358"
+platform_profile = "2014_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdchdmy1_20170525_234624"
+platform_profile = "2017_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qdchdmy1_20210315_081519"
+platform_profile = "2021_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qtqxshxs_20110815_102540"
+platform_profile = "2011_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qtqxshxs_20150327_015552"
+platform_profile = "2015_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qtqxshxs_20150328_000850"
+platform_profile = "2015_seabed"
+
+[[deployment_platforms]]
+deployment_label = "qtqxshxs_20150328_042551"
+platform_profile = "2015_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r234xgje_20100604_230524"
+platform_profile = "2010_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r234xgje_20120530_064545"
+platform_profile = "2012_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r234xgje_20140616_205232"
+platform_profile = "2014_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r23685bc_20100605_021022"
+platform_profile = "2010_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r23685bc_20120530_233021"
+platform_profile = "2012_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r23685bc_20140616_225022"
+platform_profile = "2014_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r23m7ms0_20100606_001908"
+platform_profile = "2010_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r23m7ms0_20120601_070118"
+platform_profile = "2012_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r23m7ms0_20140616_044549"
+platform_profile = "2014_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd12_20090613_010853"
+platform_profile = "2009_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd12_20090613_104954"
+platform_profile = "2009_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd12_20110612_045149"
+platform_profile = "2011_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd12_20130611_015335"
+platform_profile = "2013_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd5h_20090612_225306"
+platform_profile = "2009_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd5h_20090613_100254"
+platform_profile = "2009_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd5h_20110612_033752"
+platform_profile = "2011_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r29mrd5h_20130611_002419"
+platform_profile = "2013_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r7jjskxq_20101023_210332"
+platform_profile = "2010_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r7jjskxq_20121013_060425"
+platform_profile = "2012_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r7jjskxq_20131022_004934"
+platform_profile = "2013_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r7jjss8n_20101023_210332"
+platform_profile = "2010_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r7jjss8n_20121013_060425"
+platform_profile = "2012_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r7jjss8n_20131022_004934"
+platform_profile = "2013_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r7jjssbh_20101023_210332"
+platform_profile = "2010_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r7jjssbh_20121013_060425"
+platform_profile = "2012_seabed"
+
+[[deployment_platforms]]
+deployment_label = "r7jjssbh_20131022_004934"
+platform_profile = "2013_seabed"
+
+[[deployment_vessels]]
+deployment_label = "qd61g27j_20100421_022145"
+vessel_profile = "201004_wa201004"
+
+[[deployment_vessels]]
+deployment_label = "qd61g27j_20110410_011202"
+vessel_profile = "201104_wa201104"
+
+[[deployment_vessels]]
+deployment_label = "qd61g27j_20120422_043114"
+vessel_profile = "201204_wa201204"
+
+[[deployment_vessels]]
+deployment_label = "qd61g27j_20130414_013620"
+vessel_profile = "201304_wa201304"
+
+[[deployment_vessels]]
+deployment_label = "qd61g27j_20170523_040815"
+vessel_profile = "201705_wa201705"
+
+[[deployment_vessels]]
+deployment_label = "qdc5ghs3_20100430_024508"
+vessel_profile = "201004_wa201004"
+
+[[deployment_vessels]]
+deployment_label = "qdc5ghs3_20120501_033336"
+vessel_profile = "201204_wa201204"
+
+[[deployment_vessels]]
+deployment_label = "qdc5ghs3_20130405_103429"
+vessel_profile = "201304_wa201304"
+
+[[deployment_vessels]]
+deployment_label = "qdc5ghs3_20210315_230947"
+vessel_profile = "202103_wa202103"
+
+[[deployment_vessels]]
+deployment_label = "qdch0ftq_20100428_020202"
+vessel_profile = "201004_wa201004"
+
+[[deployment_vessels]]
+deployment_label = "qdch0ftq_20110415_020103"
+vessel_profile = "201104_wa201104"
+
+[[deployment_vessels]]
+deployment_label = "qdch0ftq_20120430_002423"
+vessel_profile = "201204_wa201204"
+
+[[deployment_vessels]]
+deployment_label = "qdch0ftq_20130406_023610"
+vessel_profile = "201304_wa201304"
+
+[[deployment_vessels]]
+deployment_label = "qdch0ftq_20140327_071251"
+vessel_profile = "201403_wa201403"
+
+[[deployment_vessels]]
+deployment_label = "qdch0ftq_20170526_025746"
+vessel_profile = "201705_wa201705"
+
+[[deployment_vessels]]
+deployment_label = "qdch0ftq_20210315_034028"
+vessel_profile = "202103_wa202103"
+
+[[deployment_vessels]]
+deployment_label = "qdchdmy1_20110416_005411"
+vessel_profile = "201104_wa201104"
+
+[[deployment_vessels]]
+deployment_label = "qdchdmy1_20130406_081713"
+vessel_profile = "201304_wa201304"
+
+[[deployment_vessels]]
+deployment_label = "qdchdmy1_20140328_063358"
+vessel_profile = "201403_wa201403"
+
+[[deployment_vessels]]
+deployment_label = "qdchdmy1_20170525_234624"
+vessel_profile = "201705_wa201705"
+
+[[deployment_vessels]]
+deployment_label = "qdchdmy1_20210315_081519"
+vessel_profile = "202103_wa202103"
+
+[[deployment_vessels]]
+deployment_label = "qtqxshxs_20110815_102540"
+vessel_profile = "201108_scottreef201108"
+
+[[deployment_vessels]]
+deployment_label = "qtqxshxs_20150327_015552"
+vessel_profile = "201503_scottreef201503"
+
+[[deployment_vessels]]
+deployment_label = "qtqxshxs_20150328_000850"
+vessel_profile = "201503_scottreef201503"
+
+[[deployment_vessels]]
+deployment_label = "qtqxshxs_20150328_042551"
+vessel_profile = "201503_scottreef201503"
+
+[[deployment_vessels]]
+deployment_label = "r234xgje_20100604_230524"
+vessel_profile = "201006_tasmania201006"
+
+[[deployment_vessels]]
+deployment_label = "r234xgje_20120530_064545"
+vessel_profile = "201205_tasmania201205"
+
+[[deployment_vessels]]
+deployment_label = "r234xgje_20140616_205232"
+vessel_profile = "201406_tasmania201406"
+
+[[deployment_vessels]]
+deployment_label = "r23685bc_20100605_021022"
+vessel_profile = "201006_tasmania201006"
+
+[[deployment_vessels]]
+deployment_label = "r23685bc_20120530_233021"
+vessel_profile = "201205_tasmania201205"
+
+[[deployment_vessels]]
+deployment_label = "r23685bc_20140616_225022"
+vessel_profile = "201406_tasmania201406"
+
+[[deployment_vessels]]
+deployment_label = "r23m7ms0_20100606_001908"
+vessel_profile = "201006_tasmania201006"
+
+[[deployment_vessels]]
+deployment_label = "r23m7ms0_20120601_070118"
+vessel_profile = "201205_tasmania201205"
+
+[[deployment_vessels]]
+deployment_label = "r23m7ms0_20140616_044549"
+vessel_profile = "201406_tasmania201406"
+
+[[deployment_vessels]]
+deployment_label = "r29mrd12_20090613_010853"
+vessel_profile = "200906_tasmania200906"
+
+[[deployment_vessels]]
+deployment_label = "r29mrd12_20090613_104954"
+vessel_profile = "200906_tasmania200906"
+
+[[deployment_vessels]]
+deployment_label = "r29mrd12_20110612_045149"
+vessel_profile = "201106_tasmania201106"
+
+[[deployment_vessels]]
+deployment_label = "r29mrd12_20130611_015335"
+vessel_profile = "201306_tasmania201306"
+
+[[deployment_vessels]]
+deployment_label = "r29mrd5h_20090612_225306"
+vessel_profile = "200906_tasmania200906"
+
+[[deployment_vessels]]
+deployment_label = "r29mrd5h_20090613_100254"
+vessel_profile = "200906_tasmania200906"
+
+[[deployment_vessels]]
+deployment_label = "r29mrd5h_20110612_033752"
+vessel_profile = "201106_tasmania201106"
+
+[[deployment_vessels]]
+deployment_label = "r29mrd5h_20130611_002419"
+vessel_profile = "201306_tasmania201306"
+
+[[deployment_vessels]]
+deployment_label = "r7jjskxq_20101023_210332"
+vessel_profile = "201010_sequeensland201010"
+
+[[deployment_vessels]]
+deployment_label = "r7jjskxq_20121013_060425"
+vessel_profile = "201210_sequeensland201210"
+
+[[deployment_vessels]]
+deployment_label = "r7jjskxq_20131022_004934"
+vessel_profile = "201310_sequeensland201310"
+
+[[deployment_vessels]]
+deployment_label = "r7jjss8n_20101023_210332"
+vessel_profile = "201010_sequeensland201010"
+
+[[deployment_vessels]]
+deployment_label = "r7jjss8n_20121013_060425"
+vessel_profile = "201210_sequeensland201210"
+
+[[deployment_vessels]]
+deployment_label = "r7jjss8n_20131022_004934"
+vessel_profile = "201310_sequeensland201310"
+
+[[deployment_vessels]]
+deployment_label = "r7jjssbh_20101023_210332"
+vessel_profile = "201010_sequeensland201010"
+
+[[deployment_vessels]]
+deployment_label = "r7jjssbh_20121013_060425"
+vessel_profile = "201210_sequeensland201210"
+
+[[deployment_vessels]]
+deployment_label = "r7jjssbh_20131022_004934"
+vessel_profile = "201310_sequeensland201310"
