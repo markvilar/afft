@@ -3,7 +3,6 @@
 from pathlib import Path
 
 import pandas as pd
-import polars as pl
 import sqlalchemy as sqla
 from rich.progress import Progress
 
@@ -76,9 +75,9 @@ def invoke_table_write(
     if not name:
         name = source.stem
 
-    if_table_exists = "replace" if overwrite else "fail"
+    if_exists = "replace" if overwrite else "fail"
 
-    data_frame: pl.DataFrame = pl.read_csv(source)
+    data_frame: pd.DataFrame = pd.read_csv(source)
 
     credentials: EnvironmentDatabase = load_environment().database
     engine: db.Engine | str = db.create_engine(
@@ -95,5 +94,5 @@ def invoke_table_write(
         engine,
         table=name,
         data=data_frame,
-        if_table_exists=if_table_exists,
+        if_exists=if_exists,
     )
