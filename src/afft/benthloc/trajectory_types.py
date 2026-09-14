@@ -1,4 +1,4 @@
-"""Data types for the Benthloc trajectory ingestion file builder."""
+"""Data types for the Benthloc trajectory ingestion document builder."""
 
 from datetime import datetime
 from pathlib import Path
@@ -6,14 +6,14 @@ from pathlib import Path
 from pydantic import BaseModel, ConfigDict
 
 
-class BuildTrajectoryIngestionFileCommand(BaseModel):
+class BuildTrajectoryIngestionDocumentCommand(BaseModel):
     """
     Attributes
     ----------
     bundle_file: Path to the processed deployment bundle to read from, never
         written.
     key: Bundle key of the trajectory geoframe to read.
-    output_file: Path to write the Benthloc trajectory ingestion file to.
+    output_file: Path to write the Benthloc trajectory ingestion document to.
     trajectory_label: Trajectory label, single-valued across the output
         file.
     trajectory_description: Optional trajectory description.
@@ -46,11 +46,11 @@ class BuildTrajectoryIngestionFileCommand(BaseModel):
     dry_run: bool = False
 
 
-class BuildTrajectoryIngestionFileResult(BaseModel):
+class BuildTrajectoryIngestionDocumentResult(BaseModel):
     """
     Attributes
     ----------
-    output_file: Path the ingestion file was (or would be) written to.
+    output_file: Path the ingestion document was (or would be) written to.
     platform_label: Resolved platform label.
     deployment_label: Resolved deployment label.
     trajectory_label: Trajectory label the file asserts.

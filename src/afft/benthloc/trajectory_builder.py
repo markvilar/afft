@@ -1,4 +1,4 @@
-"""Builder for the Benthloc trajectory ingestion file: reads a processed
+"""Builder for the Benthloc trajectory ingestion document: reads a processed
 deployment bundle's trajectory geoframe and writes the GeoJSON
 `FeatureCollection` Benthloc's `trajectory_ingestion` task reads."""
 
@@ -13,14 +13,14 @@ from afft.utils.log import logger
 
 from .common_types import ResolvedIdentity, resolve_identity
 from .trajectory_types import (
-    BuildTrajectoryIngestionFileCommand,
-    BuildTrajectoryIngestionFileResult,
+    BuildTrajectoryIngestionDocumentCommand,
+    BuildTrajectoryIngestionDocumentResult,
 )
 from .trajectory_validators import validate_trajectory_geoframe
 
 
-def validate_build_trajectory_ingestion_file_input(
-    command: BuildTrajectoryIngestionFileCommand,
+def validate_build_trajectory_ingestion_document_input(
+    command: BuildTrajectoryIngestionDocumentCommand,
 ) -> None:
     """
     Validate the task's inputs before any expensive work runs.
@@ -58,7 +58,7 @@ def validate_build_trajectory_ingestion_file_input(
 
 def _build_output_frame(
     frame: gpd.GeoDataFrame,
-    command: BuildTrajectoryIngestionFileCommand,
+    command: BuildTrajectoryIngestionDocumentCommand,
     identity: ResolvedIdentity,
 ) -> gpd.GeoDataFrame:
     """Select, rename, and attach identity/trajectory fields onto the
@@ -79,11 +79,11 @@ def _build_output_frame(
     )
 
 
-def run_build_trajectory_ingestion_file(
-    command: BuildTrajectoryIngestionFileCommand,
-) -> BuildTrajectoryIngestionFileResult:
+def run_build_trajectory_ingestion_document(
+    command: BuildTrajectoryIngestionDocumentCommand,
+) -> BuildTrajectoryIngestionDocumentResult:
     """
-    Build a Benthloc trajectory ingestion file from a processed deployment
+    Build a Benthloc trajectory ingestion document from a processed deployment
     bundle's trajectory geoframe.
 
     Arguments
@@ -108,7 +108,7 @@ def run_build_trajectory_ingestion_file(
         identity label has no override and the bundle holds no identity
         frame to read it from.
     """
-    validate_build_trajectory_ingestion_file_input(command)
+    validate_build_trajectory_ingestion_document_input(command)
 
     reader: DeploymentBundleReader
     with open_deployment_bundle_reader(command.bundle_file) as reader:
@@ -138,7 +138,7 @@ def run_build_trajectory_ingestion_file(
     end: pd.Timestamp = timestamps.max()
 
     logger.info("-------------------------------------")
-    logger.info("Build Trajectory Ingestion File")
+    logger.info("Build Trajectory Ingestion Document")
     logger.info(f"  bundle file:  {command.bundle_file}")
     logger.info(f"  key:          {command.key}")
     logger.info(f"  output file:  {command.output_file}")
@@ -151,9 +151,11 @@ def run_build_trajectory_ingestion_file(
 
     if not command.dry_run:
         output_frame.to_file(command.output_file, driver="GeoJSON")
-        logger.info(f"wrote trajectory ingestion file to {command.output_file}")
+        logger.info(
+            f"wrote trajectory ingestion document to {command.output_file}"
+        )
 
-    return BuildTrajectoryIngestionFileResult(
+    return BuildTrajectoryIngestionDocumentResult(
         output_file=command.output_file,
         platform_label=identity.platform_label,
         deployment_label=identity.deployment_label,

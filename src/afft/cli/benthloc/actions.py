@@ -3,14 +3,14 @@
 from pathlib import Path
 
 from afft.benthloc import (
-    BuildTrajectoryIngestionFileCommand,
-    BuildTrajectoryIngestionFileResult,
-    run_build_trajectory_ingestion_file,
+    BuildTrajectoryIngestionDocumentCommand,
+    BuildTrajectoryIngestionDocumentResult,
+    run_build_trajectory_ingestion_document,
 )
 from afft.utils.log import logger
 
 
-def invoke_build_trajectory_ingestion_file(
+def invoke_build_trajectory_ingestion_document(
     bundle_file: str | Path,
     key: str,
     output_file: str | Path,
@@ -25,9 +25,9 @@ def invoke_build_trajectory_ingestion_file(
     overwrite: bool,
     dry_run: bool,
 ) -> None:
-    """Build a Benthloc trajectory ingestion file from a processed
+    """Build a Benthloc trajectory ingestion document from a processed
     deployment bundle's trajectory geoframe."""
-    command = BuildTrajectoryIngestionFileCommand(
+    command = BuildTrajectoryIngestionDocumentCommand(
         bundle_file=Path(bundle_file),
         key=key,
         output_file=Path(output_file),
@@ -42,8 +42,8 @@ def invoke_build_trajectory_ingestion_file(
         overwrite=overwrite,
         dry_run=dry_run,
     )
-    result: BuildTrajectoryIngestionFileResult = (
-        run_build_trajectory_ingestion_file(command)
+    result: BuildTrajectoryIngestionDocumentResult = (
+        run_build_trajectory_ingestion_document(command)
     )
     if dry_run:
         logger.info(
