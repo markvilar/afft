@@ -1,4 +1,4 @@
-"""Validators for the Benthloc trajectory ingestion file builder."""
+"""Validators for the Benthloc trajectory ingestion document builder."""
 
 import geopandas as gpd
 
@@ -11,12 +11,12 @@ from .common_validators import (
     check_timestamps_monotonically_increasing,
     check_timestamps_tz_aware_utc,
 )
-from .trajectory_types import BuildTrajectoryIngestionFileCommand
+from .trajectory_types import BuildTrajectoryIngestionDocumentCommand
 
 
 def check_required_columns_present(
     frame: gpd.GeoDataFrame,
-    command: BuildTrajectoryIngestionFileCommand,
+    command: BuildTrajectoryIngestionDocumentCommand,
 ) -> None:
     """
     Assert the source geoframe carries every column the builder needs.
@@ -45,7 +45,7 @@ def check_required_columns_present(
 
 def drop_incomplete_rows(
     frame: gpd.GeoDataFrame,
-    command: BuildTrajectoryIngestionFileCommand,
+    command: BuildTrajectoryIngestionDocumentCommand,
 ) -> tuple[gpd.GeoDataFrame, int]:
     """
     Drop rows with a null position, attitude, or timestamp.
@@ -84,11 +84,11 @@ def drop_incomplete_rows(
 
 def validate_trajectory_geoframe(
     frame: gpd.GeoDataFrame,
-    command: BuildTrajectoryIngestionFileCommand,
+    command: BuildTrajectoryIngestionDocumentCommand,
 ) -> tuple[gpd.GeoDataFrame, int]:
     """
     Validate and clean the source trajectory geoframe against every
-    constraint Benthloc's trajectory ingestion file requires.
+    constraint Benthloc's trajectory ingestion document requires.
 
     Arguments
     ---------

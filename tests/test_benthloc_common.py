@@ -1,5 +1,5 @@
 """Tests for identity resolution and validators shared by both Benthloc
-ingestion file builders."""
+ingestion document builders."""
 
 from datetime import datetime, timezone
 from pathlib import Path

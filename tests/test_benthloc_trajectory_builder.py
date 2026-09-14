@@ -1,4 +1,4 @@
-"""Tests for the Benthloc trajectory ingestion file builder."""
+"""Tests for the Benthloc trajectory ingestion document builder."""
 
 import json
 
@@ -14,9 +14,9 @@ from shapely.geometry import Point
 from afft.deployment import open_deployment_bundle
 
 from afft.benthloc import (
-    BuildTrajectoryIngestionFileCommand,
-    BuildTrajectoryIngestionFileResult,
-    run_build_trajectory_ingestion_file,
+    BuildTrajectoryIngestionDocumentCommand,
+    BuildTrajectoryIngestionDocumentResult,
+    run_build_trajectory_ingestion_document,
 )
 
 
@@ -89,7 +89,7 @@ def _bundle(
 
 def _command(
     tmp_path: Path, **overrides: Any
-) -> BuildTrajectoryIngestionFileCommand:
+) -> BuildTrajectoryIngestionDocumentCommand:
     arguments: dict[str, Any] = {
         "bundle_file": overrides.pop("bundle_file", None)
         or _bundle(tmp_path / "bundle.gpkg"),
@@ -98,7 +98,7 @@ def _command(
         "trajectory_label": "renav_priors",
     }
     arguments.update(overrides)
-    return BuildTrajectoryIngestionFileCommand(**arguments)
+    return BuildTrajectoryIngestionDocumentCommand(**arguments)
 
 
 def test_writes_a_geojson_feature_collection_matching_benthlocs_schema(
@@ -108,9 +108,9 @@ def test_writes_a_geojson_feature_collection_matching_benthlocs_schema(
     Benthloc's reader/builder require."""
     command = _command(tmp_path)
 
-    result = run_build_trajectory_ingestion_file(command)
+    result = run_build_trajectory_ingestion_document(command)
 
-    assert isinstance(result, BuildTrajectoryIngestionFileResult)
+    assert isinstance(result, BuildTrajectoryIngestionDocumentResult)
     assert result.written
     assert result.pose_count == 2
     assert result.dropped_row_count == 0
@@ -145,7 +145,7 @@ def test_dry_run_does_not_write_the_output_file(tmp_path: Path) -> None:
     """A dry run reports the labels and pose count without touching disk."""
     command = _command(tmp_path, dry_run=True)
 
-    result = run_build_trajectory_ingestion_file(command)
+    result = run_build_trajectory_ingestion_document(command)
 
     assert result.written is False
     assert result.pose_count == 2
@@ -161,7 +161,7 @@ def test_platform_and_deployment_label_overrides_are_honored(
         deployment_label="override_deployment",
     )
 
-    result = run_build_trajectory_ingestion_file(command)
+    result = run_build_trajectory_ingestion_document(command)
 
     assert result.platform_label == "Override Platform"
     assert result.deployment_label == "override_deployment"
@@ -172,7 +172,7 @@ def test_missing_bundle_key_raises(tmp_path: Path) -> None:
     command = _command(tmp_path, key="trajectory/absent/platform_poses")
 
     with pytest.raises(ValueError, match="holds no frame"):
-        run_build_trajectory_ingestion_file(command)
+        run_build_trajectory_ingestion_document(command)
 
 
 def test_non_geoframe_key_raises(tmp_path: Path) -> None:
@@ -186,7 +186,7 @@ def test_non_geoframe_key_raises(tmp_path: Path) -> None:
     )
 
     with pytest.raises(TypeError, match="does not hold a geoframe"):
-        run_build_trajectory_ingestion_file(command)
+        run_build_trajectory_ingestion_document(command)
 
 
 def test_wrong_crs_raises(tmp_path: Path) -> None:
@@ -200,7 +200,7 @@ def test_wrong_crs_raises(tmp_path: Path) -> None:
     command = _command(tmp_path, bundle_file=bundle_file)
 
     with pytest.raises(ValueError, match="EPSG:4326"):
-        run_build_trajectory_ingestion_file(command)
+        run_build_trajectory_ingestion_document(command)
 
 
 def test_out_of_order_timestamps_are_sorted(tmp_path: Path) -> None:
@@ -213,7 +213,7 @@ def test_out_of_order_timestamps_are_sorted(tmp_path: Path) -> None:
 
     command = _command(tmp_path, bundle_file=bundle_file)
 
-    result = run_build_trajectory_ingestion_file(command)
+    result = run_build_trajectory_ingestion_document(command)
 
     assert result.pose_count == 2
     assert result.start_timestamp < result.end_timestamp
@@ -236,7 +236,7 @@ def test_rows_with_null_attitude_are_dropped_and_reported(
 
     command = _command(tmp_path, bundle_file=bundle_file)
 
-    result = run_build_trajectory_ingestion_file(command)
+    result = run_build_trajectory_ingestion_document(command)
 
     assert result.pose_count == 2
     assert result.dropped_row_count == 1
@@ -252,7 +252,7 @@ def test_all_rows_dropped_raises(tmp_path: Path) -> None:
     command = _command(tmp_path, bundle_file=bundle_file)
 
     with pytest.raises(ValueError, match="no poses remain"):
-        run_build_trajectory_ingestion_file(command)
+        run_build_trajectory_ingestion_document(command)
 
 
 def test_missing_column_raises_key_error(tmp_path: Path) -> None:
@@ -264,7 +264,7 @@ def test_missing_column_raises_key_error(tmp_path: Path) -> None:
     command = _command(tmp_path, bundle_file=bundle_file)
 
     with pytest.raises(KeyError, match="yaw"):
-        run_build_trajectory_ingestion_file(command)
+        run_build_trajectory_ingestion_document(command)
 
 
 def test_output_file_exists_and_overwrite_not_set_raises(
@@ -274,14 +274,14 @@ def test_output_file_exists_and_overwrite_not_set_raises(
     command.output_file.write_text("existing")
 
     with pytest.raises(FileExistsError):
-        run_build_trajectory_ingestion_file(command)
+        run_build_trajectory_ingestion_document(command)
 
 
 def test_overwrite_allows_replacing_the_output_file(tmp_path: Path) -> None:
     command = _command(tmp_path)
     command.output_file.write_text("existing")
 
-    result = run_build_trajectory_ingestion_file(
+    result = run_build_trajectory_ingestion_document(
         command.model_copy(update={"overwrite": True})
     )
 

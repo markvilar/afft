@@ -1,5 +1,5 @@
-"""Data types and identity resolution shared by both Benthloc ingestion file
-builders."""
+"""Data types and identity resolution shared by both Benthloc ingestion
+document builders."""
 
 from pydantic import BaseModel, ConfigDict
 
@@ -15,7 +15,7 @@ _PLATFORM_IDENTITY_KEY: str = "platform/identity"
 
 class ResolvedIdentity(BaseModel):
     """
-    Platform and deployment labels to attach to a Benthloc ingestion file.
+    Platform and deployment labels to attach to a Benthloc ingestion document.
 
     Attributes
     ----------
