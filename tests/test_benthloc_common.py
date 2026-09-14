@@ -32,6 +32,7 @@ def _bundle_with_identity(path: Path) -> Path:
             pd.DataFrame(
                 [
                     {
+                        "platform_key": "auv_sirius",
                         "platform_label": "AUV Sirius",
                         "platform_class": "SEABED",
                         "platform_operator": "ACFR",
@@ -44,6 +45,7 @@ def _bundle_with_identity(path: Path) -> Path:
             pd.DataFrame(
                 [
                     {
+                        "deployment_key": "dk_r20240101_000000",
                         "deployment_label": "r20240101_000000",
                         "deployment_start_datetime": datetime(
                             2024, 1, 1, tzinfo=timezone.utc

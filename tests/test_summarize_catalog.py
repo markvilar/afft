@@ -55,7 +55,8 @@ def _build_catalog() -> DeploymentCatalog:
         sensor_identities=[_sensor_identity()],
         platform_profiles=[
             CatalogPlatformProfile(
-                key="sirius_2010",
+                platform_profile_key="sirius_2010",
+                platform_key="auv_sirius",
                 platform_label="AUV Sirius",
                 platform_class="SEABED",
                 platform_operator="ACFR",
@@ -69,26 +70,30 @@ def _build_catalog() -> DeploymentCatalog:
             )
         ],
         vessel_profiles=[
-            CatalogVesselProfile(key="linnaeus", vessel_name="RV Linnaeus")
+            CatalogVesselProfile(
+                vessel_profile_key="linnaeus",
+                vessel_key="rv_linnaeus",
+                vessel_label="RV Linnaeus",
+            )
         ],
         deployment_platforms=[
             CatalogDeploymentPlatform(
-                deployment_label="aaa_20100428_020202",
-                platform_profile="sirius_2010",
+                deployment_key="aaa_20100428_020202",
+                platform_profile_key="sirius_2010",
             ),
             CatalogDeploymentPlatform(
-                deployment_label="bbb_20110415_020103",
-                platform_profile="sirius_2010",
+                deployment_key="bbb_20110415_020103",
+                platform_profile_key="sirius_2010",
             ),
         ],
         deployment_vessels=[
             CatalogDeploymentVessel(
-                deployment_label="aaa_20100428_020202",
-                vessel_profile="linnaeus",
+                deployment_key="aaa_20100428_020202",
+                vessel_profile_key="linnaeus",
             ),
             CatalogDeploymentVessel(
-                deployment_label="bbb_20110415_020103",
-                vessel_profile="linnaeus",
+                deployment_key="bbb_20110415_020103",
+                vessel_profile_key="linnaeus",
             ),
         ],
     )
@@ -134,7 +139,8 @@ def test_summarize_lists_profiles_assigned_no_deployment() -> None:
             "platform_profiles": [
                 *catalog.platform_profiles,
                 CatalogPlatformProfile(
-                    key="sirius_2011",
+                    platform_profile_key="sirius_2011",
+                    platform_key="auv_sirius",
                     platform_label="AUV Sirius",
                     platform_class="SEABED",
                     platform_operator="ACFR",
@@ -186,7 +192,8 @@ def test_summarize_groups_curation_gaps_by_field() -> None:
         ],
         platform_profiles=[
             CatalogPlatformProfile(
-                key="sirius_2010",
+                platform_profile_key="sirius_2010",
+                platform_key="auv_sirius",
                 platform_label="AUV Sirius",
                 platform_class="SEABED",
                 platform_operator="",
@@ -202,7 +209,13 @@ def test_summarize_groups_curation_gaps_by_field() -> None:
                 ],
             )
         ],
-        vessel_profiles=[CatalogVesselProfile(key="linnaeus", vessel_name="")],
+        vessel_profiles=[
+            CatalogVesselProfile(
+                vessel_profile_key="linnaeus",
+                vessel_key="rv_linnaeus",
+                vessel_label="",
+            )
+        ],
     )
 
     summary: CatalogSummary = summarize_catalog(catalog)
@@ -215,7 +228,7 @@ def test_summarize_groups_curation_gaps_by_field() -> None:
     assert gaps["platform_profiles.sensors.extrinsics"] == [
         "sirius_2010[dvl_teledyne]"
     ]
-    assert gaps["vessel_profiles.vessel_name"] == ["linnaeus"]
+    assert gaps["vessel_profiles.vessel_label"] == ["linnaeus"]
     assert "platform_profiles.platform_label" not in gaps
 
 
@@ -226,14 +239,20 @@ def test_summarize_orders_gaps_by_descending_count_then_field() -> None:
             _sensor_identity(key="dvl_teledyne", vendor=""),
             _sensor_identity(key="usbl_linkquest_transceiver", vendor=""),
         ],
-        vessel_profiles=[CatalogVesselProfile(key="linnaeus", vessel_name="")],
+        vessel_profiles=[
+            CatalogVesselProfile(
+                vessel_profile_key="linnaeus",
+                vessel_key="rv_linnaeus",
+                vessel_label="",
+            )
+        ],
     )
 
     summary: CatalogSummary = summarize_catalog(catalog)
 
     assert [gap.field_name for gap in summary.curation_gaps] == [
         "sensor_identities.vendor",
-        "vessel_profiles.vessel_name",
+        "vessel_profiles.vessel_label",
     ]
 
 
@@ -276,7 +295,11 @@ def test_cli_summarize_catalog_exits_zero_with_gaps(tmp_path: Path) -> None:
         DeploymentCatalog(
             sensor_identities=[_sensor_identity(vendor="")],
             vessel_profiles=[
-                CatalogVesselProfile(key="linnaeus", vessel_name="")
+                CatalogVesselProfile(
+                    vessel_profile_key="linnaeus",
+                    vessel_key="rv_linnaeus",
+                    vessel_label="",
+                )
             ],
         ),
     )

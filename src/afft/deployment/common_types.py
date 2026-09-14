@@ -189,6 +189,8 @@ class PlatformIdentity(BaseModel):
 
     Attributes
     ----------
+    platform_key: Stable lookup identity for the platform (e.g.
+        ``"auv_sirius"``).
     platform_label: Human-readable platform name (e.g. ``"AUV Sirius"``).
     platform_class: Vehicle class / system config vehicle name (e.g.
         ``"SEABED"``).
@@ -197,6 +199,7 @@ class PlatformIdentity(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
+    platform_key: str
     platform_label: str
     platform_class: str
     platform_operator: str
@@ -208,9 +211,12 @@ class VesselIdentity(BaseModel):
 
     Attributes
     ----------
-    vessel_name: Support vessel name (e.g. ``"RV Linnaeus"``).
+    vessel_key: Stable lookup identity for the vessel (e.g.
+        ``"rv_linnaeus"``).
+    vessel_label: Human-readable support vessel name (e.g. ``"RV Linnaeus"``).
     """
 
     model_config = ConfigDict(frozen=True)
 
-    vessel_name: str
+    vessel_key: str
+    vessel_label: str

@@ -655,6 +655,7 @@ def test_an_exported_geojson_can_be_ingested_back(
 
 
 CLIP_LABEL: str = "u4rmk_20231107_043022"
+CLIP_KEY: str = "u4rmk_20231107_043022"
 
 CLIP_POSE_KEY: str = "trajectory/renav_priors/camera_poses"
 
@@ -689,6 +690,7 @@ def _clip_source_bundle(path: Path) -> Path:
             "deployment/identity",
             record_to_frame(
                 DeploymentIdentity(
+                    deployment_key=CLIP_KEY,
                     deployment_label=CLIP_LABEL,
                     deployment_start_datetime=datetime(
                         2023, 11, 7, 5, 0, tzinfo=timezone.utc
@@ -866,6 +868,7 @@ def test_clip_rewrites_the_deployment_identity(
     with open_deployment_bundle_reader(output_file) as reader:
         identity = reader.read_frame("deployment/identity")
 
+    assert identity["deployment_key"].iloc[0] == f"{CLIP_KEY}_dense01"
     assert identity["deployment_label"].iloc[0] == f"{CLIP_LABEL}_dense01"
     assert identity["deployment_start_datetime"].iloc[0] == pd.Timestamp(
         "2023-11-07T05:10:00Z"
@@ -887,6 +890,7 @@ def test_clip_records_its_source_and_window_in_provenance(
     with open_deployment_bundle_reader(output_file) as reader:
         provenance = reader.read_frame("deployment/provenance")
 
+    assert provenance["deployment_key"].iloc[0] == f"{CLIP_KEY}_dense01"
     assert provenance["source_bundle"].iloc[0] == str(clip_source_file)
     assert provenance["clip_start_datetime"].iloc[0] == pd.Timestamp(
         "2023-11-07T05:10:00Z"
