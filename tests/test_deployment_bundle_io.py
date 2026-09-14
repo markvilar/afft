@@ -202,6 +202,7 @@ def test_deployment_identity_temporal_range_round_trip(
     """
     identity = record_to_frame(
         DeploymentIdentity(
+            deployment_key="geebank_16_15m_out",
             deployment_label="qdch0ftq_20231021_030000",
             deployment_start_datetime=datetime(
                 2023, 10, 21, 3, 0, 0, tzinfo=timezone.utc

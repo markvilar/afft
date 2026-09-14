@@ -195,6 +195,7 @@ def collect_unfilled_fields(
         unfilled.extend(
             f"platform.identity.{field}"
             for field in (
+                "platform_key",
                 "platform_label",
                 "platform_class",
                 "platform_operator",
@@ -207,8 +208,12 @@ def collect_unfilled_fields(
     vessel_identity = descriptor.vessel.identity
     if vessel_identity is None:
         unfilled.append("vessel.identity")
-    elif not vessel_identity.vessel_name:
-        unfilled.append("vessel.identity.vessel_name")
+    else:
+        unfilled.extend(
+            f"vessel.identity.{field}"
+            for field in ("vessel_key", "vessel_label")
+            if not getattr(vessel_identity, field)
+        )
 
     unfilled.extend(_sensor_gaps(descriptor.vessel.sensors, "vessel"))
 

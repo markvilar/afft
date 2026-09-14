@@ -31,7 +31,7 @@ from afft.tasks.process_deployment_bundle import (
 
 def invoke_build_deployment_bundle(
     descriptor_file: str | Path,
-    deployment_label: str,
+    deployment_key: str,
     data_dir: str | Path,
     config_file: str | Path,
     output_file: str | Path,
@@ -41,7 +41,7 @@ def invoke_build_deployment_bundle(
     """Build a deployment bundle from a descriptor and its raw message logs."""
     command = BuildDeploymentBundleCommand(
         descriptor_file=Path(descriptor_file),
-        deployment_label=deployment_label,
+        deployment_key=deployment_key,
         data_dir=Path(data_dir),
         config_file=Path(config_file),
         output_file=Path(output_file),

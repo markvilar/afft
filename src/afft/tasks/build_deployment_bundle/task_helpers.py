@@ -21,7 +21,7 @@ from .types import BuildDeploymentBundleCommand, BuildDeploymentBundleConfig
 
 def load_target_descriptor(
     descriptor_file: Path,
-    deployment_label: str,
+    deployment_key: str,
 ) -> DeploymentDescriptor:
     """
     Select one deployment's descriptor out of a descriptors TOML file.
@@ -29,7 +29,7 @@ def load_target_descriptor(
     Arguments
     ---------
     descriptor_file: Path to the deployment descriptors TOML file.
-    deployment_label: Label of the deployment to select.
+    deployment_key: Key of the deployment to select.
 
     Returns
     -------
@@ -37,16 +37,16 @@ def load_target_descriptor(
 
     Raises
     ------
-    ValueError: If no descriptor with the given label is present in the file.
+    ValueError: If no descriptor with the given key is present in the file.
     """
     descriptors: list[DeploymentDescriptor] = read_deployment_descriptors(
         descriptor_file
     )
     for descriptor in descriptors:
-        if descriptor.deployment_label == deployment_label:
+        if descriptor.deployment_key == deployment_key:
             return descriptor
 
-    raise ValueError(f"deployment not found: {deployment_label!r}")
+    raise ValueError(f"deployment not found: {deployment_key!r}")
 
 
 def read_build_deployment_bundle_config(

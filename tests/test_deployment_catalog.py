@@ -49,7 +49,8 @@ def _build_catalog() -> DeploymentCatalog:
         sensor_identities=[DVL_SENSOR, USBL_TRANSPONDER, USBL_TRANSCEIVER],
         platform_profiles=[
             CatalogPlatformProfile(
-                key="2010_auv_sirius",
+                platform_profile_key="2010_auv_sirius",
+                platform_key="auv_sirius",
                 platform_label="AUV Sirius",
                 platform_class="SEABED",
                 platform_operator="ACFR",
@@ -75,8 +76,9 @@ def _build_catalog() -> DeploymentCatalog:
         ],
         vessel_profiles=[
             CatalogVesselProfile(
-                key="201004_rv_linnaeus",
-                vessel_name="RV Linnaeus",
+                vessel_profile_key="201004_rv_linnaeus",
+                vessel_key="rv_linnaeus",
+                vessel_label="RV Linnaeus",
                 sensors=[
                     CatalogProfileSensor(
                         key="usbl_linkquest_transceiver",
@@ -94,14 +96,14 @@ def _build_catalog() -> DeploymentCatalog:
         ],
         deployment_platforms=[
             CatalogDeploymentPlatform(
-                deployment_label="qdch0ftq_20100428_020202",
-                platform_profile="2010_auv_sirius",
+                deployment_key="qdch0ftq_20100428_020202",
+                platform_profile_key="2010_auv_sirius",
             )
         ],
         deployment_vessels=[
             CatalogDeploymentVessel(
-                deployment_label="qdch0ftq_20100428_020202",
-                vessel_profile="201004_rv_linnaeus",
+                deployment_key="qdch0ftq_20100428_020202",
+                vessel_profile_key="201004_rv_linnaeus",
             )
         ],
     )
@@ -148,15 +150,15 @@ def test_mapping_tables_are_written_sorted_by_deployment_label(
         vessel_profiles=catalog.vessel_profiles,
         deployment_platforms=[
             CatalogDeploymentPlatform(
-                deployment_label="r7jjskxq_20101023_210332",
-                platform_profile="2010_auv_sirius",
+                deployment_key="r7jjskxq_20101023_210332",
+                platform_profile_key="2010_auv_sirius",
             ),
             *catalog.deployment_platforms,
         ],
         deployment_vessels=[
             CatalogDeploymentVessel(
-                deployment_label="r7jjskxq_20101023_210332",
-                vessel_profile="201004_rv_linnaeus",
+                deployment_key="r7jjskxq_20101023_210332",
+                vessel_profile_key="201004_rv_linnaeus",
             ),
             *catalog.deployment_vessels,
         ],
@@ -166,10 +168,11 @@ def test_mapping_tables_are_written_sorted_by_deployment_label(
     write_deployment_catalog(path, unsorted)
 
     written = read_deployment_catalog(path)
-    assert [
-        entry.deployment_label for entry in written.deployment_platforms
-    ] == ["qdch0ftq_20100428_020202", "r7jjskxq_20101023_210332"]
-    assert [entry.deployment_label for entry in written.deployment_vessels] == [
+    assert [entry.deployment_key for entry in written.deployment_platforms] == [
+        "qdch0ftq_20100428_020202",
+        "r7jjskxq_20101023_210332",
+    ]
+    assert [entry.deployment_key for entry in written.deployment_vessels] == [
         "qdch0ftq_20100428_020202",
         "r7jjskxq_20101023_210332",
     ]
@@ -193,7 +196,8 @@ def test_duplicate_sensor_key_is_rejected() -> None:
 
 def test_duplicate_platform_profile_key_is_rejected() -> None:
     profile = CatalogPlatformProfile(
-        key="2010_auv_sirius",
+        platform_profile_key="2010_auv_sirius",
+        platform_key="auv_sirius",
         platform_label="AUV Sirius",
         platform_class="SEABED",
         platform_operator="ACFR",
@@ -206,7 +210,9 @@ def test_duplicate_platform_profile_key_is_rejected() -> None:
 
 def test_duplicate_vessel_profile_key_is_rejected() -> None:
     profile = CatalogVesselProfile(
-        key="201004_rv_linnaeus", vessel_name="RV Linnaeus"
+        vessel_profile_key="201004_rv_linnaeus",
+        vessel_key="rv_linnaeus",
+        vessel_label="RV Linnaeus",
     )
     with pytest.raises(
         ValidationError, match="duplicate key in vessel_profiles"
@@ -251,7 +257,8 @@ def test_unknown_sensor_identity_is_rejected() -> None:
         DeploymentCatalog(
             platform_profiles=[
                 CatalogPlatformProfile(
-                    key="2010_auv_sirius",
+                    platform_profile_key="2010_auv_sirius",
+                    platform_key="auv_sirius",
                     platform_label="AUV Sirius",
                     platform_class="SEABED",
                     platform_operator="ACFR",
@@ -268,8 +275,8 @@ def test_unknown_platform_profile_reference_is_rejected() -> None:
         DeploymentCatalog(
             deployment_platforms=[
                 CatalogDeploymentPlatform(
-                    deployment_label="qdch0ftq_20100428_020202",
-                    platform_profile="2010_auv_sirius",
+                    deployment_key="qdch0ftq_20100428_020202",
+                    platform_profile_key="2010_auv_sirius",
                 )
             ]
         )
@@ -282,8 +289,8 @@ def test_unknown_vessel_profile_reference_is_rejected() -> None:
         DeploymentCatalog(
             deployment_vessels=[
                 CatalogDeploymentVessel(
-                    deployment_label="qdch0ftq_20100428_020202",
-                    vessel_profile="201004_rv_linnaeus",
+                    deployment_key="qdch0ftq_20100428_020202",
+                    vessel_profile_key="201004_rv_linnaeus",
                 )
             ]
         )

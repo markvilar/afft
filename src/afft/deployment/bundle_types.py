@@ -15,6 +15,7 @@ class DeploymentIdentity(BaseModel):
 
     Attributes
     ----------
+    deployment_key: Stable lookup identity for the deployment.
     deployment_label: Deployment identifier in ``<GEOHASH>_<DATETIME>`` format.
     deployment_start_datetime: Start datetime of the deployment.
     deployment_end_datetime: End datetime of the deployment; ``None`` when the
@@ -23,6 +24,7 @@ class DeploymentIdentity(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
+    deployment_key: str
     deployment_label: str
     deployment_start_datetime: datetime
     deployment_end_datetime: datetime | None = None

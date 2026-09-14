@@ -56,6 +56,7 @@ def _build_deployment(root: Path, names: tuple[str, ...]) -> Path:
 def _build_descriptor() -> DeploymentDescriptor:
     """Builds a descriptor with every curated slot left unfilled."""
     return DeploymentDescriptor(
+        deployment_key="snapperbank_ss11",
         deployment_label="qd66hv_20170525_234600",
         deployment_start_datetime=datetime(
             2017, 5, 25, 23, 46, 0, tzinfo=timezone.utc
@@ -135,6 +136,7 @@ def test_filled_curated_slots_round_trip(tmp_path: Path) -> None:
         update={
             "platform": PlatformDescriptorSection(
                 identity=PlatformIdentity(
+                    platform_key="auv_sirius",
                     platform_label="AUV Sirius",
                     platform_class="SEABED",
                     platform_operator="ACFR",
@@ -170,7 +172,9 @@ def test_filled_vessel_section_round_trip(tmp_path: Path) -> None:
     descriptor = _build_descriptor().model_copy(
         update={
             "vessel": VesselDescriptorSection(
-                identity=VesselIdentity(vessel_name="RV Linnaeus"),
+                identity=VesselIdentity(
+                    vessel_key="rv_linnaeus", vessel_label="RV Linnaeus"
+                ),
                 sensors=[
                     VesselSensor(
                         key="USBL",

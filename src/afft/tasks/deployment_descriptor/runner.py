@@ -133,7 +133,8 @@ def describe_deployment(
 
     The description is purely observational: the curated platform and vessel
     sections are left empty for enrichment, which holds the sensor vocabulary
-    the descriptor's rosters are keyed on.
+    the descriptor's rosters are keyed on. The deployment key is derived from
+    the deployment label.
 
     Arguments
     ---------
@@ -168,6 +169,7 @@ def describe_deployment(
         )
 
     return DeploymentDescriptor(
+        deployment_key=deployment_label,
         deployment_label=deployment_label,
         deployment_start_datetime=deployment_start_datetime,
         metadata=build_deployment_metadata(
