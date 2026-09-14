@@ -2,7 +2,10 @@
 
 import click
 
-from .actions import invoke_build_trajectory_ingestion_document
+from .actions import (
+    invoke_build_telemetry_ingestion_document,
+    invoke_build_trajectory_ingestion_document,
+)
 
 
 @click.group()
@@ -119,4 +122,64 @@ def build_trajectory_ingestion_document(
         deployment_label,
         overwrite,
         dry_run,
+    )
+
+
+@benthloc_group.command("build-telemetry-ingestion-document")
+@click.option(
+    "--bundle",
+    "bundle_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the built deployment bundle to read from, never written",
+)
+@click.option(
+    "--config",
+    "config_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the task config TOML file holding the builder's section",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="path to write the Benthloc telemetry ingestion document to",
+)
+@click.option(
+    "--overwrite",
+    is_flag=True,
+    default=False,
+    help="overwrite the output file if it already exists",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    help="validate and report the keys the document asserts without writing",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="log accumulated diagnostics after the run completes",
+)
+def build_telemetry_ingestion_document(
+    bundle_file: str,
+    config_file: str,
+    output_file: str,
+    overwrite: bool,
+    dry_run: bool,
+    verbose: bool,
+) -> None:
+    """Build a Benthloc telemetry ingestion document from a built deployment
+    bundle."""
+    invoke_build_telemetry_ingestion_document(
+        bundle_file,
+        config_file,
+        output_file,
+        overwrite,
+        dry_run,
+        verbose,
     )

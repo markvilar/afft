@@ -155,3 +155,11 @@ processor        = "rename_columns"
 output           = "trajectory/metashape_registered/platform_poses"
 inputs.df        = "trajectory/metashape_registered/platform_poses_raw"
 config.columns   = { heading = "yaw" }
+
+# Benthloc telemetry ingestion document builder. The concrete sensor and
+# series tables are authored in the configuration sub-issue; this stub keeps
+# both lists empty, which still produces a valid (sensor- and series-less)
+# document.
+[afft.benthloc.build_telemetry_ingestion_document]
+sensors = []
+series  = []
