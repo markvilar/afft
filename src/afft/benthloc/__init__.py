@@ -23,5 +23,33 @@ from .trajectory_builder import (
     run_build_trajectory_ingestion_document as run_build_trajectory_ingestion_document,
     validate_build_trajectory_ingestion_document_input as validate_build_trajectory_ingestion_document_input,
 )
+from .telemetry_types import (
+    MEASUREMENT_SCHEMAS as MEASUREMENT_SCHEMAS,
+    BuildTelemetryIngestionDocumentCommand as BuildTelemetryIngestionDocumentCommand,
+    BuildTelemetryIngestionDocumentResult as BuildTelemetryIngestionDocumentResult,
+    MeasurementSchema as MeasurementSchema,
+    TelemetryIngestionConfig as TelemetryIngestionConfig,
+    TelemetryIngestionDiagnostics as TelemetryIngestionDiagnostics,
+    TelemetryIngestionError as TelemetryIngestionError,
+    TelemetryIngestionWarning as TelemetryIngestionWarning,
+    TelemetrySampleEntry as TelemetrySampleEntry,
+    TelemetrySensorEntry as TelemetrySensorEntry,
+    TelemetrySensorExtrinsicsEntry as TelemetrySensorExtrinsicsEntry,
+    TelemetrySeriesEntry as TelemetrySeriesEntry,
+)
+from .telemetry_validators import (
+    check_columns_against_schema as check_columns_against_schema,
+    validate_config_against_bundle as validate_config_against_bundle,
+    validate_config_series_identities as validate_config_series_identities,
+)
+from .telemetry_builder import (
+    build_payload as build_payload,
+    build_sensor_entries as build_sensor_entries,
+    build_series_entry as build_series_entry,
+    euler_zyx_to_matrix as euler_zyx_to_matrix,
+    read_build_telemetry_ingestion_document_config as read_build_telemetry_ingestion_document_config,
+    run_build_telemetry_ingestion_document as run_build_telemetry_ingestion_document,
+    validate_build_telemetry_ingestion_document_input as validate_build_telemetry_ingestion_document_input,
+)
 
 __all__ = []
