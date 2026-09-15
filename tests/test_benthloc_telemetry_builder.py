@@ -16,12 +16,12 @@ from afft.deployment import open_deployment_bundle
 from afft.benthloc import (
     BuildTelemetryIngestionDocumentCommand,
     BuildTelemetryIngestionDocumentResult,
-    MEASUREMENT_SCHEMAS,
     TelemetryIngestionConfig,
     TelemetryIngestionDiagnostics,
     build_payload,
     euler_zyx_to_matrix,
     read_build_telemetry_ingestion_document_config,
+    resolve_payload_type,
     run_build_telemetry_ingestion_document,
 )
 
@@ -130,7 +130,11 @@ def _config(**overrides: Any) -> TelemetryIngestionConfig:
                 "sensor_key": "dvl_teledyne",
                 "series_key": "linear_velocity",
                 "payload_schema_name": "linear_velocity",
-                "columns": {"velx": "velx", "vely": "vely", "velz": "velz"},
+                "columns": {
+                    "velx": "velocity_x",
+                    "vely": "velocity_y",
+                    "velz": "velocity_z",
+                },
             }
         ],
     }
@@ -183,7 +187,11 @@ def test_writes_a_document_matching_benthlocs_schema(tmp_path: Path) -> None:
     assert series["series_key"] == "linear_velocity"
     assert series["payload_schema_name"] == "linear_velocity"
     assert len(series["samples"]) == 2
-    assert set(series["samples"][0]["payload"]) == {"velx", "vely", "velz"}
+    assert set(series["samples"][0]["payload"]) == {
+        "velocity_x",
+        "velocity_y",
+        "velocity_z",
+    }
 
 
 def test_dry_run_does_not_write_the_output_file(tmp_path: Path) -> None:
@@ -252,56 +260,76 @@ def test_euler_composition_is_rz_ry_rx() -> None:
 
 
 def test_build_payload_selects_and_renames_columns() -> None:
-    schema = MEASUREMENT_SCHEMAS["linear_velocity"]
+    payload_type = resolve_payload_type("linear_velocity")
 
     payload = build_payload(
         {"vx": 1.0, "vy": 2.0, "vz": 3.0},
-        {"vx": "velx", "vy": "vely", "vz": "velz"},
-        schema,
+        {"vx": "velocity_x", "vy": "velocity_y", "vz": "velocity_z"},
+        payload_type,
     )
 
-    assert payload == {"velx": 1.0, "vely": 2.0, "velz": 3.0}
+    assert payload == {"velocity_x": 1.0, "velocity_y": 2.0, "velocity_z": 3.0}
 
 
 def test_build_payload_drops_on_non_finite_required() -> None:
-    schema = MEASUREMENT_SCHEMAS["linear_velocity"]
+    payload_type = resolve_payload_type("linear_velocity")
 
     payload = build_payload(
         {"velx": float("nan"), "vely": 2.0, "velz": 3.0},
-        {"velx": "velx", "vely": "vely", "velz": "velz"},
-        schema,
+        {"velx": "velocity_x", "vely": "velocity_y", "velz": "velocity_z"},
+        payload_type,
     )
 
     assert payload is None
 
 
 def test_build_payload_omits_non_finite_optional() -> None:
-    schema = MEASUREMENT_SCHEMAS["linear_velocity"]
+    payload_type = resolve_payload_type("linear_velocity")
 
     payload = build_payload(
         {"velx": 1.0, "vely": 2.0, "velz": 3.0, "velx_std": float("nan")},
         {
-            "velx": "velx",
-            "vely": "vely",
-            "velz": "velz",
-            "velx_std": "velx_std",
+            "velx": "velocity_x",
+            "vely": "velocity_y",
+            "velz": "velocity_z",
+            "velx_std": "velocity_x_std",
         },
-        schema,
+        payload_type,
     )
 
-    assert payload == {"velx": 1.0, "vely": 2.0, "velz": 3.0}
+    assert payload == {"velocity_x": 1.0, "velocity_y": 2.0, "velocity_z": 3.0}
 
 
 def test_build_payload_emits_integer_fields_as_int() -> None:
-    schema = MEASUREMENT_SCHEMAS["teledyne_dvl_ensemble"]
+    payload_type = resolve_payload_type("teledyne_dvl_ensemble")
+    row: dict[str, float] = {
+        "altitude": 1.0,
+        "range_01": 1.0,
+        "range_02": 1.0,
+        "range_03": 1.0,
+        "range_04": 1.0,
+        "heading": 1.0,
+        "pitch": 1.0,
+        "roll": 1.0,
+        "velocity_x": 1.0,
+        "velocity_y": 1.0,
+        "velocity_z": 1.0,
+        "dmg_x": 1.0,
+        "dmg_y": 1.0,
+        "dmg_z": 1.0,
+        "course_over_ground": 1.0,
+        "speed_over_ground": 1.0,
+        "true_heading": 1.0,
+        "gimbal_pitch": 1.0,
+        "sound_velocity": 1.0,
+        "bottom_track_status": 4.0,
+    }
+    columns = {field: field for field in row}
 
-    payload = build_payload(
-        {"status": 4.0},
-        {"status": "bottom_track_status"},
-        schema,
-    )
+    payload = build_payload(row, columns, payload_type)
 
-    assert payload == {"bottom_track_status": 4}
+    assert payload is not None
+    assert payload["bottom_track_status"] == 4
     assert isinstance(payload["bottom_track_status"], int)
 
 
@@ -339,9 +367,9 @@ def test_one_frame_feeds_many_series(tmp_path: Path) -> None:
                 "series_key": "linear_velocity",
                 "payload_schema_name": "linear_velocity",
                 "columns": {
-                    "velx": "velx",
-                    "vely": "vely",
-                    "velz": "velz",
+                    "velx": "velocity_x",
+                    "vely": "velocity_y",
+                    "velz": "velocity_z",
                 },
             },
             {

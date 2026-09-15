@@ -30,6 +30,7 @@ dependencies = [
     "tomli-w>=1.2.0",  # required by msgspec for TOML encoding
     "tenacity>=9.0.0",
     "rich>=15.0.0",
+    "benthloc",
 ]
 
 [build-system]
@@ -44,6 +45,9 @@ afft = "afft.cli.entrypoint:main"
 
 [tool.uv]
 package = true
+
+[tool.uv.sources]
+benthloc = { git = "ssh://git@github.com/markvilar/benthloc.git", tag = "v0.3.0" }
 
 [tool.mypy]
 mypy_path = "src"

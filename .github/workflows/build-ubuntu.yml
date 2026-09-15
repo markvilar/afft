@@ -13,6 +13,11 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
+    - name: Load benthloc deploy key
+      uses: webfactory/ssh-agent@v0.9.0
+      with:
+        ssh-private-key: ${{ secrets.BENTHLOC_DEPLOY_KEY }}
+
     - name: Set up Python 3.12
       uses: actions/setup-python@v5
       with:
