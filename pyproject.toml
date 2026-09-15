@@ -47,7 +47,7 @@ afft = "afft.cli.entrypoint:main"
 package = true
 
 [tool.uv.sources]
-benthloc = { git = "https://github.com/markvilar/benthloc.git", tag = "v0.3.0" }
+benthloc = { git = "ssh://git@github.com/markvilar/benthloc.git", tag = "v0.3.0" }
 
 [tool.mypy]
 mypy_path = "src"
