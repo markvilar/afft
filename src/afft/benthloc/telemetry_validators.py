@@ -6,11 +6,9 @@ discovered while building are reported through the diagnostics callbacks by
 the builder instead.
 """
 
-from collections.abc import Mapping
+from benthloc.models import MeasurementPayload
 
 from .telemetry_types import (
-    MEASUREMENT_SCHEMAS,
-    MeasurementSchema,
     TelemetryIngestionConfig,
     WarningCallback,
 )
@@ -92,7 +90,7 @@ def validate_config_against_bundle(
 def check_columns_against_schema(
     series: TelemetryIngestionConfig.SeriesEntry,
     on_warning: WarningCallback,
-    schemas: Mapping[str, MeasurementSchema] = MEASUREMENT_SCHEMAS,
+    payload_type: type[MeasurementPayload] | None,
 ) -> None:
     """
     Warn if a series' `columns` map does not line up with the measurement
@@ -100,19 +98,19 @@ def check_columns_against_schema(
 
     This is advisory only: Benthloc is the authority that validates each
     payload against its measurement schema. A `payload_schema_name` outside
-    the known vocabulary is warned about but not treated as an error, since
-    the vocabulary here may lag Benthloc's.
+    Benthloc's vocabulary is warned about but not treated as an error. The
+    payload model's fields are read once per series here, never per row.
 
     Arguments
     ---------
     series: Series to check.
     on_warning: Callback invoked with `(topic, message)` per issue found.
-    schemas: Known measurement vocabulary, keyed by `payload_schema_name`.
+    payload_type: The Benthloc payload model, or `None` if the series' key is
+        outside Benthloc's vocabulary.
     """
     topic: str = f"{series.sensor_key}/{series.series_key}"
 
-    schema: MeasurementSchema | None = schemas.get(series.payload_schema_name)
-    if schema is None:
+    if payload_type is None:
         on_warning(
             topic,
             f"payload_schema_name {series.payload_schema_name!r} is not in "
@@ -120,9 +118,15 @@ def check_columns_against_schema(
         )
         return
 
+    fields: set[str] = set(payload_type.model_fields)
+    required_fields: set[str] = {
+        name
+        for name, field in payload_type.model_fields.items()
+        if field.is_required()
+    }
     target_fields: set[str] = set(series.columns.values())
 
-    unknown: list[str] = sorted(target_fields - schema.fields())
+    unknown: list[str] = sorted(target_fields - fields)
     if unknown:
         on_warning(
             topic,
@@ -130,9 +134,7 @@ def check_columns_against_schema(
             f"{series.payload_schema_name!r}: {unknown}",
         )
 
-    missing_required: list[str] = sorted(
-        set(schema.required_fields) - target_fields
-    )
+    missing_required: list[str] = sorted(required_fields - target_fields)
     if missing_required:
         on_warning(
             topic,

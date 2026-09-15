@@ -18,6 +18,19 @@ import pandas as pd
 
 import afft.io as io
 
+from benthloc.ingestion import (
+    TelemetrySampleEntry,
+    TelemetrySensorEntry,
+    TelemetrySensorExtrinsicsEntry,
+    TelemetrySeriesEntry,
+)
+from benthloc.models import (
+    MeasurementPayload,
+    MeasurementType,
+    get_measurement_type,
+)
+from pydantic import ValidationError
+
 from afft.deployment import (
     DeploymentBundleReader,
     DeploymentIdentity,
@@ -30,16 +43,10 @@ from afft.utils.log import logger
 
 from .common_validators import check_timestamps_tz_aware_utc
 from .telemetry_types import (
-    MEASUREMENT_SCHEMAS,
     BuildTelemetryIngestionDocumentCommand,
     BuildTelemetryIngestionDocumentResult,
-    MeasurementSchema,
     TelemetryIngestionConfig,
     TelemetryIngestionDiagnostics,
-    TelemetrySampleEntry,
-    TelemetrySensorEntry,
-    TelemetrySensorExtrinsicsEntry,
-    TelemetrySeriesEntry,
     WarningCallback,
 )
 from .telemetry_validators import (
@@ -279,60 +286,68 @@ def _is_present(value: Any) -> bool:
     return True
 
 
-def _to_native(value: Any, is_integer: bool) -> Any:
-    """Convert a frame value to a JSON-serializable native Python scalar."""
-    if is_integer:
-        return int(value)
-    if isinstance(value, (np.integer, np.floating, int, float)) and not (
-        isinstance(value, bool)
-    ):
-        return float(value)
-    if isinstance(value, np.bool_):
-        return bool(value)
-    return value
+def resolve_payload_type(
+    payload_schema_name: str,
+) -> type[MeasurementPayload] | None:
+    """
+    Resolve a measurement key to its Benthloc payload model.
+
+    Arguments
+    ---------
+    payload_schema_name: Registered Benthloc `measurement_key`.
+
+    Returns
+    -------
+    The payload model, or `None` if the key is outside Benthloc's
+    vocabulary.
+    """
+    try:
+        measurement: MeasurementType = get_measurement_type(
+            payload_schema_name
+        )
+    except KeyError:
+        return None
+    payload_type: type[MeasurementPayload] = measurement.payload_type()
+    return payload_type
 
 
 def build_payload(
     row: Mapping[str, Any],
     columns: Mapping[str, str],
-    schema: MeasurementSchema | None,
+    payload_type: type[MeasurementPayload] | None,
 ) -> dict[str, Any] | None:
     """
     Select and rename a frame row into a measurement payload.
 
-    A non-finite value in a required field drops the sample (returns
-    `None`); in an optional field it is omitted. When the schema is unknown,
-    every mapped field is treated as required.
+    Non-finite values are omitted before validation, so a non-finite
+    required field makes Benthloc's payload model fail to validate (the
+    sample is dropped, `None`), while a non-finite optional field is simply
+    absent. When the schema is unknown, the finite values are emitted
+    unvalidated.
 
     Arguments
     ---------
     row: Frame row, keyed by source column name.
     columns: Source column name -> measurement payload field name.
-    schema: The measurement type, or `None` if outside the known
+    payload_type: The Benthloc payload model, or `None` if outside the known
         vocabulary.
 
     Returns
     -------
     The payload, or `None` if the sample must be dropped.
     """
-    required: set[str] = (
-        set(schema.required_fields) if schema is not None else set()
-    )
-    integer_fields: set[str] = (
-        set(schema.integer_fields) if schema is not None else set()
-    )
-
-    payload: dict[str, Any] = {}
-    for source_column, target_field in columns.items():
-        value: Any = row[source_column]
-        if not _is_present(value):
-            if schema is None or target_field in required:
-                return None
-            continue
-        payload[target_field] = _to_native(
-            value, target_field in integer_fields
-        )
-    return payload
+    values: dict[str, Any] = {
+        target_field: row[source_column]
+        for source_column, target_field in columns.items()
+        if _is_present(row[source_column])
+    }
+    if payload_type is None:
+        return values or None
+    try:
+        payload: MeasurementPayload = payload_type.model_validate(values)
+    except ValidationError:
+        return None
+    return payload.model_dump(mode="json", exclude_none=True)
 
 
 def build_series_entry(
@@ -341,7 +356,6 @@ def build_series_entry(
     platform_key: str,
     deployment_key: str,
     diagnostics: TelemetryIngestionDiagnostics,
-    schemas: Mapping[str, MeasurementSchema] = MEASUREMENT_SCHEMAS,
 ) -> TelemetrySeriesEntry | None:
     """
     Build one `telemetry_series` entry from its configured bundle frame.
@@ -357,7 +371,6 @@ def build_series_entry(
     platform_key: Platform key the entry asserts.
     deployment_key: Deployment key the entry asserts.
     diagnostics: Collector for warnings, errors, and drop counts.
-    schemas: Known measurement vocabulary.
 
     Returns
     -------
@@ -387,8 +400,10 @@ def build_series_entry(
         diagnostics.error(topic, str(error))
         return None
 
-    check_columns_against_schema(series, diagnostics.warning, schemas)
-    schema: MeasurementSchema | None = schemas.get(series.payload_schema_name)
+    payload_type: type[MeasurementPayload] | None = resolve_payload_type(
+        series.payload_schema_name
+    )
+    check_columns_against_schema(series, diagnostics.warning, payload_type)
 
     subframe: pd.DataFrame = frame.loc[:, needed].sort_values(_TIMESTAMP_COLUMN)
     source_columns: list[str] = list(series.columns.keys())
@@ -399,7 +414,7 @@ def build_series_entry(
         timestamp: pd.Timestamp = record[0]
         row: dict[str, Any] = dict(zip(source_columns, record[1:]))
         payload: dict[str, Any] | None = build_payload(
-            row, series.columns, schema
+            row, series.columns, payload_type
         )
         if payload is None:
             dropped += 1
