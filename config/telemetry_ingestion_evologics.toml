@@ -68,7 +68,7 @@ columns = { depth = "depth", depth_uncertainty = "depth_std", sea_level = "sea_l
 # frame `conductivity` column is not mapped.
 
 [[afft.benthloc.build_telemetry_ingestion_document.series]]
-frame_key = "telemetry/processed/ctd_seabird/SEABIRD/messages"
+frame_key = "telemetry/raw/ctd_seabird/SEABIRD/messages"
 sensor_key = "ctd_seabird"
 series_key = "ctd"
 payload_schema_name = "conductivity_temperature_depth"
@@ -77,7 +77,7 @@ columns = { temperature = "temperature", salinity = "salinity", pressure = "pres
 # --- Fluorometer series (Ecopuck) ------------------------------------------
 
 [[afft.benthloc.build_telemetry_ingestion_document.series]]
-frame_key = "telemetry/processed/ecopuck_wetlabs/ECOPUCK/messages"
+frame_key = "telemetry/raw/ecopuck_wetlabs/ECOPUCK/messages"
 sensor_key = "ecopuck_wetlabs"
 series_key = "fluorometer"
 payload_schema_name = "chlorophyll_backscatter_cdom"
