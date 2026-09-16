@@ -4,7 +4,7 @@
 # The DVL (`dvl_teledyne_navigator`) and pressure (`pressure_parosci`) series
 # are identical to `config/telemetry_ingestion_evologics.toml`; only the USBL
 # series differ. `columns` maps frame column name -> measurement payload field
-# name; `payload_schema_name` must equal a registered Benthloc v0.3.0
+# name; `payload_schema_name` must equal a registered Benthloc v0.3.1
 # measurement_key.
 
 # --- Sensors ---------------------------------------------------------------
@@ -14,6 +14,12 @@ sensor_key = "dvl_teledyne_navigator"
 
 [[afft.benthloc.build_telemetry_ingestion_document.sensors]]
 sensor_key = "pressure_parosci"
+
+[[afft.benthloc.build_telemetry_ingestion_document.sensors]]
+sensor_key = "ctd_seabird"
+
+[[afft.benthloc.build_telemetry_ingestion_document.sensors]]
+sensor_key = "ecopuck_wetlabs"
 
 [[afft.benthloc.build_telemetry_ingestion_document.sensors]]
 sensor_key = "usbl_linkquest_transponder"
@@ -56,6 +62,26 @@ sensor_key = "pressure_parosci"
 series_key = "depth"
 payload_schema_name = "pressure_depth"
 columns = { depth = "depth", depth_uncertainty = "depth_std", sea_level = "sea_level" }
+
+# --- CTD series (Seabird) --------------------------------------------------
+# The conductivity_temperature_depth payload has no conductivity field, so the
+# frame `conductivity` column is not mapped.
+
+[[afft.benthloc.build_telemetry_ingestion_document.series]]
+frame_key = "telemetry/processed/ctd_seabird/SEABIRD/messages"
+sensor_key = "ctd_seabird"
+series_key = "ctd"
+payload_schema_name = "conductivity_temperature_depth"
+columns = { temperature = "temperature", salinity = "salinity", pressure = "pressure", sound_velocity = "sound_velocity" }
+
+# --- Fluorometer series (Ecopuck) ------------------------------------------
+
+[[afft.benthloc.build_telemetry_ingestion_document.series]]
+frame_key = "telemetry/processed/ecopuck_wetlabs/ECOPUCK/messages"
+sensor_key = "ecopuck_wetlabs"
+series_key = "fluorometer"
+payload_schema_name = "chlorophyll_backscatter_cdom"
+columns = { chlorophyll = "chlorophyll", backscatter = "backscatter", cdom = "cdom", temperature = "temperature" }
 
 # --- USBL series (LinkQuest) -----------------------------------------------
 
