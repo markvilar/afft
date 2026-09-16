@@ -1,0 +1,81 @@
+# Benthloc telemetry ingestion document config for Sirius deployments from
+# 2015 on (EvoLogics S2C R 18/34 USBL, `usbl_evologics_transponder`).
+#
+# The DVL (`dvl_teledyne_navigator`) and pressure (`pressure_parosci`) series
+# are identical to `config/telemetry_ingestion_linkquest.toml`; only the USBL
+# series differ. `columns` maps frame column name -> measurement payload field
+# name; `payload_schema_name` must equal a registered Benthloc v0.3.0
+# measurement_key.
+
+# --- Sensors ---------------------------------------------------------------
+
+[[afft.benthloc.build_telemetry_ingestion_document.sensors]]
+sensor_key = "dvl_teledyne_navigator"
+
+[[afft.benthloc.build_telemetry_ingestion_document.sensors]]
+sensor_key = "pressure_parosci"
+
+[[afft.benthloc.build_telemetry_ingestion_document.sensors]]
+sensor_key = "usbl_evologics_transponder"
+
+# --- DVL series ------------------------------------------------------------
+
+[[afft.benthloc.build_telemetry_ingestion_document.series]]
+frame_key = "telemetry/processed/dvl_teledyne_navigator/RDI/messages"
+sensor_key = "dvl_teledyne_navigator"
+series_key = "velocity"
+payload_schema_name = "linear_velocity"
+columns = { velocity_x = "velocity_x", velocity_y = "velocity_y", velocity_z = "velocity_z", velocity_x_uncertainty = "velocity_x_std", velocity_y_uncertainty = "velocity_y_std", velocity_z_uncertainty = "velocity_z_std" }
+
+[[afft.benthloc.build_telemetry_ingestion_document.series]]
+frame_key = "telemetry/processed/dvl_teledyne_navigator/RDI/messages"
+sensor_key = "dvl_teledyne_navigator"
+series_key = "attitude"
+payload_schema_name = "attitude"
+columns = { roll = "roll", pitch = "pitch", heading = "yaw", roll_uncertainty = "roll_std", pitch_uncertainty = "pitch_std", heading_uncertainty = "yaw_std" }
+
+[[afft.benthloc.build_telemetry_ingestion_document.series]]
+frame_key = "telemetry/processed/dvl_teledyne_navigator/RDI/messages"
+sensor_key = "dvl_teledyne_navigator"
+series_key = "beam_ranges"
+payload_schema_name = "dvl_beam_ranges"
+columns = { range_01 = "range_01", range_02 = "range_02", range_03 = "range_03", range_04 = "range_04" }
+
+[[afft.benthloc.build_telemetry_ingestion_document.series]]
+frame_key = "telemetry/processed/dvl_teledyne_navigator/RDI/messages"
+sensor_key = "dvl_teledyne_navigator"
+series_key = "ensemble"
+payload_schema_name = "teledyne_dvl_ensemble"
+columns = { altitude = "altitude", range_01 = "range_01", range_02 = "range_02", range_03 = "range_03", range_04 = "range_04", heading = "heading", pitch = "pitch", roll = "roll", velocity_x = "velocity_x", velocity_y = "velocity_y", velocity_z = "velocity_z", dmg_x = "dmg_x", dmg_y = "dmg_y", dmg_z = "dmg_z", course_over_ground = "course_over_ground", speed_over_ground = "speed_over_ground", true_heading = "true_heading", gimbal_pitch = "gimbal_pitch", sound_velocity = "sound_velocity", bottom_track_status = "bottom_track_status" }
+
+# --- Pressure series -------------------------------------------------------
+
+[[afft.benthloc.build_telemetry_ingestion_document.series]]
+frame_key = "telemetry/processed/pressure_parosci/depth_sealevel_corrected"
+sensor_key = "pressure_parosci"
+series_key = "depth"
+payload_schema_name = "pressure_depth"
+columns = { depth = "depth", depth_uncertainty = "depth_std", sea_level = "sea_level" }
+
+# --- USBL series (EvoLogics) -----------------------------------------------
+
+[[afft.benthloc.build_telemetry_ingestion_document.series]]
+frame_key = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+sensor_key = "usbl_evologics_transponder"
+series_key = "acoustic_transponder_fix"
+payload_schema_name = "acoustic_transponder_fix"
+columns = { target_latitude = "latitude", target_longitude = "longitude", target_height = "height" }
+
+[[afft.benthloc.build_telemetry_ingestion_document.series]]
+frame_key = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+sensor_key = "usbl_evologics_transponder"
+series_key = "acoustic_transceiver_fix"
+payload_schema_name = "acoustic_transceiver_fix"
+columns = { ship_latitude = "latitude", ship_longitude = "longitude" }
+
+[[afft.benthloc.build_telemetry_ingestion_document.series]]
+frame_key = "telemetry/processed/usbl_evologics_transponder/EVOLOGICS_FIX/messages"
+sensor_key = "usbl_evologics_transponder"
+series_key = "acoustic_link_fix"
+payload_schema_name = "acoustic_link_fix"
+columns = { target_latitude = "target_latitude", target_longitude = "target_longitude", target_height = "target_height", ship_latitude = "vessel_latitude", ship_longitude = "vessel_longitude" }
