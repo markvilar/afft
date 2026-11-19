@@ -66,6 +66,9 @@ def _build_descriptor(
 ) -> DeploymentDescriptor:
     """Builds a descriptor carrying only the fields the summarizer reads."""
     return DeploymentDescriptor(
+        # A key deliberately distinct from the label, so the summarizer is
+        # exercised against a key that is not the label.
+        deployment_key=f"dk-{label}",
         deployment_label=label,
         deployment_start_datetime=moment,
         metadata=DeploymentMetadata(
@@ -97,6 +100,7 @@ def _enriched_platform() -> PlatformDescriptorSection:
     """Builds a fully enriched platform section."""
     return PlatformDescriptorSection(
         identity=PlatformIdentity(
+            platform_key="auv_sirius",
             platform_label="AUV Sirius",
             platform_class="SEABED",
             platform_operator="ACFR",
@@ -112,7 +116,10 @@ def _enriched_platform() -> PlatformDescriptorSection:
 def _enriched_vessel() -> VesselDescriptorSection:
     """Builds a fully enriched vessel section."""
     return VesselDescriptorSection(
-        identity=VesselIdentity(vessel_name="RV Linnaeus"), sensors=[]
+        identity=VesselIdentity(
+            vessel_key="rv_linnaeus", vessel_label="RV Linnaeus"
+        ),
+        sensors=[],
     )
 
 
@@ -223,6 +230,7 @@ def test_summarize_groups_partially_filled_rosters() -> None:
     """Gaps group by field and carry the deployments they affect."""
     partial = PlatformDescriptorSection(
         identity=PlatformIdentity(
+            platform_key="auv_sirius",
             platform_label="AUV Sirius",
             platform_class="SEABED",
             platform_operator="",

@@ -45,12 +45,23 @@ PLATFORM_LABEL: str = "qdch0ftq_20100428_020202"
 UNASSIGNED_LABEL: str = "qd61g27j_20100421_022145"
 
 
+def _deployment_key(label: str) -> str:
+    """Derive a deployment key that is deliberately distinct from the label.
+
+    Keys and labels coincide in authored data, but the code must never rely on
+    that: giving the fixtures distinct values keeps a lookup that keys on the
+    label rather than the key from passing by accident.
+    """
+    return f"dk-{label}"
+
+
 def _build_descriptor(
     label: str,
     topics: tuple[str, ...] = ("RDI", "VIS", "MICRON"),
 ) -> DeploymentDescriptor:
     """Builds a descriptor carrying only the fields enrichment reads."""
     return DeploymentDescriptor(
+        deployment_key=_deployment_key(label),
         deployment_label=label,
         deployment_start_datetime=datetime(
             2010, 4, 28, 2, 2, 2, tzinfo=timezone.utc
@@ -116,7 +127,8 @@ def _build_catalog() -> DeploymentCatalog:
         ],
         platform_profiles=[
             CatalogPlatformProfile(
-                key="2010_seabed",
+                platform_profile_key="2010_seabed",
+                platform_key="auv_sirius",
                 platform_label="AUV Sirius",
                 platform_class="SEABED",
                 platform_operator="ACFR",
@@ -145,8 +157,9 @@ def _build_catalog() -> DeploymentCatalog:
         ],
         vessel_profiles=[
             CatalogVesselProfile(
-                key="201004_wa201004",
-                vessel_name="RV Linnaeus",
+                vessel_profile_key="201004_wa201004",
+                vessel_key="rv_linnaeus",
+                vessel_label="RV Linnaeus",
                 sensors=[
                     CatalogProfileSensor(
                         key="usbl_evologics_transceiver",
@@ -164,14 +177,14 @@ def _build_catalog() -> DeploymentCatalog:
         ],
         deployment_platforms=[
             CatalogDeploymentPlatform(
-                deployment_label=PLATFORM_LABEL,
-                platform_profile="2010_seabed",
+                deployment_key=_deployment_key(PLATFORM_LABEL),
+                platform_profile_key="2010_seabed",
             )
         ],
         deployment_vessels=[
             CatalogDeploymentVessel(
-                deployment_label=PLATFORM_LABEL,
-                vessel_profile="201004_wa201004",
+                deployment_key=_deployment_key(PLATFORM_LABEL),
+                vessel_profile_key="201004_wa201004",
             )
         ],
     )
@@ -206,6 +219,7 @@ def test_matched_sensor_gets_its_identity_and_extrinsics(
     platform = enrichment.descriptor.platform
     assert enrichment.platform_matched is True
     assert platform.identity is not None
+    assert platform.identity.platform_key == "auv_sirius"
     assert platform.identity.platform_label == "AUV Sirius"
     assert platform.identity.platform_class == "SEABED"
     assert platform.identity.platform_operator == "ACFR"
@@ -291,7 +305,8 @@ def test_vessel_section_is_filled_entirely_from_the_profile(
     vessel = enrichment.descriptor.vessel
     assert enrichment.vessel_matched is True
     assert vessel.identity is not None
-    assert vessel.identity.vessel_name == "RV Linnaeus"
+    assert vessel.identity.vessel_key == "rv_linnaeus"
+    assert vessel.identity.vessel_label == "RV Linnaeus"
     assert [sensor.key for sensor in vessel.sensors] == [
         "usbl_evologics_transceiver"
     ]

@@ -46,7 +46,7 @@ def run_build_deployment_bundle(
     The build's result, including the run's diagnostics.
     """
     descriptor: DeploymentDescriptor = load_target_descriptor(
-        command.descriptor_file, command.deployment_label
+        command.descriptor_file, command.deployment_key
     )
     files: DeploymentFiles = validate_build_deployment_bundle_input(
         command, descriptor

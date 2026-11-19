@@ -28,7 +28,7 @@ for bundle_file in "${INPUT_DIR}"/*_deployment_bundle.gpkg; do
 
     output_file="${OUTPUT_DIR}/${deployment_label}_${trajectory_label}_trajectory_ingestion.geojson"
 
-    uv run afft benthloc build-trajectory-ingestion-file \
+    uv run afft benthloc build-trajectory-ingestion-document \
       --bundle "${bundle_file}" \
       --key "${key}" \
       --output "${output_file}" \

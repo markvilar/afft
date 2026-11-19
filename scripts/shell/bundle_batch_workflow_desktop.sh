@@ -100,7 +100,7 @@ for deployment in $(printf "%s\n" "${!SEALEVEL_FILES[@]}" | sort); do
     --descriptor-file "${DESCRIPTOR_FILE}" \
     --data-dir "${DEPLOYMENT_DATA_DIR}/${deployment}_deployment_data" \
     --config "${CONFIG_FILE}" \
-    --deployment-label "${deployment}" \
+    --deployment-key "${deployment}" \
     --output "${bundle_file}" \
     --overwrite
 

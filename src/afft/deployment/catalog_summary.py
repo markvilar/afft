@@ -131,10 +131,10 @@ class CatalogSummary(BaseModel):
 def _collect_coverage(catalog: DeploymentCatalog) -> AssignmentCoverage:
     """Collect the assignment coverage of the deployments the catalog names."""
     platform_labels: set[str] = {
-        entry.deployment_label for entry in catalog.deployment_platforms
+        entry.deployment_key for entry in catalog.deployment_platforms
     }
     vessel_labels: set[str] = {
-        entry.deployment_label for entry in catalog.deployment_vessels
+        entry.deployment_key for entry in catalog.deployment_vessels
     }
     return AssignmentCoverage(
         deployment_labels=sorted(platform_labels | vessel_labels),
@@ -169,11 +169,11 @@ def _collect_platform_assignments(
     """Pair every platform profile with its assigned deployments."""
     labels_by_profile: dict[ProfileKey, list[str]] = {}
     for entry in catalog.deployment_platforms:
-        labels_by_profile.setdefault(entry.platform_profile, []).append(
-            entry.deployment_label
+        labels_by_profile.setdefault(entry.platform_profile_key, []).append(
+            entry.deployment_key
         )
     return _collect_assignments(
-        [profile.key for profile in catalog.platform_profiles],
+        [profile.platform_profile_key for profile in catalog.platform_profiles],
         labels_by_profile,
     )
 
@@ -184,11 +184,12 @@ def _collect_vessel_assignments(
     """Pair every vessel profile with its assigned deployments."""
     labels_by_profile: dict[ProfileKey, list[str]] = {}
     for entry in catalog.deployment_vessels:
-        labels_by_profile.setdefault(entry.vessel_profile, []).append(
-            entry.deployment_label
+        labels_by_profile.setdefault(entry.vessel_profile_key, []).append(
+            entry.deployment_key
         )
     return _collect_assignments(
-        [profile.key for profile in catalog.vessel_profiles], labels_by_profile
+        [profile.vessel_profile_key for profile in catalog.vessel_profiles],
+        labels_by_profile,
     )
 
 
@@ -239,12 +240,13 @@ def _sensor_pose_gaps(
 
 def _empty_fields(
     record: CatalogRecord,
+    record_key: RecordKey,
     fields: tuple[str, ...],
     section: str,
 ) -> list[tuple[FieldName, RecordKey]]:
     """Pair every empty string field of a record with the record's key."""
     return [
-        (f"{section}.{field}", record.key)
+        (f"{section}.{field}", record_key)
         for field in fields
         if not getattr(record, field)
     ]
@@ -275,6 +277,7 @@ def collect_catalog_curation_gaps(
     for sensor_identity in catalog.sensor_identities:
         for field_name, record_key in _empty_fields(
             sensor_identity,
+            sensor_identity.key,
             ("label", "vendor", "product", "type"),
             "sensor_identities",
         ):
@@ -283,22 +286,26 @@ def collect_catalog_curation_gaps(
     for platform_profile in catalog.platform_profiles:
         for field_name, record_key in _empty_fields(
             platform_profile,
+            platform_profile.platform_profile_key,
             ("platform_label", "platform_class", "platform_operator"),
             "platform_profiles",
         ):
             add(field_name, record_key)
         for sensor_key in _sensor_pose_gaps(
-            platform_profile.key, platform_profile.sensors
+            platform_profile.platform_profile_key, platform_profile.sensors
         ):
             add("platform_profiles.sensors.extrinsics", sensor_key)
 
     for vessel_profile in catalog.vessel_profiles:
         for field_name, record_key in _empty_fields(
-            vessel_profile, ("vessel_name",), "vessel_profiles"
+            vessel_profile,
+            vessel_profile.vessel_profile_key,
+            ("vessel_label",),
+            "vessel_profiles",
         ):
             add(field_name, record_key)
         for sensor_key in _sensor_pose_gaps(
-            vessel_profile.key, vessel_profile.sensors
+            vessel_profile.vessel_profile_key, vessel_profile.sensors
         ):
             add("vessel_profiles.sensors.extrinsics", sensor_key)
 

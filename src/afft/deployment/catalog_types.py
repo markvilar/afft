@@ -86,7 +86,9 @@ class CatalogPlatformProfile(BaseModel):
 
     Attributes
     ----------
-    key: Profile lookup key.
+    platform_profile_key: Profile lookup key.
+    platform_key: Stable lookup identity for the platform, written to the
+        descriptor identity by enrichment.
     platform_label: Human-readable platform name.
     platform_class: Vehicle class, matching ``system.vehicle_name``.
     platform_operator: Operating institution.
@@ -96,7 +98,8 @@ class CatalogPlatformProfile(BaseModel):
 
     model_config = ConfigDict(frozen=True)
 
-    key: str
+    platform_profile_key: str
+    platform_key: str
     platform_label: str
     platform_class: str
     platform_operator: str
@@ -109,16 +112,19 @@ class CatalogVesselProfile(BaseModel):
 
     Attributes
     ----------
-    key: Profile lookup key.
-    vessel_name: Support vessel name.
+    vessel_profile_key: Profile lookup key.
+    vessel_key: Stable lookup identity for the vessel, written to the
+        descriptor identity by enrichment.
+    vessel_label: Support vessel name.
     sensors: The vessel's sensor roster, with poses in the ship reference
         frame.
     """
 
     model_config = ConfigDict(frozen=True)
 
-    key: str
-    vessel_name: str
+    vessel_profile_key: str
+    vessel_key: str
+    vessel_label: str
     sensors: list[CatalogProfileSensor] = Field(default_factory=list)
 
 
@@ -128,14 +134,14 @@ class CatalogDeploymentPlatform(BaseModel):
 
     Attributes
     ----------
-    deployment_label: Label of the assigned deployment.
-    platform_profile: Key of the assigned ``CatalogPlatformProfile``.
+    deployment_key: Key of the assigned deployment.
+    platform_profile_key: Key of the assigned ``CatalogPlatformProfile``.
     """
 
     model_config = ConfigDict(frozen=True)
 
-    deployment_label: str
-    platform_profile: str
+    deployment_key: str
+    platform_profile_key: str
 
 
 class CatalogDeploymentVessel(BaseModel):
@@ -144,14 +150,14 @@ class CatalogDeploymentVessel(BaseModel):
 
     Attributes
     ----------
-    deployment_label: Label of the assigned deployment.
-    vessel_profile: Key of the assigned ``CatalogVesselProfile``.
+    deployment_key: Key of the assigned deployment.
+    vessel_profile_key: Key of the assigned ``CatalogVesselProfile``.
     """
 
     model_config = ConfigDict(frozen=True)
 
-    deployment_label: str
-    vessel_profile: str
+    deployment_key: str
+    vessel_profile_key: str
 
 
 class DeploymentCatalog(BaseModel):
@@ -203,44 +209,51 @@ class DeploymentCatalog(BaseModel):
             "sensor_identities",
         )
         platform_profile_keys: set[str] = _unique_keys(
-            (profile.key for profile in self.platform_profiles),
+            (
+                profile.platform_profile_key
+                for profile in self.platform_profiles
+            ),
             "platform_profiles",
         )
         vessel_profile_keys: set[str] = _unique_keys(
-            (profile.key for profile in self.vessel_profiles),
+            (profile.vessel_profile_key for profile in self.vessel_profiles),
             "vessel_profiles",
         )
 
         _unique_keys(
-            (entry.deployment_label for entry in self.deployment_platforms),
+            (entry.deployment_key for entry in self.deployment_platforms),
             "deployment_platforms",
         )
         _unique_keys(
-            (entry.deployment_label for entry in self.deployment_vessels),
+            (entry.deployment_key for entry in self.deployment_vessels),
             "deployment_vessels",
         )
 
         for platform_profile in self.platform_profiles:
             _check_sensor_identities(
-                platform_profile.key, platform_profile.sensors, sensor_keys
+                platform_profile.platform_profile_key,
+                platform_profile.sensors,
+                sensor_keys,
             )
         for vessel_profile in self.vessel_profiles:
             _check_sensor_identities(
-                vessel_profile.key, vessel_profile.sensors, sensor_keys
+                vessel_profile.vessel_profile_key,
+                vessel_profile.sensors,
+                sensor_keys,
             )
 
         for platform_entry in self.deployment_platforms:
-            if platform_entry.platform_profile not in platform_profile_keys:
+            if platform_entry.platform_profile_key not in platform_profile_keys:
                 raise ValueError(
-                    f"deployment {platform_entry.deployment_label!r} references "
+                    f"deployment {platform_entry.deployment_key!r} references "
                     f"unknown platform profile: "
-                    f"{platform_entry.platform_profile!r}"
+                    f"{platform_entry.platform_profile_key!r}"
                 )
         for vessel_entry in self.deployment_vessels:
-            if vessel_entry.vessel_profile not in vessel_profile_keys:
+            if vessel_entry.vessel_profile_key not in vessel_profile_keys:
                 raise ValueError(
-                    f"deployment {vessel_entry.deployment_label!r} references "
-                    f"unknown vessel profile: {vessel_entry.vessel_profile!r}"
+                    f"deployment {vessel_entry.deployment_key!r} references "
+                    f"unknown vessel profile: {vessel_entry.vessel_profile_key!r}"
                 )
 
         return self

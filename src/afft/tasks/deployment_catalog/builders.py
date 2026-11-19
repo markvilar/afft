@@ -168,7 +168,8 @@ def build_platform_profile_stubs(
 
     return [
         CatalogPlatformProfile(
-            key=profile_key,
+            platform_profile_key=profile_key,
+            platform_key="",
             platform_label="",
             platform_class=platform_classes[profile_key],
             platform_operator="",
@@ -205,7 +206,9 @@ def build_vessel_profile_stubs(
     Vessel profile stubs with an empty name and no sensors, sorted by key.
     """
     return [
-        CatalogVesselProfile(key=profile_key, vessel_name="")
+        CatalogVesselProfile(
+            vessel_profile_key=profile_key, vessel_key="", vessel_label=""
+        )
         for profile_key in sorted(set(profile_keys.values()))
     ]
 
@@ -229,8 +232,8 @@ def build_deployment_platforms(
     """
     return [
         CatalogDeploymentPlatform(
-            deployment_label=descriptor.deployment_label,
-            platform_profile=profile_keys[descriptor.deployment_label],
+            deployment_key=descriptor.deployment_key,
+            platform_profile_key=profile_keys[descriptor.deployment_label],
         )
         for descriptor in sorted(
             descriptors, key=lambda item: item.deployment_label
@@ -257,8 +260,8 @@ def build_deployment_vessels(
     """
     return [
         CatalogDeploymentVessel(
-            deployment_label=descriptor.deployment_label,
-            vessel_profile=profile_keys[descriptor.deployment_label],
+            deployment_key=descriptor.deployment_key,
+            vessel_profile_key=profile_keys[descriptor.deployment_label],
         )
         for descriptor in sorted(
             descriptors, key=lambda item: item.deployment_label

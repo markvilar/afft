@@ -55,11 +55,11 @@ def bundle_group(context: click.Context) -> None:
     help="path to the deployment descriptors TOML file",
 )
 @click.option(
-    "--deployment-label",
-    "deployment_label",
+    "--deployment-key",
+    "deployment_key",
     type=str,
     required=True,
-    help="label of the deployment to build, selected from --descriptor-file",
+    help="key of the deployment to build, selected from --descriptor-file",
 )
 @click.option(
     "--data-dir",
@@ -96,7 +96,7 @@ def bundle_group(context: click.Context) -> None:
 )
 def build(
     descriptor_file: str,
-    deployment_label: str,
+    deployment_key: str,
     data_dir: str,
     config_file: str,
     output_file: str,
@@ -106,7 +106,7 @@ def build(
     """Build a deployment bundle from a descriptor and its raw message logs."""
     invoke_build_deployment_bundle(
         descriptor_file,
-        deployment_label,
+        deployment_key,
         data_dir,
         config_file,
         output_file,

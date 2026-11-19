@@ -27,7 +27,7 @@ from .descriptor_types import (
 )
 
 type CatalogKey = str
-type DeploymentLabel = str
+type DeploymentKey = str
 
 
 class EnrichmentSection(StrEnum):
@@ -47,8 +47,8 @@ class DeploymentCatalogIndex(BaseModel):
     sensor_identities: Sensor identity records, keyed by catalog key.
     platform_profiles: Platform profiles, keyed by catalog key.
     vessel_profiles: Vessel profiles, keyed by catalog key.
-    platform_assignments: Platform profile key, per deployment label.
-    vessel_assignments: Vessel profile key, per deployment label.
+    platform_assignments: Platform profile key, per deployment key.
+    vessel_assignments: Vessel profile key, per deployment key.
     """
 
     model_config = ConfigDict(frozen=True)
@@ -56,13 +56,13 @@ class DeploymentCatalogIndex(BaseModel):
     sensor_identities: dict[CatalogKey, CatalogSensorIdentity]
     platform_profiles: dict[CatalogKey, CatalogPlatformProfile]
     vessel_profiles: dict[CatalogKey, CatalogVesselProfile]
-    platform_assignments: dict[DeploymentLabel, CatalogKey]
-    vessel_assignments: dict[DeploymentLabel, CatalogKey]
+    platform_assignments: dict[DeploymentKey, CatalogKey]
+    vessel_assignments: dict[DeploymentKey, CatalogKey]
 
     @classmethod
     def from_catalog(cls, catalog: DeploymentCatalog) -> Self:
         """
-        Index a catalog for lookup by deployment label and record key.
+        Index a catalog for lookup by deployment key and record key.
 
         Arguments
         ---------
@@ -77,55 +77,57 @@ class DeploymentCatalogIndex(BaseModel):
                 sensor.key: sensor for sensor in catalog.sensor_identities
             },
             platform_profiles={
-                profile.key: profile for profile in catalog.platform_profiles
+                profile.platform_profile_key: profile
+                for profile in catalog.platform_profiles
             },
             vessel_profiles={
-                profile.key: profile for profile in catalog.vessel_profiles
+                profile.vessel_profile_key: profile
+                for profile in catalog.vessel_profiles
             },
             platform_assignments={
-                entry.deployment_label: entry.platform_profile
+                entry.deployment_key: entry.platform_profile_key
                 for entry in catalog.deployment_platforms
             },
             vessel_assignments={
-                entry.deployment_label: entry.vessel_profile
+                entry.deployment_key: entry.vessel_profile_key
                 for entry in catalog.deployment_vessels
             },
         )
 
     def platform_profile(
-        self, deployment_label: DeploymentLabel
+        self, deployment_key: DeploymentKey
     ) -> CatalogPlatformProfile | None:
         """
         Look up the platform profile assigned to a deployment.
 
         Arguments
         ---------
-        deployment_label: Label of the deployment to look up.
+        deployment_key: Key of the deployment to look up.
 
         Returns
         -------
         The assigned platform profile, or ``None`` if the deployment has no
         assignment.
         """
-        key: CatalogKey | None = self.platform_assignments.get(deployment_label)
+        key: CatalogKey | None = self.platform_assignments.get(deployment_key)
         return self.platform_profiles.get(key) if key is not None else None
 
     def vessel_profile(
-        self, deployment_label: DeploymentLabel
+        self, deployment_key: DeploymentKey
     ) -> CatalogVesselProfile | None:
         """
         Look up the vessel profile assigned to a deployment.
 
         Arguments
         ---------
-        deployment_label: Label of the deployment to look up.
+        deployment_key: Key of the deployment to look up.
 
         Returns
         -------
         The assigned vessel profile, or ``None`` if the deployment has no
         assignment.
         """
-        key: CatalogKey | None = self.vessel_assignments.get(deployment_label)
+        key: CatalogKey | None = self.vessel_assignments.get(deployment_key)
         return self.vessel_profiles.get(key) if key is not None else None
 
 
@@ -187,7 +189,7 @@ def enrich_descriptor(
 
     if section in (EnrichmentSection.PLATFORM, EnrichmentSection.ALL):
         platform_profile: CatalogPlatformProfile | None = (
-            index.platform_profile(descriptor.deployment_label)
+            index.platform_profile(descriptor.deployment_key)
         )
         platform_matched = platform_profile is not None
         if platform_profile is not None:
@@ -197,7 +199,7 @@ def enrich_descriptor(
 
     if section in (EnrichmentSection.VESSEL, EnrichmentSection.ALL):
         vessel_profile: CatalogVesselProfile | None = index.vessel_profile(
-            descriptor.deployment_label
+            descriptor.deployment_key
         )
         vessel_matched = vessel_profile is not None
         if vessel_profile is not None:
@@ -278,6 +280,7 @@ def enrich_platform_section(
     return section.model_copy(
         update={
             "identity": PlatformIdentity(
+                platform_key=profile.platform_key,
                 platform_label=profile.platform_label,
                 platform_class=profile.platform_class,
                 platform_operator=profile.platform_operator,
@@ -313,7 +316,10 @@ def enrich_vessel_section(
     """
     return section.model_copy(
         update={
-            "identity": VesselIdentity(vessel_name=profile.vessel_name),
+            "identity": VesselIdentity(
+                vessel_key=profile.vessel_key,
+                vessel_label=profile.vessel_label,
+            ),
             "sensors": _resolve_sensors(
                 profile.sensors, identities, VesselSensor
             ),

@@ -38,6 +38,7 @@ def build_deployment_section(
         key_builders.deployment_identity_key(),
         frame_builders.record_to_frame(
             DeploymentIdentity(
+                deployment_key=descriptor.deployment_key,
                 deployment_label=descriptor.deployment_label,
                 deployment_start_datetime=descriptor.deployment_start_datetime,
                 deployment_end_datetime=descriptor.deployment_end_datetime,
@@ -58,7 +59,7 @@ def build_deployment_section(
     writer.write_frame(
         key_builders.deployment_provenance_key(),
         frame_builders.record_to_frame(
-            DeploymentProvenance(deployment_key=descriptor.deployment_label)
+            DeploymentProvenance(deployment_key=descriptor.deployment_key)
         ),
         if_exists="fail",
     )

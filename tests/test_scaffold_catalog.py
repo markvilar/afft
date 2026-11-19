@@ -36,6 +36,9 @@ def _build_descriptor(
 ) -> DeploymentDescriptor:
     """Builds a descriptor carrying only the fields the scaffolder reads."""
     return DeploymentDescriptor(
+        # A key deliberately distinct from the label: the scaffolder must copy
+        # the descriptor's key into its assignments, not fall back to the label.
+        deployment_key=f"dk-{label}",
         deployment_label=label,
         deployment_start_datetime=moment,
         metadata=DeploymentMetadata(
@@ -92,7 +95,9 @@ def test_platform_profiles_are_grouped_per_year(
 ) -> None:
     catalog = scaffold_catalog(descriptors, ScaffoldCatalogDiagnostics())
 
-    assert [profile.key for profile in catalog.platform_profiles] == [
+    assert [
+        profile.platform_profile_key for profile in catalog.platform_profiles
+    ] == [
         "2010_seabed",
         "2011_seabed",
     ]
@@ -137,10 +142,10 @@ def test_vessel_profiles_are_grouped_per_campaign(
 ) -> None:
     catalog = scaffold_catalog(descriptors, ScaffoldCatalogDiagnostics())
 
-    assert [profile.key for profile in catalog.vessel_profiles] == [
-        "201004_wa201004"
-    ]
-    assert catalog.vessel_profiles[0].vessel_name == ""
+    assert [
+        profile.vessel_profile_key for profile in catalog.vessel_profiles
+    ] == ["201004_wa201004"]
+    assert catalog.vessel_profiles[0].vessel_label == ""
     assert catalog.vessel_profiles[0].sensors == []
 
 
@@ -152,16 +157,14 @@ def test_deployments_without_usbl_logs_get_no_vessel(
     catalog = scaffold_catalog(descriptors, diagnostics)
 
     # Both tables are sorted by deployment label, not left in descriptor order.
-    assert [
-        entry.deployment_label for entry in catalog.deployment_platforms
-    ] == [
-        "qd61g27j_20100421_022145",
-        "qdch0ftq_20100428_020202",
-        "qdch0ftq_20110415_020103",
+    assert [entry.deployment_key for entry in catalog.deployment_platforms] == [
+        "dk-qd61g27j_20100421_022145",
+        "dk-qdch0ftq_20100428_020202",
+        "dk-qdch0ftq_20110415_020103",
     ]
-    assert [entry.deployment_label for entry in catalog.deployment_vessels] == [
-        "qd61g27j_20100421_022145",
-        "qdch0ftq_20100428_020202",
+    assert [entry.deployment_key for entry in catalog.deployment_vessels] == [
+        "dk-qd61g27j_20100421_022145",
+        "dk-qdch0ftq_20100428_020202",
     ]
     assert [warning.deployment_label for warning in diagnostics.warnings] == [
         "qdch0ftq_20110415_020103"
@@ -173,8 +176,8 @@ def test_mappings_reference_the_derived_profile_keys(
 ) -> None:
     catalog = scaffold_catalog(descriptors, ScaffoldCatalogDiagnostics())
 
-    assert catalog.deployment_platforms[2].platform_profile == "2011_seabed"
-    assert catalog.deployment_vessels[0].vessel_profile == "201004_wa201004"
+    assert catalog.deployment_platforms[2].platform_profile_key == "2011_seabed"
+    assert catalog.deployment_vessels[0].vessel_profile_key == "201004_wa201004"
 
 
 def test_run_writes_a_readable_catalog(

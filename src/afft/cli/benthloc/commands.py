@@ -1,18 +1,21 @@
-"""CLI commands for building Benthloc ingestion files."""
+"""CLI commands for building Benthloc ingestion documents."""
 
 import click
 
-from .actions import invoke_build_trajectory_ingestion_file
+from .actions import (
+    invoke_build_telemetry_ingestion_document,
+    invoke_build_trajectory_ingestion_document,
+)
 
 
 @click.group()
 @click.pass_context
 def benthloc_group(context: click.Context) -> None:
-    """CLI group for building Benthloc ingestion files."""
+    """CLI group for building Benthloc ingestion documents."""
     context.ensure_object(dict)
 
 
-@benthloc_group.command("build-trajectory-ingestion-file")
+@benthloc_group.command("build-trajectory-ingestion-document")
 @click.option(
     "--bundle",
     "bundle_file",
@@ -30,7 +33,7 @@ def benthloc_group(context: click.Context) -> None:
     "output_file",
     type=click.Path(dir_okay=False),
     required=True,
-    help="path to write the Benthloc trajectory ingestion file to",
+    help="path to write the Benthloc trajectory ingestion document to",
 )
 @click.option(
     "--trajectory-label",
@@ -88,7 +91,7 @@ def benthloc_group(context: click.Context) -> None:
     default=False,
     help="validate and report the labels and pose count without writing",
 )
-def build_trajectory_ingestion_file(
+def build_trajectory_ingestion_document(
     bundle_file: str,
     key: str,
     output_file: str,
@@ -103,9 +106,9 @@ def build_trajectory_ingestion_file(
     overwrite: bool,
     dry_run: bool,
 ) -> None:
-    """Build a Benthloc trajectory ingestion file from a processed
+    """Build a Benthloc trajectory ingestion document from a processed
     deployment bundle's trajectory geoframe."""
-    invoke_build_trajectory_ingestion_file(
+    invoke_build_trajectory_ingestion_document(
         bundle_file,
         key,
         output_file,
@@ -119,4 +122,64 @@ def build_trajectory_ingestion_file(
         deployment_label,
         overwrite,
         dry_run,
+    )
+
+
+@benthloc_group.command("build-telemetry-ingestion-document")
+@click.option(
+    "--bundle",
+    "bundle_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the built deployment bundle to read from, never written",
+)
+@click.option(
+    "--config",
+    "config_file",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True,
+    help="path to the task config TOML file holding the builder's section",
+)
+@click.option(
+    "--output",
+    "output_file",
+    type=click.Path(dir_okay=False),
+    required=True,
+    help="path to write the Benthloc telemetry ingestion document to",
+)
+@click.option(
+    "--overwrite",
+    is_flag=True,
+    default=False,
+    help="overwrite the output file if it already exists",
+)
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    help="validate and report the keys the document asserts without writing",
+)
+@click.option(
+    "--verbose",
+    is_flag=True,
+    default=False,
+    help="log accumulated diagnostics after the run completes",
+)
+def build_telemetry_ingestion_document(
+    bundle_file: str,
+    config_file: str,
+    output_file: str,
+    overwrite: bool,
+    dry_run: bool,
+    verbose: bool,
+) -> None:
+    """Build a Benthloc telemetry ingestion document from a built deployment
+    bundle."""
+    invoke_build_telemetry_ingestion_document(
+        bundle_file,
+        config_file,
+        output_file,
+        overwrite,
+        dry_run,
+        verbose,
     )

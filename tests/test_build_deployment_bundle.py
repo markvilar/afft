@@ -32,6 +32,7 @@ from afft.tasks.build_deployment_bundle import (
 )
 
 DEPLOYMENT_LABEL: str = "qdch0ftq_20100428_020202"
+DEPLOYMENT_KEY: str = "geebank_16_15m_out"
 
 _PAROSCI_LINES: list[str] = [
     "PAROSCI:  1272420122.878\t-0.0514",
@@ -46,6 +47,7 @@ def _build_descriptor(
     platform = PlatformDescriptorSection(
         identity=(
             PlatformIdentity(
+                platform_key="auv_sirius",
                 platform_label="AUV Sirius",
                 platform_class="SEABED",
                 platform_operator="ACFR",
@@ -61,10 +63,13 @@ def _build_descriptor(
     )
     vessel = VesselDescriptorSection(
         identity=(
-            VesselIdentity(vessel_name="RV Linnaeus") if enriched else None
+            VesselIdentity(vessel_key="rv_linnaeus", vessel_label="RV Linnaeus")
+            if enriched
+            else None
         )
     )
     return DeploymentDescriptor(
+        deployment_key=DEPLOYMENT_KEY,
         deployment_label=label,
         deployment_start_datetime=datetime(
             2010, 4, 28, 2, 2, 2, tzinfo=timezone.utc
@@ -131,7 +136,7 @@ def _write_command(
     config_file = _write_config(tmp_path)
     return BuildDeploymentBundleCommand(
         descriptor_file=descriptor_file,
-        deployment_label=label,
+        deployment_key=DEPLOYMENT_KEY,
         data_dir=data_dir,
         config_file=config_file,
         output_file=tmp_path / "bundle.gpkg",
@@ -154,6 +159,7 @@ def test_run_builds_a_readable_bundle(tmp_path: Path) -> None:
 
     with open_deployment_bundle_reader(command.output_file) as reader:
         deployment_identity = reader.read_frame("deployment/identity")
+        assert deployment_identity["deployment_key"].iloc[0] == DEPLOYMENT_KEY
         assert deployment_identity["deployment_label"].iloc[0] == (
             DEPLOYMENT_LABEL
         )
@@ -178,9 +184,11 @@ def test_run_builds_a_readable_bundle(tmp_path: Path) -> None:
             deployment_identity["deployment_end_datetime"]
         )
         platform_identity = reader.read_frame("platform/identity")
+        assert platform_identity["platform_key"].iloc[0] == "auv_sirius"
         assert platform_identity["platform_label"].iloc[0] == "AUV Sirius"
         vessel_identity = reader.read_frame("vessel/identity")
-        assert vessel_identity["vessel_name"].iloc[0] == "RV Linnaeus"
+        assert vessel_identity["vessel_key"].iloc[0] == "rv_linnaeus"
+        assert vessel_identity["vessel_label"].iloc[0] == "RV Linnaeus"
 
         key = "telemetry/raw/pressure_parosci/PAROSCI/messages"
         assert key in reader.list_frames()
@@ -208,11 +216,11 @@ def test_run_warns_on_a_declared_topic_with_no_messages(
     ] == [("PAROSCI", "declared but no messages parsed")]
 
 
-def test_run_rejects_an_unknown_deployment_label(tmp_path: Path) -> None:
+def test_run_rejects_an_unknown_deployment_key(tmp_path: Path) -> None:
     command = _write_command(tmp_path)
     command = BuildDeploymentBundleCommand(
         descriptor_file=command.descriptor_file,
-        deployment_label="does_not_exist",
+        deployment_key="does_not_exist",
         data_dir=command.data_dir,
         config_file=command.config_file,
         output_file=command.output_file,
@@ -254,8 +262,8 @@ def test_cli_builds_a_deployment_bundle(tmp_path: Path) -> None:
             "build",
             "--descriptor-file",
             str(command.descriptor_file),
-            "--deployment-label",
-            DEPLOYMENT_LABEL,
+            "--deployment-key",
+            DEPLOYMENT_KEY,
             "--data-dir",
             str(command.data_dir),
             "--config",
@@ -282,6 +290,7 @@ def test_record_to_frame_normalizes_an_optional_datetime() -> None:
     """
     frame = record_to_frame(
         DeploymentIdentity(
+            deployment_key=DEPLOYMENT_KEY,
             deployment_label=DEPLOYMENT_LABEL,
             deployment_start_datetime=datetime(
                 2010, 4, 28, 2, 2, 2, tzinfo=timezone.utc
@@ -301,6 +310,7 @@ def test_record_to_frame_encodes_an_absent_datetime_as_nat() -> None:
     """An unrecorded end becomes `NaT` in a UTC column, not an object."""
     frame = record_to_frame(
         DeploymentIdentity(
+            deployment_key=DEPLOYMENT_KEY,
             deployment_label=DEPLOYMENT_LABEL,
             deployment_start_datetime=datetime(
                 2010, 4, 28, 2, 2, 2, tzinfo=timezone.utc

@@ -324,6 +324,7 @@ def run_clip_deployment_bundle(
     clipped: list[ClippedFrame] = []
     copied: list[str] = []
     empty: list[str] = []
+    deployment_key: str
     deployment_label: str
 
     output_file: Path = command.output_file
@@ -332,7 +333,7 @@ def run_clip_deployment_bundle(
         reader: DeploymentBundleReader
         target: DeploymentBundleIO
         with open_deployment_bundle_reader(command.input_file) as reader:
-            deployment_label = _clipped_deployment_label(
+            deployment_key, deployment_label = _clipped_deployment_identity(
                 reader, command.label_suffix
             )
             with open_deployment_bundle(staged) as target:
@@ -342,6 +343,7 @@ def run_clip_deployment_bundle(
                             key,
                             record_to_frame(
                                 DeploymentIdentity(
+                                    deployment_key=deployment_key,
                                     deployment_label=deployment_label,
                                     deployment_start_datetime=command.start,
                                     deployment_end_datetime=command.end,
@@ -357,7 +359,7 @@ def run_clip_deployment_bundle(
                             key,
                             record_to_frame(
                                 DeploymentProvenance(
-                                    deployment_key=deployment_label,
+                                    deployment_key=deployment_key,
                                     source_bundle=str(command.input_file),
                                     clip_start_datetime=command.start,
                                     clip_end_datetime=command.end,
@@ -423,13 +425,14 @@ def _to_utc_timestamp(value: datetime) -> pd.Timestamp:
     return timestamp.tz_convert("UTC")
 
 
-def _clipped_deployment_label(
+def _clipped_deployment_identity(
     reader: DeploymentBundleReader, label_suffix: str
-) -> str:
-    """Read the source deployment's label and join the suffix onto it.
+) -> tuple[str, str]:
+    """Read the source deployment's key and label and join the suffix onto each.
 
     Every bundle is written onto the identity field names the descriptor
-    models use, so the label is read unconditionally rather than probed for.
+    models use, so the key and label are read unconditionally rather than
+    probed for.
     """
     if not reader.has_frame(_IDENTITY_KEY):
         raise ValueError(
@@ -438,5 +441,9 @@ def _clipped_deployment_label(
         )
 
     identity: pd.DataFrame = reader.read_frame(_IDENTITY_KEY)
+    source_key: str = str(identity["deployment_key"].iloc[0])
     source_label: str = str(identity["deployment_label"].iloc[0])
-    return f"{source_label}_{label_suffix}"
+    return (
+        f"{source_key}_{label_suffix}",
+        f"{source_label}_{label_suffix}",
+    )

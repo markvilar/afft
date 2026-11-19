@@ -1,4 +1,5 @@
 [[deployments]]
+deployment_key = "qd61g27j_20100421_022145"
 deployment_label = "qd61g27j_20100421_022145"
 deployment_start_datetime = 2010-04-21 02:21:45+00:00
 
@@ -70,6 +71,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -209,7 +211,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -226,6 +229,7 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments]]
+deployment_key = "qd61g27j_20110410_011202"
 deployment_label = "qd61g27j_20110410_011202"
 deployment_start_datetime = 2011-04-10 01:12:02+00:00
 
@@ -287,6 +291,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -426,7 +431,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Cape Ferguson"
+vessel_key = "rv_cape_ferguson"
+vessel_label = "RV Cape Ferguson"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -443,6 +449,7 @@ extrinsics.roty = -0.0016
 extrinsics.rotz = -0.0106
 
 [[deployments]]
+deployment_key = "qd61g27j_20120422_043114"
 deployment_label = "qd61g27j_20120422_043114"
 deployment_start_datetime = 2012-04-22 04:31:14+00:00
 
@@ -508,6 +515,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -657,7 +665,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -674,6 +683,7 @@ extrinsics.roty = 0.001
 extrinsics.rotz = 0.2548
 
 [[deployments]]
+deployment_key = "qd61g27j_20130414_013620"
 deployment_label = "qd61g27j_20130414_013620"
 deployment_start_datetime = 2013-04-14 01:36:20+00:00
 
@@ -735,6 +745,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -882,7 +893,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -899,6 +911,7 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments]]
+deployment_key = "qd61g27j_20170523_040815"
 deployment_label = "qd61g27j_20170523_040815"
 deployment_start_datetime = 2017-05-23 04:08:15+00:00
 
@@ -964,6 +977,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -1113,7 +1127,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "Silver Streak"
+vessel_key = "silver_streak"
+vessel_label = "Silver Streak"
 
 [[deployments.vessel.sensors]]
 key = "usbl_evologics_transceiver"
@@ -1130,6 +1145,7 @@ extrinsics.roty = 0.0032
 extrinsics.rotz = 0.4713
 
 [[deployments]]
+deployment_key = "qdc5ghs3_20100430_024508"
 deployment_label = "qdc5ghs3_20100430_024508"
 deployment_start_datetime = 2010-04-30 02:45:08+00:00
 
@@ -1190,6 +1206,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -1329,7 +1346,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -1346,6 +1364,7 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments]]
+deployment_key = "qdc5ghs3_20120501_033336"
 deployment_label = "qdc5ghs3_20120501_033336"
 deployment_start_datetime = 2012-05-01 03:33:36+00:00
 
@@ -1409,6 +1428,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -1558,7 +1578,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -1575,6 +1596,7 @@ extrinsics.roty = 0.001
 extrinsics.rotz = 0.2548
 
 [[deployments]]
+deployment_key = "qdc5ghs3_20130405_103429"
 deployment_label = "qdc5ghs3_20130405_103429"
 deployment_start_datetime = 2013-04-05 10:34:29+00:00
 
@@ -1636,6 +1658,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -1783,7 +1806,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -1800,6 +1824,7 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments]]
+deployment_key = "qdc5ghs3_20210315_230947"
 deployment_label = "qdc5ghs3_20210315_230947"
 deployment_start_datetime = 2021-03-15 23:09:47+00:00
 
@@ -1867,6 +1892,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -2011,7 +2037,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "PoppaG"
+vessel_key = "poppag"
+vessel_label = "PoppaG"
 
 [[deployments.vessel.sensors]]
 key = "usbl_evologics_transceiver"
@@ -2028,6 +2055,7 @@ extrinsics.roty = 0.23
 extrinsics.rotz = -0.21
 
 [[deployments]]
+deployment_key = "qdch0ftq_20100428_020202"
 deployment_label = "qdch0ftq_20100428_020202"
 deployment_start_datetime = 2010-04-28 02:02:02+00:00
 
@@ -2092,6 +2120,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -2231,7 +2260,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -2248,6 +2278,7 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments]]
+deployment_key = "qdch0ftq_20110415_020103"
 deployment_label = "qdch0ftq_20110415_020103"
 deployment_start_datetime = 2011-04-15 02:01:03+00:00
 
@@ -2313,6 +2344,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -2452,7 +2484,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Naturaliste"
+vessel_key = "rv_naturaliste"
+vessel_label = "RV Naturaliste"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -2469,6 +2502,7 @@ extrinsics.roty = -0.0007
 extrinsics.rotz = 0.0375
 
 [[deployments]]
+deployment_key = "qdch0ftq_20120430_002423"
 deployment_label = "qdch0ftq_20120430_002423"
 deployment_start_datetime = 2012-04-30 00:24:23+00:00
 
@@ -2534,6 +2568,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -2683,7 +2718,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -2700,6 +2736,7 @@ extrinsics.roty = 0.001
 extrinsics.rotz = 0.2548
 
 [[deployments]]
+deployment_key = "qdch0ftq_20130406_023610"
 deployment_label = "qdch0ftq_20130406_023610"
 deployment_start_datetime = 2013-04-06 02:36:10+00:00
 
@@ -2763,6 +2800,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -2910,7 +2948,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -2927,6 +2966,7 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments]]
+deployment_key = "qdch0ftq_20140327_071251"
 deployment_label = "qdch0ftq_20140327_071251"
 deployment_start_datetime = 2014-03-27 07:12:51+00:00
 
@@ -2999,6 +3039,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -3147,7 +3188,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -3164,6 +3206,7 @@ extrinsics.roty = -0.0126
 extrinsics.rotz = -0.0685
 
 [[deployments]]
+deployment_key = "qdch0ftq_20170526_025746"
 deployment_label = "qdch0ftq_20170526_025746"
 deployment_start_datetime = 2017-05-26 02:57:46+00:00
 
@@ -3230,6 +3273,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -3379,7 +3423,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "Silver Streak"
+vessel_key = "silver_streak"
+vessel_label = "Silver Streak"
 
 [[deployments.vessel.sensors]]
 key = "usbl_evologics_transceiver"
@@ -3396,6 +3441,7 @@ extrinsics.roty = 0.0032
 extrinsics.rotz = 0.4713
 
 [[deployments]]
+deployment_key = "qdch0ftq_20210315_034028"
 deployment_label = "qdch0ftq_20210315_034028"
 deployment_start_datetime = 2021-03-15 03:40:28+00:00
 
@@ -3465,6 +3511,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -3609,7 +3656,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "PoppaG"
+vessel_key = "poppag"
+vessel_label = "PoppaG"
 
 [[deployments.vessel.sensors]]
 key = "usbl_evologics_transceiver"
@@ -3626,6 +3674,7 @@ extrinsics.roty = 0.23
 extrinsics.rotz = -0.21
 
 [[deployments]]
+deployment_key = "qdchdmy1_20110416_005411"
 deployment_label = "qdchdmy1_20110416_005411"
 deployment_start_datetime = 2011-04-16 00:54:11+00:00
 
@@ -3686,6 +3735,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -3825,7 +3875,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Naturaliste"
+vessel_key = "rv_naturaliste"
+vessel_label = "RV Naturaliste"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -3842,6 +3893,7 @@ extrinsics.roty = -0.0007
 extrinsics.rotz = 0.0375
 
 [[deployments]]
+deployment_key = "qdchdmy1_20120501_071203"
 deployment_label = "qdchdmy1_20120501_071203"
 deployment_start_datetime = 2012-05-01 07:12:03+00:00
 
@@ -3902,6 +3954,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -4051,7 +4104,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -4068,6 +4122,7 @@ extrinsics.roty = 0.001
 extrinsics.rotz = 0.2548
 
 [[deployments]]
+deployment_key = "qdchdmy1_20130406_081713"
 deployment_label = "qdchdmy1_20130406_081713"
 deployment_start_datetime = 2013-04-06 08:17:13+00:00
 
@@ -4129,6 +4184,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -4276,7 +4332,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -4293,6 +4350,7 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments]]
+deployment_key = "qdchdmy1_20140328_063358"
 deployment_label = "qdchdmy1_20140328_063358"
 deployment_start_datetime = 2014-03-28 06:33:58+00:00
 
@@ -4362,6 +4420,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -4510,7 +4569,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Linnaeus"
+vessel_key = "rv_linnaeus"
+vessel_label = "RV Linnaeus"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -4527,6 +4587,7 @@ extrinsics.roty = -0.0126
 extrinsics.rotz = -0.0685
 
 [[deployments]]
+deployment_key = "qdchdmy1_20170525_234624"
 deployment_label = "qdchdmy1_20170525_234624"
 deployment_start_datetime = 2017-05-25 23:46:24+00:00
 
@@ -4591,6 +4652,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -4740,7 +4802,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "Silver Streak"
+vessel_key = "silver_streak"
+vessel_label = "Silver Streak"
 
 [[deployments.vessel.sensors]]
 key = "usbl_evologics_transceiver"
@@ -4757,6 +4820,7 @@ extrinsics.roty = 0.0032
 extrinsics.rotz = 0.4713
 
 [[deployments]]
+deployment_key = "qdchdmy1_20210315_081519"
 deployment_label = "qdchdmy1_20210315_081519"
 deployment_start_datetime = 2021-03-15 08:15:19+00:00
 
@@ -4837,6 +4901,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -4981,7 +5046,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "PoppaG"
+vessel_key = "poppag"
+vessel_label = "PoppaG"
 
 [[deployments.vessel.sensors]]
 key = "usbl_evologics_transceiver"
@@ -4998,6 +5064,7 @@ extrinsics.roty = 0.23
 extrinsics.rotz = -0.21
 
 [[deployments]]
+deployment_key = "qtqxshxs_20110815_102540"
 deployment_label = "qtqxshxs_20110815_102540"
 deployment_start_datetime = 2011-08-15 10:25:40+00:00
 
@@ -5064,6 +5131,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -5203,7 +5271,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "Solander"
+vessel_key = "solander"
+vessel_label = "Solander"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -5220,6 +5289,7 @@ extrinsics.roty = 0.041
 extrinsics.rotz = -0.0609
 
 [[deployments]]
+deployment_key = "qtqxshxs_20150327_015552"
 deployment_label = "qtqxshxs_20150327_015552"
 deployment_start_datetime = 2015-03-27 01:55:52+00:00
 
@@ -5298,6 +5368,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -5446,7 +5517,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "Tasmania Bluefin"
+vessel_key = "tasmania_bluefin"
+vessel_label = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
 key = "usbl_evologics_transceiver"
@@ -5463,6 +5535,7 @@ extrinsics.roty = 0.0195
 extrinsics.rotz = -0.0464
 
 [[deployments]]
+deployment_key = "qtqxshxs_20150328_000850"
 deployment_label = "qtqxshxs_20150328_000850"
 deployment_start_datetime = 2015-03-28 00:08:50+00:00
 
@@ -5533,6 +5606,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -5681,7 +5755,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "Tasmania Bluefin"
+vessel_key = "tasmania_bluefin"
+vessel_label = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
 key = "usbl_evologics_transceiver"
@@ -5698,6 +5773,7 @@ extrinsics.roty = 0.0195
 extrinsics.rotz = -0.0464
 
 [[deployments]]
+deployment_key = "qtqxshxs_20150328_042551"
 deployment_label = "qtqxshxs_20150328_042551"
 deployment_start_datetime = 2015-03-28 04:25:51+00:00
 
@@ -5766,6 +5842,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -5914,7 +5991,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "Tasmania Bluefin"
+vessel_key = "tasmania_bluefin"
+vessel_label = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
 key = "usbl_evologics_transceiver"
@@ -5931,6 +6009,7 @@ extrinsics.roty = 0.0195
 extrinsics.rotz = -0.0464
 
 [[deployments]]
+deployment_key = "r234xgje_20100604_230524"
 deployment_label = "r234xgje_20100604_230524"
 deployment_start_datetime = 2010-06-04 23:05:24+00:00
 
@@ -5994,6 +6073,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -6133,7 +6213,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -6150,6 +6231,7 @@ extrinsics.roty = -0.0042
 extrinsics.rotz = 0.3138
 
 [[deployments]]
+deployment_key = "r234xgje_20120530_064545"
 deployment_label = "r234xgje_20120530_064545"
 deployment_start_datetime = 2012-05-30 06:45:45+00:00
 
@@ -6216,6 +6298,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -6365,7 +6448,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -6382,6 +6466,7 @@ extrinsics.roty = -0.0429
 extrinsics.rotz = 0.1861
 
 [[deployments]]
+deployment_key = "r234xgje_20140616_205232"
 deployment_label = "r234xgje_20140616_205232"
 deployment_start_datetime = 2014-06-16 20:52:32+00:00
 
@@ -6444,6 +6529,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -6592,7 +6678,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "Tasmania Bluefin"
+vessel_key = "tasmania_bluefin"
+vessel_label = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -6609,6 +6696,7 @@ extrinsics.roty = -0.0103
 extrinsics.rotz = -0.0327
 
 [[deployments]]
+deployment_key = "r23685bc_20100605_021022"
 deployment_label = "r23685bc_20100605_021022"
 deployment_start_datetime = 2010-06-05 02:10:22+00:00
 
@@ -6671,6 +6759,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -6810,7 +6899,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -6827,6 +6917,7 @@ extrinsics.roty = -0.0042
 extrinsics.rotz = 0.3138
 
 [[deployments]]
+deployment_key = "r23685bc_20120530_233021"
 deployment_label = "r23685bc_20120530_233021"
 deployment_start_datetime = 2012-05-30 23:30:21+00:00
 
@@ -6890,6 +6981,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -7039,7 +7131,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -7056,6 +7149,7 @@ extrinsics.roty = -0.0429
 extrinsics.rotz = 0.1861
 
 [[deployments]]
+deployment_key = "r23685bc_20140616_225022"
 deployment_label = "r23685bc_20140616_225022"
 deployment_start_datetime = 2014-06-16 22:50:22+00:00
 
@@ -7119,6 +7213,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -7267,7 +7362,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "Tasmania Bluefin"
+vessel_key = "tasmania_bluefin"
+vessel_label = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -7284,6 +7380,7 @@ extrinsics.roty = -0.0103
 extrinsics.rotz = -0.0327
 
 [[deployments]]
+deployment_key = "r23m7ms0_20100606_001908"
 deployment_label = "r23m7ms0_20100606_001908"
 deployment_start_datetime = 2010-06-06 00:19:08+00:00
 
@@ -7344,6 +7441,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -7483,7 +7581,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -7500,6 +7599,7 @@ extrinsics.roty = -0.0042
 extrinsics.rotz = 0.3138
 
 [[deployments]]
+deployment_key = "r23m7ms0_20120601_070118"
 deployment_label = "r23m7ms0_20120601_070118"
 deployment_start_datetime = 2012-06-01 07:01:18+00:00
 
@@ -7563,6 +7663,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -7711,7 +7812,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -7728,6 +7830,7 @@ extrinsics.roty = -0.0429
 extrinsics.rotz = 0.1861
 
 [[deployments]]
+deployment_key = "r23m7ms0_20140616_044549"
 deployment_label = "r23m7ms0_20140616_044549"
 deployment_start_datetime = 2014-06-16 04:45:49+00:00
 
@@ -7793,6 +7896,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -7941,7 +8045,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "Tasmania Bluefin"
+vessel_key = "tasmania_bluefin"
+vessel_label = "Tasmania Bluefin"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -7958,6 +8063,7 @@ extrinsics.roty = -0.0103
 extrinsics.rotz = -0.0327
 
 [[deployments]]
+deployment_key = "r29mrd12_20090613_010853"
 deployment_label = "r29mrd12_20090613_010853"
 deployment_start_datetime = 2009-06-13 01:08:53+00:00
 
@@ -8016,6 +8122,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -8154,7 +8261,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -8171,6 +8279,7 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments]]
+deployment_key = "r29mrd12_20090613_104954"
 deployment_label = "r29mrd12_20090613_104954"
 deployment_start_datetime = 2009-06-13 10:49:54+00:00
 
@@ -8229,6 +8338,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -8367,7 +8477,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -8384,6 +8495,7 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments]]
+deployment_key = "r29mrd12_20110612_045149"
 deployment_label = "r29mrd12_20110612_045149"
 deployment_start_datetime = 2011-06-12 04:51:49+00:00
 
@@ -8443,6 +8555,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -8582,7 +8695,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -8599,6 +8713,7 @@ extrinsics.roty = -0.0605
 extrinsics.rotz = -0.24
 
 [[deployments]]
+deployment_key = "r29mrd12_20130611_015335"
 deployment_label = "r29mrd12_20130611_015335"
 deployment_start_datetime = 2013-06-11 01:53:35+00:00
 
@@ -8662,6 +8777,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -8810,7 +8926,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -8827,6 +8944,7 @@ extrinsics.roty = 0.0176
 extrinsics.rotz = -0.2815
 
 [[deployments]]
+deployment_key = "r29mrd5h_20090612_225306"
 deployment_label = "r29mrd5h_20090612_225306"
 deployment_start_datetime = 2009-06-12 22:53:06+00:00
 
@@ -8887,6 +9005,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -9025,7 +9144,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -9042,6 +9162,7 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments]]
+deployment_key = "r29mrd5h_20090613_100254"
 deployment_label = "r29mrd5h_20090613_100254"
 deployment_start_datetime = 2009-06-13 10:02:54+00:00
 
@@ -9100,6 +9221,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -9238,7 +9360,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -9255,6 +9378,7 @@ extrinsics.roty = 0.0
 extrinsics.rotz = 0.0
 
 [[deployments]]
+deployment_key = "r29mrd5h_20110612_033752"
 deployment_label = "r29mrd5h_20110612_033752"
 deployment_start_datetime = 2011-06-12 03:37:52+00:00
 
@@ -9313,6 +9437,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -9452,7 +9577,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -9469,6 +9595,7 @@ extrinsics.roty = -0.0605
 extrinsics.rotz = -0.24
 
 [[deployments]]
+deployment_key = "r29mrd5h_20130611_002419"
 deployment_label = "r29mrd5h_20130611_002419"
 deployment_start_datetime = 2013-06-11 00:24:19+00:00
 
@@ -9535,6 +9662,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -9683,7 +9811,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Challenger"
+vessel_key = "rv_challenger"
+vessel_label = "RV Challenger"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -9700,6 +9829,7 @@ extrinsics.roty = 0.0176
 extrinsics.rotz = -0.2815
 
 [[deployments]]
+deployment_key = "r7jjskxq_20101023_210332"
 deployment_label = "r7jjskxq_20101023_210332"
 deployment_start_datetime = 2010-10-23 21:03:32+00:00
 
@@ -9760,6 +9890,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -9899,7 +10030,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Tom Marshall"
+vessel_key = "rv_tom_marshall"
+vessel_label = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -9916,6 +10048,7 @@ extrinsics.roty = -0.0622
 extrinsics.rotz = -0.0509
 
 [[deployments]]
+deployment_key = "r7jjskxq_20121013_060425"
 deployment_label = "r7jjskxq_20121013_060425"
 deployment_start_datetime = 2012-10-13 06:04:25+00:00
 
@@ -9978,6 +10111,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -10125,7 +10259,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Tom Marshall"
+vessel_key = "rv_tom_marshall"
+vessel_label = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -10142,6 +10277,7 @@ extrinsics.roty = -0.0036
 extrinsics.rotz = -0.0511
 
 [[deployments]]
+deployment_key = "r7jjskxq_20131022_004934"
 deployment_label = "r7jjskxq_20131022_004934"
 deployment_start_datetime = 2013-10-22 00:49:34+00:00
 
@@ -10200,6 +10336,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -10347,7 +10484,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Tom Marshall"
+vessel_key = "rv_tom_marshall"
+vessel_label = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -10364,6 +10502,7 @@ extrinsics.roty = 0.0022
 extrinsics.rotz = 0.2499
 
 [[deployments]]
+deployment_key = "r7jjss8n_20101023_210332"
 deployment_label = "r7jjss8n_20101023_210332"
 deployment_start_datetime = 2010-10-23 21:03:32+00:00
 
@@ -10424,6 +10563,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -10563,7 +10703,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Tom Marshall"
+vessel_key = "rv_tom_marshall"
+vessel_label = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -10580,6 +10721,7 @@ extrinsics.roty = -0.0622
 extrinsics.rotz = -0.0509
 
 [[deployments]]
+deployment_key = "r7jjss8n_20121013_060425"
 deployment_label = "r7jjss8n_20121013_060425"
 deployment_start_datetime = 2012-10-13 06:04:25+00:00
 
@@ -10642,6 +10784,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -10789,7 +10932,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Tom Marshall"
+vessel_key = "rv_tom_marshall"
+vessel_label = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -10806,6 +10950,7 @@ extrinsics.roty = -0.0036
 extrinsics.rotz = -0.0511
 
 [[deployments]]
+deployment_key = "r7jjss8n_20131022_004934"
 deployment_label = "r7jjss8n_20131022_004934"
 deployment_start_datetime = 2013-10-22 00:49:34+00:00
 
@@ -10864,6 +11009,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -11011,7 +11157,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Tom Marshall"
+vessel_key = "rv_tom_marshall"
+vessel_label = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -11028,6 +11175,7 @@ extrinsics.roty = 0.0022
 extrinsics.rotz = 0.2499
 
 [[deployments]]
+deployment_key = "r7jjssbh_20101023_210332"
 deployment_label = "r7jjssbh_20101023_210332"
 deployment_start_datetime = 2010-10-23 21:03:32+00:00
 
@@ -11088,6 +11236,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -11227,7 +11376,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Tom Marshall"
+vessel_key = "rv_tom_marshall"
+vessel_label = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -11244,6 +11394,7 @@ extrinsics.roty = -0.0622
 extrinsics.rotz = -0.0509
 
 [[deployments]]
+deployment_key = "r7jjssbh_20121013_060425"
 deployment_label = "r7jjssbh_20121013_060425"
 deployment_start_datetime = 2012-10-13 06:04:25+00:00
 
@@ -11306,6 +11457,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -11453,7 +11605,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Tom Marshall"
+vessel_key = "rv_tom_marshall"
+vessel_label = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"
@@ -11470,6 +11623,7 @@ extrinsics.roty = -0.0036
 extrinsics.rotz = -0.0511
 
 [[deployments]]
+deployment_key = "r7jjssbh_20131022_004934"
 deployment_label = "r7jjssbh_20131022_004934"
 deployment_start_datetime = 2013-10-22 00:49:34+00:00
 
@@ -11528,6 +11682,7 @@ topics = [
 [deployments.platform]
 
 [deployments.platform.identity]
+platform_key = "auv_sirius"
 platform_label = "AUV Sirius"
 platform_class = "SEABED"
 platform_operator = "ACFR"
@@ -11675,7 +11830,8 @@ sensors = [
 [deployments.vessel]
 
 [deployments.vessel.identity]
-vessel_name = "RV Tom Marshall"
+vessel_key = "rv_tom_marshall"
+vessel_label = "RV Tom Marshall"
 
 [[deployments.vessel.sensors]]
 key = "usbl_linkquest_transceiver"

@@ -26,7 +26,7 @@ class BuildDeploymentBundleCommand:
     ----------
     descriptor_file: Path to the deployment descriptors TOML file containing
         the target deployment's (enriched) descriptor.
-    deployment_label: Label of the deployment to build, selected out of
+    deployment_key: Key of the deployment to build, selected out of
         ``descriptor_file``'s entries.
     data_dir: Per-deployment data directory, e.g.
         ``<root_dir>/qdch0ftq_20100428_020202_deployment_data``.
@@ -38,7 +38,7 @@ class BuildDeploymentBundleCommand:
     """
 
     descriptor_file: Path
-    deployment_label: str
+    deployment_key: str
     data_dir: Path
     config_file: Path
     output_file: Path

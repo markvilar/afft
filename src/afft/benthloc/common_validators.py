@@ -1,4 +1,4 @@
-"""Validators shared by both Benthloc ingestion file builders."""
+"""Validators shared by both Benthloc ingestion document builders."""
 
 import geopandas as gpd
 import pandas as pd

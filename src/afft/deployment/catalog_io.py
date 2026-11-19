@@ -38,7 +38,7 @@ def write_deployment_catalog(path: Path, catalog: DeploymentCatalog) -> None:
 
     Emitted by hand rather than by a TOML encoder so that rotations, stated in
     radians, carry their degree equivalents as trailing comments. The mapping
-    tables are sorted by deployment label; the record tables keep the order
+    tables are sorted by deployment key; the record tables keep the order
     they are held in, since a curated file orders those deliberately.
 
     Arguments
@@ -61,7 +61,9 @@ def write_deployment_catalog(path: Path, catalog: DeploymentCatalog) -> None:
     for platform_profile in catalog.platform_profiles:
         blocks.append(
             "[[platform_profiles]]\n"
-            f"key = {_toml_string(platform_profile.key)}\n"
+            "platform_profile_key = "
+            f"{_toml_string(platform_profile.platform_profile_key)}\n"
+            f"platform_key = {_toml_string(platform_profile.platform_key)}\n"
             f"platform_label = {_toml_string(platform_profile.platform_label)}\n"
             f"platform_class = {_toml_string(platform_profile.platform_class)}\n"
             "platform_operator = "
@@ -72,29 +74,33 @@ def write_deployment_catalog(path: Path, catalog: DeploymentCatalog) -> None:
     for vessel_profile in catalog.vessel_profiles:
         blocks.append(
             "[[vessel_profiles]]\n"
-            f"key = {_toml_string(vessel_profile.key)}\n"
-            f"vessel_name = {_toml_string(vessel_profile.vessel_name)}\n"
+            "vessel_profile_key = "
+            f"{_toml_string(vessel_profile.vessel_profile_key)}\n"
+            f"vessel_key = {_toml_string(vessel_profile.vessel_key)}\n"
+            f"vessel_label = {_toml_string(vessel_profile.vessel_label)}\n"
             f"{_format_profile_sensors(vessel_profile.sensors)}"
         )
 
     for platform_entry in sorted(
         catalog.deployment_platforms,
-        key=lambda entry: entry.deployment_label,
+        key=lambda entry: entry.deployment_key,
     ):
         blocks.append(
             "[[deployment_platforms]]\n"
-            f"deployment_label = {_toml_string(platform_entry.deployment_label)}\n"
-            f"platform_profile = {_toml_string(platform_entry.platform_profile)}\n"
+            f"deployment_key = {_toml_string(platform_entry.deployment_key)}\n"
+            "platform_profile_key = "
+            f"{_toml_string(platform_entry.platform_profile_key)}\n"
         )
 
     for vessel_entry in sorted(
         catalog.deployment_vessels,
-        key=lambda entry: entry.deployment_label,
+        key=lambda entry: entry.deployment_key,
     ):
         blocks.append(
             "[[deployment_vessels]]\n"
-            f"deployment_label = {_toml_string(vessel_entry.deployment_label)}\n"
-            f"vessel_profile = {_toml_string(vessel_entry.vessel_profile)}\n"
+            f"deployment_key = {_toml_string(vessel_entry.deployment_key)}\n"
+            "vessel_profile_key = "
+            f"{_toml_string(vessel_entry.vessel_profile_key)}\n"
         )
 
     path.write_text("\n".join(blocks))
